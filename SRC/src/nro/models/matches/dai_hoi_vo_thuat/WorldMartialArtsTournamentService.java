@@ -95,11 +95,8 @@ public class WorldMartialArtsTournamentService extends ConstTournament {
                         if (canReg && tour != -1) {
                             if (!regCheck(player)) {
                                 ArrayList<String> menu = new ArrayList<>();
-                                if (tour == NGOAI_HANG) {
-                                    menu.add("Giải\n" + tournamentNames[tour] + "\n(" + tournamentGolds[tour] / 1000 + "k vàng)");
-                                } else {
-                                    menu.add("Giải\n" + tournamentNames[tour] + "\n(" + tournamentGems[tour] + " ngọc)");
-                                }
+                                long goldCost = tour == NGOAI_HANG ? tournamentGolds[tour] : tournamentGems[tour] * 1_000_000L;
+                                menu.add("Giải\n" + tournamentNames[tour] + "\n(" + (goldCost / 1000) + "k vàng)");
                                 menu.add("Từ chối");
                                 npc.createOtherMenu(player, ConstNpc.DANGKYDHVT_CONFIRM, "Hiện đang có giải đấu " + tournamentNames[tour] + " bạn có muốn đăng ký không?", menu.toArray(String[]::new));
                             } else {
@@ -138,16 +135,11 @@ public class WorldMartialArtsTournamentService extends ConstTournament {
         }
         if (!WorldMartialArtsTournamentManager.gI().listReg.contains(player.id)) {
             int tour = getTournament();
-            int gold = tournamentGolds[tour];
-            int gem = tournamentGems[tour];
+            long gold = tour == NGOAI_HANG ? tournamentGolds[tour] : tournamentGems[tour] * 1_000_000L;
 
             // Kiểm tra tài nguyên người chơi
             if (player.inventory.gold < gold) {
                 NpcService.gI().createTutorial(player, npc.tempId, npc.avartar, "Bạn không đủ vàng, còn thiếu " + (gold - player.inventory.gold) + " vàng nữa");
-                return;
-            }
-            if (player.inventory.getGem() < gem) {
-                NpcService.gI().createTutorial(player, npc.tempId, npc.avartar, "Bạn không đủ ngọc, còn thiếu " + (gem - player.inventory.getGem()) + " ngọc nữa");
                 return;
             }
 
@@ -156,7 +148,6 @@ public class WorldMartialArtsTournamentService extends ConstTournament {
                 // Nếu giải Ngoại hạng thì bỏ qua kiểm tra power
                 NpcService.gI().createTutorial(player, npc.tempId, npc.avartar, ConstTournament.TEXT_DANG_KY_THANH_CONG.replaceAll("%1", TimeUtil.getCurrHour() + "").replaceAll("%2", TimeUtil.getCurrHour() + "h" + TimeUtil.getCurrMin()));
                 player.inventory.gold -= gold;
-                player.inventory.subGem(gem);
                 Service.gI().sendMoney(player);
                 WorldMartialArtsTournamentManager.gI().listReg.add(player.id);
                 return;
@@ -197,7 +188,6 @@ public class WorldMartialArtsTournamentService extends ConstTournament {
 
             // Cập nhật tài nguyên và đăng ký giải đấu
             player.inventory.gold -= gold;
-            player.inventory.subGem(gem);
             Service.gI().sendMoney(player);
             WorldMartialArtsTournamentManager.gI().listReg.add(player.id);
             NpcService.gI().createTutorial(player, npc.tempId, npc.avartar, ConstTournament.TEXT_DANG_KY_THANH_CONG.replaceAll("%1", TimeUtil.getCurrHour() + "").replaceAll("%2", TimeUtil.getCurrHour() + "h" + TimeUtil.getCurrMin()));

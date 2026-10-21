@@ -84,7 +84,7 @@ public class Osin extends Npc {
                     ArrayList<String> menuAL = new ArrayList<>();
                     menuAL.add("Hướng\ndẫn\nthêm");
                     if (!player.itemTime.isUseGTPT) {
-                        menuAL.add("Giải trừ\nphép thuật\n1 ngọc");
+                        menuAL.add("Giải trừ\nphép thuật\n1 Tr vàng");
                     }
                     if (player.fightMabu.pointMabu >= player.fightMabu.POINT_MAX && this.mapId != 120) {
                         menuAL.add("Xuống\nTầng dưới");
@@ -96,7 +96,7 @@ public class Osin extends Npc {
                     String npcSay = player.isPhuHoMapMabu ? "Ta có thể giúp gì cho ngươi ?" : "Ta sẽ phù hộ ngươi bằng\nnguồn sức mạnh của Thần Kaiô\n+1 triệu HP, +1 triệu KI, +10k Sức đánh\nLưu ý: sức mạnh này sẽ biến mất khi ngươi rời khỏi đây";
                     ArrayList<String> menuAL = new ArrayList<>();
                     if (!player.isPhuHoMapMabu) {
-                        menuAL.add("Phù hộ\n10 ngọc");
+                        menuAL.add("Phù hộ\n10 Tr vàng");
                     }
                     menuAL.add("Từ chối");
                     menuAL.add("Về\nĐại Hội\nVõ Thuật");
@@ -216,10 +216,11 @@ public class Osin extends Npc {
                         switch (select) {
                             case 0 -> {
                                 if (!player.isPhuHoMapMabu) {
-                                    if (player.inventory.getGem() < 10) {
-                                        Service.gI().sendThongBao(player, "Bạn không có đủ ngọc");
+                                    if (player.inventory.gold < 10_000_000) {
+                                        Service.gI().sendThongBao(player, "Bạn không có đủ 10 triệu vàng");
                                     } else {
-                                        player.inventory.subGem(10);
+                                        player.inventory.subGold(10_000_000);
+                                        Service.gI().sendMoney(player);
                                         player.isPhuHoMapMabu = true;
                                         player.nPoint.calPoint();
                                         player.nPoint.setHp((int) player.nPoint.hpMax);
@@ -254,14 +255,14 @@ public class Osin extends Npc {
                             case 1 ->
                                 createOtherMenu(player, ConstNpc.BUA_HO_TRO,
                                         "Ta có thể làm phép giúp ngươi\nhút nhanh hơn gấp đôi năng lượng tà ác\ntrong 10 phút, tối đa 60 phút",
-                                        "Đồng ý\n5 ngọc", "Từ chối");
+                                        "Đồng ý\n5 Tr vàng", "Từ chối");
                         }
                     }
 
                     case ConstNpc.BUA_HO_TRO -> {
                         if (select == 0) {
-                            if (player.inventory.getGem() >= 5) {
-                                player.inventory.subGem(5);
+                            if (player.inventory.gold >= 5_000_000) {
+                                player.inventory.subGold(5_000_000);
                                 Service.gI().sendMoney(player);
                                 long currentTime = System.currentTimeMillis();
                                 long addedTime = 10 * 60 * 1000;
@@ -280,7 +281,7 @@ public class Osin extends Npc {
 
                                 ItemTimeService.gI().sendAllItemTime(player);
                             } else {
-                                Service.gI().sendThongBao(player, "Bạn không có đủ ngọc!");
+                                Service.gI().sendThongBao(player, "Bạn không có đủ 5 triệu vàng!");
                             }
                         }
                     }

@@ -52,9 +52,9 @@ public class GhiDanh extends Npc {
                     long rubychallenge = pl.rubyChallenge;
                     // Hướng dẫn thêm - Hủy\nđăng kí - về dhvt
                     if (pl.levelWoodChest == 0) {
-                        menuselect = new String[]{"Hướng\ndẫn\nthêm", "Thi đấu\n" + Util.numberToMoney(rubychallenge) + " ngọc", "Thi đấu\n" + Util.numberToMoney(goldchallenge) + " vàng", "Về\nĐại Hội\nVõ Thuật"};
+                        menuselect = new String[]{"Hướng\ndẫn\nthêm", "Thi đấu\n" + Util.numberToMoney(goldchallenge) + " vàng", "Thi đấu\n" + Util.numberToMoney(goldchallenge) + " vàng", "Về\nĐại Hội\nVõ Thuật"};
                     } else {
-                        menuselect = new String[]{"Hướng\ndẫn\nthêm", "Thi đấu\n" + Util.numberToMoney(rubychallenge) + " ngọc", "Thi đấu\n" + Util.numberToMoney(goldchallenge) + " vàng", "Nhận\nthưởng\nRương Cấp\n" + pl.levelWoodChest, "Về\nĐại Hội\nVõ Thuật"};
+                        menuselect = new String[]{"Hướng\ndẫn\nthêm", "Thi đấu\n" + Util.numberToMoney(goldchallenge) + " vàng", "Thi đấu\n" + Util.numberToMoney(goldchallenge) + " vàng", "Nhận\nthưởng\nRương Cấp\n" + pl.levelWoodChest, "Về\nĐại Hội\nVõ Thuật"};
                     }
                     this.createOtherMenu(pl, ConstNpc.BASE_MENU, "Đại hội võ thuật lần thứ 23\nDiễn ra bất kể ngày đêm, ngày nghỉ, ngày lễ\nPhần thưởng vô cùng quý giá\nNhanh chóng tham gia nào", menuselect, "Từ chối");
                 }
@@ -81,26 +81,14 @@ public class GhiDanh extends Npc {
                                 case 1, 2 -> {
                                     if (player.levelWoodChest != 12) {
                                         if (InventoryService.gI().finditemWoodChest(player)) {
-                                            if (select == 1) {
-                                                if (player.inventory.gem >= rubychallenge) {
-                                                    The23rdMartialArtCongressService.gI().startChallenge(player);
-                                                    player.inventory.gem -= (rubychallenge);
-                                                    PlayerService.gI().sendInfoHpMpMoney(player);
-                                                    player.goldChallenge *= 2;
-                                                    player.rubyChallenge += 2;
-                                                } else {
-                                                    Service.gI().sendThongBao(player, "Bạn không đủ ngọc, còn thiếu " + Util.numberToMoney(rubychallenge - player.inventory.ruby) + " ngọc nữa");
-                                                }
+                                            if (player.inventory.gold >= goldchallenge) {
+                                                The23rdMartialArtCongressService.gI().startChallenge(player);
+                                                player.inventory.gold -= (goldchallenge);
+                                                PlayerService.gI().sendInfoHpMpMoney(player);
+                                                player.goldChallenge *= 2;
+                                                player.rubyChallenge += 2;
                                             } else {
-                                                if (player.inventory.gold >= goldchallenge) {
-                                                    The23rdMartialArtCongressService.gI().startChallenge(player);
-                                                    player.inventory.gold -= (goldchallenge);
-                                                    PlayerService.gI().sendInfoHpMpMoney(player);
-                                                    player.goldChallenge *= 2;
-                                                    player.rubyChallenge += 2;
-                                                } else {
-                                                    Service.gI().sendThongBao(player, "Bạn không đủ vàng, còn thiếu " + Util.numberToMoney(goldchallenge - player.inventory.gold) + " vàng nữa");
-                                                }
+                                                Service.gI().sendThongBao(player, "Bạn không đủ vàng, còn thiếu " + Util.numberToMoney(goldchallenge - player.inventory.gold) + " vàng nữa");
                                             }
                                         } else {
                                             Service.gI().sendThongBao(player, "Hãy mở rương báu vật trước");
@@ -119,26 +107,14 @@ public class GhiDanh extends Npc {
                                 case 1, 2 -> {
                                     if (player.levelWoodChest != 12) {
                                         if (InventoryService.gI().finditemWoodChest(player)) {
-                                            if (select == 1) {
-                                                if (player.inventory.gem >= rubychallenge) {
-                                                    The23rdMartialArtCongressService.gI().startChallenge(player);
-                                                    player.inventory.gem -= (rubychallenge);
-                                                    PlayerService.gI().sendInfoHpMpMoney(player);
-                                                    player.goldChallenge *= 2;
-                                                    player.rubyChallenge += 2;
-                                                } else {
-                                                    Service.gI().sendThongBao(player, "Bạn không đủ ngọc, còn thiếu " + Util.numberToMoney(rubychallenge - player.inventory.gem) + " ngọc nữa");
-                                                }
+                                            if (player.inventory.gold >= goldchallenge) {
+                                                The23rdMartialArtCongressService.gI().startChallenge(player);
+                                                player.inventory.gold -= (goldchallenge);
+                                                PlayerService.gI().sendInfoHpMpMoney(player);
+                                                player.goldChallenge *= 2;
+                                                player.rubyChallenge += 2;
                                             } else {
-                                                if (player.inventory.gold >= goldchallenge) {
-                                                    The23rdMartialArtCongressService.gI().startChallenge(player);
-                                                    player.inventory.gold -= (goldchallenge);
-                                                    PlayerService.gI().sendInfoHpMpMoney(player);
-                                                    player.goldChallenge *= 2;
-                                                    player.rubyChallenge += 2;
-                                                } else {
-                                                    Service.gI().sendThongBao(player, "Bạn không đủ vàng, còn thiếu " + Util.numberToMoney(goldchallenge - player.inventory.gold) + " vàng nữa");
-                                                }
+                                                Service.gI().sendThongBao(player, "Bạn không đủ vàng, còn thiếu " + Util.numberToMoney(goldchallenge - player.inventory.gold) + " vàng nữa");
                                             }
                                         } else {
                                             Service.gI().sendThongBao(player, "Hãy mở rương báu vật trước");

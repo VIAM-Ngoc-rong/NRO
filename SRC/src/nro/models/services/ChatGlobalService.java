@@ -76,10 +76,10 @@ public class ChatGlobalService implements Runnable {
         if (haveInChatting) {
             return;
         }
-        if (player.inventory.gem >= 5) {
+        if (player.inventory.gold >= 5_000_000) {
             if (player.isAdmin() || Util.canDoWithTime(player.idMark.getLastTimeChatGlobal(), 30000)) {
                 if (player.isAdmin() || player.nPoint.power > 1500000) {
-                    player.inventory.subGem(1);
+                    player.inventory.subGold(5_000_000);
                     Service.gI().sendMoney(player);
                     player.idMark.setLastTimeChatGlobal(System.currentTimeMillis());
                     waitingChat.add(new ChatGlobal(player, text.length() > 100 ? text.substring(0, 100) : text));
@@ -91,7 +91,7 @@ public class ChatGlobalService implements Runnable {
                         + TimeUtil.getTimeLeft(player.idMark.getLastTimeChatGlobal(), 5));
             }
         } else {
-            Service.gI().sendThongBao(player, "Không đủ ngọc chat thế giới");
+            Service.gI().sendThongBao(player, "Không đủ 5 triệu vàng chat thế giới");
         }
     }
 

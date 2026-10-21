@@ -94,7 +94,7 @@ public class IntrinsicService {
 
     public void showConfirmOpenVip(Player player) {
         NpcService.gI().createMenuConMeo(player, ConstNpc.CONFIRM_OPEN_INTRINSIC_VIP, -1,
-                "Bạn có muốn mở Nội Tại\nvới giá là 100 ngọc và\ntái lập giá vàng quay lại ban đầu không?", "Mở\nNội VIP", "Từ chối");
+                "Bạn có muốn mở Nội Tại\nvới giá là 100 Tr vàng và\ntái lập giá vàng quay lại ban đầu không?", "Mở\nNội VIP", "Từ chối");
     }
 
     private void changeIntrinsic(Player player) {
@@ -144,15 +144,15 @@ public class IntrinsicService {
 
     public void openVip(Player player) {
         if (player.nPoint.power >= 10000000000L) {
-            int gemRequire = 100;
-            if (player.inventory.gem >= 100) {
-                player.inventory.gem -= gemRequire;
+            long goldRequire = 100_000_000L;
+            if (player.inventory.gold >= goldRequire) {
+                player.inventory.gold -= goldRequire;
                 PlayerService.gI().sendInfoHpMpMoney(player);
                 changeIntrinsic(player);
                 player.playerIntrinsic.countOpen = 0;
             } else {
-                Service.gI().sendThongBao(player, "Bạn không có đủ ngọc, còn thiếu "
-                        + (gemRequire - player.inventory.gem) + " ngọc nữa");
+                Service.gI().sendThongBao(player, "Bạn không đủ vàng, còn thiếu "
+                        + Util.numberToMoney(goldRequire - player.inventory.gold) + " vàng nữa");
             }
         } else {
             Service.gI().sendThongBao(player, "Yêu cầu sức mạnh tối thiểu 10 tỷ");

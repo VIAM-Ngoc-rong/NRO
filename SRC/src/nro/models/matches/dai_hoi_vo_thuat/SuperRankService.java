@@ -60,8 +60,8 @@ public class SuperRankService {
         } else if (pl.superRank.rank < 10 && player.superRank.rank - pl.superRank.rank > 2) {
             Service.gI().sendThongBao(player, ConstSuperRank.TEXT_KHONG_THE_THI_DAU_TREN_2_HANG);
             return;
-        } else if (player.superRank.ticket <= 0 && player.inventory.getGem() < 1 ) {
-            Service.gI().sendThongBao(player, "Bạn không đủ ngọc, còn thiếu 1 ngọc nữa");
+        } else if (player.superRank.ticket <= 0 && player.inventory.gold < 3_000_000) {
+            Service.gI().sendThongBao(player, "Bạn không đủ 3 triệu vàng để thi đấu");
             return;
         }
         SuperRankDAO.loadData(player);

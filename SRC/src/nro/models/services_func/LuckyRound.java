@@ -111,12 +111,12 @@ public class LuckyRound {
     }
 
     private void openBallByGem(Player player, byte count) {
-        int gemNeed = (count * PRICE_GEM);
-        if (player.inventory.gem < gemNeed) {
-            Service.gI().sendThongBao(player, "Bạn không đủ ngọc để mở");
+        long goldNeed = (long) count * PRICE_GOLD;
+        if (player.inventory.gold < goldNeed) {
+            Service.gI().sendThongBao(player, "Bạn không đủ vàng để mở");
         } else {
             if (count + player.inventory.itemsBoxCrackBall.size() <= MAX_ITEM_IN_BOX) {
-                player.inventory.gem -= gemNeed;
+                player.inventory.gold -= goldNeed;
                 List<Item> list = RewardService.gI().getListItemLuckyRound(player, count, true);
                 addItemToBox(player, list);
                 sendReward(player, list);

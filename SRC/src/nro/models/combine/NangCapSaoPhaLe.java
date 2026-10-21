@@ -35,26 +35,20 @@ public class NangCapSaoPhaLe {
 
             if (saoPhaLe != null && hematite != null) {
                 player.combineNew.goldCombine = GOLD_NANG_CAP;
-                player.combineNew.gemCombine = GEM_NANG_CAP;
                 player.combineNew.ratioCombine = RATIO_NANG_CAP;
 
                 String npcSay = "|2|Nâng cấp Sao Pha Lê từ cấp 1 lên cấp 2\n";
                 npcSay += "|2|Tỉ lệ thành công: " + player.combineNew.ratioCombine + "%\n";
                 npcSay += "|2|Cần 1 đá Hematite\n";
-                npcSay += "|2|Cần: " + Util.numberToMoney(player.combineNew.gemCombine) + " ngọc\n";
                 npcSay += "|2|Cần: " + Util.numberToMoney(player.combineNew.goldCombine) + " vàng\n";
                 npcSay += "|7|Thất bại -1 đá Hematite\n";
 
-                if (player.inventory.getGem() < player.combineNew.gemCombine) {
-                    npcSay += "|7|Còn thiếu " + (player.combineNew.gemCombine - player.inventory.gem) + " ngọc xanh\n";
-                    CombineService.gI().baHatMit.createOtherMenu(player, ConstNpc.IGNORE_MENU, npcSay, "Đóng");
-                } else if (player.inventory.gold < player.combineNew.goldCombine) {
+                if (player.inventory.gold < player.combineNew.goldCombine) {
                     npcSay += "|7|Còn thiếu " + Util.powerToString(player.combineNew.goldCombine - player.inventory.gold) + " vàng\n";
                     CombineService.gI().baHatMit.createOtherMenu(player, ConstNpc.IGNORE_MENU, npcSay, "Đóng");
                 } else {
                     CombineService.gI().baHatMit.createOtherMenu(player, ConstNpc.MENU_START_COMBINE, npcSay,
-                            "Nâng cấp\n" + Util.numberToMoney(player.combineNew.goldCombine) + " vàng\n"
-                            + Util.numberToMoney(player.combineNew.gemCombine) + " ngọc\n", "Từ chối");
+                            "Nâng cấp\n" + Util.numberToMoney(player.combineNew.goldCombine) + " vàng\n", "Từ chối");
                 }
             } else {
                 CombineService.gI().baHatMit.createOtherMenu(player, ConstNpc.IGNORE_MENU,
@@ -69,14 +63,9 @@ public class NangCapSaoPhaLe {
     public static void nangCapSaoPhaLe(Player player) {
         if (player.combineNew.itemsCombine.size() == 2) {
             int gold = player.combineNew.goldCombine;
-            int gem = player.combineNew.gemCombine;
 
             if (player.inventory.gold < gold) {
                 Service.gI().sendThongBao(player, "Không đủ vàng để thực hiện");
-                return;
-            }
-            if (player.inventory.gem < gem) {
-                Service.gI().sendThongBao(player, "Không đủ ngọc để thực hiện");
                 return;
             }
 
@@ -93,7 +82,6 @@ public class NangCapSaoPhaLe {
 
             if (saoPhaLe != null && hematite != null) {
                 player.inventory.gold -= gold;
-                player.inventory.gem -= gem;
                 
                 if (Util.isTrue(player.combineNew.ratioCombine, 100)) {
                     int getSaoPhaLeCap2Id = getSaoPhaLeCap2Id(saoPhaLe.template.id);

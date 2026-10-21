@@ -22,7 +22,6 @@ public class ChuyenHoaTrangBi_Ngoc {
 
         Item trangBiGoc = player.combineNew.itemsCombine.get(0);
         Item trangBiCanChuyenHoa = player.combineNew.itemsCombine.get(1);
-        int goldChuyenHoa = 2_000_000_000;
 
         int levelTrangBi = 0;
         int soLanRotCap = 0;
@@ -89,7 +88,7 @@ public class ChuyenHoaTrangBi_Ngoc {
         }
 
         npcSay.append("Chuyển qua tất cả sao pha lê\n");
-        npcSay.append("|2|Cần 5000 ngọc");
+        npcSay.append("|2|Cần 2 tỷ vàng");
 
         CombineService.gI().baHatMit.createOtherMenu(player, ConstNpc.MENU_START_COMBINE,
                 npcSay.toString(), "Chuyển hóa", "Từ chối");
@@ -99,6 +98,10 @@ public class ChuyenHoaTrangBi_Ngoc {
         Item trangBiGoc = player.combineNew.itemsCombine.get(0);
         Item trangBiCanChuyenHoa = player.combineNew.itemsCombine.get(1);
         int goldChuyenHoa = 2_000_000_000;
+        if (player.inventory.gold < goldChuyenHoa) {
+            Service.gI().sendThongBao(player, "Không đủ vàng để thực hiện");
+            return;
+        }
 
         int levelTrangBi = 0;
         int soLanRotCap = 0;

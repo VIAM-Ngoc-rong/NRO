@@ -44,7 +44,7 @@ public class EpSaoTrangBi {
                         return;
                     }
 
-                    player.combineNew.gemCombine = CombineSystem.getGemEpSao(star);
+                    player.combineNew.goldCombine = CombineSystem.getGemEpSao(star) * 1_000_000;
                     String npcSay = trangBi.template.name + "\n|2|";
                     for (ItemOption io : trangBi.itemOptions) {
                         if (io.optionTemplate.id != 102) {
@@ -60,9 +60,9 @@ public class EpSaoTrangBi {
                         npcSay += "|7|" + ItemService.gI().getItemOptionTemplate(CombineSystem.getOptionDaPhaLe(daPhaLe)).name
                                 .replaceAll("#", CombineSystem.getParamDaPhaLe(daPhaLe) + "") + "\n";
                     }
-                    npcSay += "|1|Cần " + Util.numberToMoney(player.combineNew.gemCombine) + " ngọc";
+                    npcSay += "|1|Cần " + Util.numberToMoney(player.combineNew.goldCombine) + " vàng";
                     CombineService.gI().baHatMit.createOtherMenu(player, ConstNpc.MENU_START_COMBINE, npcSay,
-                            "Nâng cấp\ncần " + player.combineNew.gemCombine + " ngọc");
+                            "Nâng cấp\ncần " + Util.numberToMoney(player.combineNew.goldCombine) + " vàng");
                 } else {
                     CombineService.gI().baHatMit.createOtherMenu(player, ConstNpc.IGNORE_MENU,
                             "Cần 1 trang bị có lỗ sao pha lê và 1 loại đá pha lê để ép vào, và lỗ sao tối đa là 9", "Đóng");
@@ -79,9 +79,9 @@ public class EpSaoTrangBi {
 
     public static void epSaoTrangBi(Player player) {
         if (player.combineNew.itemsCombine.size() == 2) {
-            int gem = player.combineNew.gemCombine;
-            if (player.inventory.gem < gem) {
-                Service.gI().sendThongBao(player, "Không đủ ngọc để thực hiện");
+            int gold = player.combineNew.goldCombine;
+            if (player.inventory.gold < gold) {
+                Service.gI().sendThongBao(player, "Không đủ vàng để thực hiện");
                 return;
             }
 
@@ -123,7 +123,7 @@ public class EpSaoTrangBi {
                 return;
             }
 
-            player.inventory.subGem(gem);
+            player.inventory.subGold(gold);
 
             int optionId = CombineSystem.getOptionDaPhaLe(daPhaLe);
             int param = CombineSystem.getParamDaPhaLe(daPhaLe);

@@ -137,13 +137,13 @@ public class MagicTree {
                     msg.writer().writeUTF(getTextMenuUpgrade());
                 }
                 if (this.currPeas < this.getMaxPea()) {
-                    msg.writer().writeUTF("Kết hạt\nnhanh\n" + HARVEST_GEM[this.level - 1] + " ngọc");
+                    msg.writer().writeUTF("Kết hạt\nnhanh\n" + HARVEST_GEM[this.level - 1] + " Tr vàng");
                     this.player.idMark.setIndexMenu(ConstNpc.MAGIC_TREE_NON_UPGRADE_LEFT_PEA);
                 } else {
                     this.player.idMark.setIndexMenu(ConstNpc.MAGIC_TREE_NON_UPGRADE_FULL_PEA);
                 }
             } else {
-                msg.writer().writeUTF("Nâng cấp\nnhanh\n" + UPGRADE_GEM[this.level - 1] + " ngọc");
+                msg.writer().writeUTF("Nâng cấp\nnhanh\n" + UPGRADE_GEM[this.level - 1] + " Tr vàng");
                 msg.writer().writeUTF("Hủy\nnâng cấp\nhồi " + (PEA_UPGRADE[this.level - 1][3] / 2 + (this.level <= 3 ? " k" : " Tr")) + "\nvàng");
                 this.player.idMark.setIndexMenu(ConstNpc.MAGIC_TREE_UPGRADE);
             }
@@ -212,45 +212,33 @@ public class MagicTree {
     }
 
     public void fastRespawnPea() {
-        // Sử dụng mảng HARVEST_GEM để lấy số gem theo cấp độ
-        int gemRequired = HARVEST_GEM[this.level - 1];  // Lấy số gem theo cấp độ cây
+        long goldRequired = HARVEST_GEM[this.level - 1] * 1_000_000L;
 
-        // Kiểm tra xem người chơi có đủ gem không
-        if (this.player.inventory.gem >= gemRequired) {
-            // Trừ số gem yêu cầu từ túi đồ người chơi
-            this.player.inventory.gem -= gemRequired;
-            // Cập nhật lại thông tin gem của người chơi
+        if (this.player.inventory.gold >= goldRequired) {
+            this.player.inventory.gold -= goldRequired;
             Service.gI().sendMoney(player);
 
-            // Cập nhật số hạt đậu
             this.currPeas = this.getMaxPea();
             this.loadMagicTree();
         } else {
-            // Thông báo nếu người chơi không đủ gem
-            Service.gI().sendThongBao(player, "Bạn không đủ gem để kết hạt nhanh, còn thiếu "
-                    + (gemRequired - this.player.inventory.gem) + " gem.");
+            Service.gI().sendThongBao(player, "Bạn không đủ vàng để kết hạt nhanh, còn thiếu "
+                    + Util.numberToMoney(goldRequired - this.player.inventory.gold) + " vàng.");
         }
     }
 
     public void fastUpgradeMagicTree() {
-        // Lấy số ngọc yêu cầu để nâng cấp
-        int upgradeGemCost = UPGRADE_GEM[this.level - 1];
+        long upgradeGoldCost = UPGRADE_GEM[this.level - 1] * 1_000_000L;
 
-        // Kiểm tra nếu cấp độ cây còn dưới MAX_LEVEL và người chơi đủ ngọc
-        if (this.level < MAX_LEVEL && this.player.inventory.gem >= upgradeGemCost) {
-            // Lấy số ngọc trước khi nâng cấp
-            int currentGem = this.player.inventory.gem;
-           this.player.inventory.gem -= upgradeGemCost;
+        if (this.level < MAX_LEVEL && this.player.inventory.gold >= upgradeGoldCost) {
+            this.player.inventory.gold -= upgradeGoldCost;
             this.level++;  // Tăng cấp độ cây
             this.isUpgrade = false;
             Service.gI().sendMoney(player);
-             this.loadMagicTree();
+            this.loadMagicTree();
 
-            // Thông báo số ngọc đã mất
-            Service.gI().sendThongBao(player, "Nâng cấp nhanh thành công! Bạn đã mất " + upgradeGemCost + " ngọc.");
+            Service.gI().sendThongBao(player, "Nâng cấp nhanh thành công! Bạn đã mất " + Util.numberToMoney(upgradeGoldCost) + " vàng.");
         } else {
-            // Thông báo nếu người chơi không đủ ngọc hoặc cây đã đạt cấp tối đa
-            Service.gI().sendThongBao(player, "Bạn không đủ ngọc để nâng cấp nhanh hoặc cây đã đạt cấp tối đa.");
+            Service.gI().sendThongBao(player, "Bạn không đủ vàng để nâng cấp nhanh hoặc cây đã đạt cấp tối đa.");
         }
     }
 

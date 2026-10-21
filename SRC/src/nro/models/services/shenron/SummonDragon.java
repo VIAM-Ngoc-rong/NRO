@@ -49,28 +49,28 @@ public class SummonDragon {
             + "Để gọi rồng 1 sao cần ngọc từ 1 sao đến 7 sao\n"
             + "Để gọi rồng 2 sao cần ngọc từ 2 sao đến 7 sao\n"
             + "Để gọi rồng 3 sao cần ngọc từ 3 sao đến 7sao\n"
-            + "Điều ước rồng 3 sao: Capsule 3 sao, hoặc 2 triệu sức mạnh, hoặc 200k vàng\n"
-            + "Điều ước rồng 2 sao: Capsule 2 sao, hoặc 20 triệu sức mạnh, hoặc 2 triệu vàng\n"
-            + "Điều ước rồng 1 sao: Capsule 1 sao, hoặc 200 triệu sức mạnh, hoặc 20 triệu vàng, hoặc đẹp trai, hoặc....\n"
+            + "Điều ước rồng 3 sao: 2 tỷ vàng, hoặc 2 triệu sức mạnh, hoặc 20 triệu vàng\n"
+            + "Điều ước rồng 2 sao: 2 tỷ vàng, hoặc 20 triệu sức mạnh, hoặc 200 triệu vàng\n"
+            + "Điều ước rồng 1 sao: 2 tỷ vàng, hoặc 200 triệu sức mạnh, hoặc găng/quần lên 1 cấp, hoặc đẹp trai, hoặc....\n"
             + "Ngọc rồng sẽ mất ngay khi gọi rồng dù bạn có ước hay không\n"
             + "Quá 5 phút nếu không ước rồng thần sẽ bay mất";
     public static final String SHENRON_SAY
             = "Ta sẽ ban cho người 1 điều ước, ngươi có 5 phút, hãy suy nghĩ thật kỹ trước khi quyết định";
 
     public static final String[] SHENRON_1_STAR_WISHES_1
-            = new String[]{"Giàu có\n+2 Tỏi\nVàng", "Găng tay\nđang mang\nlên 1 cấp", "Chí mạng\nGốc +2%",
+            = new String[]{"Giàu có\n+2 Tỷ\nVàng", "Găng tay\nđang mang\nlên 1 cấp", "Chí mạng\nGốc +2%",
                 "Thay\nChiêu 2-3\nĐệ tử", "Điều ước\nkhác"};
     public static final String[] SHENRON_1_STAR_WISHES_2
-            = new String[]{"Đẹp trai\nnhất\nVũ trụ", "Giàu có\n+10K\nNgọc", "+200 Tr\nSức mạnh\nvà tiềm\nnăng",
+            = new String[]{"Đẹp trai\nnhất\nVũ trụ", "Giàu có\n+2 Tỷ\nVàng", "+200 Tr\nSức mạnh\nvà tiềm\nnăng",
                 "Găng tay đệ\nđang mang\nlên 1 cấp",
                 "Điều ước\nkhác"};
     public static final String[] SHENRON_1_STAR_WISHES_3
             = new String[]{"Quần\nđang mang\nlên 1 cấp", "Quần đệ\nđang mang\nlên 1 cấp",
                 "Điều ước\nkhác"};
     public static final String[] SHENRON_2_STARS_BlackGokuHES
-            = new String[]{"Giàu có\n+2K\nNgọc", "+20 Tr\nSức mạnh\nvà tiềm năng", "Giàu có\n+200 Tr\nVàng"};
+            = new String[]{"Giàu có\n+2 Tỷ\nVàng", "+20 Tr\nSức mạnh\nvà tiềm năng", "Giàu có\n+200 Tr\nVàng"};
     public static final String[] SHENRON_3_STARS_BlackGokuHES
-            = new String[]{"Giàu có\n+200\nNgọc", "+2 Tr\nSức mạnh\nvà tiềm năng", "Giàu có\n+20 Tr\nVàng"};
+            = new String[]{"Giàu có\n+2 Tỷ\nVàng", "+2 Tr\nSức mạnh\nvà tiềm năng", "Giàu có\n+20 Tr\nVàng"};
     //--------------------------------------------------------------------------
     private static SummonDragon instance;
     private final Map pl_dragonStar;
@@ -290,8 +290,8 @@ public class SummonDragon {
         switch (this.menuShenron) {
             case ConstNpc.SHENRON_1_1:
                 switch (this.select) {
-                    case 0: //20 tr vàng
-                        this.playerSummonShenron.inventory.gold = 2000000000;
+                    case 0: //+2 tỷ vàng
+                        this.playerSummonShenron.inventory.addGold(2_000_000_000L);
                         PlayerService.gI().sendInfoHpMpMoney(this.playerSummonShenron);
                         break;
                     case 1: //găng tay đang đeo lên 1 cấp
@@ -375,8 +375,8 @@ public class SummonDragon {
                             return;
                         }
                         break;
-                    case 1: //+1,5 ngọc
-                        this.playerSummonShenron.inventory.gem += 10000;
+                    case 1: //+2 tỷ vàng
+                        this.playerSummonShenron.inventory.addGold(2_000_000_000L);
                         PlayerService.gI().sendInfoHpMpMoney(this.playerSummonShenron);
                         break;
                     case 2: //+200 tr smtn
@@ -427,38 +427,30 @@ public class SummonDragon {
                 break;
             case ConstNpc.SHENRON_2:
                 switch (this.select) {
-                    case 0: //+150 ngọc
-                        this.playerSummonShenron.inventory.gem += 2000;
+                    case 0: //+2 tỷ vàng
+                        this.playerSummonShenron.inventory.addGold(2_000_000_000L);
                         PlayerService.gI().sendInfoHpMpMoney(this.playerSummonShenron);
                         break;
                     case 1: //+20 tr smtn
                         Service.gI().addSMTN(this.playerSummonShenron, (byte) 2, 20000000, false);
                         break;
-                    case 2: //2 tr vàng
-                        if (this.playerSummonShenron.inventory.gold > 1800000000) {
-                            this.playerSummonShenron.inventory.gold = Inventory.LIMIT_GOLD;
-                        } else {
-                            this.playerSummonShenron.inventory.gold += 200000000;
-                        }
+                    case 2: //200 tr vàng
+                        this.playerSummonShenron.inventory.addGold(200_000_000L);
                         PlayerService.gI().sendInfoHpMpMoney(this.playerSummonShenron);
                         break;
                 }
                 break;
             case ConstNpc.SHENRON_3:
                 switch (this.select) {
-                    case 0: //+15 ngọc
-                        this.playerSummonShenron.inventory.gem += 200;
+                    case 0: //+2 tỷ vàng
+                        this.playerSummonShenron.inventory.addGold(2_000_000_000L);
                         PlayerService.gI().sendInfoHpMpMoney(this.playerSummonShenron);
                         break;
                     case 1: //+2 tr smtn
                         Service.gI().addSMTN(this.playerSummonShenron, (byte) 2, 2000000, false);
                         break;
-                    case 2: //200k vàng
-                        if (this.playerSummonShenron.inventory.gold > (2000000000 - 20000000)) {
-                            this.playerSummonShenron.inventory.gold = Inventory.LIMIT_GOLD;
-                        } else {
-                            this.playerSummonShenron.inventory.gold += 20000000;
-                        }
+                    case 2: //20 tr vàng
+                        this.playerSummonShenron.inventory.addGold(20_000_000L);
                         PlayerService.gI().sendInfoHpMpMoney(this.playerSummonShenron);
                         break;
                 }

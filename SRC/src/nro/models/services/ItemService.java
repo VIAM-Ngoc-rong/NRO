@@ -707,6 +707,33 @@ public class ItemService {
         return items[type][gender][Util.nextInt(2)];
     }
 
+    public int randTempItemKichHoatCold(int gender) {
+        int[][][] items = {
+            {{230, 231, 232}, {234, 235, 236}, {238, 239, 240}}, // áo (20tr - 170tr SM)
+            {{242, 243, 244}, {246, 247, 248}, {250, 251, 252}}, // quần (20tr - 170tr SM)
+            {{267, 268}, {271, 272}, {275, 276}},                // giày (42tr - 120tr SM)
+            {{254, 255}, {258, 259}, {262, 263}},                // găng (68tr - 200tr SM)
+            {{278, 279}, {278, 279}, {278, 279}}                 // rada (42tr - 200tr SM)
+        };
+
+        int type;
+        if (Util.isTrue(10, 100)) {
+            type = 4; // rada
+        } else if (Util.isTrue(23, 100)) {
+            type = 3; // gang
+        } else if (Util.isTrue(23, 100)) {
+            type = 1; // quan
+        } else if (Util.isTrue(23, 100)) {
+            type = 0; // ao
+        } else {
+            type = 2; // giay
+        }
+
+        int g = (gender >= 0 && gender <= 2) ? gender : 0;
+        int[] pool = items[type][g];
+        return pool[Util.nextInt(pool.length)];
+    }
+
     public int randDoSao(int gender) {
         int[][][] items = {
             {{0, 33}, {1, 41}, {2, 49}},

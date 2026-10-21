@@ -69,17 +69,18 @@ public class TruongLaoGuru extends Npc {
 
     private void handleSkillLearningMenu(Player player) {
         if (player.LearnSkill.Time != -1) {
-            var ngoc = 5;
+            long ngoc = 5;
             var time = player.LearnSkill.Time - System.currentTimeMillis();
             if (time / 600_000 >= 2) {
                 ngoc += time / 600_000;
             }
+            long goldCost = ngoc * 1_000_000L;
             String[] subName = ItemService.gI().getTemplate(player.LearnSkill.ItemTemplateSkillId).name.split("");
             byte level = Byte.parseByte(subName[subName.length - 1]);
             createOtherMenu(player, 12,
                     "Con đang học kỹ năng\n" + SkillUtil.findSkillTemplate(SkillUtil.getTempSkillSkillByItemID(player.LearnSkill.ItemTemplateSkillId)).name
                     + " cấp " + level + "\nThời gian còn lại " + TimeUtil.getTime(time),
-                    "Học Cấp tốc " + ngoc + " ngọc", "Huỷ", "Bỏ qua");
+                    "Học Cấp tốc\n" + Util.numberToMoney(goldCost) + " vàng", "Huỷ", "Bỏ qua");
         } else {
             ShopService.gI().opendShop(player, "QUY_LAO", false);
         }
@@ -89,15 +90,16 @@ public class TruongLaoGuru extends Npc {
         switch (select) {
             case 0 -> {
                 var time = player.LearnSkill.Time - System.currentTimeMillis();
-                var ngoc = 5;
+                long ngoc = 5;
                 if (time / 600_000 >= 2) {
                     ngoc += time / 600_000;
                 }
-                if (player.inventory.gem < ngoc) {
-                    Service.gI().sendThongBao(player, "Bạn không có đủ ngọc");
+                long goldCost = ngoc * 1_000_000L;
+                if (player.inventory.gold < goldCost) {
+                    Service.gI().sendThongBao(player, "Bạn không có đủ vàng");
                     return;
                 }
-                player.inventory.subGem(ngoc);
+                player.inventory.subGold(goldCost);
                 player.LearnSkill.Time = -1;
                 learnSkill(player);
             }

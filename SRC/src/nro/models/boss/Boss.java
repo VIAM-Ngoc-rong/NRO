@@ -62,6 +62,7 @@ import nro.models.services.TaskService;
 import nro.models.map.service.ChangeMapService;
 import nro.models.utils.Logger;
 import nro.models.utils.SkillUtil;
+import nro.models.utils.TimeUtil;
 import nro.models.utils.Util;
 import nro.models.interfaces.IBoss;
 import java.io.IOException;
@@ -844,6 +845,19 @@ public class Boss extends Player implements IBoss {
         }
         int x = this.location.x;
         int y = this.zone.map.yPhysicInTop(x, this.location.y - 24);
+
+        // 0. Đánh Boss rớt vàng từ 1 triệu trở lên tùy theo lượng máu (x2 vào Thứ 7, Chủ Nhật)
+        long bossHp = this.nPoint != null ? Math.max(1L, (long) this.nPoint.hpMax) : 1L;
+        long totalGoldDrop = 1_000_000L + (bossHp / 20L) + Util.nextInt(0, 500_000);
+        if (TimeUtil.isWeekend()) {
+            totalGoldDrop *= 2L;
+        }
+        int piles = bossHp >= 100_000_000L ? 3 : (bossHp >= 10_000_000L ? 2 : 1);
+        int goldPerPile = (int) Math.min(2_000_000_000L, Math.max(1_000_000L, totalGoldDrop / piles));
+        for (int i = 0; i < piles; i++) {
+            ItemMap goldMap = new ItemMap(this.zone, 190, goldPerPile, x + (i * 15) - 15, y, plOwner.id);
+            Service.gI().dropItemMap(this.zone, goldMap);
+        }
 
         // 1. Boss từ Tiểu Đội Sát Thủ ở map Nappa trở đi: rớt trang bị giá trị trong shop + Ngọc Rồng 3 -> 1 sao tỷ lệ giảm dần
         if (isBossFromTDSTNappaOnwards()) {

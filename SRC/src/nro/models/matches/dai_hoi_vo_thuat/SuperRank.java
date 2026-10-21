@@ -180,11 +180,11 @@ public final class SuperRank implements Runnable {
 
         if (!playerWon && loser.superRank.ticket > 0) {
             loser.superRank.ticket--;
-        } else if (!playerWon && loser.inventory.getGem() > 0) {
-            loser.inventory.subGem(3);
+        } else if (!playerWon && loser.inventory.gold >= 3_000_000) {
+            loser.inventory.subGold(3_000_000);
             Service.gI().sendMoney(loser);
-        } else if (playerWon && winner.superRank.ticket == 0 && winner.inventory.getGem() > 0) {
-            winner.inventory.subGem(2);
+        } else if (playerWon && winner.superRank.ticket == 0 && winner.inventory.gold >= 2_000_000) {
+            winner.inventory.subGold(2_000_000);
         }
 
         winner.superRank.rank = rankWin;

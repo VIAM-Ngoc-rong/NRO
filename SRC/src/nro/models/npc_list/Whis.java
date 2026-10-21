@@ -138,7 +138,7 @@ public class Whis extends Npc {
             message += "\n|7|Bí kiếp tuyệt kỹ: 0/" + requiredBk;
         }
 
-        message += "\n|2|Giá vàng: 10.000.000\n|2|Giá ngọc: 99";
+        message += "\n|2|Giá vàng: 100.000.000";
         createOtherMenu(player, 6, message, "Đồng ý", "Từ chối");
 
     }
@@ -153,7 +153,7 @@ public class Whis extends Npc {
             return;
         }
 
-        if (player.inventory.gold < 10_000_000 || player.inventory.gem < 99 || player.nPoint.power < 60_000_000_000L) {
+        if (player.inventory.gold < 100_000_000 || player.nPoint.power < 60_000_000_000L) {
             Service.gI().sendThongBao(player, "Bạn không đủ điều kiện học tuyệt kỹ!");
             return;
         }
@@ -204,8 +204,8 @@ public class Whis extends Npc {
             Service.gI().sendThongBao(player, message);
 
             InventoryService.gI().subQuantityItemsBag(player, sach, usedBk);
-            player.inventory.gold -= 10_000_000;
-            player.inventory.gem -= 99;
+            player.inventory.gold -= 100_000_000;
+            Service.gI().sendMoney(player);
             InventoryService.gI().sendItemBags(player);
 
         } catch (IOException e) {
@@ -228,8 +228,8 @@ public class Whis extends Npc {
             Service.gI().sendThongBao(player, message);
 
             InventoryService.gI().subQuantityItemsBag(player, sach, usedBk);
-            player.inventory.gold -= 10_000_000;
-            player.inventory.gem -= 99;
+            player.inventory.gold -= 100_000_000;
+            Service.gI().sendMoney(player);
             InventoryService.gI().sendItemBags(player);
 
         } catch (IOException e) {

@@ -542,21 +542,13 @@ public class ClanService {
             }
             FlagBag flagBag = FlagBagService.gI().getFlagBag(imgId);
             if (flagBag != null) {
-                if (flagBag.gold > 0) {
-                    if (player.inventory.gold >= flagBag.gold) {
-                        player.inventory.gold -= flagBag.gold;
+                long totalGoldCost = flagBag.gold + (flagBag.gem * 1_000_000L);
+                if (totalGoldCost > 0) {
+                    if (player.inventory.gold >= totalGoldCost) {
+                        player.inventory.gold -= totalGoldCost;
                     } else {
                         Service.gI().sendThongBao(player, "Bạn không đủ vàng, còn thiếu "
-                                + Util.numberToMoney(flagBag.gold - player.inventory.gold) + " vàng");
-                        return;
-                    }
-                }
-                if (flagBag.gem > 0) {
-                    if (player.inventory.gem >= flagBag.gem) {
-                        player.inventory.gem -= flagBag.gem;
-                    } else {
-                        Service.gI().sendThongBao(player, "Bạn không đủ ngọc, còn thiếu "
-                                + (flagBag.gem - player.inventory.gem) + " ngọc");
+                                + Util.numberToMoney(totalGoldCost - player.inventory.gold) + " vàng");
                         return;
                     }
                 }
@@ -758,21 +750,13 @@ public class ClanService {
             FlagBag flagBag = FlagBagService.gI().getFlagBag(imgId);
 
             if (flagBag != null) {
-                if (flagBag.gold > 0) {
-                    if (player.inventory.gold >= flagBag.gold) {
-                        player.inventory.gold -= flagBag.gold;
+                long totalGoldCost = flagBag.gold + (flagBag.gem * 1_000_000L);
+                if (totalGoldCost > 0) {
+                    if (player.inventory.gold >= totalGoldCost) {
+                        player.inventory.gold -= totalGoldCost;
                     } else {
                         Service.gI().sendThongBao(player, "Bạn không đủ vàng, còn thiếu "
-                                + Util.numberToMoney(flagBag.gold - player.inventory.gold) + " vàng");
-                        return;
-                    }
-                }
-                if (flagBag.gem > 0) {
-                    if (player.inventory.gem >= flagBag.gem) {
-                        player.inventory.gem -= flagBag.gem;
-                    } else {
-                        Service.gI().sendThongBao(player, "Bạn không đủ ngọc, còn thiếu "
-                                + (flagBag.gem - player.inventory.gem) + " ngọc");
+                                + Util.numberToMoney(totalGoldCost - player.inventory.gold) + " vàng");
                         return;
                     }
                 }

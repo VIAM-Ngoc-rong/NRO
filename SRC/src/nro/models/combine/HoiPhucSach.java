@@ -14,12 +14,12 @@ import nro.models.utils.Util;
 
 public class HoiPhucSach {
 
-    private static int getGem(int param) {
-        int gem = (1000 - param) * 50 / 1000;
+    private static long getGold(int param) {
+        long gem = (1000 - param) * 50L / 1000L;
         if (gem < 5) {
             gem = 5;
         }
-        return gem;
+        return gem * 1_000_000L;
     }
     
     public static void showInfoCombine(Player player) {
@@ -38,14 +38,15 @@ public class HoiPhucSach {
             return;
         }
         int doBen = sachTuyetKy.getOptionParam(212);
+        long goldCost = getGold(doBen);
         StringBuilder text = new StringBuilder();
         text.append("Phục hồi Sách Tuyệt Kỹ ?\n");
         text.append("1 cuốn\n");
         text.append(1000 - doBen).append(" điểm độ bền cần hồi phục\n");
-        text.append("Cần ").append(getGem(doBen)).append(" ngọc");
-        if (player.inventory.getGem() < getGem(doBen)) {
+        text.append("Cần ").append(Util.numberToMoney(goldCost)).append(" vàng");
+        if (player.inventory.gold < goldCost) {
             CombineService.gI().baHatMit.createOtherMenu(player, ConstNpc.IGNORE_MENU, text.toString(),
-                    "Còn thiếu\n" + Util.numberToMoney(getGem(doBen) - player.inventory.getGem()) + " ngọc");
+                    "Còn thiếu\n" + Util.numberToMoney(goldCost - player.inventory.gold) + " vàng");
             return;
         }
         CombineService.gI().baHatMit.createOtherMenu(player, ConstNpc.MENU_START_COMBINE, text.toString(),
@@ -66,10 +67,12 @@ public class HoiPhucSach {
             return;
         }
         int doBen = sachTuyetKy.getOptionParam(212);
-        if (player.inventory.getGem() < getGem(doBen)) {
+        long goldCost = getGold(doBen);
+        if (player.inventory.gold < goldCost) {
+            Service.gI().sendThongBao(player, "Không đủ vàng để thực hiện");
             return;
         }
-        player.inventory.subGem(getGem(doBen));
+        player.inventory.subGold(goldCost);
         for (Item.ItemOption io : sachTuyetKy.itemOptions) {
             if (io.optionTemplate.id == 212) {
                 io.param = 1000;

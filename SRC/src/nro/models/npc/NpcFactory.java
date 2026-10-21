@@ -659,7 +659,7 @@ public class NpcFactory {
                     case ConstNpc.CONFIRM_TELE_NAMEC -> {
                         if (select == 0) {
                             NgocRongNamecService.gI().teleportToNrNamec(player);
-                            player.inventory.subGem(10);
+                            player.inventory.subGold(10_000_000);
                             Service.gI().sendMoney(player);
                         }
                     }
@@ -688,7 +688,7 @@ public class NpcFactory {
                     }
                     case ConstNpc.UP_TOP_ITEM -> {
                         if (select == 0) {
-                            if (player.inventory.gem >= 50 && player.idMark.getIdItemUpTop() != -1) {
+                            if (player.inventory.gold >= 5_000_000 && player.idMark.getIdItemUpTop() != -1) {
                                 nro.models.shop_ky_gui.ConsignItem it = ConsignShopService.gI().getItemBuy(player.idMark.getIdItemUpTop());
                                 if (it == null || it.isBuy) {
                                     Service.gI().sendThongBao(player, "Vật phẩm không tồn tại hoặc đã được bán");
@@ -699,13 +699,13 @@ public class NpcFactory {
                                     ConsignShopService.gI().openShopKyGui(player);
                                     return;
                                 }
-                                player.inventory.gem -= 5;
+                                player.inventory.subGold(5_000_000);
                                 Service.gI().sendMoney(player);
                                 Service.gI().sendThongBao(player, "Thành công");
                                 it.isUpTop += 1;
                                 ConsignShopService.gI().openShopKyGui(player);
                             } else {
-                                Service.gI().sendThongBao(player, "Bạn không đủ ngọc");
+                                Service.gI().sendThongBao(player, "Bạn không đủ vàng");
                                 player.idMark.setIdItemUpTop(-1);
                             }
                         }

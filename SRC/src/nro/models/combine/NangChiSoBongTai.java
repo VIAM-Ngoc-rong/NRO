@@ -12,7 +12,7 @@ import nro.models.utils.Util;
  * @author By Minh Du
  */
 public class NangChiSoBongTai {
-    private static final int GEM_NANG_BT = 1_000;
+    private static final int GOLD_NANG_BT = 200_000_000;
     private static final int RATIO_NANG_CAP = 45;
     private static final int ITEM_PARAM_INDEX = 31; 
     private static final int BONG_TAI_ID = 921;
@@ -40,7 +40,7 @@ public class NangChiSoBongTai {
             }
             if (bongTai != null && honBongTai != null && daXanhLam != null) {
 
-                player.combineNew.gemCombine = GEM_NANG_BT;
+                player.combineNew.goldCombine = GOLD_NANG_BT;
                 player.combineNew.ratioCombine = RATIO_NANG_CAP;
 
                 // Lấy số lượng Mảnh hồn bông tai từ param (option 31)
@@ -52,31 +52,31 @@ public class NangChiSoBongTai {
                 if (daXanhLam.quantity < 1) {
                     npcSay += "|2|Cần " + REQUIRED_HON_BONG_TAI + " " + honBongTai.template.name + "\n";
                     npcSay += "|7|Cần 1 " + daXanhLam.template.name + "\n";
-                    npcSay += "|2|Cần: " + player.combineNew.gemCombine + " ngọc\n";
+                    npcSay += "|2|Cần: " + Util.numberToMoney(player.combineNew.goldCombine) + " vàng\n";
                     npcSay += "|1|+1 Chỉ số ngẫu nhiên\n";
                     npcSay += "|2|Còn thiếu " + (1 - daXanhLam.quantity) + " " + daXanhLam.template.name;
                     CombineService.gI().baHatMit.createOtherMenu(player, ConstNpc.IGNORE_MENU, npcSay, "Đóng");
-                } else if (currentHonSoLuong < REQUIRED_HON_BONG_TAI) { // So sánh với số lượng từ param
+                } else if (currentHonSoLuong < REQUIRED_HON_BONG_TAI) {
                     npcSay += "|7|Cần " + REQUIRED_HON_BONG_TAI + " " + honBongTai.template.name + "\n";
                     npcSay += "|2|Cần 1 " + daXanhLam.template.name + "\n";
-                    npcSay += "|2|Cần: " + player.combineNew.gemCombine + " ngọc\n";
+                    npcSay += "|2|Cần: " + Util.numberToMoney(player.combineNew.goldCombine) + " vàng\n";
                     npcSay += "|1|+1 Chỉ số ngẫu nhiên\n";
                     npcSay += "|2|Còn thiếu " + (REQUIRED_HON_BONG_TAI - currentHonSoLuong) + " " + honBongTai.template.name;
                     CombineService.gI().baHatMit.createOtherMenu(player, ConstNpc.IGNORE_MENU, npcSay, "Đóng");
-                } else if (player.inventory.gem < player.combineNew.gemCombine) {
+                } else if (player.inventory.gold < player.combineNew.goldCombine) {
                     npcSay += "|2|Cần " + REQUIRED_HON_BONG_TAI + " " + honBongTai.template.name + "\n";
                     npcSay += "|2|Cần 1 " + daXanhLam.template.name + "\n";
-                    npcSay += "|7|Cần: " + player.combineNew.gemCombine + " ngọc\n";
+                    npcSay += "|7|Cần: " + Util.numberToMoney(player.combineNew.goldCombine) + " vàng\n";
                     npcSay += "|1|+1 Chỉ số ngẫu nhiên\n";
-                    npcSay += "|2|Còn thiếu " + (player.combineNew.gemCombine - player.inventory.gem) + " ngọc";
+                    npcSay += "|2|Còn thiếu " + Util.numberToMoney(player.combineNew.goldCombine - player.inventory.gold) + " vàng";
                     CombineService.gI().baHatMit.createOtherMenu(player, ConstNpc.IGNORE_MENU, npcSay, "Đóng");
                 } else {
                     npcSay += "|2|Cần " + REQUIRED_HON_BONG_TAI + " " + honBongTai.template.name + "\n";
                     npcSay += "|2|Cần 1 " + daXanhLam.template.name + "\n";
-                    npcSay += "|2|Cần: " + player.combineNew.gemCombine + " ngọc\n";
+                    npcSay += "|2|Cần: " + Util.numberToMoney(player.combineNew.goldCombine) + " vàng\n";
                     npcSay += "|1|+1 Chỉ số ngẫu nhiên";
                     CombineService.gI().baHatMit.createOtherMenu(player, ConstNpc.MENU_START_COMBINE, npcSay,
-                            "Nâng cấp\n" + player.combineNew.gemCombine + " ngọc", "Từ chối");
+                            "Nâng cấp\n" + Util.numberToMoney(player.combineNew.goldCombine) + " vàng", "Từ chối");
                 }
             } else {
                 CombineService.gI().baHatMit.createOtherMenu(player, ConstNpc.IGNORE_MENU,
@@ -97,12 +97,12 @@ public class NangChiSoBongTai {
                 Service.gI().sendThongBao(player, "Không đủ vật phẩm để thực hiện.");
                 return;
             }
-            if (player.inventory.gem < player.combineNew.gemCombine) {
-                Service.gI().sendThongBao(player, "Bạn không đủ ngọc, còn thiếu " + (player.combineNew.gemCombine - player.inventory.gem) + " ngọc nữa!");
+            if (player.inventory.gold < player.combineNew.goldCombine) {
+                Service.gI().sendThongBao(player, "Bạn không đủ vàng, còn thiếu " + Util.numberToMoney(player.combineNew.goldCombine - player.inventory.gold) + " vàng nữa!");
                 return;
             }
             
-            player.inventory.gem -= player.combineNew.gemCombine;
+            player.inventory.gold -= player.combineNew.goldCombine;
             
             // Lấy item bông tai từ trong ô combine
             Item bongTai = player.combineNew.itemsCombine.stream().filter(item -> item.template.id == BONG_TAI_ID).findFirst().orElse(null);

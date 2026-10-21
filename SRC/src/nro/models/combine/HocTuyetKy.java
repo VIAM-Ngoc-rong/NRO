@@ -43,16 +43,12 @@ public class HocTuyetKy {
             .append("\n");
 
         int requiredBiKip = (nextPoint == 1) ? 9999 : 999;
-        int requiredGem = (nextPoint == 1) ? 99 : 0;
-        int requiredGold = 10_000_000;
+        int requiredGold = (nextPoint == 1) ? 100_000_000 : 10_000_000;
 
         appendRequirement(text, "Bí kíp tuyệt kỹ", quantityBiKipTuyetKy, requiredBiKip);
         appendRequirement(text, "Giá vàng", gold, requiredGold);
-        if (requiredGem > 0) {
-            appendRequirement(text, "Giá ngọc", gem, requiredGem);
-        }
 
-        if (quantityBiKipTuyetKy < requiredBiKip || gold < requiredGold || gem < requiredGem) {
+        if (quantityBiKipTuyetKy < requiredBiKip || gold < requiredGold) {
             CombineService.gI().whis.createOtherMenu(player, ConstNpc.IGNORE_MENU, text.toString(), "Từ chối");
             return;
         }
@@ -63,7 +59,6 @@ public class HocTuyetKy {
     public static void hocTuyetKy(Player player) {
         Item biKipTuyetKy = InventoryService.gI().findItem(player.inventory.itemsBag, 1229);
         int quantityBiKipTuyetKy = (biKipTuyetKy != null) ? biKipTuyetKy.quantity : 0;
-        int gem = player.inventory.getGem();
         long gold = player.inventory.gold;
         int skillId = getSkillIdByGender(player.gender);
         Skill curSkill = SkillUtil.getSkillbyId(player, skillId);
@@ -74,10 +69,9 @@ public class HocTuyetKy {
         }
 
         int requiredBiKip = (nextPoint == 1) ? 9999 : 999;
-        int requiredGem = (nextPoint == 1) ? 99 : 0;
-        int requiredGold = 10_000_000;
+        int requiredGold = (nextPoint == 1) ? 100_000_000 : 10_000_000;
 
-        if (quantityBiKipTuyetKy < requiredBiKip || gold < requiredGold || gem < requiredGem) {
+        if (quantityBiKipTuyetKy < requiredBiKip || gold < requiredGold) {
             return;
         }
 
@@ -85,8 +79,8 @@ public class HocTuyetKy {
         Skill nextSkill = SkillUtil.createSkill(skillTemplate.id, nextPoint);
         SkillUtil.setSkill(player, nextSkill);
 
-        player.inventory.subGem(requiredGem);
         player.inventory.gold -= requiredGold;
+        Service.gI().sendMoney(player);
         InventoryService.gI().subQuantityItemsBag(player, biKipTuyetKy, requiredBiKip);
 
         CombineService.gI().whis.npcChat(player, "Bư cô lô, ba cô la, bư ra bư zô...");

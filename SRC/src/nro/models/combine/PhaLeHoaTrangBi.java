@@ -55,7 +55,7 @@ public class PhaLeHoaTrangBi {
         if (player.combineNew.goldCombine <= player.inventory.gold) {
             npcSay += "|1|Cần " + Util.numberToMoney(player.combineNew.goldCombine) + " vàng";
             CombineService.gI().baHatMit.createOtherMenu(player, ConstNpc.MENU_START_COMBINE, npcSay,
-                    "Nâng cấp\ncần " + player.combineNew.gemCombine + " ngọc", "Nâng cấp 10 lần", "Nâng cấp 100 lần");
+                    "Nâng cấp\ncần " + Util.numberToMoney(player.combineNew.goldCombine) + " vàng", "Nâng cấp 10 lần", "Nâng cấp 100 lần");
         } else {
             npcSay += "Còn thiếu " + Util.numberToMoney(player.combineNew.goldCombine - player.inventory.gold) + " vàng";
             CombineService.gI().baHatMit.createOtherMenu(player, ConstNpc.IGNORE_MENU, npcSay, "Đóng");
@@ -121,12 +121,8 @@ public class PhaLeHoaTrangBi {
 
         if (!player.combineNew.itemsCombine.isEmpty()) {
             int gold = player.combineNew.goldCombine;
-            int gem = player.combineNew.gemCombine;
             if (player.inventory.gold < gold) {
                 Service.gI().sendThongBao(player, "Không đủ vàng để thực hiện");
-                return;
-            } else if (player.inventory.gem < gem) {
-                Service.gI().sendThongBao(player, "Không đủ ngọc để thực hiện");
                 return;
             }
 
@@ -140,8 +136,7 @@ public class PhaLeHoaTrangBi {
             for (int i = 0; i < n; i++) {
                 num = i;
                 gold = player.combineNew.goldCombine;
-                gem = player.combineNew.gemCombine;
-                if (player.inventory.gem < gem || player.inventory.gold < gold) {
+                if (player.inventory.gold < gold) {
                     break;
                 }
 
@@ -158,11 +153,9 @@ public class PhaLeHoaTrangBi {
                     }
                     if (star < CombineService.MAX_STAR_ITEM) {
                         player.combineNew.goldCombine = CombineSystem.getGoldPhaLeHoa(star);
-                        player.combineNew.gemCombine = CombineSystem.getGemPhaLeHoa(star);
 
                         float baseRatio = getRatio(star);
                         player.inventory.gold -= gold;
-                        player.inventory.gem -= gem;
 
                         boolean succ = Util.isTrue(baseRatio, 100);
 

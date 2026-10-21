@@ -150,10 +150,10 @@ public class TrainingService {
                 NpcService.gI().createTutorial(player, -1, "Bạn tăng được " + Util.numberToMoney(tnsm) + " sức mạnh trong thời gian " + (time / 60) + " phút tập luyện Offline");
                 Service.gI().addSMTN(player, (byte) 2, tnsm, false);
             } else if (player.dangKyTapTuDong && time > 1800) {
-                if (player.inventory.getGem() > 1) {
+                if (player.inventory.gold >= 1_000_000) {
                     Executors.newSingleThreadExecutor().submit(() -> {
                         try {
-                            player.inventory.subGem(1);
+                            player.inventory.subGold(1_000_000);
                             Thread.sleep(1000);
                             if (player.zone == null) {
                                 return;
@@ -163,7 +163,7 @@ public class TrainingService {
                             player.lastXOffline = player.location.x;
                             Service.gI().addSMTN(player, (byte) 2, tnsm, false);
                             player.teleTapTuDong = true;
-                            player.thongBaoTapTuDong = "Bạn tăng được " + Util.numberToMoney(tnsm) + " sức mạnh trong thời gian " + (time / 60) + " phút tập luyện Offline, -1 ngọc (phí đăng ký tập tự động)";
+                            player.thongBaoTapTuDong = "Bạn tăng được " + Util.numberToMoney(tnsm) + " sức mạnh trong thời gian " + (time / 60) + " phút tập luyện Offline, -1 triệu vàng (phí đăng ký tập tự động)";
                             ChangeMapService.gI().changeMapBySpaceShip(player, player.mapIdDangTapTuDong, 0, Util.nextInt(200, 400));
                             Service.gI().sendMoney(player);
                         } catch (InterruptedException e) {
@@ -171,7 +171,7 @@ public class TrainingService {
                     }, "Luyện Tập");
                 } else {
                     player.dangKyTapTuDong = false;
-                    Service.gI().sendThongBao(player, "Bạn không đủ ngọc, đăng ký luyện tập tự động đã bị hủy");
+                    Service.gI().sendThongBao(player, "Bạn không đủ vàng, đăng ký luyện tập tự động đã bị hủy");
                 }
             }
         }

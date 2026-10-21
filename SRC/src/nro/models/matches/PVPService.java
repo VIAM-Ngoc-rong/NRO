@@ -245,17 +245,17 @@ public class PVPService {
             return;
         }
         NpcService.gI().createMenuConMeo(pl, ConstNpc.REVENGE,
-                -1, "Bạn muốn đến ngay chỗ hắn, phí là 1 ngọc\nvà được tìm thoải mái trong 5 phút nhé", "OK", "Từ chối");
+                -1, "Bạn muốn đến ngay chỗ hắn, phí là 1 triệu vàng\nvà được tìm thoải mái trong 5 phút nhé", "OK", "Từ chối");
     }
 
     public void acceptRevenge(Player pl) {
         if (Util.canDoWithTime(pl.idMark.getLastTimeRevenge(), 300000)) {
-            if (pl.inventory.getGem() < 1) {
-                Service.gI().sendThongBao(pl, "Bạn không đủ ngọc, còn thiếu 1 ngọc nữa");
+            if (pl.inventory.gold < 1_000_000) {
+                Service.gI().sendThongBao(pl, "Bạn không đủ vàng, còn thiếu " + Util.numberToMoney(1_000_000 - pl.inventory.gold) + " vàng nữa");
                 return;
             }
             pl.idMark.setLastTimeRevenge(System.currentTimeMillis());
-            pl.inventory.subGem(1);
+            pl.inventory.subGold(1_000_000);
             Service.gI().sendMoney(pl);
         }
         Player enemy = Client.gI().getPlayer(pl.idMark.getIdEnemy());

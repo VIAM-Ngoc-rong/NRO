@@ -26,6 +26,7 @@ import nro.models.services.AchievementService;
 import nro.models.services_dungeon.TrainingService;
 import nro.models.services.ChatGlobalService;
 import nro.models.services.ItemService;
+import nro.models.services.RewardService;
 import nro.models.map.service.MapService;
 import nro.models.event.EventManager;
 import nro.models.skill.Skill;
@@ -857,13 +858,17 @@ public class Mob {
                 tileDrop *= 1.5;
             }
 
-            // Check rơi đồ kích hoạt (tỷ lệ cơ bản 5%)
+            // Check rơi đồ kích hoạt (tỷ lệ cơ bản 2%)
             if (plOwner != null && Util.isTrue((int) tileDrop, 10000)) {
-                short itTemp = (short) ItemService.gI().randTempItemKichHoat(plOwner.gender);
+                short itTemp = (short) (MapService.gI().isMapCold(mapid)
+                        ? ItemService.gI().randTempItemKichHoatCold(plOwner.gender)
+                        : ItemService.gI().randTempItemKichHoat(plOwner.gender));
                 ItemMap it = new ItemMap(zone, itTemp, 1, x, yEnd, plOwner.id);
                 List<Item.ItemOption> ops = ItemService.gI().getListOptionItemShop(itTemp);
                 if (!ops.isEmpty()) {
                     it.options = ops;
+                } else {
+                    RewardService.gI().initBaseOptionClothes(null, it.itemTemplate.id, it.itemTemplate.type, it.options);
                 }
 
                 int[] opsrand = ItemService.gI().randOptionItemKichHoat(plOwner.gender);

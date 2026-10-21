@@ -45,8 +45,7 @@ public class DanhBongSaoPhaLe {
                     CombineService.gI().baHatMit.createOtherMenu(player, ConstNpc.IGNORE_MENU, npcSay, "Đóng");
                 } else {
                     CombineService.gI().baHatMit.createOtherMenu(player, ConstNpc.MENU_START_COMBINE, npcSay,
-                            "Nâng cấp\n" + Util.numberToMoney(player.combineNew.goldCombine) + " vàng\n"
-                            + Util.numberToMoney(player.combineNew.gemCombine) + " ngọc\n", "Từ chối");
+                            "Nâng cấp\n" + Util.numberToMoney(player.combineNew.goldCombine) + " vàng\n", "Từ chối");
                 }
             } else {
                 CombineService.gI().baHatMit.createOtherMenu(player, ConstNpc.IGNORE_MENU,
@@ -61,13 +60,8 @@ public class DanhBongSaoPhaLe {
     public static void danhBongSaoPhaLe(Player player) {
         if (player.combineNew.itemsCombine.size() == 2) {
             int gold = player.combineNew.goldCombine;
-            int gem = player.combineNew.gemCombine;
             if (player.inventory.gold < gold) {
                 Service.gI().sendThongBao(player, "Không đủ vàng để thực hiện");
-                return;
-            }
-            if (player.inventory.gem < gem) {
-                Service.gI().sendThongBao(player, "Không đủ ngọc để thực hiện");
                 return;
             }
 
@@ -83,7 +77,6 @@ public class DanhBongSaoPhaLe {
 
             if (saoPhaLe != null && daMai != null && saoPhaLe.quantity >= 2) {
                 player.inventory.gold -= gold;
-                player.inventory.gem -= gem;
 
                 if (Util.isTrue(player.combineNew.ratioCombine, 100)) {
                     int saoPhaLeLapLanhId = 1426 + (saoPhaLe.template.id - 1416);
