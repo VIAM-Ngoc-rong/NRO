@@ -365,7 +365,9 @@ public class PlayerDAO {
                 String inventory = dataArray.toJSONString();
                 dataArray.clear();
 
-                int mapId = player.mapIdBeforeLogout;
+                int mapId = (player.zone != null && player.zone.map != null)
+                        ? player.zone.map.mapId
+                        : player.mapIdBeforeLogout;
                 int x = player.location.x;
                 int y = player.location.y;
                 long hp = player.nPoint.hp;
