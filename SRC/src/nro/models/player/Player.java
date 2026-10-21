@@ -483,9 +483,9 @@ public class Player implements Runnable {
                     if (this.nPoint.timeXinbatoBuff + 10_000 < System.currentTimeMillis()) {
                         this.nPoint.tlNeDonBuffXinbato = 0;
                     }
-                    if (this.isPl() && !this.isBot && !this.isDie() && this.effectSkill != null && !this.effectSkill.isChibi && Util.canDoWithTime(lastTimeChibi, 1000)) {
-                        if (Util.isTrue(20, 100) && !MapService.gI().isMapBlackBallWar(this.zone.map.mapId)) {
-                            EffectSkillService.gI().setChibi(this, 600000);
+                    if (this.isPl() && !this.isBot && !this.isDie() && this.effectSkill != null && !this.effectSkill.isChibi && Util.canDoWithTime(lastTimeChibi, 180000)) {
+                        if (Util.isTrue(10, 100) && !MapService.gI().isMapBlackBallWar(this.zone.map.mapId)) {
+                            EffectSkillService.gI().setChibi(this, 300000);
                         }
                         lastTimeChibi = System.currentTimeMillis();
                     }
