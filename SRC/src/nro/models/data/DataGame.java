@@ -38,7 +38,7 @@ public class DataGame {
     public static int vsRes = 1;
     public static short maxSmallVersion = 32767;
 
-    public static String LINK_IP_PORT = "Ngọc Rồng VIAM:36.50.134.190:14445:0";
+    public static String LINK_IP_PORT = "Ngọc Rồng VIAM:103.179.190.242:14445:0";
     public static Map<Object, Object> MAP_MOUNT_NUM = new HashMap<>();
 
     public static void sendVersionGame(MySession session) {

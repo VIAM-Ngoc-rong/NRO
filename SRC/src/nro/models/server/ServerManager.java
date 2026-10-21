@@ -58,7 +58,7 @@ public class ServerManager {
     public static String NAME_SERVER = "Ngọc Rồng VIAM";
     public static String DOMAIN = "Server 1";
     public static String NAME = "Ngọc Rồng VIAM";
-    public static String IP = "36.50.135.149";
+    public static String IP = "103.179.190.242";
     public static int PORT = 14445;
     public static int EVENT_SEVER = 0;
     private static ServerManager instance;
