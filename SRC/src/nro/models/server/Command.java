@@ -285,6 +285,11 @@ parameterizedCommands.put("upp", (player, text) -> {
                 Service.gI().sendThongBao(player, "Up treo quái (Chống đầy hành trang & Tự bán đồ rác): " + (player.isAutoCleanBag ? "[Bật]" : "[Tắt]"));
                 return true;
             }
+            case "boss", "dsboss", "sanboss" -> {
+                ServerNotify.gI().sendActiveBossesToPlayer(player);
+                BossManager.gI().showListBoss(player);
+                return true;
+            }
         }
 
         if (player.pet != null) {

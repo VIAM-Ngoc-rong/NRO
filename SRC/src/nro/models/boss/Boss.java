@@ -674,8 +674,9 @@ public class Boss extends Player implements IBoss {
         }
     }
 
-    private boolean canSendNotify() {
-        return !(this.isNotifyDisabled || this.zone.map.mapId == 140
+    public boolean canSendNotify() {
+        return this.zone != null && this.zone.map != null
+                && !(this.isNotifyDisabled || this.zone.map.mapId == 140
                 || this.zone.map.mapId == 111
                 || MapService.gI().isMapPhoBan(this.zone.map.mapId)
                 || MapService.gI().isMapMaBu(this.zone.map.mapId)

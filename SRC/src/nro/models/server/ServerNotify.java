@@ -74,7 +74,29 @@ public class ServerNotify extends Thread {
     }
 
     public void notify(String text) {
-        this.notifies.add(text);
+        if (!Client.gI().getPlayers().isEmpty()) {
+            this.notifies.add(text);
+        }
+    }
+
+    public void sendActiveBossesToPlayer(Player player) {
+        if (player == null || player.session == null) {
+            return;
+        }
+        try {
+            List<nro.models.boss.Boss> allBosses = new ArrayList<>(nro.models.boss.Boss_Manager.BossManager.gI().getBosses());
+            allBosses.addAll(nro.models.boss.Boss_Manager.BrolyManager.gI().getBosses());
+            allBosses.addAll(nro.models.boss.Boss_Manager.FinalBossManager.gI().getBosses());
+            for (nro.models.boss.Boss boss : allBosses) {
+                if (boss != null && boss.zone != null && boss.zone.map != null && !boss.isDie() && boss.canSendNotify()) {
+                    Message msg = new Message(93);
+                    msg.writer().writeUTF("BOSS " + boss.name + " vừa xuất hiện tại " + boss.zone.map.mapName);
+                    player.sendMessage(msg);
+                    msg.cleanup();
+                }
+            }
+        } catch (Exception ignored) {
+        }
     }
 
      public void sendNotifyTab(Player player) {

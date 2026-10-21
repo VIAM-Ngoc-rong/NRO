@@ -83,6 +83,7 @@ public class Player implements Runnable {
     public boolean isAutoBuffPea = true;
     public boolean isAutoCleanBag = true;
     public long lastTimeAutoCleanBag;
+    public boolean hasSentInitialBossNotify = false;
     public long lastTimeSyncPetInfo;
     public Map<Integer, Long> activeEffects = new HashMap<>();
     @Setter
@@ -553,6 +554,10 @@ public class Player implements Runnable {
                         pet.update();
                     }
                     if (this.isPl() && !this.isBot && !this.isDie()) {
+                        if (!this.hasSentInitialBossNotify && this.zone != null && this.session != null) {
+                            this.hasSentInitialBossNotify = true;
+                            nro.models.server.ServerNotify.gI().sendActiveBossesToPlayer(this);
+                        }
                         if (this.pet != null && !this.pet.isDie() && Util.canDoWithTime(this.lastTimeSyncPetInfo, 2500)) {
                             this.lastTimeSyncPetInfo = System.currentTimeMillis();
                             Service.gI().showInfoPet(this);
