@@ -212,6 +212,17 @@ public class Boss extends Player implements IBoss {
         }
     }
 
+    public int bossDamageReductionFactor = 1;
+
+    public boolean isWorldBossForHpBoost() {
+        switch ((int) this.id) {
+            case BossID.KUKU, BossID.MAP_DAU_DINH, BossID.RAMBO:
+                return true;
+            default:
+                return isBossFromTDSTNappaOnwards();
+        }
+    }
+
     @Override
     public void initBase() {
         BossData data = this.data[this.currentLevel];
@@ -219,7 +230,20 @@ public class Boss extends Player implements IBoss {
         this.gender = data.getGender();
         this.nPoint.mpg = 31_07_2002;
         this.nPoint.dameg = data.getDame();
-        this.nPoint.hpg = data.getHp()[Util.nextInt(0, data.getHp().length - 1)];
+        long rawHp = data.getHp()[Util.nextInt(0, data.getHp().length - 1)];
+        if (isWorldBossForHpBoost() && rawHp >= 500_000L) {
+            long boostedHp = rawHp * 3L;
+            if (boostedHp <= 2_100_000_000L) {
+                this.nPoint.hpg = (int) boostedHp;
+                this.bossDamageReductionFactor = 1;
+            } else {
+                this.nPoint.hpg = 2_100_000_000;
+                this.bossDamageReductionFactor = (int) Math.max(2L, Math.round((double) boostedHp / 2_000_000_000.0));
+            }
+        } else {
+            this.nPoint.hpg = (int) Math.min(2_100_000_000L, rawHp);
+            this.bossDamageReductionFactor = 1;
+        }
         this.nPoint.hp = nPoint.hpg;
         this.nPoint.calPoint();
         this.initSkill();
@@ -585,6 +609,7 @@ public class Boss extends Player implements IBoss {
                             if (zoneid < this.zone.map.zones.size()) {
                                 this.zone = this.zone.map.zones.get(zoneid);
                             } else {
+                                this.lastTimeRest = System.currentTimeMillis();
                                 this.changeStatus(BossStatus.REST);
                                 this.zone = null;
                                 this.lastZone = null;
@@ -1114,6 +1139,8 @@ public class Boss extends Player implements IBoss {
                             }
                         }
                         prepareBom = false;
+                    } else {
+                        nro.models.utils.Functions.sleep(100);
                     }
                 }
             }

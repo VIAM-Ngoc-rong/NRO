@@ -443,7 +443,7 @@ public class BossManager implements Runnable {
                 for (Boss boss : this.bosses) {
                     boss.update();
                 }
-                Thread.sleep(1500 - (System.currentTimeMillis() - st));
+                Thread.sleep(Math.max(1500 - (System.currentTimeMillis() - st), 50));
             } catch (Exception ignored) {
             }
         }

@@ -127,9 +127,13 @@ public class Zone {
     }
 
     private void udMob() {
+        boolean hasPlayers = !this.notBosses.isEmpty();
         for (int i = this.mobs.size() - 1; i >= 0; i--) {
             try {
-                mobs.get(i).update();
+                Mob mob = mobs.get(i);
+                if (hasPlayers || mob.isDie()) {
+                    mob.update();
+                }
             } catch (Exception e) {
                 Logger.logException(Zone.class, e, "Lỗi update mobs");
             }
