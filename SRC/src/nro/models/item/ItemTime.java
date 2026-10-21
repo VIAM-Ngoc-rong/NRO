@@ -117,91 +117,101 @@ public class ItemTime {
     }
 
     public void update() {
+        long now = System.currentTimeMillis();
         if (isEatMeal) {
-            if (Util.canDoWithTime(lastTimeEatMeal, TIME_EAT_MEAL)) {
-                isEatMeal = false;
-                Service.gI().point(player);
+            if (Util.canDoWithTime(lastTimeEatMeal, TIME_EAT_MEAL - 10000)) {
+                lastTimeEatMeal = now;
+                ItemTimeService.gI().sendItemTime(player, iconMeal, (int) (TIME_EAT_MEAL / 1000));
             }
         }
         if (isEatMeal2) {
-            if (Util.canDoWithTime(lastTimeEatMeal2, TIME_EAT_MEAL)) {
-                isEatMeal2 = false;
-                Service.gI().point(player);
+            if (Util.canDoWithTime(lastTimeEatMeal2, TIME_EAT_MEAL - 10000)) {
+                lastTimeEatMeal2 = now;
+                ItemTimeService.gI().sendItemTime(player, iconMeal2, (int) (TIME_EAT_MEAL / 1000));
             }
         }
         if (isUseBoHuyet) {
-            if (Util.canDoWithTime(lastTimeBoHuyet, TIME_ITEM)) {
-                isUseBoHuyet = false;
-                Service.gI().point(player);
+            if (Util.canDoWithTime(lastTimeBoHuyet, TIME_ITEM - 10000)) {
+                lastTimeBoHuyet = now;
+                ItemTimeService.gI().sendItemTime(player, 2755, (int) (TIME_ITEM / 1000));
             }
         }
-
         if (isUseBoKhi) {
-            if (Util.canDoWithTime(lastTimeBoKhi, TIME_ITEM)) {
-                isUseBoKhi = false;
-                Service.gI().point(player);
+            if (Util.canDoWithTime(lastTimeBoKhi, TIME_ITEM - 10000)) {
+                lastTimeBoKhi = now;
+                ItemTimeService.gI().sendItemTime(player, 2756, (int) (TIME_ITEM / 1000));
             }
         }
-
         if (isUseGiapXen) {
-            if (Util.canDoWithTime(lastTimeGiapXen, TIME_ITEM)) {
-                isUseGiapXen = false;
+            if (Util.canDoWithTime(lastTimeGiapXen, TIME_ITEM - 10000)) {
+                lastTimeGiapXen = now;
+                ItemTimeService.gI().sendItemTime(player, 2757, (int) (TIME_ITEM / 1000));
             }
         }
         if (isUseCuongNo) {
-            if (Util.canDoWithTime(lastTimeCuongNo, TIME_ITEM)) {
-                isUseCuongNo = false;
-                Service.gI().point(player);
+            if (Util.canDoWithTime(lastTimeCuongNo, TIME_ITEM - 10000)) {
+                lastTimeCuongNo = now;
+                ItemTimeService.gI().sendItemTime(player, 2754, (int) (TIME_ITEM / 1000));
             }
         }
         if (isUseAnDanh) {
-            if (Util.canDoWithTime(lastTimeAnDanh, TIME_ITEM)) {
-                isUseAnDanh = false;
+            if (Util.canDoWithTime(lastTimeAnDanh, TIME_ITEM - 10000)) {
+                lastTimeAnDanh = now;
+                ItemTimeService.gI().sendItemTime(player, 2760, (int) (TIME_ITEM / 1000));
             }
         }
-
         if (isUseBoHuyet2) {
-            if (Util.canDoWithTime(lastTimeBoHuyet2, TIME_ITEM)) {
-                isUseBoHuyet2 = false;
-                Service.gI().point(player);
+            if (Util.canDoWithTime(lastTimeBoHuyet2, TIME_ITEM - 10000)) {
+                lastTimeBoHuyet2 = now;
+                ItemTimeService.gI().sendItemTime(player, 10714, (int) (TIME_ITEM / 1000));
             }
         }
-
         if (isUseBoKhi2) {
-            if (Util.canDoWithTime(lastTimeBoKhi2, TIME_ITEM)) {
-                isUseBoKhi2 = false;
-                Service.gI().point(player);
+            if (Util.canDoWithTime(lastTimeBoKhi2, TIME_ITEM - 10000)) {
+                lastTimeBoKhi2 = now;
+                ItemTimeService.gI().sendItemTime(player, 10715, (int) (TIME_ITEM / 1000));
             }
         }
         if (isUseGiapXen2) {
-            if (Util.canDoWithTime(lastTimeGiapXen2, TIME_ITEM)) {
-                isUseGiapXen2 = false;
+            if (Util.canDoWithTime(lastTimeGiapXen2, TIME_ITEM - 10000)) {
+                lastTimeGiapXen2 = now;
+                ItemTimeService.gI().sendItemTime(player, 10712, (int) (TIME_ITEM / 1000));
             }
         }
         if (isUseCuongNo2) {
-            if (Util.canDoWithTime(lastTimeCuongNo2, TIME_ITEM)) {
-                isUseCuongNo2 = false;
-                Service.gI().point(player);
+            if (Util.canDoWithTime(lastTimeCuongNo2, TIME_ITEM - 10000)) {
+                lastTimeCuongNo2 = now;
+                ItemTimeService.gI().sendItemTime(player, 10716, (int) (TIME_ITEM / 1000));
             }
         }
         if (isUseAnDanh2) {
-            if (Util.canDoWithTime(lastTimeAnDanh2, TIME_ITEM)) {
-                isUseAnDanh2 = false;
+            if (Util.canDoWithTime(lastTimeAnDanh2, TIME_ITEM - 10000)) {
+                lastTimeAnDanh2 = now;
+                ItemTimeService.gI().sendItemTime(player, 10717, (int) (TIME_ITEM / 1000));
             }
         }
         if (isUseCMS) {
-            if (Util.canDoWithTime(lastTimeUseCMS, TIME_CMS)) {
-                isUseCMS = false;
+            if (Util.canDoWithTime(lastTimeUseCMS, TIME_CMS - 10000)) {
+                lastTimeUseCMS = now;
+                ItemTimeService.gI().sendItemTime(player, 5829, (int) (TIME_CMS / 1000));
+            }
+        }
+        if (isUseNCD) {
+            if (Util.canDoWithTime(lastTimeUseNCD, TIME_NCD - 10000)) {
+                lastTimeUseNCD = now;
+                ItemTimeService.gI().sendItemTime(player, 11173, (int) (TIME_NCD / 1000));
             }
         }
         if (isUseGTPT) {
-            if (Util.canDoWithTime(lastTimeUseGTPT, TIME_ITEM)) {
-                isUseGTPT = false;
+            if (Util.canDoWithTime(lastTimeUseGTPT, TIME_ITEM - 10000)) {
+                lastTimeUseGTPT = now;
+                ItemTimeService.gI().sendItemTime(player, 3778, (int) (TIME_ITEM / 1000));
             }
         }
         if (isUseDK) {
-            if (Util.canDoWithTime(lastTimeUseDK, TIME_DK)) {
-                isUseDK = false;
+            if (Util.canDoWithTime(lastTimeUseDK, TIME_DK - 10000)) {
+                lastTimeUseDK = now;
+                ItemTimeService.gI().sendItemTime(player, 5072, (int) (TIME_DK / 1000));
             }
         }
         if (isOpenPower) {
@@ -215,60 +225,80 @@ public class ItemTime {
             }
         }
         if (isUseMayDo) {
-            if (Util.canDoWithTime(lastTimeUseMayDo, TIME_MAY_DO)) {
-                isUseMayDo = false;
+            if (Util.canDoWithTime(lastTimeUseMayDo, TIME_MAY_DO - 10000)) {
+                lastTimeUseMayDo = now;
+                ItemTimeService.gI().sendItemTime(player, 2758, (int) (TIME_MAY_DO / 1000));
             }
         }
         if (isUseCoBonLa) {
-            long now = System.currentTimeMillis();
+            if (timeLengthCoBonLa <= 0) {
+                timeLengthCoBonLa = TIME_CO_BON_LA;
+            }
             long timeLeft = (lastTimeUseCoBonLa + timeLengthCoBonLa) - now;
-            if (timeLeft <= 0) {
-                isUseCoBonLa = false;
-                timeLengthCoBonLa = 0;
+            if (timeLeft <= 10000) {
+                lastTimeUseCoBonLa = now;
+                timeLengthCoBonLa = TIME_CO_BON_LA;
+                ItemTimeService.gI().sendItemTime(player, 13618, (int) (TIME_CO_BON_LA / 1000));
             }
         }
         if (isUseKilis) {
-            if (Util.canDoWithTime(lastTimeUseKilis, TIME_KILIS)) {
-                isUseKilis = false;
+            if (timeLengthKilis <= 0) {
+                timeLengthKilis = TIME_KILIS;
+            }
+            if (Util.canDoWithTime(lastTimeUseKilis, TIME_KILIS - 10000)) {
+                lastTimeUseKilis = now;
+                timeLengthKilis = TIME_KILIS;
+                ItemTimeService.gI().sendItemTime(player, 15359, (int) (TIME_KILIS / 1000));
             }
         }
         if (isUseNuocMia1) {
-            if (Util.canDoWithTime(lastTimeUseNuocMia1, TIME_NUOC_MIA1)) {
-                isUseNuocMia1 = false;
-                Service.gI().point(player);
+            if (Util.canDoWithTime(lastTimeUseNuocMia1, TIME_NUOC_MIA1 - 10000)) {
+                lastTimeUseNuocMia1 = now;
+                ItemTimeService.gI().sendItemTime(player, 13462, (int) (TIME_NUOC_MIA1 / 1000));
             }
         }
         if (isUseNuocMia2) {
-            if (Util.canDoWithTime(lastTimeUseNuocMia1, TIME_NUOC_MIA2)) {
-                isUseNuocMia2 = false;
-                Service.gI().point(player);
+            if (Util.canDoWithTime(lastTimeUseNuocMia2, TIME_NUOC_MIA2 - 10000)) {
+                lastTimeUseNuocMia2 = now;
+                ItemTimeService.gI().sendItemTime(player, 13463, (int) (TIME_NUOC_MIA2 / 1000));
             }
         }
         if (isUseNuocMia3) {
-            if (Util.canDoWithTime(lastTimeUseNuocMia1, TIME_NUOC_MIA3)) {
-                isUseNuocMia3 = false;
-                Service.gI().point(player);
+            if (Util.canDoWithTime(lastTimeUseNuocMia3, TIME_NUOC_MIA3 - 10000)) {
+                lastTimeUseNuocMia3 = now;
+                ItemTimeService.gI().sendItemTime(player, 13464, (int) (TIME_NUOC_MIA3 / 1000));
             }
         }
         if (isUseBuaSanta) {
-            if (Util.canDoWithTime(lastTimeBuaSanta, TIME_BUA_SANTA)) {
-                isUseBuaSanta = false;
+            if (Util.canDoWithTime(lastTimeBuaSanta, TIME_BUA_SANTA - 10000)) {
+                lastTimeBuaSanta = now;
+                ItemTimeService.gI().sendItemTime(player, 13540, (int) (TIME_BUA_SANTA / 1000));
             }
         }
         if (isUseKhoBauX2) {
-            if (Util.canDoWithTime(lastTimeUseKhoBauX2, TIME_MAY_DO2)) {
-                isUseKhoBauX2 = false;
+            if (Util.canDoWithTime(lastTimeUseKhoBauX2, TIME_MAY_DO2 - 10000)) {
+                lastTimeUseKhoBauX2 = now;
             }
         }
         if (isUseTDLT) {
-            if (Util.canDoWithTime(lastTimeUseTDLT, timeTDLT)) {
-                this.isUseTDLT = false;
+            if (timeTDLT <= 20000) {
+                timeTDLT = 30000 * 1000;
+            }
+            if (Util.canDoWithTime(lastTimeUseTDLT, timeTDLT - 10000)) {
+                lastTimeUseTDLT = now;
+                timeTDLT = 30000 * 1000;
                 ItemTimeService.gI().sendCanAutoPlay(this.player);
+                ItemTimeService.gI().sendItemTime(player, 4387, timeTDLT / 1000);
             }
         }
         if (isUseRX) {
-            if (Util.canDoWithTime(lastTimeUseRX, timeRX)) {
-                isUseRX = false;
+            if (timeRX <= 20000) {
+                timeRX = 30000 * 1000;
+            }
+            if (Util.canDoWithTime(lastTimeUseRX, timeRX - 10000)) {
+                lastTimeUseRX = now;
+                timeRX = 30000 * 1000;
+                ItemTimeService.gI().sendItemTime(player, 8579, timeRX / 1000);
             }
         }
     }

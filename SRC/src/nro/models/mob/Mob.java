@@ -775,10 +775,10 @@ public class Mob {
                     }
                     it.options.add(new Item.ItemOption(30, 0));
                 } else {
-                    // Đồ thường có cơ hội nhỏ kèm 1-3 lỗ sao pha lê
-                    if (Util.isTrue(20, 100)) {
+                    // Đồ thường có cơ hội nhỏ kèm 1-3 lỗ sao pha lê (đã giảm tỷ lệ rớt đồ sao)
+                    if (Util.isTrue(3, 100)) {
                         int randStar = Util.nextInt(100);
-                        int starCount = randStar < 65 ? 1 : (randStar < 92 ? 2 : 3);
+                        int starCount = randStar < 80 ? 1 : (randStar < 97 ? 2 : 3);
                         it.options.add(new Item.ItemOption(107, starCount));
                     }
                 }

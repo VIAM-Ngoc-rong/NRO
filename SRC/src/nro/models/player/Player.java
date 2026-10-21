@@ -81,6 +81,8 @@ public class Player implements Runnable {
 
     public long lastTimeEatPea;
     public boolean isAutoBuffPea = true;
+    public boolean isAutoCleanBag = true;
+    public long lastTimeAutoCleanBag;
     public long lastTimeSyncPetInfo;
     public Map<Integer, Long> activeEffects = new HashMap<>();
     @Setter
@@ -431,12 +433,89 @@ public class Player implements Runnable {
         Executors.newSingleThreadExecutor().submit(this, "Update player " + this.name);
     }
 
+    public boolean isTrashEquipToAutoSell(Item item) {
+        if (item == null || !item.isNotNullItem() || item.template == null) {
+            return false;
+        }
+        int type = item.template.type;
+        if (type < 0 || type > 4) {
+            return false;
+        }
+        int id = item.template.id;
+        if (item.template.level >= 13
+                || (id >= 555 && id <= 567)
+                || (id >= 650 && id <= 662)
+                || (id >= 1048 && id <= 1062)) {
+            return false;
+        }
+        if (item.itemOptions != null) {
+            for (Item.ItemOption io : item.itemOptions) {
+                if (io == null || io.optionTemplate == null) {
+                    continue;
+                }
+                int opId = io.optionTemplate.id;
+                if (opId == 107 && io.param > 0) {
+                    return false; // Có lỗ sao pha lê
+                }
+                if ((opId >= 127 && opId <= 144) || (opId >= 237 && opId <= 248) || opId == 210) {
+                    return false; // Đồ kích hoạt (SKH)
+                }
+                if (opId == 72 && io.param > 0) {
+                    return false; // Đã ép cấp [+1] trở lên
+                }
+                if (opId >= 34 && opId <= 36) {
+                    return false; // Tinh ấn / Nguyệt ấn / Nhật ấn
+                }
+            }
+        }
+        return true;
+    }
+
+    public boolean isUnnecessaryJunkItem(Item item) {
+        if (item == null || !item.isNotNullItem() || item.template == null) {
+            return false;
+        }
+        int id = item.template.id;
+        if (id == 73 && TaskService.gI().getIdTask(this) > ConstTask.TASK_2_0) {
+            return true;
+        }
+        if (item.template.type == 7 && id >= 66 && id <= 72) {
+            return true;
+        }
+        return false;
+    }
+
+    public void autoCleanTrashAndSellItems() {
+        if (this.inventory == null || this.inventory.itemsBag == null) {
+            return;
+        }
+        boolean cleanJunkToo = InventoryService.gI().getCountEmptyBag(this) <= 3;
+        int cleanedCount = 0;
+        for (int i = 0; i < this.inventory.itemsBag.size(); i++) {
+            Item item = this.inventory.itemsBag.get(i);
+            if (isTrashEquipToAutoSell(item) || (cleanJunkToo && isUnnecessaryJunkItem(item))) {
+                long goldGain = Math.max(2000L, (long) item.template.gold / 2L) * Math.max(1, item.quantity);
+                this.inventory.addGold(goldGain);
+                InventoryService.gI().removeItemBag(this, i);
+                cleanedCount++;
+            }
+        }
+        if (cleanedCount > 0) {
+            InventoryService.gI().sortItems(this.inventory.itemsBag);
+            InventoryService.gI().sendItemBags(this);
+            Service.gI().sendMoney(this);
+        }
+    }
+
     public void update() {
         if (!this.beforeDispose) {
             try {
                 if (this.zone != null || (!this.isPl() && this.zone == null)) {
                     if (itemTime != null) {
                         itemTime.update();
+                    }
+                    if (charms != null) {
+                        charms.update();
                     }
                     if (magicTree != null) {
                         magicTree.update();
@@ -490,6 +569,10 @@ public class Player implements Runnable {
                             if (needBuff) {
                                 nro.models.services_func.UseItem.gI().eatPea(this);
                             }
+                        }
+                        if (this.isAutoCleanBag && Util.canDoWithTime(this.lastTimeAutoCleanBag, 5000)) {
+                            this.lastTimeAutoCleanBag = System.currentTimeMillis();
+                            this.autoCleanTrashAndSellItems();
                         }
                     }
                     if (event != null) {

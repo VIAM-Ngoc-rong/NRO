@@ -343,6 +343,34 @@ public class Zone {
                                 }
                             }
 
+                            if (player.isPl() && player.isAutoCleanBag) {
+                                if (player.isTrashEquipToAutoSell(item) || (InventoryService.gI().getCountEmptyBag(player) <= 2 && player.isUnnecessaryJunkItem(item))) {
+                                    long goldGain = Math.max(2000L, (long) item.template.gold / 2L) * Math.max(1, item.quantity);
+                                    player.inventory.addGold(goldGain);
+                                    try {
+                                        Message msg = new Message(-20);
+                                        msg.writer().writeShort(itemMapId);
+                                        msg.writer().writeUTF("");
+                                        msg.writer().writeShort(1);
+                                        player.sendMessage(msg);
+                                        msg.cleanup();
+                                        Service.gI().sendToAntherMePickItem(player, itemMapId);
+                                        Service.gI().sendMoney(player);
+                                        itemMap.isPickedUp = true;
+                                        removeItemMap(itemMap);
+                                    } catch (Exception e) {
+                                        Logger.logException(Zone.class, e);
+                                    }
+                                    TaskService.gI().checkDoneTaskPickItem(player, itemMap);
+                                    TaskService.gI().checkDoneSideTaskPickItem(player, itemMap);
+                                    TaskService.gI().checkDoneClanTaskPickItem(player, itemMap);
+                                    return;
+                                }
+                                if (InventoryService.gI().getCountEmptyBag(player) <= 1) {
+                                    player.autoCleanTrashAndSellItems();
+                                }
+                            }
+
                             if (InventoryService.gI().addItemBag(player, item)) {
                                 int itemType = item.template.type;
                                 Message msg;
