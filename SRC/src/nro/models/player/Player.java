@@ -80,6 +80,8 @@ import nro.models.task.BadgesTaskService;
 public class Player implements Runnable {
 
     public long lastTimeEatPea;
+    public boolean isAutoBuffPea = true;
+    public long lastTimeSyncPetInfo;
     public Map<Integer, Long> activeEffects = new HashMap<>();
     @Setter
     @Getter
@@ -470,6 +472,25 @@ public class Player implements Runnable {
                     }
                     if (pet != null) {
                         pet.update();
+                    }
+                    if (this.isPl() && !this.isBot && !this.isDie()) {
+                        if (this.pet != null && !this.pet.isDie() && Util.canDoWithTime(this.lastTimeSyncPetInfo, 2500)) {
+                            this.lastTimeSyncPetInfo = System.currentTimeMillis();
+                            Service.gI().showInfoPet(this);
+                        }
+                        if (this.isAutoBuffPea && Util.canDoWithTime(this.lastTimeEatPea, 3000)) {
+                            boolean needBuff = (this.nPoint.hp <= this.nPoint.hpMax * 25L / 100L)
+                                    || (this.nPoint.mp <= this.nPoint.mpMax * 25L / 100L)
+                                    || (this.nPoint.stamina <= this.nPoint.maxStamina * 20 / 100);
+                            if (!needBuff && this.pet != null && !this.pet.isDie() && this.pet.nPoint != null) {
+                                needBuff = (this.pet.nPoint.hp <= this.pet.nPoint.hpMax * 25L / 100L)
+                                        || (this.pet.nPoint.mp <= this.pet.nPoint.mpMax * 25L / 100L)
+                                        || (this.pet.nPoint.stamina <= this.pet.nPoint.maxStamina * 20 / 100);
+                            }
+                            if (needBuff) {
+                                nro.models.services_func.UseItem.gI().eatPea(this);
+                            }
+                        }
                     }
                     if (event != null) {
                         event.update();

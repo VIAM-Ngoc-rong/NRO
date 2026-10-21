@@ -271,6 +271,14 @@ parameterizedCommands.put("upp", (player, text) -> {
             PetService.gI().changeNamePet(player, text.replace("ten con la ", ""));
         }
 
+        switch (text.toLowerCase().trim()) {
+            case "autodau", "ad", "buffdau", "auto dau", "buff dau" -> {
+                player.isAutoBuffPea = !player.isAutoBuffPea;
+                Service.gI().sendThongBao(player, "Auto Buff Đậu (Sư phụ & Đệ tử): " + (player.isAutoBuffPea ? "[Bật]" : "[Tắt]"));
+                return true;
+            }
+        }
+
         if (player.pet != null) {
             switch (text) {
                 case "di theo", "follow" ->

@@ -1866,6 +1866,28 @@ public class UseItem {
                 break;
             }
         }
+        if (pea == null && player.magicTree != null) {
+            player.magicTree.update();
+            if (player.magicTree.currPeas > 0) {
+                player.magicTree.harvestPea();
+                for (Item item : player.inventory.itemsBag) {
+                    if (item.isNotNullItem() && item.template.type == 6) {
+                        pea = item;
+                        break;
+                    }
+                }
+            }
+        }
+        boolean fromBox = false;
+        if (pea == null && player.inventory.itemsBox != null) {
+            for (Item item : player.inventory.itemsBox) {
+                if (item.isNotNullItem() && item.template.type == 6) {
+                    pea = item;
+                    fromBox = true;
+                    break;
+                }
+            }
+        }
         if (pea != null) {
             int hpKiHoiPhuc = 0;
             int lvPea = Integer.parseInt(pea.template.name.substring(13));
@@ -1881,9 +1903,13 @@ public class UseItem {
             }
             player.nPoint.setHp(player.nPoint.hp + hpKiHoiPhuc);
             player.nPoint.setMp(player.nPoint.mp + hpKiHoiPhuc);
+            player.nPoint.stamina += (short) (100 * lvPea);
+            if (player.nPoint.stamina > player.nPoint.maxStamina) {
+                player.nPoint.stamina = player.nPoint.maxStamina;
+            }
             PlayerService.gI().sendInfoHpMp(player);
             Service.gI().sendInfoPlayerEatPea(player);
-            if (player.pet != null && player.zone.equals(player.pet.zone) && !player.pet.isDie()) {
+            if (player.pet != null && player.zone != null && player.zone.equals(player.pet.zone) && !player.pet.isDie()) {
                 int statima = 100 * lvPea;
                 player.pet.nPoint.stamina += statima;
                 if (player.pet.nPoint.stamina > player.pet.nPoint.maxStamina) {
@@ -1893,10 +1919,16 @@ public class UseItem {
                 player.pet.nPoint.setMp(player.pet.nPoint.mp + hpKiHoiPhuc);
                 Service.gI().sendInfoPlayerEatPea(player.pet);
                 Service.gI().chatJustForMe(player, player.pet, "Cám ơn sư phụ");
+                Service.gI().showInfoPet(player);
             }
 
-            InventoryService.gI().subQuantityItemsBag(player, pea, 1);
-            InventoryService.gI().sendItemBags(player);
+            if (fromBox) {
+                InventoryService.gI().subQuantityItemsBox(player, pea, 1);
+                InventoryService.gI().sendItemBox(player);
+            } else {
+                InventoryService.gI().subQuantityItemsBag(player, pea, 1);
+                InventoryService.gI().sendItemBags(player);
+            }
         }
     }
 
