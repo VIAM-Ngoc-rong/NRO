@@ -558,6 +558,10 @@ public class ChangeMapService {
         if (player.isPl() && player.effectSkill != null && player.effectSkill.isBodyChangeTechnique) {
             EffectSkillService.gI().removeBodyChangeTechnique(player);
         }
+        if (player.isPl() && !player.isBot && !player.hasSentInitialBossNotify) {
+            player.hasSentInitialBossNotify = true;
+            nro.models.server.ServerNotify.gI().sendActiveBossesToPlayer(player);
+        }
         try {
             for (int i = player.zone.getPlayers().size() - 1; i >= 0; i--) {
                 Player pl = player.zone.getPlayers().get(i);

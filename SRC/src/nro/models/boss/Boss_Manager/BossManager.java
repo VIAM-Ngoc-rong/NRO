@@ -440,8 +440,15 @@ public class BossManager implements Runnable {
         while (ServerManager.isRunning) {
             try {
                 long st = System.currentTimeMillis();
-                for (Boss boss : this.bosses) {
-                    boss.update();
+                for (int i = 0; i < this.bosses.size(); i++) {
+                    Boss boss = this.bosses.get(i);
+                    if (boss != null) {
+                        try {
+                            boss.update();
+                        } catch (Exception e) {
+                            Logger.logException(BossManager.class, e);
+                        }
+                    }
                 }
                 Thread.sleep(Math.max(1500 - (System.currentTimeMillis() - st), 50));
             } catch (Exception ignored) {

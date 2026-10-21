@@ -324,7 +324,8 @@ public class Boss extends Player implements IBoss {
         if (root.bossAppearTogether != null && root.currentLevel >= 0 && root.currentLevel < root.bossAppearTogether.length
                 && root.bossAppearTogether[root.currentLevel] != null) {
             for (Boss sub : root.bossAppearTogether[root.currentLevel]) {
-                if (sub != null && (sub.isDie() || sub.droppedBelow50Hp
+                if (sub != null && sub.currentLevel >= 0 && sub.bossStatus != BossStatus.REST
+                        && (sub.isDie() || sub.droppedBelow50Hp
                         || (sub.nPoint != null && sub.nPoint.hpMax > 0 && sub.nPoint.hp < sub.nPoint.hpMax / 2))) {
                     return true;
                 }
@@ -604,19 +605,16 @@ public class Boss extends Player implements IBoss {
                         // Chỉ cho boss xuất hiện từ khu 2 trở lên ở map thường
                         if (this.isZone01SpawnDisabled && this.zone.map.zones.size() > 2) {
                             zoneid = Util.nextInt(2, this.zone.map.zones.size() - 1);
-                            while (zoneid < this.zone.map.zones.size() && !this.zone.map.zones.get(zoneid).getBosses().isEmpty()) {
+                            int checked = 0;
+                            int totalZonesFrom2 = this.zone.map.zones.size() - 2;
+                            while (checked < totalZonesFrom2 && !this.zone.map.zones.get(zoneid).getBosses().isEmpty()) {
                                 zoneid++;
+                                if (zoneid >= this.zone.map.zones.size()) {
+                                    zoneid = 2;
+                                }
+                                checked++;
                             }
-
-                            if (zoneid < this.zone.map.zones.size()) {
-                                this.zone = this.zone.map.zones.get(zoneid);
-                            } else {
-                                this.lastTimeRest = System.currentTimeMillis();
-                                this.changeStatus(BossStatus.REST);
-                                this.zone = null;
-                                this.lastZone = null;
-                                return;
-                            }
+                            this.zone = this.zone.map.zones.get(zoneid);
                         } else {
                             // Check trong khu lớn hơn 10 người chuyển sang khu n + 1
                             while (zoneid < this.zone.map.zones.size() && this.zone.map.zones.get(zoneid).getNumOfPlayers() > 10) {

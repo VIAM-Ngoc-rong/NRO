@@ -127,7 +127,7 @@ public class BlackGoku extends Boss {
 
     @Override
     public void joinMap() {
-        this.name = this.data[this.currentLevel].getName() + " " + Util.nextInt(1, 100);
+        this.name = this.data[this.currentLevel].getName();
         super.joinMap();
         st = System.currentTimeMillis();
         timeLeaveMap = Util.nextInt(600000, 900000);

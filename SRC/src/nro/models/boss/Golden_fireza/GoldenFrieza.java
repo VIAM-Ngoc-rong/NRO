@@ -95,7 +95,7 @@ public class GoldenFrieza extends Boss {
     @Override
     public void joinMap() {
         if (TimeUtil.is21H()) {
-            this.name = this.data[this.currentLevel].getName() + " " + Util.nextInt(1, 100);
+            this.name = this.data[this.currentLevel].getName();
             super.joinMap();
             if (this.zone != null) {
                 for (Mob mob : this.zone.mobs) {

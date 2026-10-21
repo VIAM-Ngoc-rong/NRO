@@ -15,7 +15,7 @@ public class MapDauDinh extends Boss {
     private long st;
 
     public MapDauDinh() throws Exception {
-        super(BossID.MAP_DAU_DINH, true, true, BossesData.MAP_DAU_DINH);
+        super(BossID.MAP_DAU_DINH, false, true, BossesData.MAP_DAU_DINH);
     }
 
     @Override
