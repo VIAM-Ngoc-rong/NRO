@@ -43,6 +43,10 @@ public class SetClothes {
 
     public void setup() {
         setDefault();
+        if (this.player == null || this.player.isBoss || this.player.inventory == null
+                || this.player.inventory.itemsBody == null || this.player.inventory.itemsBody.size() < 6) {
+            return;
+        }
         setupSKT();
 
         this.godClothes = true;
@@ -202,7 +206,9 @@ public class SetClothes {
     }
 
     public boolean checkSetGod() {
-        if (this.player.isBot) {
+        if (this.player == null || this.player.isBot || this.player.isBoss
+                || this.player.inventory == null || this.player.inventory.itemsBody == null
+                || this.player.inventory.itemsBody.size() < 5) {
             return false;
         }
         for (int i = 0; i < 5; i++) {
@@ -219,6 +225,11 @@ public class SetClothes {
     }
 
     public boolean checkSetDes() {
+        if (this.player == null || this.player.isBot || this.player.isBoss
+                || this.player.inventory == null || this.player.inventory.itemsBody == null
+                || this.player.inventory.itemsBody.size() < 5) {
+            return false;
+        }
         for (int i = 0; i < 5; i++) {
             Item item = this.player.inventory.itemsBody.get(i);
             if (item.isNotNullItem()) {
