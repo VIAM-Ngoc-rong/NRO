@@ -156,7 +156,7 @@ public class BossManager implements Runnable {
         this.createBoss(BossID.COOLER, 1);
         this.createBoss(BossID.BLACK_GOKU, 2);
         this.createBoss(BossID.GOLDEN_FRIEZA, 1);
-        this.createBoss(BossID.SOI_HEC_QUYN1, 2);
+        this.createBoss(BossID.SOI_HEC_QUYN1, 15);
         this.createBoss(BossID.AN_TROM, 5);
         this.createBoss(BossID.O_DO1, 5);
         this.createBoss(BossID.BABY, 2);

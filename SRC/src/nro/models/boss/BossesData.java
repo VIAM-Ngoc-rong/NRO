@@ -1271,7 +1271,7 @@ public class BossesData {
             new String[]{}, //text chat 1
             new String[]{}, //text chat 2
             new String[]{}, //text chat 3
-            REST_10_M //second rest
+            REST_1_M //second rest
     );
 
     public static final BossData O_DO = new BossData(

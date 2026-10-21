@@ -2305,7 +2305,8 @@ public class UseItem {
                         InventoryService.gI().subQuantityItemsBag(pl, item, 1);
                         InventoryService.gI().sendItemBags(pl);
 
-                        if (Util.nextInt(4) < 3) { // 75% cơ hội
+                        int roll = Util.nextInt(100);
+                        if (roll < 55) { // 55% cơ hội nhận Sao Pha Lê
                             int rand = Util.nextInt(0, 6); // Random từ 0 đến 6
                             short idItem = (short) (rand + 441); // Item 441 + rand
                             Item it = ItemService.gI().createNewItem(idItem);
@@ -2317,7 +2318,24 @@ public class UseItem {
                             } else {
                                 Service.gI().sendThongBao(pl, "Hành trang không đủ chỗ trống.");
                             }
-                        } else {
+                        } else if (roll < 85) { // 30% cơ hội nhận Cải trang Sói Hẹc Quyn
+                            short idItem = 461; // Cải trang Sói Hẹc Quyn
+                            Item it = ItemService.gI().createNewItem(idItem);
+                            it.itemOptions.add(new Item.ItemOption(50, 20));
+                            it.itemOptions.add(new Item.ItemOption(77, 18));
+                            it.itemOptions.add(new Item.ItemOption(103, 18));
+                            it.itemOptions.add(new Item.ItemOption(114, 20));
+                            it.itemOptions.add(new Item.ItemOption(94, 10));
+                            if (Util.isTrue(70, 100)) {
+                                it.itemOptions.add(new Item.ItemOption(93, Util.nextInt(3, 7)));
+                            }
+                            if (InventoryService.gI().getCountEmptyBag(pl) > 0) {
+                                InventoryService.gI().addItemBag(pl, it);
+                                Service.gI().sendThongBao(pl, "Bạn vừa nhận được Cải trang Sói Hẹc Quyn!");
+                            } else {
+                                Service.gI().sendThongBao(pl, "Hành trang không đủ chỗ trống.");
+                            }
+                        } else { // 15% cơ hội nhận Phiếu giảm giá
                             short idItem = 459; // Item 459
                             Item it = ItemService.gI().createNewItem(idItem);
                             it.itemOptions.add(new Item.ItemOption(112, 80));

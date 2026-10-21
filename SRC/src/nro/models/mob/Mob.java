@@ -580,12 +580,32 @@ public class Mob {
         }
     }
 
+    private boolean isGoldItem(ItemMap itemMap) {
+        if (itemMap == null || itemMap.itemTemplate == null) {
+            return false;
+        }
+        int id = itemMap.itemTemplate.id;
+        return id == 76 || id == 188 || id == 189 || id == 190;
+    }
+
     private List<ItemMap> mobReward(Player player, ItemMap itemTask, Message msg) {
         List<ItemMap> itemReward = new ArrayList<>();
         try {
             itemReward = this.getItemMobReward(player, this.location.x + Util.nextInt(-10, 10),
                     this.zone.map.yPhysicInTop(this.location.x, this.location.y));
             if (itemTask != null) {
+                // Nếu có vật phẩm nhiệm vụ, giữ lại tối đa 1 cục vàng và thay vật phẩm rơi bằng vật phẩm nhiệm vụ
+                ItemMap goldDrop = null;
+                for (ItemMap im : itemReward) {
+                    if (isGoldItem(im)) {
+                        goldDrop = im;
+                        break;
+                    }
+                }
+                itemReward.clear();
+                if (goldDrop != null) {
+                    itemReward.add(goldDrop);
+                }
                 itemReward.add(itemTask);
             }
             msg.writer().writeByte(itemReward.size());
@@ -612,227 +632,98 @@ public class Mob {
             return list;
         }
         int mapid = player.zone.map.mapId;
-        //========================Capsul Kì Bí========================
-        if (player.itemTime.isUseMayDo
-                && (Util.isTrue(20, 100))
-                && this.tempId > 57 && this.tempId < 66) {
-            list.add(new ItemMap(zone, 380, 1, x, yEnd, player.id));
+        Player plOwner = player.isPet ? ((Pet) player).master : player;
+        if (plOwner == null) {
+            plOwner = player;
         }
+
+        ItemMap goldDrop = null;
+        List<ItemMap> candidateItems = new ArrayList<>();
 
         //========================TASK========================
         if (player.isPl() && TaskService.gI().getIdTask(player) == ConstTask.TASK_8_1) {
             if (player.gender == 0 && this.tempId == 11 || player.gender == 1 && this.tempId == 12 || player.gender == 2 && this.tempId == 10) {
-                list.add(new ItemMap(zone, 20, 1, x, yEnd, player.id));
+                candidateItems.add(new ItemMap(zone, 20, 1, x, yEnd, player.id));
                 TaskService.gI().checkDoneTaskFind7Stars(player);
             }
         }
 
-        //========================Map Bang Hội========================
-        if (MapService.gI().isMapUpPorata(mapid)) {
-            int dropRate1 = 10;
-            int dropRate2 = 5;
-            int dropRate3 = 1;
-
-            if (player.itemTime.isUseCoBonLa) {
-                dropRate1 += 5;
-                dropRate2 += 3;
-                dropRate3 += 1;
-            }
-
-            if (Util.isTrue(dropRate1, 100)) {
-                ItemMap it = new ItemMap(zone, 933, 1, x, yEnd, player.id);
-                it.options.add(new Item.ItemOption(31, 1));
-                list.add(it);
-            } else if (Util.isTrue(dropRate2, 100) && player.itemEvent.canDropManhVo(150)) {
-                ItemMap it = new ItemMap(zone, 934, 1, x, yEnd, player.id);
-                it.options.add(new Item.ItemOption(31, 1));
-                list.add(it);
-            } else if (Util.isTrue(dropRate3, 500)) {
-                ItemMap it = new ItemMap(zone, 935, 1, x, yEnd, player.id);
-                it.options.add(new Item.ItemOption(31, 1));
-                list.add(it);
-            }
-        }
-
-        //======================== Vàng Ngọc ========================
-        int weekendGoldMul = TimeUtil.isWeekend() ? 2 : 1;
+        //======================== Vàng rơi từ quái (Tối đa 50k cơ bản, tăng thêm nếu có đồ +% vàng) ========================
+        int baseDropGoldRate = 50;
+        int baseVang = 0;
         if (MapService.gI().isMap3Planets(mapid)) {
-            if (Util.isTrue(50, 100)) {
-                int vang = Util.nextInt(3000, 12000) * weekendGoldMul;
-                if (vang < 5000) {
-                    list.add(new ItemMap(zone, 76, vang, x, yEnd, player.id));
-                } else if (vang < 10000) {
-                    list.add(new ItemMap(zone, 188, vang, x, yEnd, player.id));
-                } else {
-                    list.add(new ItemMap(zone, 189, vang, x, yEnd, player.id));
-                }
-            }
+            baseDropGoldRate = 50;
+            baseVang = Util.nextInt(3000, 10000);
         } else if (MapService.gI().isMapNappa(mapid)) {
-            if (Util.isTrue(50, 100)) {
-                int vang = Util.nextInt(15000, 50000) * weekendGoldMul;
-                if (vang < 20000) {
-                    list.add(new ItemMap(zone, 188, vang, x, yEnd, player.id));
-                } else if (vang < 35000) {
-                    list.add(new ItemMap(zone, 189, vang, x, yEnd, player.id));
-                } else {
-                    list.add(new ItemMap(zone, 190, vang, x, yEnd, player.id));
-                }
-            }
+            baseDropGoldRate = 50;
+            baseVang = Util.nextInt(10000, 25000);
+        } else if (MapService.gI().isMapCold(mapid)) {
+            baseDropGoldRate = 65;
+            baseVang = Util.nextInt(30000, 50000);
+        } else if (MapService.gI().isMapTuongLai(mapid) || MapService.gI().isMapPhoBan(mapid)) {
+            baseDropGoldRate = 55;
+            baseVang = Util.nextInt(20000, 40000);
+        } else {
+            baseDropGoldRate = 50;
+            baseVang = Util.nextInt(20000, 40000);
         }
+
+        // Tính tổng % vàng cộng thêm từ trang bị (option 100 / 156) của chủ và đệ tử
+        int totalTlGold = 0;
+        if (plOwner.nPoint != null) {
+            totalTlGold += plOwner.nPoint.tlGold;
+        }
+        if (plOwner.pet != null && plOwner.pet.nPoint != null) {
+            totalTlGold += plOwner.pet.nPoint.tlGold;
+        }
+        if (plOwner.itemTime != null && plOwner.itemTime.isUseCoBonLa) {
+            totalTlGold += 15;
+        }
+
+        int finalGoldDropRate = Math.min(90, baseDropGoldRate + (totalTlGold > 0 ? Math.min(25, totalTlGold / 4) : 0));
+        if (Util.isTrue(finalGoldDropRate, 100)) {
+            long vangLong = (long) baseVang * (100L + totalTlGold) / 100L;
+            if (TimeUtil.isWeekend()) {
+                vangLong *= 2L;
+            }
+            int vang = (int) Math.min(vangLong, Integer.MAX_VALUE);
+            int goldTemplateId;
+            if (vang < 10000) {
+                goldTemplateId = 76;
+            } else if (vang < 25000) {
+                goldTemplateId = 188;
+            } else if (vang < 45000) {
+                goldTemplateId = 189;
+            } else {
+                goldTemplateId = 190;
+            }
+            goldDrop = new ItemMap(zone, goldTemplateId, vang, x, yEnd, plOwner.id);
+        }
+
         if (MapService.gI().AllMap(mapid)) {
             if (player != null) {
                 player.monsterKillCountAutoTrain++;
             }
 
             if (player.event.luotNhanNgocMienPhi == 1) {
-                ItemMap item1 = new ItemMap(zone, 77, 1, x, yEnd, player.id);
-                ItemMap item2 = new ItemMap(zone, 77, 1, x + 10, yEnd, player.id);
-                list.add(item1);
-                list.add(item2);
+                ItemMap itemNgoc = new ItemMap(zone, 77, 1, x, yEnd, player.id);
+                candidateItems.add(itemNgoc);
                 player.event.luotNhanNgocMienPhi = 0;
             }
         }
-        if (EventManager.HALLOWEEN && MapService.gI().AllMap(mapid)) {
-            if (Util.isTrue(5, 100)) {
-                int biNgoId = Util.nextInt(702, 708); // Bí ngô 1 sao -> 7 sao (Ngọc rồng Halloween)
-                ItemMap it = new ItemMap(zone, biNgoId, 1, x, yEnd, player.id);
-                list.add(it);
-            }
-        }
 
+        //========================Đồ Thần Linh (Map Cold)========================
         if (MapService.gI().isMapCold(mapid)) {
-            if (Util.isTrue(65, 100)) {
-                int vang = Util.nextInt(150000, 350000) * weekendGoldMul;
-                if (vang < 10000) {
-                    list.add(new ItemMap(zone, 189, vang, x, yEnd, player.id)); // Rơi vàng cấp 189
-                } else if (vang < 14000) {
-                    list.add(new ItemMap(zone, 190, vang, x, yEnd, player.id)); // Rơi vàng cấp 190
-                } else {
-                    list.add(new ItemMap(zone, 190, vang, x, yEnd, player.id)); // Rơi vàng cấp 190
-                }
-            }
-        } else if (MapService.gI().isMapTuongLai(mapid)) {
-            if (Util.isTrue(55, 100)) {
-                int vang = Util.nextInt(80000, 200000) * weekendGoldMul;
-                if (vang < 6000) {
-                    list.add(new ItemMap(zone, 188, vang, x, yEnd, player.id));
-                } else if (vang < 10000) {
-                    list.add(new ItemMap(zone, 189, vang, x, yEnd, player.id));
-                } else {
-                    list.add(new ItemMap(zone, 190, vang, x, yEnd, player.id));
-                }
-            }
-        } else if (MapService.gI().isMapPhoBan(mapid)) {
-            if (Util.isTrue(55, 100)) {
-                int vang = Util.nextInt(80000, 250000) * weekendGoldMul;
-                if (player.itemTime.isUseCoBonLa) {
-                    vang = (int) (vang * 1.15);
-                }
-                if (vang < 6000) {
-                    list.add(new ItemMap(zone, 188, vang, x, yEnd, player.id));
-                } else if (vang < 10000) {
-                    list.add(new ItemMap(zone, 189, vang, x, yEnd, player.id));
-                } else {
-                    list.add(new ItemMap(zone, 190, vang, x, yEnd, player.id));
-                }
-            }
-        } else if (!MapService.gI().isMap3Planets(mapid) && !MapService.gI().isMapNappa(mapid)) {
-            if (Util.isTrue(50, 100)) {
-                int vang = Util.nextInt(50000, 150000) * weekendGoldMul;
-                list.add(new ItemMap(zone, 190, vang, x, yEnd, player.id));
+            if (Util.isTrue(1, 50000)) {
+                ItemMap it = ItemService.gI().randDoTL(this.zone, 1, x, yEnd, plOwner.id);
+                candidateItems.add(it);
             }
         }
-        if (Util.isTrue(1, 1000000)) {
-            int ngoc = Util.nextInt(1, 1);
-            list.add(new ItemMap(zone, 77, ngoc, x, yEnd, player.id));
-        }
-        if (MapService.gI().isMapUpSKH(mapid)) {
-            int baseTileDrop = 1;
-            int tileDrop = baseTileDrop;
-            if (player.itemTime.isUseCoBonLa) {
-                tileDrop = (int) (baseTileDrop * 1.15);
-            }
 
-            if (Util.isTrue(tileDrop, 9999)) {
-                int soLuong = 1;
-                list.add(new ItemMap(zone, 1634, soLuong, x, yEnd, player.id));
-            }
-        }
-        if (MapService.gI().isMapDoanhTrai(mapid)) {
-            int baseTileDrop = 20;
-            int tileDrop = baseTileDrop;
-            if (player.itemTime.isUseCoBonLa) {
-                tileDrop = (int) (baseTileDrop * 1.15);
-            }
-
-            if (Util.isTrue(tileDrop, 100)) {
-                int soLuong = 1;
-                list.add(new ItemMap(zone, 1778, soLuong, x, yEnd, player.id));
-            }
-        }
-        if (MapService.gI().isMapRiengTu(mapid)) {
-            int baseTileDrop = 1;
-            int tileDrop = baseTileDrop;
-            if (player.itemTime.isUseCoBonLa) {
-                tileDrop = (int) (baseTileDrop * 1.15);
-            }
-
-            if (Util.isTrue(tileDrop, 19999)) {
-                int soLuong = 1;
-                list.add(new ItemMap(zone, 1634, soLuong, x, yEnd, player.id));
-            }
-        }
-        if (MapService.gI().isMapRiengTu(mapid)) {
-            int baseTileDrop = 2;
-            double tileDrop = baseTileDrop;
-
-            int totalOption236Param = 0;
-            for (Item item : player.inventory.itemsBody) {
-                if (item != null && item.itemOptions != null) {
-                    for (Item.ItemOption op : item.itemOptions) {
-                        if (op.optionTemplate.id == 236) {
-                            totalOption236Param += op.param;
-                        }
-                    }
-                }
-            }
-
-            if (totalOption236Param > 100) {
-                totalOption236Param = 100;
-            }
-
-            double percentFromOption236 = Math.pow(totalOption236Param / 100.0, 1.5) * 20.0; // max 20%
-            tileDrop *= (1 + percentFromOption236 / 100.0);
-
-            if (player.itemTime.isUseCoBonLa) {
-                tileDrop *= 1.5;
-            }
-
-            // Check rơi đồ kích hoạt
-            if (Util.isTrue((int) tileDrop, 9999)) {
-                short itTemp = (short) ItemService.gI().randTempItemKichHoat(player.gender);
-                ItemMap it = new ItemMap(zone, itTemp, 1, x, yEnd, player.id);
-                List<Item.ItemOption> ops = ItemService.gI().getListOptionItemShop(itTemp);
-                if (!ops.isEmpty()) {
-                    it.options = ops;
-                }
-
-                int[] opsrand = ItemService.gI().randOptionItemKichHoat(player.gender);
-                for (int opId : opsrand) {
-                    if (opId > 0) {
-                        it.options.add(new Item.ItemOption(opId, 0));
-                    }
-                }
-                it.options.add(new Item.ItemOption(30, 0));
-                list.add(it);
-
-                //  ChatGlobalService.gI().ThongBaoRoiDo(player, player.name + " vừa nhặt được " + it.itemTemplate.name + " sét kích hoạt tại " + this.zone.map.mapName + " khu " + this.zone.zoneId);
-            }
-        }
-        if (MapService.gI().isMapUpSKH(mapid)) {
-            Player plOwner = player.isPet ? ((Pet) player).master : player;
-            int baseTileDrop = 200; // 200 / 10000 = 2%
-            double tileDrop = baseTileDrop;
+        //========================Trang bị thường & Đồ Kích Hoạt (Map Up SKH / Map Riêng Tư)========================
+        if (MapService.gI().isMapUpSKH(mapid) || MapService.gI().isMapRiengTu(mapid)) {
+            int baseSkhDrop = 200; // 200 / 10000 = 2% tỷ lệ rơi đồ kích hoạt
+            double skhTileDrop = baseSkhDrop;
 
             int totalOption236Param = 0;
             if (plOwner != null && plOwner.inventory != null && plOwner.inventory.itemsBody != null) {
@@ -852,14 +743,18 @@ public class Mob {
             }
 
             double percentFromOption236 = Math.pow(totalOption236Param / 100.0, 1.5) * 20.0; // max 20%
-            tileDrop *= (1 + percentFromOption236 / 100.0);
+            skhTileDrop *= (1 + percentFromOption236 / 100.0);
 
             if (plOwner != null && plOwner.itemTime != null && plOwner.itemTime.isUseCoBonLa) {
-                tileDrop *= 1.5;
+                skhTileDrop *= 1.5;
             }
 
-            // Check rơi đồ kích hoạt (tỷ lệ cơ bản 2%)
-            if (plOwner != null && Util.isTrue((int) tileDrop, 10000)) {
+            int normalEquipDrop = 600; // 600 / 10000 = 6% tỷ lệ rơi trang bị thường
+            int totalEquipDrop = normalEquipDrop + (int) skhTileDrop;
+            int rollEquip = Util.nextInt(10000);
+
+            if (plOwner != null && rollEquip < totalEquipDrop) {
+                boolean isSKH = rollEquip < (int) skhTileDrop;
                 short itTemp = (short) (MapService.gI().isMapCold(mapid)
                         ? ItemService.gI().randTempItemKichHoatCold(plOwner.gender)
                         : ItemService.gI().randTempItemKichHoat(plOwner.gender));
@@ -871,192 +766,200 @@ public class Mob {
                     RewardService.gI().initBaseOptionClothes(null, it.itemTemplate.id, it.itemTemplate.type, it.options);
                 }
 
-                int[] opsrand = ItemService.gI().randOptionItemKichHoat(plOwner.gender);
-                for (int opId : opsrand) {
-                    if (opId > 0) {
-                        it.options.add(new Item.ItemOption(opId, 0));
+                if (isSKH) {
+                    int[] opsrand = ItemService.gI().randOptionItemKichHoat(plOwner.gender);
+                    for (int opId : opsrand) {
+                        if (opId > 0) {
+                            it.options.add(new Item.ItemOption(opId, 0));
+                        }
+                    }
+                    it.options.add(new Item.ItemOption(30, 0));
+                } else {
+                    // Đồ thường có cơ hội nhỏ kèm 1-3 lỗ sao pha lê
+                    if (Util.isTrue(20, 100)) {
+                        int randStar = Util.nextInt(100);
+                        int starCount = randStar < 65 ? 1 : (randStar < 92 ? 2 : 3);
+                        it.options.add(new Item.ItemOption(107, starCount));
                     }
                 }
-                it.options.add(new Item.ItemOption(30, 0));
-                list.add(it);
-
-                //  ChatGlobalService.gI().ThongBaoRoiDo(plOwner, plOwner.name + " vừa nhặt được " + it.itemTemplate.name + " sét kích hoạt tại " + this.zone.map.mapName + " khu " + this.zone.zoneId);
+                candidateItems.add(it);
             }
         }
 
-        //========================Đồ Sao Khác Vải Thô========================
-        if (((Util.isTrue(1, 8000))) && MapService.gI().isMapUpSKH(mapid)) {
-            int baseDropRate = 1;
+        //========================Capsul Kì Bí========================
+        if (player.itemTime.isUseMayDo
+                && (Util.isTrue(20, 100))
+                && this.tempId > 57 && this.tempId < 66) {
+            candidateItems.add(new ItemMap(zone, 380, 1, x, yEnd, player.id));
+        }
+
+        //========================Map Bang Hội========================
+        if (MapService.gI().isMapUpPorata(mapid)) {
+            int dropRate1 = 10;
+            int dropRate2 = 5;
+            int dropRate3 = 1;
+
             if (player.itemTime.isUseCoBonLa) {
-                baseDropRate = 1;
-                int coBonLaBonus = 15;
-                baseDropRate = (int) (baseDropRate * (1 + coBonLaBonus / 100.0));
+                dropRate1 += 5;
+                dropRate2 += 3;
+                dropRate3 += 1;
             }
 
-            if (Util.isTrue(baseDropRate, 19999)) {
-                short itTemp = (short) ItemService.gI().randTempItemDoSao(player.gender);
-                ItemMap it = new ItemMap(zone, itTemp, 1, x, yEnd, player.id);
-                List<Item.ItemOption> ops = ItemService.gI().getListOptionItemShop(itTemp);
-                if (!ops.isEmpty()) {
-                    it.options = ops;
-                }
-
-                int randOption = Util.nextInt(100);
-                boolean hasOption = false;
-                if (randOption < 50) {
-                    int randAddOption = Util.nextInt(100);
-                    if (randAddOption < 50) {
-                        it.options.add(new Item.ItemOption(107, 1));
-                        hasOption = true;
-                    } else if (randAddOption < 90) {
-                        it.options.add(new Item.ItemOption(107, 2));
-                        hasOption = true;
-                    } else {
-                        it.options.add(new Item.ItemOption(107, 3));
-                        hasOption = true;
-                    }
-                }
-
-                if (hasOption) {
-                    list.add(it);
-                    //  ChatGlobalService.gI().ThongBaoRoiDo(player, "[Hệ Thống] " + player.name + " vừa nhặt được " + it.itemTemplate.name + " Sét Kích Hoạt");
-                }
+            if (Util.isTrue(dropRate1, 100)) {
+                ItemMap it = new ItemMap(zone, 933, 1, x, yEnd, player.id);
+                it.options.add(new Item.ItemOption(31, 1));
+                candidateItems.add(it);
+            } else if (Util.isTrue(dropRate2, 100) && player.itemEvent.canDropManhVo(150)) {
+                ItemMap it = new ItemMap(zone, 934, 1, x, yEnd, player.id);
+                it.options.add(new Item.ItemOption(31, 1));
+                candidateItems.add(it);
+            } else if (Util.isTrue(dropRate3, 500)) {
+                ItemMap it = new ItemMap(zone, 935, 1, x, yEnd, player.id);
+                it.options.add(new Item.ItemOption(31, 1));
+                candidateItems.add(it);
             }
         }
 
-        // END
-        //========================Đồ Sao 3 Map Đầu========================
-        if (((Util.isTrue(50, 50000))) && MapService.gI().isMapUpSKH(mapid)) {
-            int baseRate = 50;
+        //========================Sự kiện Halloween========================
+        if (EventManager.HALLOWEEN && MapService.gI().AllMap(mapid)) {
+            if (Util.isTrue(5, 100)) {
+                int biNgoId = Util.nextInt(702, 708); // Bí ngô 1 sao -> 7 sao (Ngọc rồng Halloween)
+                ItemMap it = new ItemMap(zone, biNgoId, 1, x, yEnd, player.id);
+                candidateItems.add(it);
+            }
+        }
+
+        if (MapService.gI().isMapUpSKH(mapid)) {
+            int baseTileDrop = 1;
+            int tileDrop = baseTileDrop;
             if (player.itemTime.isUseCoBonLa) {
-                baseRate = (int) (baseRate * (1 + 0.15));
+                tileDrop = (int) (baseTileDrop * 1.15);
             }
 
-            int powerReduction = (int) Math.min(player.nPoint.power / 100000, 5) * 20;
-            int finalRate = Math.max(baseRate - powerReduction, 0);
-
-            if (finalRate > 0 && Util.nextInt(100) < finalRate) {
-                short itTemp = (short) ItemService.gI().randDoSao(player.gender);
-                ItemMap it = new ItemMap(zone, itTemp, 1, x, yEnd, player.id);
-                List<Item.ItemOption> ops = ItemService.gI().getListOptionItemShop(itTemp);
-                if (!ops.isEmpty()) {
-                    it.options = ops;
-                }
-
-                int randOption = Util.nextInt(1, 100);
-                boolean hasOption = false;
-                if (randOption < 50) {
-                    int randAddOption = Util.nextInt(100);
-                    if (randAddOption < 60) {
-                        it.options.add(new Item.ItemOption(107, 1));
-                        hasOption = true;
-                    } else if (randAddOption < 90) {
-                        it.options.add(new Item.ItemOption(107, 2));
-                        hasOption = true;
-                    } else {
-                        it.options.add(new Item.ItemOption(107, 3));
-                        hasOption = true;
-                    }
-                }
-                if (hasOption) {
-                    list.add(it);
-                    //   ChatGlobalService.gI().ThongBaoRoiDo(player, "[ Hệ Thống ] " + player.name + " vừa nhặt được " + it.itemTemplate.name + " tại " + this.zone.map.mapName + " khu " + this.zone.zoneId);
-                }
+            if (Util.isTrue(tileDrop, 9999)) {
+                candidateItems.add(new ItemMap(zone, 1634, 1, x, yEnd, player.id));
             }
         }
-
-        //========================Đồ Thần + Thức Ăn========================
-        if (MapService.gI().isMapCold(mapid)) {
-            if (player.isPet) {
-                player = ((Pet) player).master;
-            }
-            int rate = 1;
+        if (MapService.gI().isMapDoanhTrai(mapid)) {
+            int baseTileDrop = 20;
+            int tileDrop = baseTileDrop;
             if (player.itemTime.isUseCoBonLa) {
-                rate = (int) (rate * 0.85);
+                tileDrop = (int) (baseTileDrop * 1.15);
             }
-            if (Util.isTrue(1, 50000)) {
-                ItemMap it = ItemService.gI().randDoTL(this.zone, 1, x, yEnd, player.id);
-                list.add(it);
-                //   ChatGlobalService.gI().ThongBaoRoiDo(player, "[ Hệ Thống ] " + player.name + " vừa nhặt được " + it.itemTemplate.name + " tại " + this.zone.map.mapName + " khu " + this.zone.zoneId);
+
+            if (Util.isTrue(tileDrop, 100)) {
+                candidateItems.add(new ItemMap(zone, 1778, 1, x, yEnd, player.id));
             }
         }
-        int rate1 = 100;
-        if (player.itemTime.isUseCoBonLa) {
-            rate1 = (int) (rate1 * 1.15);
+        if (MapService.gI().isMapRiengTu(mapid)) {
+            int baseTileDrop = 1;
+            int tileDrop = baseTileDrop;
+            if (player.itemTime.isUseCoBonLa) {
+                tileDrop = (int) (baseTileDrop * 1.15);
+            }
+
+            if (Util.isTrue(tileDrop, 19999)) {
+                candidateItems.add(new ItemMap(zone, 1634, 1, x, yEnd, player.id));
+            }
         }
+
+        //========================Thức Ăn & Nguyên Liệu========================
         if (Util.isTrue(3, 333)) {
             if (player.setClothes.checkSetGod()) {
                 ItemMap it = new ItemMap(zone, Util.nextInt(663, 667), 1, x, yEnd, player.id);
-                list.add(it);
+                candidateItems.add(it);
             }
         }
 
+        if (player.setClothes.checkSetDes() && MapService.gI().isMapNgucTu(mapid)) {
+            if ((player.isActive() && Util.isTrue(2, 555)) || Util.isTrue(10, 100)) {
+                candidateItems.add(new ItemMap(zone, Util.nextInt(1066, 1070), 1, x, yEnd, player.id));
+            }
+        }
+        if ((Util.isTrue(10, 100) || (player.isActive() && player.setClothes.checkSetDes() && Util.isTrue(20, 100))) && MapService.gI().isMapNgucTu(mapid)) {
+            candidateItems.add(new ItemMap(zone, 1229, 1, x, yEnd, player.id));
+        }
+
+        if ((Util.isTrue(10, 100) && MapService.gI().isMapNguHanhSon(mapid))) {
+            candidateItems.add(new ItemMap(zone, Util.nextInt(541, 542), 1, x, yEnd, player.id));
+        }
+
+        //========================Ngọc Rồng từ quái (Đã giảm mạnh tỷ lệ)========================
+        if (MapService.gI().isMap3Planets(mapid) || MapService.gI().isMapNappa(mapid) || MapService.gI().isMapTuongLai(mapid) || MapService.gI().isMapCold(mapid)) {
+            int dropRate = 8; // 8 / 1000 = 0.8% (trước đây là 10/70 ~ 14.3%)
+            if (player.itemTime.isUseCoBonLa) {
+                dropRate = (int) (dropRate * 1.15);
+            }
+
+            if (Util.isTrue(dropRate, 1000)) {
+                int rand = Util.nextInt(0, 1);
+                ItemMap it = new ItemMap(zone, 19 + rand, 1, x, yEnd, player.id);
+                candidateItems.add(it);
+            }
+        }
+
+        if (this.zone.map.mapId >= 0) {
+            int dropRate = 2; // 2 / 1000 = 0.2% (trước đây là 1/100 = 1%)
+            if (player.itemTime.isUseCoBonLa) {
+                dropRate = (int) (dropRate * 1.15);
+            }
+
+            if (Util.isTrue(dropRate, 1000)) { // nro 4-7 sao
+                candidateItems.add(new ItemMap(zone, Util.nextInt(17, 20), 1, x, yEnd, player.id));
+            }
+        }
+
+        //========================Sao Pha Lê từ quái (Đã giảm mạnh tỷ lệ)========================
+        if (this.zone.map.mapId >= 0) {
+            int dropRate = 5; // 5 / 1000 = 0.5% (trước đây là 10/100 = 10%)
+            if (player.itemTime.isUseCoBonLa) {
+                dropRate = (int) (dropRate * 1.15);
+            }
+
+            if (Util.isTrue(dropRate, 1000)) { // spl
+                candidateItems.add(new ItemMap(Util.spl(zone, Util.nextInt(441, 447), 1, x, yEnd, player.id)));
+            }
+        }
+
+        //========================Cục Xương (dùng cho Sói Hẹc Quyn)========================
+        if (MapService.gI().isMap3Planets(mapid) || MapService.gI().isMapNappa(mapid)) {
+            if (Util.isTrue(15, 1000)) { // 1.5% cơ hội rơi Cục xương
+                candidateItems.add(new ItemMap(zone, 460, 1, x, yEnd, player.id));
+            }
+        }
+
+        //========================Đá Nâng Cấp & Đá Vụn========================
         if (MapService.gI().isMapCold(mapid)) {
-            if (Util.isTrue(20, 100)) {
+            if (Util.isTrue(10, 100)) {
                 int rand = Util.nextInt(0, 4);
                 ItemMap it = new ItemMap(zone, 220 + rand, 1, x, yEnd, player.id);
                 it.options.add(new Item.ItemOption(71 - rand, 0));
-                list.add(it);
+                candidateItems.add(it);
             }
         }
 
         if (MapService.gI().isMapDoanhTrai(mapid) && (Util.isTrue(10, 100))) {
             ItemMap it = new ItemMap(zone, 225, 1, x, yEnd, player.id);
             it.options.add(new Item.ItemOption(74, 0));
-            list.add(it);
+            candidateItems.add(it);
         }
 
-        if (MapService.gI().isMap3Planets(mapid) && (Util.isTrue(10, 100))) {
+        if (MapService.gI().isMap3Planets(mapid) && (Util.isTrue(5, 100))) {
             ItemMap it = new ItemMap(zone, 225, 1, x, yEnd, player.id);
             it.options.add(new Item.ItemOption(74, 0));
-            list.add(it);
+            candidateItems.add(it);
         }
 
-        if (MapService.gI().isMap3Planets(mapid) || MapService.gI().isMapNappa(mapid) || MapService.gI().isMapTuongLai(mapid) || MapService.gI().isMapCold(mapid)) {
-            int dropRate = 10;
-            if (player.itemTime.isUseCoBonLa) {
-                dropRate = (int) (dropRate * 1.15);
-            }
-
-            if (Util.isTrue(dropRate, 70) || (player.isActive() && Util.isTrue(1, 100))) {
-                int rand = Util.nextInt(0, 1);
-                ItemMap it = new ItemMap(zone, 19 + rand, 1, x, yEnd, player.id);
-                list.add(it);
-            }
+        // Đảm bảo mỗi lần quái chết chỉ rớt tối đa: 1 cục Vàng + 1 Vật phẩm bất kỳ
+        if (goldDrop != null) {
+            list.add(goldDrop);
         }
-        if (player.setClothes.checkSetDes() && MapService.gI().isMapNgucTu(mapid)) {
-            if ((player.isActive() && Util.isTrue(2, 555)) || Util.isTrue(10, 100)) {
-                list.add(new ItemMap(zone, Util.nextInt(1066, 1070), 1, x, yEnd, player.id));
+        if (!candidateItems.isEmpty()) {
+            ItemMap chosenItem = candidateItems.get(0);
+            if (goldDrop != null) {
+                chosenItem.x = (short) (x + 12);
             }
-        }
-        if ((Util.isTrue(10, 100) || (player.isActive() && player.setClothes.checkSetDes() && Util.isTrue(20, 100))) && MapService.gI().isMapNgucTu(mapid)) {
-            list.add(new ItemMap(zone, 1229, 1, x, yEnd, player.id));
-        }
-
-        if ((Util.isTrue(10, 100) && MapService.gI().isMapNguHanhSon(mapid))) {
-            list.add(new ItemMap(zone, Util.nextInt(541, 542), 1, x, yEnd, player.id));
-        }
-
-        if (this.zone.map.mapId >= 0) {
-            int dropRate = 1;
-            if (player.itemTime.isUseCoBonLa) {
-                dropRate = (int) (dropRate * 1.15);
-            }
-
-            if (Util.isTrue(dropRate, 100)) { // nro
-                list.add(new ItemMap(zone, Util.nextInt(17, 20), 1, x, this.location.y, player.id));
-            }
-        }
-
-        if (this.zone.map.mapId >= 0) {
-            int dropRate = 10;
-            if (player.itemTime.isUseCoBonLa) {
-                dropRate = (int) (dropRate * 1.15);
-            }
-
-            if (Util.isTrue(dropRate, 100)) { // spl
-                list.add(new ItemMap(Util.spl(zone, Util.nextInt(441, 447), 1, x, this.location.y, player.id)));
-            }
+            list.add(chosenItem);
         }
 
         return list;

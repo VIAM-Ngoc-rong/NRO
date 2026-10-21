@@ -70,7 +70,7 @@ public class SoiHecQuyn extends Boss {
                             this.location.y - 24));
                     this.changeStatus(BossStatus.CHAT_S);
                     st = System.currentTimeMillis();
-                    timeLeave = Util.nextInt(100000, 300000);
+                    timeLeave = Util.nextInt(300000, 600000);
                 } else {
                     this.leaveMapNew();
                     return;
