@@ -524,12 +524,13 @@ public class EffectSkillService {
 
     public void sendEffectStartCharge(Player player) {
         Skill skill = SkillUtil.getSkillbyId(player, Skill.TAI_TAO_NANG_LUONG);
+        short skillId = (skill != null) ? skill.skillId : SkillUtil.createSkill(Skill.TAI_TAO_NANG_LUONG, 7).skillId;
         Message msg;
         try {
             msg = new Message(-45);
             msg.writer().writeByte(6);
             msg.writer().writeInt((int) player.id);
-            msg.writer().writeShort(skill.skillId);
+            msg.writer().writeShort(skillId);
             Service.gI().sendMessAllPlayerInMap(player, msg);
             msg.cleanup();
         } catch (Exception e) {
@@ -539,12 +540,13 @@ public class EffectSkillService {
 
     public void sendEffectCharge(Player player) {
         Skill skill = SkillUtil.getSkillbyId(player, Skill.TAI_TAO_NANG_LUONG);
+        short skillId = (skill != null) ? skill.skillId : SkillUtil.createSkill(Skill.TAI_TAO_NANG_LUONG, 7).skillId;
         Message msg;
         try {
             msg = new Message(-45);
             msg.writer().writeByte(1);
             msg.writer().writeInt((int) player.id);
-            msg.writer().writeShort(skill.skillId);
+            msg.writer().writeShort(skillId);
             Service.gI().sendMessAllPlayerInMap(player, msg);
             msg.cleanup();
         } catch (Exception e) {

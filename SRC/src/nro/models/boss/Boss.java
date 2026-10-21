@@ -51,6 +51,10 @@ import nro.models.player.Player;
 import nro.models.skill.Skill;
 import nro.models.server.ServerNotify;
 import nro.models.map.service.MapService;
+import nro.models.map.ItemMap;
+import nro.models.item.Item;
+import nro.models.services.EffectSkillService;
+import nro.models.services.ItemService;
 import nro.models.services.PlayerService;
 import nro.models.services.Service;
 import nro.models.services.SkillService;
@@ -104,6 +108,14 @@ public class Boss extends Player implements IBoss {
 
     public boolean isNotifyDisabled;
     public boolean isZone01SpawnDisabled;
+
+    public long lastTimeSpawnOnMap;
+    public boolean droppedBelow50Hp;
+    public boolean usedTTNL;
+    public boolean isUsingTTNL;
+    public long lastTimeStartTTNL;
+    public long lastTimeTickTTNL;
+    public int ticksTTNL;
 
     public Boss(int id, boolean isNotifyDisabled, boolean isZone01SpawnDisabled, BossData... data) throws Exception {
         this(id, data);
@@ -236,6 +248,64 @@ public class Boss extends Player implements IBoss {
         this.timeChatE = 0;
         this.indexChatS = 0;
         this.indexChatE = 0;
+        this.lastTimeSpawnOnMap = System.currentTimeMillis();
+        this.droppedBelow50Hp = false;
+        this.usedTTNL = false;
+        this.isUsingTTNL = false;
+        this.ticksTTNL = 0;
+    }
+
+    public void startBossTTNL() {
+        if (this.usedTTNL || this.isDie() || this.zone == null) {
+            return;
+        }
+        this.usedTTNL = true;
+        this.isUsingTTNL = true;
+        this.lastTimeStartTTNL = System.currentTimeMillis();
+        this.lastTimeTickTTNL = System.currentTimeMillis();
+        this.ticksTTNL = 0;
+        EffectSkillService.gI().sendEffectStartCharge(this);
+        EffectSkillService.gI().sendEffectCharge(this);
+        this.chat("Tái tạo năng lượng!");
+    }
+
+    public boolean isBrolyBoss() {
+        return this.id == BossID.BROLY || this.id == BossID.SUPER_BROLY
+                || (this.name != null && this.name.toLowerCase().contains("broly"));
+    }
+
+    public boolean isExcludedFrom5MinReset() {
+        if (isBrolyBoss()) {
+            return true;
+        }
+        if (this.zone != null && this.zone.map != null) {
+            int mapId = this.zone.map.mapId;
+            if (MapService.gI().isMapOffline(mapId) || MapService.gI().isMapPhoBan(mapId) || mapId == 113 || mapId == 112 || mapId == 129) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean hasGroupDroppedBelow50Hp() {
+        if (this.droppedBelow50Hp || (this.nPoint != null && this.nPoint.hpMax > 0 && this.nPoint.hp < this.nPoint.hpMax / 2)) {
+            this.droppedBelow50Hp = true;
+            return true;
+        }
+        Boss root = this.parentBoss != null ? this.parentBoss : this;
+        if (root.droppedBelow50Hp || (root.nPoint != null && root.nPoint.hpMax > 0 && root.nPoint.hp < root.nPoint.hpMax / 2)) {
+            return true;
+        }
+        if (root.bossAppearTogether != null && root.currentLevel >= 0 && root.currentLevel < root.bossAppearTogether.length
+                && root.bossAppearTogether[root.currentLevel] != null) {
+            for (Boss sub : root.bossAppearTogether[root.currentLevel]) {
+                if (sub != null && (sub.isDie() || sub.droppedBelow50Hp
+                        || (sub.nPoint != null && sub.nPoint.hpMax > 0 && sub.nPoint.hp < sub.nPoint.hpMax / 2))) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     //.outfit.
@@ -296,6 +366,9 @@ public class Boss extends Player implements IBoss {
 
     @Override
     public void changeStatus(BossStatus status) {
+        if (status == BossStatus.ACTIVE && this.bossStatus != BossStatus.ACTIVE) {
+            this.lastTimeSpawnOnMap = System.currentTimeMillis();
+        }
         this.bossStatus = status;
     }
 
@@ -340,12 +413,71 @@ public class Boss extends Player implements IBoss {
         }
         super.update();
         this.nPoint.mp = this.nPoint.mpg;
+        if (!this.isDie() && this.nPoint != null && this.nPoint.hpMax > 0) {
+            if (this.nPoint.hp < this.nPoint.hpMax / 2) {
+                this.droppedBelow50Hp = true;
+            }
+            if (!this.usedTTNL && this.nPoint.hp > 0 && this.nPoint.hp < (this.nPoint.hpMax * 30L / 100L)) {
+                this.startBossTTNL();
+            }
+        }
+        if (this.isUsingTTNL) {
+            if (this.isDie() || this.zone == null) {
+                this.isUsingTTNL = false;
+                if (this.zone != null) {
+                    EffectSkillService.gI().sendEffectStopCharge(this);
+                }
+            } else {
+                long targetHp = this.nPoint.hpMax / 2;
+                if (Util.canDoWithTime(this.lastTimeTickTTNL, 1000)) {
+                    this.lastTimeTickTTNL = System.currentTimeMillis();
+                    this.ticksTTNL++;
+                    int remainingTicks = Math.max(1, 5 - this.ticksTTNL + 1);
+                    long needHeal = targetHp - this.nPoint.hp;
+                    if (needHeal > 0) {
+                        long healAmount = Math.max(1L, needHeal / remainingTicks);
+                        PlayerService.gI().hoiPhuc(this, healAmount, 0);
+                    }
+                    EffectSkillService.gI().sendEffectCharge(this);
+                    this.chat("Phục hồi năng lượng " + this.nPoint.getCurrPercentHP() + "%");
+                }
+                if (Util.canDoWithTime(this.lastTimeStartTTNL, 5000) || this.ticksTTNL >= 5) {
+                    if (this.nPoint.hp < targetHp) {
+                        PlayerService.gI().hoiPhuc(this, targetHp - this.nPoint.hp, 0);
+                    }
+                    this.isUsingTTNL = false;
+                    EffectSkillService.gI().sendEffectStopCharge(this);
+                    this.chat("Phục hồi năng lượng 50%!");
+                }
+                return;
+            }
+        }
         if (this.effectSkill == null || this.effectSkill.isHaveEffectSkill() || (this.newSkill != null && this.newSkill.isStartSkillSpecial)) {
             return;
         }
         switch (this.bossStatus) {
-            case CHAT_S, AFK, ACTIVE ->
+            case CHAT_S, AFK, ACTIVE -> {
                 this.autoLeaveMap();
+                if (!this.isExcludedFrom5MinReset() && !this.hasGroupDroppedBelow50Hp()
+                        && this.lastTimeSpawnOnMap > 0 && Util.canDoWithTime(this.lastTimeSpawnOnMap, 300000)) {
+                    this.chat("Quá 5 phút không ai đánh ta xuống dưới 50% HP, tạm biệt!");
+                    Boss root = this.parentBoss != null ? this.parentBoss : this;
+                    if (root.bossAppearTogether != null && root.currentLevel >= 0
+                            && root.currentLevel < root.bossAppearTogether.length
+                            && root.bossAppearTogether[root.currentLevel] != null) {
+                        for (Boss sub : root.bossAppearTogether[root.currentLevel]) {
+                            if (sub != null && sub.zone != null && sub != this) {
+                                sub.leaveMapNew();
+                            }
+                        }
+                    }
+                    if (root != this && root.zone != null) {
+                        root.leaveMapNew();
+                    }
+                    this.leaveMapNew();
+                    return;
+                }
+            }
         }
         switch (this.bossStatus) {
             case REST ->
@@ -637,14 +769,129 @@ public class Boss extends Player implements IBoss {
                 || !MapService.gI().isMapBanDoKhoBau(this.zone.map.mapId))) {
             if (!plKill.isBot) {
                 reward(plKill);
+                dropExtraBossReward(plKill);
             }
             ServerNotify.gI().notify(plKill.name + ": Đã tiêu diệt được " + this.name + " mọi người đều ngưỡng mộ.");
             this.changeStatus(BossStatus.DIE);
         } else {
             if (plKill != null && !plKill.isBot) {
                 reward(plKill);
+                dropExtraBossReward(plKill);
             }
             this.changeStatus(BossStatus.DIE);
+        }
+    }
+
+    public boolean isBossFromTDSTNappaOnwards() {
+        switch ((int) this.id) {
+            case BossID.SO_4, BossID.SO_3, BossID.SO_2, BossID.SO_1, BossID.TIEU_DOI_TRUONG, BossID.TDST,
+                 BossID.FIDE, BossID.COOLER, BossID.ANDROID_19, BossID.DR_KORE,
+                 BossID.ANDROID_13, BossID.ANDROID_14, BossID.ANDROID_15,
+                 BossID.PIC, BossID.POC, BossID.KING_KONG,
+                 BossID.XEN_BO_HUNG, BossID.SIEU_BO_HUNG,
+                 BossID.XEN_CON_1, BossID.XEN_CON_2, BossID.XEN_CON_3, BossID.XEN_CON_4, BossID.XEN_CON_5, BossID.XEN_CON_6, BossID.XEN_CON_7,
+                 BossID.BLACK_GOKU, BossID.CUMBER, BossID.GOLDEN_FRIEZA,
+                 BossID.DEATH_BEAM_1, BossID.DEATH_BEAM_2, BossID.DEATH_BEAM_3, BossID.DEATH_BEAM_4, BossID.DEATH_BEAM_5,
+                 BossID.HIT, BossID.CHILL_1, BossID.CHILL_2, BossID.HATCHIYACK, BossID.DR_LYCHEE,
+                 BossID.DRABURA, BossID.BUI_BUI, BossID.YA_CON, BossID.MABU_12H, BossID.DRABURA_2, BossID.BUI_BUI_2, BossID.GOKU, BossID.CADIC, BossID.DRABURA_3,
+                 BossID.MABU, BossID.SUPERBU, BossID.BABY, BossID.CADIC_M:
+                return true;
+            default:
+                break;
+        }
+        if (this.zone != null && this.zone.map != null) {
+            int mapId = this.zone.map.mapId;
+            if (MapService.gI().isMapTuongLai(mapId) || MapService.gI().isMapCold(mapId)
+                    || MapService.gI().isMapNgucTu(mapId) || MapService.gI().isMapMaBu(mapId)
+                    || MapService.gI().isMapMabu2H(mapId) || MapService.gI().isMapCadic(mapId)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean isBossFromFutureOnwards() {
+        switch ((int) this.id) {
+            case BossID.BLACK_GOKU, BossID.CUMBER, BossID.COOLER,
+                 BossID.XEN_BO_HUNG, BossID.SIEU_BO_HUNG,
+                 BossID.XEN_CON_1, BossID.XEN_CON_2, BossID.XEN_CON_3, BossID.XEN_CON_4, BossID.XEN_CON_5, BossID.XEN_CON_6, BossID.XEN_CON_7,
+                 BossID.ANDROID_19, BossID.DR_KORE, BossID.ANDROID_13, BossID.ANDROID_14, BossID.ANDROID_15,
+                 BossID.PIC, BossID.POC, BossID.KING_KONG,
+                 BossID.GOLDEN_FRIEZA, BossID.HIT, BossID.CHILL_1, BossID.CHILL_2,
+                 BossID.MABU_12H, BossID.MABU, BossID.SUPERBU, BossID.BABY, BossID.CADIC_M:
+                return true;
+            default:
+                break;
+        }
+        if (this.zone != null && this.zone.map != null) {
+            int mapId = this.zone.map.mapId;
+            if (MapService.gI().isMapTuongLai(mapId) || MapService.gI().isMapCold(mapId)
+                    || MapService.gI().isMapNgucTu(mapId) || MapService.gI().isMapMaBu(mapId)
+                    || MapService.gI().isMapMabu2H(mapId) || MapService.gI().isMapCadic(mapId)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    protected void dropExtraBossReward(Player plKill) {
+        if (plKill == null || this.zone == null || this.zone.map == null) {
+            return;
+        }
+        Player plOwner = plKill.isPet ? ((Pet) plKill).master : plKill;
+        if (plOwner == null) {
+            plOwner = plKill;
+        }
+        int x = this.location.x;
+        int y = this.zone.map.yPhysicInTop(x, this.location.y - 24);
+
+        // 1. Boss từ Tiểu Đội Sát Thủ ở map Nappa trở đi: rớt trang bị giá trị trong shop + Ngọc Rồng 3 -> 1 sao tỷ lệ giảm dần
+        if (isBossFromTDSTNappaOnwards()) {
+            // Cơ hội rớt trang bị giá trị trong shop (cấp 9 - 12)
+            if (Util.isTrue(35, 100)) {
+                int group = Util.nextInt(1, 100) <= 70 ? 0 : 1;
+                int[][] shopHighValueDrops = {
+                    {230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 266, 267, 268, 269, 270, 271, 272, 273, 274, 275, 276, 277},
+                    {254, 255, 256, 257, 258, 259, 260, 261, 262, 263, 264, 265, 278, 279, 280, 281}
+                };
+                int dropItemId = shopHighValueDrops[group][Util.nextInt(0, shopHighValueDrops[group].length - 1)];
+                ItemMap shopItemMap = new ItemMap(this.zone, dropItemId, 1, x + Util.nextInt(-15, 15), y, plOwner.id);
+                List<Item.ItemOption> shopOps = ItemService.gI().getListOptionItemShop((short) dropItemId);
+                shopOps.forEach(option -> option.param = (int) (option.param * Util.nextInt(100, 115) / 100.0));
+                shopItemMap.options.addAll(shopOps);
+                int randStar = Util.nextInt(1, 100);
+                int stars = randStar <= 75 ? Util.nextInt(1, 3) : (randStar <= 95 ? Util.nextInt(4, 5) : 6);
+                shopItemMap.options.add(new Item.ItemOption(107, stars));
+                Service.gI().dropItemMap(this.zone, shopItemMap);
+            }
+
+            // Ngọc Rồng 3 sao -> 2 sao -> 1 sao tỷ lệ giảm dần (3 sao: 25%, 2 sao: 12%, 1 sao: 5%)
+            int rdNro = Util.nextInt(1, 100);
+            int nroId = -1;
+            if (rdNro <= 5) {
+                nroId = 14; // Ngọc rồng 1 sao (5%)
+            } else if (rdNro <= 17) {
+                nroId = 15; // Ngọc rồng 2 sao (12%)
+            } else if (rdNro <= 42) {
+                nroId = 16; // Ngọc rồng 3 sao (25%)
+            }
+            if (nroId != -1) {
+                ItemMap nroMap = new ItemMap(this.zone, nroId, 1, x + Util.nextInt(-20, 20), y, plOwner.id);
+                Service.gI().dropItemMap(this.zone, nroMap);
+            }
+        }
+
+        // 2. Các Boss ở Tương Lai trở đi: có tỷ lệ rớt Đồ Thần Linh, tỷ lệ tăng dần theo máu của Boss
+        if (isBossFromFutureOnwards()) {
+            long hpBoss = Math.max(1L, (long) this.nPoint.hpMax);
+            // Tỷ lệ tính trên thang 1000: cơ bản 20/1000 (2%), cộng thêm 1% mỗi 100tr HP, tối đa 250/1000 (25%)
+            int ratePer1000 = (int) Math.min(250L, 20L + (hpBoss / 10_000_000L));
+            if (Util.isTrue(ratePer1000, 1000)) {
+                ItemMap godItem = ItemService.gI().randDoTLBoss(this.zone, 1, x + Util.nextInt(-10, 10), y, plOwner.id);
+                if (godItem != null) {
+                    Service.gI().dropItemMap(this.zone, godItem);
+                }
+            }
         }
     }
 

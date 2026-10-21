@@ -791,9 +791,23 @@ public class NPoint {
             hpMax += (hpMax * 80L / 100L);
         }
 
-        if (this.player.setClothes.cadicM >= 2) {
-            hpMax += (hpMax * 20L / 100L);
+        // Set Chiến Binh Nail (Namếc: tăng HP, phòng thủ)
+        if (this.player.setClothes.nail == 5) {
+            hpMax += (hpMax * 100L / 100L);
+        } else if (this.player.setClothes.nail >= 2) {
+            hpMax += (hpMax * 30L / 100L);
+        }
 
+        // Set Thần Vũ Trụ Kaio (Trái Đất: tăng sức đánh, sinh tồn)
+        if (this.player.setClothes.thanVuTruKaio == 5) {
+            hpMax += (hpMax * 50L / 100L);
+        }
+
+        // Set Cadic M (Xayda: tăng sức đánh cao)
+        if (this.player.setClothes.cadicM == 5) {
+            hpMax += (hpMax * 50L / 100L);
+        } else if (this.player.setClothes.cadicM >= 2) {
+            hpMax += (hpMax * 20L / 100L);
         }
         // Xử lý set worldcup
         if (this.player.setClothes.worldcup == 2) {
@@ -1104,6 +1118,17 @@ public class NPoint {
 
         if (this.player.setClothes.nail >= 2) {
             this.tlDameCrit.add(10);
+            this.tlSDCM += 10;
+        }
+        if (this.player.setClothes.thanVuTruKaio == 5) {
+            dame += (dame * 50L / 100L);
+        }
+        if (this.player.setClothes.cadicM == 5) {
+            dame += (dame * 100L / 100L);
+            this.tlDameCrit.add(50);
+            this.tlSDCM += 50;
+        } else if (this.player.setClothes.cadicM >= 4) {
+            dame += (dame * 40L / 100L);
         }
         // Xử lý thức ăn 2
         if (this.player.itemTime != null && this.player.itemTime.isEatMeal2 && this.player.itemTime.iconMeal2 == 8061) {
@@ -1220,6 +1245,12 @@ public class NPoint {
         if (this.player.itemTime != null && this.player.itemTime.isUseNuocMia3) {
             this.def += this.def * 10 / 100;
         }
+        if (this.player.setClothes.nail == 5) {
+            this.def += this.def * 100 / 100;
+        }
+        if (this.player.setClothes.thanVuTruKaio == 5) {
+            this.def += this.def * 50 / 100;
+        }
     }
 
     private void setCrit() {
@@ -1234,8 +1265,8 @@ public class NPoint {
             this.crit += 10;
         }
 
-        if (player.setClothes.thanVuTruKaio >= 1) {
-            this.crit += 10 / 100;
+        if (player.setClothes.thanVuTruKaio >= 2) {
+            this.crit += 20;
         }
     }
 
@@ -1393,9 +1424,9 @@ public class NPoint {
             case Skill.TU_SAT:
                 percentDameSkill = skillSelect.damage;
                 if (this.player.setClothes.cadicM == 4) {
-                    percentXDame = 20;
-                } else if (this.player.setClothes.cadicM == 5) {
                     percentXDame = 50;
+                } else if (this.player.setClothes.cadicM == 5) {
+                    percentXDame = 100;
                 }
                 break;
             case Skill.DEMON:
@@ -1409,7 +1440,7 @@ public class NPoint {
                     percentXDame += intrinsic.param1;
                 }
                 if (this.player.setClothes.nail == 5) {
-                    percentXDame += 80;
+                    percentXDame += 100;
                 }
 
                 percentDameSkill = skillSelect.damage + percentXDame;
@@ -1427,7 +1458,7 @@ public class NPoint {
             case Skill.KAIOKEN:
                 percentDameSkill = skillSelect.damage;
                 if (player.setClothes.thanVuTruKaio == 5) {
-                    percentXDame = 30;
+                    percentXDame = 100;
                 }
                 break;
             case Skill.DICH_CHUYEN_TUC_THOI:
@@ -1559,6 +1590,13 @@ public class NPoint {
         if (this.hp <= 0) {
             this.hp = 0;
             this.setHp(0);
+        } else if (this.player != null && this.player.isBoss && this.player instanceof nro.models.boss.Boss boss && this.hpMax > 0) {
+            if (this.hp < this.hpMax / 2) {
+                boss.droppedBelow50Hp = true;
+            }
+            if (!boss.usedTTNL && this.hp > 0 && this.hp < (this.hpMax * 30L / 100L)) {
+                boss.startBossTTNL();
+            }
         }
     }
 
@@ -1647,6 +1685,9 @@ public class NPoint {
                 }
             }
             tiemNang *= Manager.RATE_EXP_SERVER;
+            if (TimeUtil.isWeekend()) {
+                tiemNang *= 2;
+            }
             tiemNang = calSubTNSM(tiemNang);
             if (tiemNang <= 0) {
                 tiemNang = 1;
@@ -1687,6 +1728,14 @@ public class NPoint {
     public int subDameInjureWithDeff(long dame) {
         long def = this.def;
         dame -= def;
+        if (this.player != null && this.player.setClothes != null) {
+            if (this.player.setClothes.nail == 5) {
+                dame -= dame * 30 / 100;
+            }
+            if (this.player.setClothes.thanVuTruKaio == 5) {
+                dame -= dame * 20 / 100;
+            }
+        }
         if (dame < 0) {
             dame = 1;
         }

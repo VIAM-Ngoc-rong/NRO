@@ -15,10 +15,9 @@ import java.util.List;
 public class RewardService {
 
     private static final int[][][] ACTIVATION_SET = {
-        {{129, 141, 1, 1000}, {127, 139, 1, 1000}, {128, 140, 1, 1000}}, // songoku - thien xin hang - kirin
-        {{131, 143, 1, 1000}, {132, 144, 1, 1000}, {130, 142, 1, 1000}}, // oc tieu - pikkoro daimao -
-        // picolo
-        {{135, 138, 1, 1000}, {133, 136, 1, 1000}, {134, 137, 1, 1000}} // kakarot - cadic - nappa
+        {{129, 141, 1, 1000}, {127, 139, 1, 1000}, {128, 140, 1, 1000}, {245, 246, 247, 248}}, // songoku - thien xin hang - kirin - than vu tru kaio
+        {{131, 143, 1, 1000}, {132, 144, 1, 1000}, {130, 142, 1, 1000}, {237, 238, 239, 240}}, // oc tieu - pikkoro daimao - picolo - chien binh nail
+        {{135, 138, 1, 1000}, {133, 136, 1, 1000}, {134, 137, 1, 1000}, {241, 242, 243, 244}} // kakarot - cadic - nappa - cadic M
     };
     private static RewardService I;
 
@@ -1671,9 +1670,15 @@ public class RewardService {
 
     public void initActivationOption(int gender, int type, List<ItemOption> list) {
         if (type <= 4) {
-            int[] idOption = ACTIVATION_SET[gender][Util.nextInt(0, 2)];
-            list.add(new ItemOption(idOption[0], 1)); // tên set
-            list.add(new ItemOption(idOption[1], 1)); // hiệu ứng set
+            int[] idOption = ACTIVATION_SET[gender][Util.nextInt(0, ACTIVATION_SET[gender].length - 1)];
+            if (idOption.length == 4 && idOption[0] >= 237) {
+                for (int opId : idOption) {
+                    list.add(new ItemOption(opId, 1));
+                }
+            } else {
+                list.add(new ItemOption(idOption[0], 1)); // tên set
+                list.add(new ItemOption(idOption[1], 1)); // hiệu ứng set
+            }
             list.add(new ItemOption(30, 7)); // không thể giao dịch
         }
     }

@@ -654,24 +654,24 @@ public class Mob {
         }
 
         //======================== Vàng Ngọc ========================
+        int weekendGoldMul = TimeUtil.isWeekend() ? 2 : 1;
         if (MapService.gI().isMap3Planets(mapid)) {
-            if (Util.isTrue(1, 20)) {
-                int vang = Util.nextInt(500, 3000);
-                if (vang < 1000) {
+            if (Util.isTrue(50, 100)) {
+                int vang = Util.nextInt(3000, 12000) * weekendGoldMul;
+                if (vang < 5000) {
                     list.add(new ItemMap(zone, 76, vang, x, yEnd, player.id));
-                } else if (vang < 2000) {
+                } else if (vang < 10000) {
                     list.add(new ItemMap(zone, 188, vang, x, yEnd, player.id));
                 } else {
                     list.add(new ItemMap(zone, 189, vang, x, yEnd, player.id));
                 }
             }
-        }
-        if (MapService.gI().isMapNappa(mapid)) {
-            if (Util.isTrue(1, 100)) {
-                int vang = Util.nextInt(2000, 6000);
-                if (vang < 3000) {
+        } else if (MapService.gI().isMapNappa(mapid)) {
+            if (Util.isTrue(50, 100)) {
+                int vang = Util.nextInt(15000, 50000) * weekendGoldMul;
+                if (vang < 20000) {
                     list.add(new ItemMap(zone, 188, vang, x, yEnd, player.id));
-                } else if (vang < 5000) {
+                } else if (vang < 35000) {
                     list.add(new ItemMap(zone, 189, vang, x, yEnd, player.id));
                 } else {
                     list.add(new ItemMap(zone, 190, vang, x, yEnd, player.id));
@@ -700,8 +700,8 @@ public class Mob {
         }
 
         if (MapService.gI().isMapCold(mapid)) {
-            if (Util.isTrue(30, 100)) {
-                int vang = Util.nextInt(150000, 250000);
+            if (Util.isTrue(65, 100)) {
+                int vang = Util.nextInt(150000, 350000) * weekendGoldMul;
                 if (vang < 10000) {
                     list.add(new ItemMap(zone, 189, vang, x, yEnd, player.id)); // Rơi vàng cấp 189
                 } else if (vang < 14000) {
@@ -710,10 +710,9 @@ public class Mob {
                     list.add(new ItemMap(zone, 190, vang, x, yEnd, player.id)); // Rơi vàng cấp 190
                 }
             }
-        }
-        if (MapService.gI().isMapTuongLai(mapid)) {
-            if (Util.isTrue(15, 100)) {
-                int vang = Util.nextInt(80000, 150000);
+        } else if (MapService.gI().isMapTuongLai(mapid)) {
+            if (Util.isTrue(55, 100)) {
+                int vang = Util.nextInt(80000, 200000) * weekendGoldMul;
                 if (vang < 6000) {
                     list.add(new ItemMap(zone, 188, vang, x, yEnd, player.id));
                 } else if (vang < 10000) {
@@ -722,10 +721,9 @@ public class Mob {
                     list.add(new ItemMap(zone, 190, vang, x, yEnd, player.id));
                 }
             }
-        }
-        if (MapService.gI().isMapPhoBan(mapid)) {
-            if (Util.isTrue(1, 100)) {
-                int vang = Util.nextInt(80000, 200000);
+        } else if (MapService.gI().isMapPhoBan(mapid)) {
+            if (Util.isTrue(55, 100)) {
+                int vang = Util.nextInt(80000, 250000) * weekendGoldMul;
                 if (player.itemTime.isUseCoBonLa) {
                     vang = (int) (vang * 1.15);
                 }
@@ -736,6 +734,11 @@ public class Mob {
                 } else {
                     list.add(new ItemMap(zone, 190, vang, x, yEnd, player.id));
                 }
+            }
+        } else if (!MapService.gI().isMap3Planets(mapid) && !MapService.gI().isMapNappa(mapid)) {
+            if (Util.isTrue(50, 100)) {
+                int vang = Util.nextInt(50000, 150000) * weekendGoldMul;
+                list.add(new ItemMap(zone, 190, vang, x, yEnd, player.id));
             }
         }
         if (Util.isTrue(1, 1000000)) {
@@ -827,7 +830,7 @@ public class Mob {
         }
         if (MapService.gI().isMapUpSKH(mapid)) {
             Player plOwner = player.isPet ? ((Pet) player).master : player;
-            int baseTileDrop = 500; // 500 / 10000 = 5%
+            int baseTileDrop = 200; // 200 / 10000 = 2%
             double tileDrop = baseTileDrop;
 
             int totalOption236Param = 0;

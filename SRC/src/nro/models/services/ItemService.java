@@ -332,19 +332,7 @@ public class ItemService {
             gender = 2;
         }
         int[][] options = {{128, 129, 127, 233, 245}, {130, 131, 132, 233, 237}, {133, 135, 134, 233, 241}};
-        int skhv1 = 25;
-        int skhv2 = 35;
-        int skhc = 40;
-        int skhId = -1;
-        int rd = Util.nextInt(1, 100);
-        if (rd <= skhv1) {
-            skhId = 0;
-        } else if (rd <= skhv1 + skhv2) {
-            skhId = 1;
-        } else if (rd <= skhv1 + skhv2 + skhc) {
-            skhId = 2;
-        }
-        return options[gender][skhId];
+        return options[gender][Util.nextInt(0, options[gender].length - 1)];
     }
 
     public Item createItemFromItemMap(ItemMap itemMap) {

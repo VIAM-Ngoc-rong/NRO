@@ -266,4 +266,9 @@ public class TimeUtil {
         return LocalTime.now().getSecond();
     }
 
+    public static boolean isWeekend() {
+        int day = getCurrDay();
+        return day == 6 || day == 7; // Thứ 7 (6) hoặc Chủ Nhật (7)
+    }
+
 }
