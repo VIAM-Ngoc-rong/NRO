@@ -928,24 +928,37 @@ public class Mob {
             }
         }
 
-        //========================Đá Nâng Cấp & Đá Vụn========================
+        //========================Đá Nâng Cấp (220-224) & Đá Vụn (225)========================
+        int daNangCapRate = 0;
         if (MapService.gI().isMapCold(mapid)) {
-            if (Util.isTrue(10, 100)) {
-                int rand = Util.nextInt(0, 4);
-                ItemMap it = new ItemMap(zone, 220 + rand, 1, x, yEnd, player.id);
-                it.options.add(new Item.ItemOption(71 - rand, 0));
-                candidateItems.add(it);
-            }
+            daNangCapRate = 30;
+        } else if (MapService.gI().isMapTuongLai(mapid) || MapService.gI().isMapPhoBan(mapid)) {
+            daNangCapRate = 25;
+        } else if (MapService.gI().isMapNappa(mapid)) {
+            daNangCapRate = 20;
+        } else if (MapService.gI().isMap3Planets(mapid)) {
+            daNangCapRate = 15;
+        } else if (this.zone.map.mapId >= 0) {
+            daNangCapRate = 15;
+        }
+        if (daNangCapRate > 0 && player.itemTime != null && player.itemTime.isUseCoBonLa) {
+            daNangCapRate += 5;
+        }
+        if (daNangCapRate > 0 && Util.isTrue(daNangCapRate, 100)) {
+            int rand = Util.nextInt(0, 4);
+            ItemMap it = new ItemMap(zone, 220 + rand, 1, x, yEnd, plOwner.id);
+            it.options.add(new Item.ItemOption(71 - rand, 0));
+            candidateItems.add(it);
         }
 
-        if (MapService.gI().isMapDoanhTrai(mapid) && (Util.isTrue(10, 100))) {
-            ItemMap it = new ItemMap(zone, 225, 1, x, yEnd, player.id);
+        if (MapService.gI().isMapDoanhTrai(mapid) && (Util.isTrue(15, 100))) {
+            ItemMap it = new ItemMap(zone, 225, 1, x, yEnd, plOwner.id);
             it.options.add(new Item.ItemOption(74, 0));
             candidateItems.add(it);
         }
 
-        if (MapService.gI().isMap3Planets(mapid) && (Util.isTrue(5, 100))) {
-            ItemMap it = new ItemMap(zone, 225, 1, x, yEnd, player.id);
+        if (MapService.gI().isMap3Planets(mapid) && (Util.isTrue(8, 100))) {
+            ItemMap it = new ItemMap(zone, 225, 1, x, yEnd, plOwner.id);
             it.options.add(new Item.ItemOption(74, 0));
             candidateItems.add(it);
         }
