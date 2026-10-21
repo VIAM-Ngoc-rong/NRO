@@ -113,7 +113,6 @@ public class ServerManager {
             new Thread(The23rdMartialArtCongressManager.gI(), "Update DHVT23").start();
             new Thread(DeathOrAliveArenaManager.gI(), "Update Võ Đài Sinh Tử").start();
             new Thread(WorldMartialArtsTournamentManager.gI(), "Update WMAT").start();
-            new Thread(AutoMaintenance.gI(), "Update Bảo Trì Tự Động").start();
             AutoMaintenance.AutoMaintenance = true;
             AutoMaintenance.gI().start();
             new Thread(ShenronEventManager.gI(), "Update Shenron").start();
@@ -290,7 +289,14 @@ public class ServerManager {
         Logger.success("SUCCESSFULLY MAINTENANCE!\n");
 
         try {
-            Runtime.getRuntime().exec("cmd /c start restart_server.bat");
+            String os = System.getProperty("os.name").toLowerCase();
+            if (os.contains("win")) {
+                Runtime.getRuntime().exec("cmd /c start restart_server.bat");
+            } else {
+                new ProcessBuilder("/bin/bash", "-c", "sleep 2 && nohup ./run.sh > server.log 2>&1 &")
+                        .directory(new java.io.File("."))
+                        .start();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -299,7 +305,7 @@ public class ServerManager {
 
     private static void activeCommandLine() {
         Scanner sc = new Scanner(System.in);
-        while (true) {
+        while (sc.hasNextLine()) {
             String line = sc.nextLine();
             switch (line) {
                 case "bt":
