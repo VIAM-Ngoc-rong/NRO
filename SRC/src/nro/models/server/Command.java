@@ -287,7 +287,7 @@ parameterizedCommands.put("upp", (player, text) -> {
             }
             case "boss", "dsboss", "sanboss" -> {
                 ServerNotify.gI().sendActiveBossesToPlayer(player);
-                BossManager.gI().showListBoss(player);
+                nro.models.boss.Boss_Manager.BossManager.gI().showListBoss(player);
                 return true;
             }
         }
