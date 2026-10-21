@@ -190,7 +190,8 @@ public class LocalManager {
         config.addDataSourceProperty("cachePrepStmts", "true");
         config.addDataSourceProperty("prepStmtCacheSize", "250");
         config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
-        config.addDataSourceProperty("useServerPrepStmts", "true");
+        config.addDataSourceProperty("useServerPrepStmts", "false");
+        config.addDataSourceProperty("autoReconnect", "true");
         return config;
     }
 }
