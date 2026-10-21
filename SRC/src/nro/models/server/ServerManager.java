@@ -63,6 +63,7 @@ public class ServerManager {
     public static int EVENT_SEVER = 0;
     private static ServerManager instance;
     public static boolean isRunning;
+    private static volatile boolean isSavedOnClose = false;
     private ScheduledExecutorService topUpdater;
 
     public void init() {
@@ -105,6 +106,7 @@ public class ServerManager {
     public void run() {
         try {
             isRunning = true;
+            Runtime.getRuntime().addShutdownHook(new Thread(this::saveAllDataOnShutdown, "ShutdownSaveHook"));
             activeServerSocket();
 
             // Gửi các nhiệm vụ cập nhật theo từng dịch vụ
@@ -273,7 +275,11 @@ public class ServerManager {
         }
     }
 
-    public void close() {
+    public synchronized void saveAllDataOnShutdown() {
+        if (isSavedOnClose) {
+            return;
+        }
+        isSavedOnClose = true;
         isRunning = false;
         try {
             ClanService.gI().close();
@@ -285,7 +291,16 @@ public class ServerManager {
         } catch (Exception e) {
             Logger.error("Lỗi save shop ký gửi!\n");
         }
-        Client.gI().close();
+        try {
+            Client.gI().close();
+        } catch (Exception e) {
+            Logger.error("Lỗi save player!\n");
+        }
+        Logger.success("SUCCESSFULLY SAVED ALL DATA!\n");
+    }
+
+    public void close() {
+        saveAllDataOnShutdown();
         Logger.success("SUCCESSFULLY MAINTENANCE!\n");
 
         try {

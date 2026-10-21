@@ -156,6 +156,8 @@ public class Client implements Runnable {
         Logger.success("SUCCESSFUL\n");
     }
 
+    private long lastTimeAutoSave = System.currentTimeMillis();
+
     private void update() {
         for (int i = SessionManager.gI().getSessions().size() - 1; i >= 0; i--) {
             ISession s = SessionManager.gI().getSessions().get(i);
@@ -168,6 +170,18 @@ public class Client implements Runnable {
                 session.timeWait--;
                 if (session.timeWait == 0) {
                     kickSession(session);
+                }
+            }
+        }
+        if (System.currentTimeMillis() - lastTimeAutoSave >= 180000L) {
+            lastTimeAutoSave = System.currentTimeMillis();
+            for (int i = players.size() - 1; i >= 0; i--) {
+                try {
+                    Player pl = players.get(i);
+                    if (pl != null && !pl.isPet && !pl.isNewPet && !pl.isBoss) {
+                        PlayerDAO.updatePlayer(pl);
+                    }
+                } catch (Exception ignored) {
                 }
             }
         }
