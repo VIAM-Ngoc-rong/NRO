@@ -107,7 +107,7 @@ public class Karin extends Npc {
                                 case 1 ->
                                     this.npcChat(player, "...");
                                 case 2 ->
-                                    this.createOtherMenu(player, 2002, "Con có chắc muốn tập luyện ?\nTập luyện với ta sẽ tăng 20 sức mỗi phút",
+                                    this.createOtherMenu(player, 2002, "Con có chắc muốn tập luyện ?\nTập luyện với ta sẽ tăng 20 sức mạnh mỗi phút",
                                             "Đồng ý\nluyện tập", "Không\nđồng ý");
                                 case 3 ->
                                     this.createOtherMenu(player, 2003, "Con có chắc muốn thách đấu ?\nNếu thắng ta sẽ được tập luyện với Yajirô, tăng 40 sức mạnh mỗi phút",
@@ -127,7 +127,7 @@ public class Karin extends Npc {
                                             "Hướng\ndẫn\nthêm", "Đồng ý\n1 ngọc\nmỗi lần", "Không\nđồng ý");
                                 }
                                 case 1 ->
-                                    this.createOtherMenu(player, 2002, "Con có chắc muốn tập luyện ?\nTập luyện với Yajirô sẽ tăng 40 sức mỗi phút",
+                                    this.createOtherMenu(player, 2002, "Con có chắc muốn tập luyện ?\nTập luyện với Yajirô sẽ tăng 40 sức mạnh mỗi phút",
                                             "Đồng ý\nluyện tập", "Không\nđồng ý");
                                 case 2 ->
                                     this.createOtherMenu(player, 2003, "Con có chắc muốn thách đấu ?\nNếu thắng được Yajirô, con sẽ được học võ với người mạnh hơn để tăng đến 80 sức mạnh mỗi phút",
@@ -147,10 +147,10 @@ public class Karin extends Npc {
                                             "Hướng\ndẫn\nthêm", "Đồng ý\n1 ngọc\nmỗi lần", "Không\nđồng ý");
                                 }
                                 case 1 ->
-                                    this.createOtherMenu(player, 2002, "Con có chắc muốn tập luyện ?\nTập luyện với ta sẽ tăng 20 sức mỗi phút",
+                                    this.createOtherMenu(player, 2002, "Con có chắc muốn tập luyện ?\nTập luyện với ta sẽ tăng 20 sức mạnh mỗi phút",
                                             "Đồng ý\nluyện tập", "Không\nđồng ý");
                                 case 2 ->
-                                    this.createOtherMenu(player, 2003, "Con có chắc muốn tập luyện ?\nTập luyện với Yajirô sẽ tăng 40 sức mỗi phút",
+                                    this.createOtherMenu(player, 2003, "Con có chắc muốn tập luyện ?\nTập luyện với Yajirô sẽ tăng 40 sức mạnh mỗi phút",
                                             "Đồng ý\nluyện tập", "Không\nđồng ý");
                             }
                         }

@@ -33,7 +33,7 @@ public class ThanVuTru extends Npc {
                                 player.dangKyTapTuDong ? "Hủy đăng\nký tập\ntự động" : "Đăng ký\ntập\ntự động", "Tập luyện\nvới\nThần Vũ Trụ", "Thách đấu\nThần Vũ Trụ", "Di chuyển");
                     default ->
                         this.createOtherMenu(player, ConstNpc.BASE_MENU,
-                                "Con mạnh nhất phía bắc vũ trụ này rồi đấy\nnhưng ngoài vũ trụ bao la kia vẫn có những kẻ mạnh hơn nhìu\ncon cần phải tập luyện để mạnh hơn nữa",
+                                "Con mạnh nhất phía bắc vũ trụ này rồi đấy\nnhưng ngoài vũ trụ bao la kia vẫn có những kẻ mạnh hơn nhiều\ncon cần phải tập luyện để mạnh hơn nữa",
                                 player.dangKyTapTuDong ? "Hủy đăng\nký tập\ntự động" : "Đăng ký\ntập\ntự động", "Tập luyện\nvới\nBubbles", "Tập luyện\nvới\nThần Vũ Trụ", "Di chuyển");
                 }
             }

@@ -5,20 +5,20 @@ public class ConstNpc {
     public static final String CALICK_KE_CHUYEN = "20 năm trước bọn Android sát thủ đã đánh bại nhóm bảo vệ trái đất của Sôngoku và Cađíc, Pôcôlô ...\n"
             + "Riêng Sôngoku vì bệnh tim nên đã chết trước đó nên không thể tham gia trận đánh...\n"
             + "Từ đó đến nay bọn chúng tàn phá Trái Đất không hề thương tiếc\n"
-            + "Cháu và mẹ may mắn sống sót nhờ lẩn trốn tại tần hầm của công ty Capsule...\n"
+            + "Cháu và mẹ may mắn sống sót nhờ lẩn trốn tại tầng hầm của công ty Capsule...\n"
             + "Cháu tuy cũng là siêu xayda nhưng cũng không thể làm gì được bọn Android sát thủ...\n"
             + "Chỉ có Sôngoku mới có thể đánh bại bọn chúng\n"
             + "mẹ cháu đã chế tạo thành công cỗ máy thời gian\n"
             + "và cháu quay về quá khứ để cứu Sôngoku...\n"
             + "Bệnh của Gôku ở quá khứ là nan y, nhưng với trình độ y học tương lai chỉ cần uống thuốc là khỏi...\n"
-            + "Hãy đi theo cháu đến tương lai giúp nhóm của Gôku đánh bạn bọn Android sát thủ\n"
+            + "Hãy đi theo cháu đến tương lai giúp nhóm của Gôku đánh bại bọn Android sát thủ\n"
             + "Khi nào chú cần sự giúp đỡ của cháu hãy đến đây nhé";
 
-    public static final String HUONG_DAN_DOANH_TRAI = "1) Trại độc nhãn là nơi các ngươi không nên vào vì những tướng tá rất mạnh. Hahaha\b"
+    public static final String HUONG_DAN_DOANH_TRAI = "1) Trại độc nhãn là nơi các ngươi không nên vào vì những tướng tá rất mạnh. Hahaha\n"
             + "2) Trong trại độc nhãn, mỗi vị tướng đều giữ ngọc rồng từ 4 sao đến 6 sao, tùy lúc\n"
-            + "3) Nếu ngươi thích chết thì cứ việc vào. Nhưng ta chỉ cho vào mỗi ngày một lần thôi, để ngươi khỏi phải chết nhiều, hahaha.\b"
+            + "3) Nếu ngươi thích chết thì cứ việc vào. Nhưng ta chỉ cho vào mỗi ngày một lần thôi, để ngươi khỏi phải chết nhiều, hahaha.\n"
             + "4) Các vị tướng trong trại rất mạnh nhé, các ngươi không đơn giản có thể đánh bại họ bằng cách bình thường như đánh quái được đâu\n"
-            + "5) Muốn vào, ngươi phải đi cùng một người đồng đội cùng bang (phải đứng gần ngươi). Nhưng ta khuyên là nên đi 3-4 người cùng.\b"
+            + "5) Muốn vào, ngươi phải đi cùng một người đồng đội cùng bang (phải đứng gần ngươi). Nhưng ta khuyên là nên đi 3-4 người cùng.\n"
             + "6) Mỗi lần vào, ngươi chỉ có 30 phút để đánh. Sau 30 phút mà ngươi vẫn không thắng, ta sẽ cho máy bay chở ngươi về nhà.";
 
     public static final String HUONG_DAN_BLACK_BALL_WAR = "Mỗi ngày từ 20h đến 21h các hành tinh có Ngọc Rồng Sao Đen sẽ xảy ra 1 cuộc đại chiến\n"
@@ -26,49 +26,49 @@ public class ConstNpc {
             + "Lưu ý mỗi bang có thể chiếm hữu nhiều viên khác nhau nhưng nếu cùng loại cũng chỉ nhận được 1 lần phần thưởng đó. Có 2 cách để thắng:\n"
             + "1) Giữ ngọc sao đen trên người hơn 5 phút liên tục\n"
             + "2) Sau 30 phút tham gia tàu sẽ đón về và đang giữ ngọc sao đen trên người\n"
-            + "Các phần thưởng như sau\b1 sao đen: +21% sức đánh\b2 sao đen: +35% HP\b"
-            + "3 sao đen: Biến 35% tấn công thành HP\b4 sao đen: Phản 35% sát thương\b"
-            + "5 sao đen: 35% Sức đánh chí mạng\b6 sao đen: KI+40%\b7 sao đen: 14% Né đòn";
-    public static final String HUONG_DAN_MAP_MA_BU = "Tại khu vực này, ta đã dùng ma pháp phong ấn\b"
-            + "dù các ngươi có mạnh đến đâu\bcũng sẽ trở thành yếu đuối như nhau\n"
-            + "Chỉ có ta với con nhóc Ôsin mới giải được ma pháp này\b"
-            + "Khi đó sức mạnh của ngươi sẽ được\bgiải phóng theo điểm tích lũy (TL)\n"
-            + "Khi đủ điểm tích lũy bằng cách\bhạ lẫn nhau hoặc hạ boss\b"
+            + "Các phần thưởng như sau\n1 sao đen: +21% sức đánh\n2 sao đen: +35% HP\n"
+            + "3 sao đen: Biến 35% tấn công thành HP\n4 sao đen: Phản 35% sát thương\n"
+            + "5 sao đen: 35% Sức đánh chí mạng\n6 sao đen: KI+40%\n7 sao đen: 14% Né đòn";
+    public static final String HUONG_DAN_MAP_MA_BU = "Tại khu vực này, ta đã dùng ma pháp phong ấn\n"
+            + "dù các ngươi có mạnh đến đâu\ncũng sẽ trở thành yếu đuối như nhau\n"
+            + "Chỉ có ta với con nhóc Ôsin mới giải được ma pháp này\n"
+            + "Khi đó sức mạnh của ngươi sẽ được\ngiải phóng theo điểm tích lũy (TL)\n"
+            + "Khi đủ điểm tích lũy bằng cách\nhạ lẫn nhau hoặc hạ boss\n"
             + "ta sẽ đưa ngươi xuống tầng tiếp theo";
-    public static final String NPC_DHVT23 = "Đại hội quy tụ nhiều cao thủ như là Jacky Chun, Thiên Xin Hăng, Tàu Bảy Bảy... Phần thường là 1 rương gỗ chưa nhiều vật phẩm giá trị.\bKhi hạ được 1 đối thủ, phần thưởng sẽ nâng lên 1 cấp.\bRương càng cao cấp, vật phẩm trong đó càng giá trị hơn.\n"
-            + "Mỗi ngày bạn chỉ được nhận 1 phần thưởng.\bBạn hãy cố gắng hết sức mình\bđể nhận phần thưởng xứng đáng nhất nhé";
+    public static final String NPC_DHVT23 = "Đại hội quy tụ nhiều cao thủ như là Jacky Chun, Thiên Xin Hăng, Tàu Bảy Bảy... Phần thưởng là 1 rương gỗ chứa nhiều vật phẩm giá trị.\nKhi hạ được 1 đối thủ, phần thưởng sẽ nâng lên 1 cấp.\nRương càng cao cấp, vật phẩm trong đó càng giá trị hơn.\n"
+            + "Mỗi ngày bạn chỉ được nhận 1 phần thưởng.\nBạn hãy cố gắng hết sức mình\nđể nhận phần thưởng xứng đáng nhất nhé";
 
-    public static final String HUONG_DAN_KHI_GAS_HUY_DIET = "Chúng ta gặp rắc rối rồi\bThượng Đế nói với tôi rằng có 1 loại khí\bgọi là Destron Gas, thứ này không thuộc về nơi đây\n"
-            + "Nó tích tụ trên Trái Đất\bvà nó sẽ hủy diệt mọi mô tế bào sống\bCó tất cả 4 địa điểm mà Thượng Đế bảo tôi nói với cậu\bCậu có thể đến kiểm tra...\n"
+    public static final String HUONG_DAN_KHI_GAS_HUY_DIET = "Chúng ta gặp rắc rối rồi\nThượng Đế nói với tôi rằng có 1 loại khí\ngọi là Destron Gas, thứ này không thuộc về nơi đây\n"
+            + "Nó tích tụ trên Trái Đất\nvà nó sẽ hủy diệt mọi mô tế bào sống\nCó tất cả 4 địa điểm mà Thượng Đế bảo tôi nói với cậu\nCậu có thể đến kiểm tra...\n"
             + "Đầu tiên là Thành phố Santa tọa lạc ở phía tây nam của thủ đô ở Viễn Đông.\n"
             + "Thứ hai là gần Kim Tự Tháp ở vùng Sa Mạc viễn tây của thủ đô Phía Bắc.\n"
             + "Thứ ba Vùng Đất Băng Giá ở Phương Bắc xa xôi\n"
-            + "Thứ tư là Hành tinh Bóng Tối đang che phủ một phần địa cầu\bCậu đã hiểu rõ chưa?";
+            + "Thứ tư là Hành tinh Bóng Tối đang che phủ một phần địa cầu\nCậu đã hiểu rõ chưa?";
 
-    public static final String HUONG_DAN_BILL = "Đại hội võ thuật liên vũ trụ\blà nơi quy tụ các cao thủ từ khắp các Vũ Trụ\bĐược tổ chức hàng ngày tại các thời điểm như sau:\n"
-            + "Thứ 2: 6h, Thứ 3: 13h, Thứ 4: 15h\bThứ 5: 17h, Thứ 6: 18h, Thứ 7: 12h, Chủ Nhật 10h\bVới các phần thưởng vô cùng hấp dẫn như sau\n"
-            + "Top 10: 1 phiếu giảm giá, 1 capsule Vàng\bTop 1: tặng thêm 1 Rađa cấp 13\bPhần thưởng được trao tại vũ trụ của chiến binh\bĐến gặp Whis tại vũ trụ của ngươi để nhận thưởng";
+    public static final String HUONG_DAN_BILL = "Đại hội võ thuật liên vũ trụ\nlà nơi quy tụ các cao thủ từ khắp các Vũ Trụ\nĐược tổ chức hàng ngày tại các thời điểm như sau:\n"
+            + "Thứ 2: 6h, Thứ 3: 13h, Thứ 4: 15h\nThứ 5: 17h, Thứ 6: 18h, Thứ 7: 12h, Chủ Nhật 10h\nVới các phần thưởng vô cùng hấp dẫn như sau\n"
+            + "Top 10: 1 phiếu giảm giá, 1 capsule Vàng\nTop 1: tặng thêm 1 Rađa cấp 13\nPhần thưởng được trao tại vũ trụ của chiến binh\nĐến gặp Whis tại vũ trụ của ngươi để nhận thưởng";
 
-    public static final String HUONG_DAN_NRNM = "Để gọi được Rồng Thần Namếc, anh cần phải làm các việc sau\b"
-            + "1) Đang có bang hội\b2) Tập họp đủ 7 viên ngọc rồng Namếc tại đây\b3) Em sẽ gọi rồng và anh nào giữ ngọc 1 sao sẽ được chọn điều ước\b"
+    public static final String HUONG_DAN_NRNM = "Để gọi được Rồng Thần Namếc, anh cần phải làm các việc sau\n"
+            + "1) Đang có bang hội\n2) Tập họp đủ 7 viên ngọc rồng Namếc tại đây\n3) Em sẽ gọi rồng và anh nào giữ ngọc 1 sao sẽ được chọn điều ước\n"
             + "4) Thời gian gọi Rồng Thần là 8h-22h\n"
-            + "(Lưu ý) Điều ước sẽ có tác dụng với tất cả thành viên trong bang có mặt tại đây\b"
-            + "Sau khi điều ước được thực hiện, tất cả ngọc sẽ biến thành đá trong 1 ngày\b"
-            + "Những ai vừa nhận điều ước, hoặc bang hội nhận điều ước\b"
+            + "(Lưu ý) Điều ước sẽ có tác dụng với tất cả thành viên trong bang có mặt tại đây\n"
+            + "Sau khi điều ước được thực hiện, tất cả ngọc sẽ biến thành đá trong 1 ngày\n"
+            + "Những ai vừa nhận điều ước, hoặc bang hội nhận điều ước\n"
             + "phải chờ 7 ngày sau mới có thể nhận điều ước khác";
     public static final String TAP_TU_DONG = "Tập luyện vẫn tiếp tục và sức mạnh vẫn tăng khi đã Offline\n"
-            + "Hiệu quả tập luyện như sau:\bThần Mèo: 20 sức mạnh mỗi phút\bYajirô: 40 sức mạnh mỗi phút\bMr.PôPô: 80 sức mạnh mỗi phút\bThượng đế: 160 sức mạnh mỗi phút\n"
-            + "Khỉ Bubbles: 320 sức mạnh mỗi phút\bThần Vũ Trụ: 640 sức mạnh mỗi phút\bTổ sư Kaio: 1280 sức mạnh mỗi phút\n"
+            + "Hiệu quả tập luyện như sau:\nThần Mèo: 20 sức mạnh mỗi phút\nYajirô: 40 sức mạnh mỗi phút\nMr.PôPô: 80 sức mạnh mỗi phút\nThượng đế: 160 sức mạnh mỗi phút\n"
+            + "Khỉ Bubbles: 320 sức mạnh mỗi phút\nThần Vũ Trụ: 640 sức mạnh mỗi phút\nTổ sư Kaio: 1280 sức mạnh mỗi phút\n"
             + "Có thể tặng ngọc để thắng mà không cần thách đấu\n"
             + "Nếu đăng ký tập thường xuyên mỗi khi Offline không cần phải đến đây vẫn tập luyện được";
-    public static final String THONG_TIN_DAI_HOI_VO_THUAT = "Lịch thi đấu trong ngày\bGiải Nhi đồng: 8,14,18h\bGiải Siêu cấp 1: 9,13,19h\bGiải Siêu Cấp 2: 10,15,20h\bGiải Siêu cấp 3: 11,16,21h\bGiải Ngoại hạng: 12,17,22,23h\n"
-            + "Giải thưởng khi thắng mỗi vòng\bGiải Nhi đồng: 2 ngọc\bGiải Siêu cấp 1: 4 ngọc\bGiải Siêu cấp 2: 6 ngọc\bGiải Siêu cấp 3: 8 ngọc\bGiải Ngoại hạng: 10.000 vàng\bVô địch: 5 viên đá nâng cấp\n"
-            + "Lệ phí đăng ký các giải đấu\bGiải Nhi đồng: 2 ngọc\bGiải Siêu cấp 1: 4 ngọc\bGiải Siêu cấp 2: 6 ngọc\bGiải Siêu cấp 3: 8 ngọc\bGiải Ngoại hạng: 10.000 vàng\n"
+    public static final String THONG_TIN_DAI_HOI_VO_THUAT = "Lịch thi đấu trong ngày\nGiải Nhi đồng: 8,14,18h\nGiải Siêu cấp 1: 9,13,19h\nGiải Siêu Cấp 2: 10,15,20h\nGiải Siêu cấp 3: 11,16,21h\nGiải Ngoại hạng: 12,17,22,23h\n"
+            + "Giải thưởng khi thắng mỗi vòng\nGiải Nhi đồng: 2 ngọc\nGiải Siêu cấp 1: 4 ngọc\nGiải Siêu cấp 2: 6 ngọc\nGiải Siêu cấp 3: 8 ngọc\nGiải Ngoại hạng: 10.000 vàng\nVô địch: 5 viên đá nâng cấp\n"
+            + "Lệ phí đăng ký các giải đấu\nGiải Nhi đồng: 2 ngọc\nGiải Siêu cấp 1: 4 ngọc\nGiải Siêu cấp 2: 6 ngọc\nGiải Siêu cấp 3: 8 ngọc\nGiải Ngoại hạng: 10.000 vàng\n"
             + "Vui lòng đến đúng giờ để đăng ký thi đấu";
-    public static final String THONG_TIN_SIEU_HANG = "Giải đấu thể hiện đẳng cấp thực sự\bCác trận đấu diễn ra liên tục bất kể ngày đêm\bBạn hãy tham gia thi đấu để nâng hạng\bvà nhận giải thưởng khủng nhé\n"
-            + "Cơ cấu giải thưởng như sau\b(chốt và trao giải ngẫu nhiên từ 20h-23h mỗi ngày)\bTop 1 thưởng 100 ngọc\bTop 2-10 thưởng 20 ngọc\bTop 11-100 thưởng 5 ngọc\bTop 101-1000 thưởng 1 ngọc\n"
-            + "Mỗi ngày các bạn được tặng 1 vé tham dự miễn phí\b(tích lũy tối đa 3 vé) khi thua sẽ mất đi 1 vé\bKhi hết vé bạn phải trả 1 ngọc để đấu tiếp\b(trừ ngọc khi trận đấu kết thúc)\n"
-            + "Bạn không thể thi đấu với đấu thủ\bcó hạng nhỏ hơn mình\bChúc bạn may mắn, chào đoàn kết và quyết thắng";
+    public static final String THONG_TIN_SIEU_HANG = "Giải đấu thể hiện đẳng cấp thực sự\nCác trận đấu diễn ra liên tục bất kể ngày đêm\nBạn hãy tham gia thi đấu để nâng hạng\nvà nhận giải thưởng khủng nhé\n"
+            + "Cơ cấu giải thưởng như sau\n(chốt và trao giải ngẫu nhiên từ 20h-23h mỗi ngày)\nTop 1 thưởng 100 ngọc\nTop 2-10 thưởng 20 ngọc\nTop 11-100 thưởng 5 ngọc\nTop 101-1000 thưởng 1 ngọc\n"
+            + "Mỗi ngày các bạn được tặng 1 vé tham dự miễn phí\n(tích lũy tối đa 3 vé) khi thua sẽ mất đi 1 vé\nKhi hết vé bạn phải trả 1 ngọc để đấu tiếp\n(trừ ngọc khi trận đấu kết thúc)\n"
+            + "Bạn không thể thi đấu với đấu thủ\ncó hạng nhỏ hơn mình\nChúc bạn may mắn, chào đoàn kết và quyết thắng";
 
     public static final String TRONGDUAHAU = "|7|Thêm Đủ Nước Và Phân Bón Để Bắt Đầu Trồng\n"
             + "|7|Để Trồng Dưa Hấu Chúng Ta Cần\n"

@@ -28,11 +28,11 @@ public class BulmaTuongLai extends Npc {
         if (canOpenNpc(player)) {
             if (this.mapId == 104 || this.mapId == 5) {
                 if (!TaskService.gI().checkDoneTaskTalkNpc(player, this)) {
-                    this.createOtherMenu(player, ConstNpc.BASE_MENU, "build", "Cửa hàng", "Đóng");
+                    this.createOtherMenu(player, ConstNpc.BASE_MENU, "Cậu cần trang bị gì cứ đến chỗ tôi nhé!", "Cửa hàng", "Đóng");
                 }
             } else if (this.mapId == 102) {
                 if (!TaskService.gI().checkDoneTaskTalkNpc(player, this)) {
-                    this.createOtherMenu(player, ConstNpc.BASE_MENU, "learn", "Cửa hàng");
+                    this.createOtherMenu(player, ConstNpc.BASE_MENU, "Cậu cần trang bị gì cứ đến chỗ tôi nhé!", "Cửa hàng", "Đóng");
                 }
             }
         }

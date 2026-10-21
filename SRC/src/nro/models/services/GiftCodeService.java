@@ -42,7 +42,7 @@ public class GiftCodeService {
             Service.gI().sendThongBao(player, "Code đã hết hạn");
         } else {
             Set<Integer> keySet = giftcode.detail.keySet();
-            String textGift = "|0|Bạn vừa nhận được:\b";
+            String textGift = "|0|Bạn vừa nhận được:\n";
             for (Integer key : keySet) {
                 int idItem = key;
                 int quantity = giftcode.detail.get(key);
@@ -50,15 +50,15 @@ public class GiftCodeService {
                 switch (idItem) {
                     case -1 -> {
                         player.inventory.gold = Math.min(player.inventory.gold + (long) quantity, 2000000000L);
-                        textGift += "|2|" + quantity + " vàng\b";
+                        textGift += "|2|" + quantity + " vàng\n";
                     }
                     case -2 -> {
                         player.inventory.gem = Math.min(player.inventory.gem + quantity, 200000000);
-                        textGift += "|3|" + quantity + " ngọc\b";
+                        textGift += "|3|" + quantity + " ngọc\n";
                     }
                     case -3 -> {
                         player.inventory.ruby = Math.min(player.inventory.ruby + quantity, 200000000);
-                        textGift += "|4|" + quantity + " ngọc khóa\b";
+                        textGift += "|4|" + quantity + " ngọc khóa\n";
                     }
                     default -> {
                         Item itemGiftTemplate = ItemService.gI().createNewItem((short) idItem);
@@ -79,7 +79,7 @@ public class GiftCodeService {
                                 itemGift.quantity = quantity;
                                 InventoryService.gI().addItemBag(player, itemGift);
                             }
-                            textGift += "|1|x" + quantity + " " + itemGift.template.name + "\b";
+                            textGift += "|1|x" + quantity + " " + itemGift.template.name + "\n";
                         }
                     }
                 }

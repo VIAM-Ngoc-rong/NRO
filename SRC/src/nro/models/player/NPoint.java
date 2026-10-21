@@ -227,6 +227,9 @@ public class NPoint {
 
     private void setPointWhenWearClothes() {
         resetPoint();
+        if (this.player.setClothes != null) {
+            this.player.setClothes.setup();
+        }
         if (this.player.rewardBlackBall.timeOutOfDateReward[2] > System.currentTimeMillis()) {
             tlHutHp += RewardBlackBall.R3S_1;
         }
@@ -703,6 +706,9 @@ public class NPoint {
     }
 
     public void setBasePoint() {
+        if (this.player.setClothes != null) {
+            this.player.setClothes.setup();
+        }
         setHpMax();
         setHp();
         setMpMax();
@@ -791,23 +797,25 @@ public class NPoint {
             hpMax += (hpMax * 80L / 100L);
         }
 
-        // Set Chiến Binh Nail (Namếc: tăng HP, phòng thủ)
-        if (this.player.setClothes.nail == 5) {
+        // Set Chiến Binh Nail (Namếc: cộng dồn theo từng món 1..5)
+        if (this.player.setClothes.nail >= 5) {
             hpMax += (hpMax * 100L / 100L);
-        } else if (this.player.setClothes.nail >= 2) {
-            hpMax += (hpMax * 30L / 100L);
+        } else if (this.player.setClothes.nail >= 1) {
+            hpMax += (hpMax * (this.player.setClothes.nail * 15L) / 100L);
         }
 
-        // Set Thần Vũ Trụ Kaio (Trái Đất: tăng sức đánh, sinh tồn)
-        if (this.player.setClothes.thanVuTruKaio == 5) {
-            hpMax += (hpMax * 50L / 100L);
+        // Set Thần Vũ Trụ Kaio (Trái Đất: cộng dồn theo từng món 1..5)
+        if (this.player.setClothes.thanVuTruKaio >= 5) {
+            hpMax += (hpMax * 60L / 100L);
+        } else if (this.player.setClothes.thanVuTruKaio >= 1) {
+            hpMax += (hpMax * (this.player.setClothes.thanVuTruKaio * 10L) / 100L);
         }
 
-        // Set Cadic M (Xayda: tăng sức đánh cao)
-        if (this.player.setClothes.cadicM == 5) {
+        // Set Cadic M (Xayda: cộng dồn theo từng món 1..5)
+        if (this.player.setClothes.cadicM >= 5) {
             hpMax += (hpMax * 50L / 100L);
-        } else if (this.player.setClothes.cadicM >= 2) {
-            hpMax += (hpMax * 20L / 100L);
+        } else if (this.player.setClothes.cadicM >= 1) {
+            hpMax += (hpMax * (this.player.setClothes.cadicM * 10L) / 100L);
         }
         // Xử lý set worldcup
         if (this.player.setClothes.worldcup == 2) {
@@ -1116,19 +1124,28 @@ public class NPoint {
             dame += (dame * 5 / 100L);
         }
 
-        if (this.player.setClothes.nail >= 2) {
+        if (this.player.setClothes.nail >= 5) {
+            dame += (dame * 30L / 100L);
             this.tlDameCrit.add(10);
             this.tlSDCM += 10;
+        } else if (this.player.setClothes.nail >= 1) {
+            dame += (dame * (this.player.setClothes.nail * 5L) / 100L);
+            if (this.player.setClothes.nail >= 2) {
+                this.tlDameCrit.add(10);
+                this.tlSDCM += 10;
+            }
         }
-        if (this.player.setClothes.thanVuTruKaio == 5) {
-            dame += (dame * 50L / 100L);
+        if (this.player.setClothes.thanVuTruKaio >= 5) {
+            dame += (dame * 60L / 100L);
+        } else if (this.player.setClothes.thanVuTruKaio >= 1) {
+            dame += (dame * (this.player.setClothes.thanVuTruKaio * 10L) / 100L);
         }
-        if (this.player.setClothes.cadicM == 5) {
+        if (this.player.setClothes.cadicM >= 5) {
             dame += (dame * 100L / 100L);
             this.tlDameCrit.add(50);
             this.tlSDCM += 50;
-        } else if (this.player.setClothes.cadicM >= 4) {
-            dame += (dame * 40L / 100L);
+        } else if (this.player.setClothes.cadicM >= 1) {
+            dame += (dame * (this.player.setClothes.cadicM * 15L) / 100L);
         }
         // Xử lý thức ăn 2
         if (this.player.itemTime != null && this.player.itemTime.isEatMeal2 && this.player.itemTime.iconMeal2 == 8061) {
@@ -1245,11 +1262,20 @@ public class NPoint {
         if (this.player.itemTime != null && this.player.itemTime.isUseNuocMia3) {
             this.def += this.def * 10 / 100;
         }
-        if (this.player.setClothes.nail == 5) {
+        if (this.player.setClothes.nail >= 5) {
             this.def += this.def * 100 / 100;
+        } else if (this.player.setClothes.nail >= 1) {
+            this.def += this.def * (this.player.setClothes.nail * 15) / 100;
         }
-        if (this.player.setClothes.thanVuTruKaio == 5) {
+        if (this.player.setClothes.thanVuTruKaio >= 5) {
+            this.def += this.def * 60 / 100;
+        } else if (this.player.setClothes.thanVuTruKaio >= 1) {
+            this.def += this.def * (this.player.setClothes.thanVuTruKaio * 10) / 100;
+        }
+        if (this.player.setClothes.cadicM >= 5) {
             this.def += this.def * 50 / 100;
+        } else if (this.player.setClothes.cadicM >= 1) {
+            this.def += this.def * (this.player.setClothes.cadicM * 10) / 100;
         }
     }
 
@@ -1265,8 +1291,10 @@ public class NPoint {
             this.crit += 10;
         }
 
-        if (player.setClothes.thanVuTruKaio >= 2) {
-            this.crit += 20;
+        if (player.setClothes.thanVuTruKaio >= 5) {
+            this.crit += 25;
+        } else if (player.setClothes.thanVuTruKaio >= 1) {
+            this.crit += player.setClothes.thanVuTruKaio * 5;
         }
     }
 

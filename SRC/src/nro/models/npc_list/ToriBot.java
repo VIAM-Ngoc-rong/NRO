@@ -82,15 +82,15 @@ public class ToriBot extends Npc {
                                 "Đóng");
                     case 1 ->
                         createOtherMenu(pl, 2, "Nâng cấp VIP 2 bạn sẽ nhận được\n500 thỏi vàng, 10 phiếu giảm giá 80%\nX3 Kinh nghiệm toàn mùa\nThú cưỡi ve sầu xên hsd 30 ngày\nTặng 1 đệ tử, 10 viên đá bảo vệ\nPet bọ cánh cứng hsd 30 ngày\nBúa hắc hường hsd 30 ngày\nCải trang thỏ buma hsd 30 ngày",
-                                "100.000\nđiềm mùa [" + pl.getSession().vnd + "]",
+                                "100.000\nđiểm mùa [" + pl.getSession().vnd + "]",
                                 "Đóng");
                     case 2 ->
                         createOtherMenu(pl, 3, "Nâng cấp VIP 3 bạn sẽ nhận được\n700 thỏi vàng, 10 phiếu giảm giá 80%\nX3 Kinh nghiệm toàn mùa\nThú cưỡi ve sầu xên vĩnh viễn\nTặng 1 đệ tử, 30 viên đá bảo vệ\nPet bọ cánh cứng vĩnh viễn\nBúa hắc hường vĩnh viễn\n2 viên capsule kích hoạt\n10 thẻ đội trưởng vàng\nCải trang thỏ buma vĩnh viễn",
-                                "150.000\nđiềm mùa [" + pl.getSession().vnd + "]",
+                                "150.000\nđiểm mùa [" + pl.getSession().vnd + "]",
                                 "Đóng");
                     case 3 ->
                         createOtherMenu(pl, 4, "Nâng cấp VIP 4 bạn sẽ nhận được\n1000 thỏi vàng, 10 phiếu giảm giá 80%\nX3 Kinh nghiệm toàn mùa\nCải trang hắc mị vĩnh viễn\nTặng 1 đệ tử mabu, 50 viên đá bảo vệ\nTàu ngầm cam 19 vĩnh viễn\nPet rồng nhí vĩnh viễn\n5 viên capsule kích hoạt\n20 thẻ rồng thần",
-                                "200.000\nđiềm mùa [" + pl.getSession().vnd + "]",
+                                "200.000\nđiểm mùa [" + pl.getSession().vnd + "]",
                                 "Đóng");
                 }
             }

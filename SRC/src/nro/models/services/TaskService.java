@@ -639,7 +639,7 @@ public class TaskService {
                     npcSay(player, ConstTask.NPC_NHA,
                             "Tốt lắm, rađa sẽ giúp con thấy được lượng máu và thể lực ở bên góc trái\n"
                             + "Bây giờ con hãy đi luyện tập\n"
-                            + "Con hãy ra %1, ở đó có những con mộc nhân cho con luyện tập dó\n"
+                            + "Con hãy ra %1, ở đó có những con mộc nhân cho con luyện tập đó\n"
                             + "Hãy đốn ngã 5 con mộc nhân cho ông");
                     break;
                 //--------------------------------------------------------------
@@ -751,7 +751,9 @@ public class TaskService {
                     break;
                 case ConstTask.TASK_7_3:
                     npcSay(player, ConstTask.NPC_NHA,
-                            "Ôi bạn ơi, sức đề kháng bạn yếu là do bạn chưa chơi đồ đấy bạn ạ");
+                            "Tốt lắm con trai, con đã làm rất tốt nhiệm vụ ông giao\n"
+                            + "Hãy tiếp tục rèn luyện bản thân để chuẩn bị cho những thử thách tiếp theo nhé");
+                    break;
                 //--------------------------------------------------------------
                 case ConstTask.TASK_8_0:
                     break;
@@ -764,6 +766,7 @@ public class TaskService {
                             + "bạn lâu ngày không gặp của ông\n"
                             + "Con hãy tìm đường tới %11 và gửi lời chào của ông tới lão ấy nhé\n"
                             + "Đi đi con...");
+                    break;
                 //--------------------------------------------------------------
                 case ConstTask.TASK_9_0:
                     break;
@@ -814,8 +817,8 @@ public class TaskService {
                 case ConstTask.TASK_12_2:
                     npcSay(player, ConstTask.NPC_QUY_LAO,
                             "Cuối cùng lão ấy cũng đồng ý rồi à? Tốt lắm\n"
-                            + "Bây giờ con hãy cùng những người bạn con vừa kết bạn tạo thành 1 bang àội đi nhé\n"
-                            + "Khi nào đủ 5 thành viên bang hãy tới đây ta s   iao nhiệm vụ cho tất cả các con");
+                            + "Bây giờ con hãy cùng những người bạn con vừa kết bạn tạo thành 1 bang hội đi nhé\n"
+                            + "Khi nào đủ 5 thành viên bang hãy tới đây ta sẽ giao nhiệm vụ cho tất cả các con");
                     break;
                 case ConstTask.TASK_13_0:
                     break;
@@ -905,7 +908,7 @@ public class TaskService {
                 case ConstTask.TASK_19_3:
                     npcSay(player, ConstTask.NPC_QUY_LAO,
                             "Cảm ơn cậu đã tiêu diệt giúp tôi lũ đệ tử của Fide\n"
-                            + "Dưới trướng Fide còn có 1 đội gồm 5 thành viên được chúng gọi là Tiều Đội Sát Thủ\n"
+                            + "Dưới trướng Fide còn có 1 đội gồm 5 thành viên được chúng gọi là Tiểu Đội Sát Thủ\n"
                             + "Chúng rất mạnh và rất trung thành với tên Fide\n"
                             + "Bọn chúng vừa được cử tới đi trả thù cho 3 tên đệ tử cậu vừa tiêu diệt\n"
                             + "Hãy chống lại bọn chúng giúp tôi nhé....");
@@ -925,7 +928,9 @@ public class TaskService {
                     break;
                 case ConstTask.TASK_20_6:
                     npcSay(player, ConstTask.NPC_QUY_LAO,
-                            "NgocRongOnline");
+                            "Cậu thật xuất sắc khi đã đánh bại được cả Tiểu Đội Sát Thủ!\n"
+                            + "Tên Fide đại ca chắc chắn sẽ không ngồi yên đâu, hắn đang đích thân chờ cậu tại Núi Khỉ Vàng\n"
+                            + "Hãy cẩn thận và chuẩn bị thật kỹ trước khi đối đầu với hắn nhé!");
                     break;
                 //--------------------------------------------------------------
                 case ConstTask.TASK_21_0:
@@ -938,27 +943,33 @@ public class TaskService {
                     break;
                 case ConstTask.TASK_21_4:
                     npcSay(player, ConstTask.NPC_QUY_LAO,
-                            "null\n"
-                            + "null\n"
-                            + "null");
+                            "Không thể tin được! Cậu đã thực sự đánh bại tên bạo chúa Fide rồi!\n"
+                            + "Hành tinh đã được bình yên trở lại nhờ công lớn của cậu\n"
+                            + "Bây giờ hãy quay về nhà báo tin vui cho ông nhé!");
                     break;
                 //--------------------------------------------------------------
                 case ConstTask.TASK_22_0:
-                    npcSay(player, ConstTask.NPC_NHA, "Ngon");
+                    npcSay(player, ConstTask.NPC_NHA,
+                            "Cháu ngoan của ông giỏi lắm! Vừa rồi có một cậu thanh niên lạ mặt đến tìm con đấy\n"
+                            + "Cậu ta đang đợi ở gần đây, con hãy ra gặp thử xem có chuyện gì nhé");
                     break;
                 case ConstTask.TASK_22_1:
                     npcSay(player, ConstNpc.CALICK, ConstNpc.CALICK_KE_CHUYEN);
                     break;
                 case ConstTask.TASK_22_2:
-                    npcSay(player, ConstNpc.QUY_LAO_KAME, "I a cờ bú");
+                    npcSay(player, ConstNpc.QUY_LAO_KAME,
+                            "Cảm ơn con đã mang thuốc trợ tim đến cho ta nhé!\n"
+                            + "Nếu lời cậu thanh niên từ tương lai kia là thật thì nguy hiểm sắp ập đến rồi\n"
+                            + "Con hãy mau đến gặp Bunma tương lai để tìm hiểu tình hình và giúp đỡ cô ấy nhé!");
                     break;
                 case ConstTask.TASK_22_3:
-                    npcSay(player, ConstNpc.BUNMA_TL, "Mau đi tiêu diệt 1000 xên cấp 1 đi em");
+                    npcSay(player, ConstNpc.BUNMA_TL, "Mau đi tiêu diệt 1000 xên cấp 1 đi nhé");
                     break;
                 case ConstTask.TASK_22_4:
                     break;
                 case ConstTask.TASK_22_5:
-                    npcSay(player, ConstNpc.BUNMA_TL, "Đến Thành Phố Phía Đông tiêu diệt Tokuda à nhầm Dr.Kore và đàn em của hắn.");
+                    npcSay(player, ConstNpc.BUNMA_TL, "Hãy đến Thành Phố Phía Đông tiêu diệt Dr.Kore và đàn em của hắn nhé!");
+                    break;
                 //--------------------------------------------------------------
                 case ConstTask.TASK_23_0:
                     break;
@@ -969,7 +980,7 @@ public class TaskService {
                 case ConstTask.TASK_23_3:
                     break;
                 case ConstTask.TASK_23_4:
-                    npcSay(player, ConstNpc.BUNMA_TL, "Bọn Android đã xuất hiện tại sân sau siêu thị mau đi trừ khử chúng");
+                    npcSay(player, ConstNpc.BUNMA_TL, "Bọn Android đã xuất hiện tại sân sau siêu thị, cậu mau đi trừ khử chúng nhé!");
                     break;
                 //--------------------------------------------------------------
                 case ConstTask.TASK_24_0:
@@ -982,7 +993,8 @@ public class TaskService {
                     break;
                 case ConstTask.TASK_24_4:
                     npcSay(player, ConstNpc.BUNMA_TL,
-                            "Quá ghê gớm =))");
+                            "Cậu làm tốt lắm! Nhưng vẫn còn nhóm Sát thủ Píc, Póc và King Kong đang hoành hành\n"
+                            + "Hãy tiếp tục lên đường tiêu diệt bọn chúng để bảo vệ mọi người nhé!");
                     break;
                 //---------------------------   
                 case ConstTask.TASK_25_0:
@@ -997,7 +1009,8 @@ public class TaskService {
                     break;
                 case ConstTask.TASK_25_5:
                     npcSay(player, ConstNpc.BUNMA_TL,
-                            "Cũng ra gì đấy! Khét đấy nhề!");
+                            "Không ngờ tên Xên Bọ Hung đã xuất hiện và đang tìm cách hấp thụ các Android!\n"
+                            + "Cậu hãy mau đuổi theo và ngăn chặn hắn trước khi hắn đạt tới hình thái hoàn hảo nhé!");
                     break;
                 //-----------------
                 case ConstTask.TASK_26_0:
@@ -1012,12 +1025,12 @@ public class TaskService {
                     break;
                 case ConstTask.TASK_26_5:
                     npcSay(player, ConstNpc.BUNMA_TL,
-                            "Hãy đến võ đài xên bọ hung và tiêu diệt 7 đứa con của nó");
+                            "Hãy đến võ đài Xên Bọ Hung và tiêu diệt 7 đứa con của hắn cùng Siêu Bọ Hung nhé!");
                     break;
                 //---------------------------------
                 case ConstTask.TASK_27_0:
                     npcSay(player, ConstNpc.THAN_MEO_KARIN,
-                            "Tốt lắm! Bây giờ con hãy tìm cho ta 500 viên capsulue kì bí");
+                            "Tốt lắm! Bây giờ con hãy tìm cho ta 500 viên capsule kỳ bí nhé");
                     break;
                 case ConstTask.TASK_27_1:
                     break;

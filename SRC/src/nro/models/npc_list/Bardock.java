@@ -21,7 +21,7 @@ public class Bardock extends Npc {
         if (canOpenNpc(player)) {
             if (!TaskService.gI().checkDoneTaskTalkNpc(player, this)) {
                 this.createOtherMenu(player, ConstNpc.BASE_MENU,
-                        "Người tìm ta có việc gì?", "ok");
+                        "Ngươi tìm ta có việc gì?", "OK");
             }
         }
     }
