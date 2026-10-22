@@ -90,7 +90,8 @@ public class ItemTimeService {
             sendItemTime(player, 2758, (int) ((TIME_MAY_DO - (System.currentTimeMillis() - player.itemTime.lastTimeUseMayDo)) / 1000));
         }
         if (player.itemTime.isUseCoBonLa) {
-            sendItemTime(player, 13618, (int) ((TIME_CO_BON_LA - (System.currentTimeMillis() - player.itemTime.lastTimeUseCoBonLa)) / 1000));
+            long duration = player.itemTime.timeLengthCoBonLa > 0 ? player.itemTime.timeLengthCoBonLa : TIME_CO_BON_LA;
+            sendItemTime(player, 13618, (int) ((duration - (System.currentTimeMillis() - player.itemTime.lastTimeUseCoBonLa)) / 1000));
         }
         if (player.itemTime.isUseNuocMia1) {
             sendItemTime(player, 13462, (int) ((TIME_NUOC_MIA1 - (System.currentTimeMillis() - player.itemTime.lastTimeUseNuocMia1)) / 1000));
@@ -98,11 +99,12 @@ public class ItemTimeService {
         if (player.itemTime.isUseNuocMia2) {
             sendItemTime(player, 13463, (int) ((TIME_NUOC_MIA2 - (System.currentTimeMillis() - player.itemTime.lastTimeUseNuocMia2)) / 1000));
         }
-        if (player.itemTime.isUseNuocMia2) {
+        if (player.itemTime.isUseNuocMia3) {
             sendItemTime(player, 13464, (int) ((TIME_NUOC_MIA3 - (System.currentTimeMillis() - player.itemTime.lastTimeUseNuocMia3)) / 1000));
         }
         if (player.itemTime.isUseKilis) {
-            long remainingTime = (player.itemTime.lastTimeUseKilis + player.itemTime.timeLengthKilis) - System.currentTimeMillis();
+            long duration = player.itemTime.timeLengthKilis > 0 ? player.itemTime.timeLengthKilis : TIME_KILIS;
+            long remainingTime = (player.itemTime.lastTimeUseKilis + duration) - System.currentTimeMillis();
             if (remainingTime > 0) {
                 sendItemTime(player, 15359, (int) (remainingTime / 1000));
             }
@@ -120,10 +122,16 @@ public class ItemTimeService {
             sendItemTime(player, player.itemTime.iconMeal2, (int) ((TIME_EAT_MEAL - (System.currentTimeMillis() - player.itemTime.lastTimeEatMeal2)) / 1000));
         }
         if (player.itemTime.isUseTDLT) {
-            sendItemTime(player, 4387, player.itemTime.timeTDLT / 1000);
+            int timeLeft = (int) ((player.itemTime.timeTDLT - (System.currentTimeMillis() - player.itemTime.lastTimeUseTDLT)) / 1000);
+            if (timeLeft > 0) {
+                sendItemTime(player, 4387, timeLeft);
+            }
         }
         if (player.itemTime.isUseRX) {
-            sendItemTime(player, 8579, player.itemTime.timeRX / 1000);
+            int timeLeft = (int) ((player.itemTime.timeRX - (System.currentTimeMillis() - player.itemTime.lastTimeUseRX)) / 1000);
+            if (timeLeft > 0) {
+                sendItemTime(player, 6581, timeLeft);
+            }
         }
     }
 

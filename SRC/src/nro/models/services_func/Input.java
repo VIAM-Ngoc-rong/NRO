@@ -494,14 +494,14 @@ public class Input {
                 }
                 case BANSLL -> {
                     int sltv = Math.abs(Integer.parseInt(text[0]));
-                    long cost = (long) sltv * 37000000;
+                    long cost = (long) sltv * 500_000_000L;
                     Item ThoiVang = InventoryService.gI().findItemBag(player, 457);
                     if (ThoiVang != null) {
                         if (ThoiVang.quantity < sltv) {
                             Service.gI().sendThongBao(player, "Bạn chỉ có " + ThoiVang.quantity + " Thỏi vàng");
                         } else {
                             if (player.inventory.gold + cost > Inventory.LIMIT_GOLD) {
-                                int slban = (int) ((Inventory.LIMIT_GOLD - player.inventory.gold) / 37000000);
+                                int slban = (int) ((Inventory.LIMIT_GOLD - player.inventory.gold) / 500_000_000L);
                                 if (slban < 1) {
                                     Service.gI().sendThongBao(player, "Vàng sau khi bán vượt quá giới hạn");
                                 } else if (slban < 2) {

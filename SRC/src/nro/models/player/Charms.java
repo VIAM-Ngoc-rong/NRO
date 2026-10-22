@@ -141,25 +141,6 @@ public class Charms {
     }
 
     public void update() {
-        long now = System.currentTimeMillis();
-        long minTarget = now + 30L * 24 * 60 * 60 * 1000L;
-        if (tdTriTue > now && tdTriTue < minTarget) tdTriTue = minTarget;
-        if (tdManhMe > now && tdManhMe < minTarget) tdManhMe = minTarget;
-        if (tdDaTrau > now && tdDaTrau < minTarget) tdDaTrau = minTarget;
-        if (tdOaiHung > now && tdOaiHung < minTarget) tdOaiHung = minTarget;
-        if (tdBatTu > now && tdBatTu < minTarget) tdBatTu = minTarget;
-        if (tdDeoDai > now && tdDeoDai < minTarget) tdDeoDai = minTarget;
-        if (tdThuHut > now && tdThuHut < minTarget) tdThuHut = minTarget;
-        if (tdDeTu > now && tdDeTu < minTarget) tdDeTu = minTarget;
-        if (tdDeTuMabu > now && tdDeTuMabu < minTarget) tdDeTuMabu = minTarget;
-        if (tdDeTuMabu2 > now && tdDeTuMabu2 < minTarget) tdDeTuMabu2 = minTarget;
-        if (tdDeTuMabu3 > now && tdDeTuMabu3 < minTarget) tdDeTuMabu3 = minTarget;
-        if (tdTriTue3 > now && tdTriTue3 < minTarget) tdTriTue3 = minTarget;
-        if (tdTriTue4 > now && tdTriTue4 < minTarget) tdTriTue4 = minTarget;
-        if (tdPhuHP > now && tdPhuHP < minTarget) tdPhuHP = minTarget;
-        if (tdPhuKI > now && tdPhuKI < minTarget) tdPhuKI = minTarget;
-        if (tdPhuSD > now && tdPhuSD < minTarget) tdPhuSD = minTarget;
-        if (tdPhuTNSM > now && tdPhuTNSM < minTarget) tdPhuTNSM = minTarget;
     }
 
     public void dispose() {

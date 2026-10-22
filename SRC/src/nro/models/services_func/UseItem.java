@@ -1177,7 +1177,9 @@ public class UseItem {
             newItem.itemOptions.add(new ItemOption(30, khongthegiaodich));
 
             int randomOption = (int) (Math.random() * 100);
-            newItem.itemOptions.add(new ItemOption(93, randomOption < 0.5 ? 0 : 15));
+            if (randomOption >= 1) {
+                newItem.itemOptions.add(new ItemOption(93, 15));
+            }
 
             InventoryService.gI().addItemBag(player, newItem);
             InventoryService.gI().subQuantityItemsBag(player, itemused, 1);
@@ -1215,7 +1217,9 @@ public class UseItem {
             newItem.itemOptions.add(new ItemOption(30, khongthegiaodich));
 
             int randomOption = (int) (Math.random() * 100);
-            newItem.itemOptions.add(new ItemOption(93, randomOption < 0.5 ? 0 : 15));
+            if (randomOption >= 1) {
+                newItem.itemOptions.add(new ItemOption(93, 15));
+            }
 
             InventoryService.gI().addItemBag(player, newItem);
             InventoryService.gI().subQuantityItemsBag(player, itemused, 1);
@@ -1253,7 +1257,9 @@ public class UseItem {
             newItem.itemOptions.add(new ItemOption(30, khongthegiaodich));
 
             int randomOption = (int) (Math.random() * 100);
-            newItem.itemOptions.add(new ItemOption(93, randomOption < 0.5 ? 0 : 15));
+            if (randomOption >= 1) {
+                newItem.itemOptions.add(new ItemOption(93, 15));
+            }
 
             InventoryService.gI().addItemBag(player, newItem);
             InventoryService.gI().subQuantityItemsBag(player, itemused, 1);
@@ -1423,7 +1429,9 @@ public class UseItem {
             newItem.itemOptions.add(new ItemOption(30, khongthegiaodich));
 
             int randomOption = (int) (Math.random() * 100);
-            newItem.itemOptions.add(new ItemOption(93, randomOption < 0.5 ? 0 : 15));
+            if (randomOption >= 1) {
+                newItem.itemOptions.add(new ItemOption(93, 15));
+            }
 
             InventoryService.gI().addItemBag(player, newItem);
             InventoryService.gI().subQuantityItemsBag(player, itemused, 1);
@@ -1469,7 +1477,9 @@ public class UseItem {
             newItem.itemOptions.add(new ItemOption(103, ki));
             newItem.itemOptions.add(new ItemOption(210, 4));
             newItem.itemOptions.add(new ItemOption(30, khongthegiaodich));
-            newItem.itemOptions.add(new ItemOption(93, Math.random() < 0.5 ? 0 : 15));
+            if (Math.random() >= 0.5) {
+                newItem.itemOptions.add(new ItemOption(93, 15));
+            }
 
             InventoryService.gI().addItemBag(player, newItem);
             InventoryService.gI().subQuantityItemsBag(player, itemused, 1);
@@ -1519,7 +1529,7 @@ public class UseItem {
             Service.gI().sendThongBao(pl, "Số vàng của bạn đã đạt giới hạn tối đa!");
             return;
         }
-        long goldAdd = 40_000_000L;
+        long goldAdd = 500_000_000L;
         if (pl.inventory.gold + goldAdd > Inventory.LIMIT_GOLD) {
             goldAdd = Inventory.LIMIT_GOLD - pl.inventory.gold;
         }
@@ -1578,6 +1588,7 @@ public class UseItem {
                 break;
             case 1635: // co bon la
                 pl.itemTime.lastTimeUseCoBonLa = System.currentTimeMillis();
+                pl.itemTime.timeLengthCoBonLa = nro.models.item.ItemTime.TIME_CO_BON_LA;
                 pl.itemTime.isUseCoBonLa = true;
                 break;
             case 1614: // nuoc mia 1
@@ -2111,9 +2122,7 @@ public class UseItem {
             newItem.itemOptions.add(new ItemOption(14, 10));  // May mắn
 
             int randomOption = (int) (Math.random() * 100);
-            if (randomOption < 0.5) {
-                newItem.itemOptions.add(new ItemOption(93, 0));
-            } else {
+            if (randomOption >= 1) {
                 newItem.itemOptions.add(new ItemOption(93, 3));
             }
 
@@ -2153,7 +2162,9 @@ public class UseItem {
             newItem.itemOptions.add(new ItemOption(30, hsd));
 
             int randomOption = (int) (Math.random() * 100);
-            newItem.itemOptions.add(new ItemOption(93, randomOption < 0.5 ? 0 : 15));
+            if (randomOption >= 1) {
+                newItem.itemOptions.add(new ItemOption(93, 15));
+            }
 
             InventoryService.gI().addItemBag(player, newItem);
             InventoryService.gI().subQuantityItemsBag(player, itemused, 1);
@@ -2186,9 +2197,7 @@ public class UseItem {
             newItem.itemOptions.add(new ItemOption(236, 10));  // May mắn
 
             int randomOption = (int) (Math.random() * 100);
-            if (randomOption < 0.5) {
-                newItem.itemOptions.add(new ItemOption(93, 0));
-            } else {
+            if (randomOption >= 1) {
                 newItem.itemOptions.add(new ItemOption(93, 3));
             }
 
@@ -2218,9 +2227,7 @@ public class UseItem {
             newItem.itemOptions.add(new ItemOption(210, 4));  // May mắn
 
             int randomOption = (int) (Math.random() * 100);
-            if (randomOption < 0.5) {
-                newItem.itemOptions.add(new ItemOption(93, 0));
-            } else {
+            if (randomOption >= 1) {
                 newItem.itemOptions.add(new ItemOption(93, 3));
             }
 
@@ -2250,9 +2257,7 @@ public class UseItem {
             newItem.itemOptions.add(new ItemOption(210, 2));  // May mắn
 
             int randomOption = (int) (Math.random() * 100);
-            if (randomOption < 0.5) {
-                newItem.itemOptions.add(new ItemOption(93, 0));
-            } else {
+            if (randomOption >= 1) {
                 newItem.itemOptions.add(new ItemOption(93, 3));
             }
 
@@ -2287,10 +2292,8 @@ public class UseItem {
             newItem.itemOptions.add(new ItemOption(103, 27));  // Sức đánh
             newItem.itemOptions.add(new ItemOption(210, 4));   // Chỉ số ẩn
 
-            int randomOption = Util.nextInt(0, 30);
-            if (randomOption < 50) {
-                newItem.itemOptions.add(new ItemOption(93, 0));
-            } else {
+            int randomOption = Util.nextInt(0, 100);
+            if (randomOption >= 50) {
                 newItem.itemOptions.add(new ItemOption(93, 3));
             }
 
@@ -2322,9 +2325,7 @@ public class UseItem {
             newItem.itemOptions.add(new ItemOption(210, 4));  // May mắn
 
             int randomOption = (int) (Math.random() * 100);
-            if (randomOption < 0.5) {
-                newItem.itemOptions.add(new ItemOption(93, 0));
-            } else {
+            if (randomOption >= 1) {
                 newItem.itemOptions.add(new ItemOption(93, 3));
             }
 

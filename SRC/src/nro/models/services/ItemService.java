@@ -391,16 +391,25 @@ public class ItemService {
     }
 
     public boolean isOutOfDateTime(Item item) {
-        if (item != null) {
-            for (Item.ItemOption io : item.itemOptions) {
-                if (io.optionTemplate.id == 93) {
+        if (item != null && item.itemOptions != null) {
+            if (item.createTime <= 0) {
+                item.createTime = System.currentTimeMillis();
+            }
+            Iterator<Item.ItemOption> it = item.itemOptions.iterator();
+            while (it.hasNext()) {
+                Item.ItemOption io = it.next();
+                if (io != null && io.optionTemplate != null && io.optionTemplate.id == 93) {
+                    if (io.param <= 0) {
+                        it.remove();
+                        continue;
+                    }
                     int dayPass = (int) TimeUtil.diffDate(new Date(), new Date(item.createTime), TimeUtil.DAY);
-                    if (dayPass != 0) {
+                    if (dayPass > 0) {
                         io.param -= dayPass;
                         if (io.param <= 0) {
                             return true;
                         } else {
-                            item.createTime = System.currentTimeMillis();
+                            item.createTime += (long) dayPass * 86_400_000L;
                         }
                     }
                 }

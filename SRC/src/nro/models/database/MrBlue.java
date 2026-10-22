@@ -586,58 +586,55 @@ public class MrBlue {
                 timeMayDo = Integer.parseInt(String.valueOf(dataArray.get(11)));
             }
             if (dataArray.size() > 12) {
-                timeKhoBauX2 = Integer.parseInt(String.valueOf(dataArray.get(12)));
+                timeCoBonLa = Long.parseLong(String.valueOf(dataArray.get(12)));
             }
             if (dataArray.size() > 13) {
+                timeKhoBauX2 = Integer.parseInt(String.valueOf(dataArray.get(13)));
             }
             if (dataArray.size() > 14) {
-                timeMeal = Integer.parseInt(String.valueOf(dataArray.get(14)));
+                timeBuaSanta = Integer.parseInt(String.valueOf(dataArray.get(14)));
             }
             if (dataArray.size() > 15) {
-                iconMeal = Integer.parseInt(String.valueOf(dataArray.get(15)));
+                timeMeal = Integer.parseInt(String.valueOf(dataArray.get(15)));
             }
             if (dataArray.size() > 16) {
-                timeUseTDLT = Integer.parseInt(String.valueOf(dataArray.get(16)));
+                iconMeal = Integer.parseInt(String.valueOf(dataArray.get(16)));
             }
             if (dataArray.size() > 17) {
-                timeUseCMS = Integer.parseInt(String.valueOf(dataArray.get(17)));
+                timeUseTDLT = Integer.parseInt(String.valueOf(dataArray.get(17)));
             }
             if (dataArray.size() > 18) {
-                timeUseGTPT = Integer.parseInt(String.valueOf(dataArray.get(18)));
+                timeUseCMS = Integer.parseInt(String.valueOf(dataArray.get(18)));
             }
             if (dataArray.size() > 19) {
-                timeUseDK = Integer.parseInt(String.valueOf(dataArray.get(19)));
+                timeUseGTPT = Integer.parseInt(String.valueOf(dataArray.get(19)));
             }
             if (dataArray.size() > 20) {
-                timeUseRX = Integer.parseInt(String.valueOf(dataArray.get(20)));
+                timeUseDK = Integer.parseInt(String.valueOf(dataArray.get(20)));
             }
             if (dataArray.size() > 21) {
-                timeMeal2 = Integer.parseInt(String.valueOf(dataArray.get(21)));
+                timeUseRX = Integer.parseInt(String.valueOf(dataArray.get(21)));
             }
             if (dataArray.size() > 22) {
-                iconMeal2 = Integer.parseInt(String.valueOf(dataArray.get(22)));
+                timeMeal2 = Integer.parseInt(String.valueOf(dataArray.get(22)));
             }
             if (dataArray.size() > 23) {
-            }
-            if (dataArray.size() > 24) {
-                timeUseNCD = Integer.parseInt(String.valueOf(dataArray.get(24)));
+                iconMeal2 = Integer.parseInt(String.valueOf(dataArray.get(23)));
             }
             if (dataArray.size() > 25) {
-                timeBuaSanta = Integer.parseInt(String.valueOf(dataArray.get(25)));
+                timeUseNCD = Integer.parseInt(String.valueOf(dataArray.get(25)));
             }
             if (dataArray.size() > 26) {
-                timeKilis = (int) Long.parseLong(String.valueOf(dataArray.get(26)));
+                timeNuocMia1 = Long.parseLong(String.valueOf(dataArray.get(26)));
             }
             if (dataArray.size() > 27) {
-                timeNuocMia1 = (int) Long.parseLong(String.valueOf(dataArray.get(27)));
+                timeNuocMia2 = Long.parseLong(String.valueOf(dataArray.get(27)));
             }
             if (dataArray.size() > 28) {
-                timeNuocMia2 = (int) Long.parseLong(String.valueOf(dataArray.get(28)));
+                timeNuocMia3 = Long.parseLong(String.valueOf(dataArray.get(28)));
             }
             if (dataArray.size() > 29) {
-                timeNuocMia3 = (int) Long.parseLong(String.valueOf(dataArray.get(28)));
-            }
-            if (dataArray.size() > 30) {
+                timeKilis = Long.parseLong(String.valueOf(dataArray.get(29)));
             }
 
             player.itemTime.lastTimeBoHuyet = System.currentTimeMillis() - (ItemTime.TIME_ITEM - timeBoHuyet);
@@ -653,6 +650,7 @@ public class MrBlue {
             player.itemTime.lastTimeOpenPower = System.currentTimeMillis() - (ItemTime.TIME_OPEN_POWER - timeOpenPower);
             player.itemTime.lastTimeUseMayDo = System.currentTimeMillis() - (ItemTime.TIME_MAY_DO - timeMayDo);
             player.itemTime.lastTimeUseCoBonLa = System.currentTimeMillis() - (ItemTime.TIME_CO_BON_LA - timeCoBonLa);
+            player.itemTime.timeLengthCoBonLa = ItemTime.TIME_CO_BON_LA;
             player.itemTime.lastTimeUseKhoBauX2 = System.currentTimeMillis() - (ItemTime.TIME_MAY_DO2 - timeKhoBauX2);
             player.itemTime.lastTimeBuaSanta = System.currentTimeMillis() - (ItemTime.TIME_BUA_SANTA - timeBuaSanta);
             player.itemTime.lastTimeEatMeal = System.currentTimeMillis() - (ItemTime.TIME_EAT_MEAL - timeMeal);
@@ -665,35 +663,41 @@ public class MrBlue {
             player.itemTime.lastTimeUseRX = System.currentTimeMillis();
             player.itemTime.lastTimeEatMeal2 = System.currentTimeMillis() - (ItemTime.TIME_EAT_MEAL - timeMeal2);
             player.itemTime.lastTimeUseNCD = System.currentTimeMillis() - (ItemTime.TIME_NCD - timeUseNCD);
+            player.itemTime.lastTimeUseNuocMia1 = System.currentTimeMillis() - (ItemTime.TIME_NUOC_MIA1 - timeNuocMia1);
+            player.itemTime.lastTimeUseNuocMia2 = System.currentTimeMillis() - (ItemTime.TIME_NUOC_MIA2 - timeNuocMia2);
+            player.itemTime.lastTimeUseNuocMia3 = System.currentTimeMillis() - (ItemTime.TIME_NUOC_MIA3 - timeNuocMia3);
+            player.itemTime.lastTimeUseKilis = System.currentTimeMillis() - (ItemTime.TIME_KILIS - timeKilis);
+            player.itemTime.timeLengthKilis = ItemTime.TIME_KILIS;
 
             player.itemTime.iconMeal = iconMeal;
-            player.itemTime.isEatMeal = timeMeal != 0;
-            player.itemTime.isUseBoHuyet = timeBoHuyet != 0;
-            player.itemTime.isUseBoKhi = timeBoKhi != 0;
-            player.itemTime.isUseGiapXen = timeGiapXen != 0;
-            player.itemTime.isUseCuongNo = timeCuongNo != 0;
-            player.itemTime.isUseAnDanh = timeAnDanh != 0;
-            player.itemTime.isUseBoHuyet2 = timeBoHuyet2 != 0;
-            player.itemTime.isUseBoKhi2 = timeBoKhi2 != 0;
-            player.itemTime.isUseGiapXen2 = timeGiapXen2 != 0;
-            player.itemTime.isUseCuongNo2 = timeCuongNo2 != 0;
-            player.itemTime.isUseAnDanh2 = timeAnDanh2 != 0;
-            player.itemTime.isOpenPower = timeOpenPower != 0;
-            player.itemTime.isUseMayDo = timeMayDo != 0;
-            player.itemTime.isUseKhoBauX2 = timeKhoBauX2 != 0;
-            player.itemTime.isUseBuaSanta = timeBuaSanta != 0;
-            player.itemTime.isUseTDLT = timeUseTDLT != 0;
-            player.itemTime.isUseCMS = timeUseCMS != 0;
-            player.itemTime.isUseGTPT = timeUseGTPT != 0;
-            player.itemTime.isUseDK = timeUseDK != 0;
-            player.itemTime.isUseRX = timeUseRX != 0;
+            player.itemTime.isEatMeal = timeMeal > 0;
+            player.itemTime.isUseBoHuyet = timeBoHuyet > 0;
+            player.itemTime.isUseBoKhi = timeBoKhi > 0;
+            player.itemTime.isUseGiapXen = timeGiapXen > 0;
+            player.itemTime.isUseCuongNo = timeCuongNo > 0;
+            player.itemTime.isUseAnDanh = timeAnDanh > 0;
+            player.itemTime.isUseBoHuyet2 = timeBoHuyet2 > 0;
+            player.itemTime.isUseBoKhi2 = timeBoKhi2 > 0;
+            player.itemTime.isUseGiapXen2 = timeGiapXen2 > 0;
+            player.itemTime.isUseCuongNo2 = timeCuongNo2 > 0;
+            player.itemTime.isUseAnDanh2 = timeAnDanh2 > 0;
+            player.itemTime.isOpenPower = timeOpenPower > 0;
+            player.itemTime.isUseMayDo = timeMayDo > 0;
+            player.itemTime.isUseCoBonLa = timeCoBonLa > 0;
+            player.itemTime.isUseKhoBauX2 = timeKhoBauX2 > 0;
+            player.itemTime.isUseBuaSanta = timeBuaSanta > 0;
+            player.itemTime.isUseTDLT = timeUseTDLT > 0;
+            player.itemTime.isUseCMS = timeUseCMS > 0;
+            player.itemTime.isUseGTPT = timeUseGTPT > 0;
+            player.itemTime.isUseDK = timeUseDK > 0;
+            player.itemTime.isUseRX = timeUseRX > 0;
             player.itemTime.iconMeal2 = iconMeal2;
-            player.itemTime.isEatMeal2 = timeMeal2 != 0;
-            player.itemTime.isUseNCD = timeUseNCD != 0;
-            player.itemTime.isUseKilis = timeKilis != 0;
-            player.itemTime.isUseNuocMia1 = timeNuocMia1 != 0;
-            player.itemTime.isUseNuocMia2 = timeNuocMia2 != 0;
-            player.itemTime.isUseNuocMia3 = timeNuocMia3 != 0;
+            player.itemTime.isEatMeal2 = timeMeal2 > 0;
+            player.itemTime.isUseNCD = timeUseNCD > 0;
+            player.itemTime.isUseKilis = timeKilis > 0;
+            player.itemTime.isUseNuocMia1 = timeNuocMia1 > 0;
+            player.itemTime.isUseNuocMia2 = timeNuocMia2 > 0;
+            player.itemTime.isUseNuocMia3 = timeNuocMia3 > 0;
             dataArray.clear();
 
             //data nhiệm vụ
