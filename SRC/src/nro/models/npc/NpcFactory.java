@@ -763,9 +763,175 @@ public class NpcFactory {
                             ChangeMapService.gI().changeMap(player, player.zone.map.mapIdNextMabu((short) player.zone.map.mapId), -1, -1, 100);
                         }
                     }
+                    case 9900 -> {
+                        switch (select) {
+                            case 0 -> {
+                                player.isAutoBuffPea = !player.isAutoBuffPea;
+                                Service.gI().sendThongBao(player, "Auto Buff Đậu (Sư phụ & Đệ tử): " + (player.isAutoBuffPea ? "[Bật]" : "[Tắt]"));
+                                openMenuTienIch(player);
+                            }
+                            case 1 -> {
+                                player.isAutoCleanBag = !player.isAutoCleanBag;
+                                if (player.isAutoCleanBag) {
+                                    player.autoCleanTrashAndSellItems();
+                                }
+                                Service.gI().sendThongBao(player, "Auto Treo Quái (Chống đầy túi & tự bán đồ rác): " + (player.isAutoCleanBag ? "[Bật]" : "[Tắt]"));
+                                openMenuTienIch(player);
+                            }
+                            case 2 -> {
+                                nro.models.server.ServerNotify.gI().sendActiveBossesToPlayer(player);
+                                BossManager.gI().showListBoss(player);
+                            }
+                            case 3 -> {
+                                openMenuCongNhanh(player);
+                            }
+                            case 4 -> {
+                                openMenuQuanLyDeTu(player);
+                            }
+                        }
+                    }
+                    case 9901 -> {
+                        switch (select) {
+                            case 0 -> {
+                                player.nPoint.increasePoint((byte) 0, (short) 1000);
+                                openMenuCongNhanh(player);
+                            }
+                            case 1 -> {
+                                player.nPoint.increasePoint((byte) 0, (short) 30000);
+                                openMenuCongNhanh(player);
+                            }
+                            case 2 -> {
+                                player.nPoint.increasePoint((byte) 1, (short) 1000);
+                                openMenuCongNhanh(player);
+                            }
+                            case 3 -> {
+                                player.nPoint.increasePoint((byte) 1, (short) 30000);
+                                openMenuCongNhanh(player);
+                            }
+                            case 4 -> {
+                                player.nPoint.increasePoint((byte) 2, (short) 1000);
+                                openMenuCongNhanh(player);
+                            }
+                            case 5 -> {
+                                player.nPoint.increasePoint((byte) 2, (short) 30000);
+                                openMenuCongNhanh(player);
+                            }
+                            case 6 -> {
+                                openMenuTienIch(player);
+                            }
+                        }
+                    }
+                    case 9902 -> {
+                        if (player.pet == null) {
+                            if (select == 0) {
+                                PetService.gI().createNormalPet(player);
+                                Service.gI().sendThongBao(player, "Bạn vừa nhận được Đệ tử miễn phí!");
+                            } else {
+                                openMenuTienIch(player);
+                            }
+                            return;
+                        }
+                        switch (select) {
+                            case 0 ->
+                                player.pet.changeStatus(nro.models.player.Pet.FOLLOW);
+                            case 1 ->
+                                player.pet.changeStatus(nro.models.player.Pet.PROTECT);
+                            case 2 ->
+                                player.pet.changeStatus(nro.models.player.Pet.ATTACK);
+                            case 3 ->
+                                player.pet.changeStatus(nro.models.player.Pet.GOHOME);
+                            case 4 ->
+                                player.pet.transform();
+                            case 5 -> {
+                                int typePet = player.pet.typePet;
+                                if (typePet == 2 || typePet == 3 || typePet == 4) {
+                                    boolean found = false;
+                                    for (int i = 0; i < player.inventory.itemsBag.size(); i++) {
+                                        Item item = player.inventory.itemsBag.get(i);
+                                        if (item != null && item.isNotNullItem() && item.template.type == 25) {
+                                            found = true;
+                                            if (player.pet.nPoint != null && player.pet.nPoint.power >= 1500000) {
+                                                Item old = InventoryService.gI().putItemBody(player.pet, item);
+                                                player.inventory.itemsBag.set(i, old);
+                                                InventoryService.gI().sendItemBags(player);
+                                                InventoryService.gI().sendItemBody(player);
+                                                Service.gI().Send_Caitrang(player.pet);
+                                                Service.gI().Send_Caitrang(player);
+                                                Service.gI().sendThongBao(player, "Đã trang bị " + item.template.name + " cho đệ tử!");
+                                            } else {
+                                                Service.gI().sendThongBaoOK(player, "Đệ tử cần đạt 1tr5 sức mạnh để trang bị.");
+                                            }
+                                            break;
+                                        }
+                                    }
+                                    if (!found) {
+                                        Service.gI().sendThongBao(player, "Không tìm thấy Sách Tuyệt Kỹ trong hành trang!");
+                                    }
+                                } else {
+                                    Service.gI().sendThongBaoOK(player, "Chỉ đệ tử (Uub, Kid Beerus, Jiren) mới có thể dùng Sách Tuyệt Kỹ.");
+                                }
+                            }
+                            case 6 ->
+                                openMenuTienIch(player);
+                        }
+                    }
                 }
             }
         };
+    }
+
+    public static void openMenuTienIch(Player player) {
+        String npcSay = "|7|=== BẢNG ĐIỀU KHIỂN TIỆN ÍCH ===\n"
+                + "|2|Auto Buff Đậu (Sư phụ & Đệ): " + (player.isAutoBuffPea ? "|1|[Đang Bật]" : "|7|[Đang Tắt]") + "\n"
+                + "|2|Auto Treo Quái (Chống đầy túi): " + (player.isAutoCleanBag ? "|1|[Đang Bật]" : "|7|[Đang Tắt]") + "\n"
+                + "|2|Điểm Săn Boss hiện có: |1|" + player.pointSanBoss + " điểm\n"
+                + "|0|(Mẹo: Gõ 'auto' hoặc 'menu' vào chat để mở nhanh ở mọi nơi)";
+        NpcService.gI().createMenuConMeo(player, 9900, -1, npcSay,
+                "Auto Đậu\n" + (player.isAutoBuffPea ? "[Tắt]" : "[Bật]"),
+                "Treo Quái\n" + (player.isAutoCleanBag ? "[Tắt]" : "[Bật]"),
+                "D.Sách Boss\n(Bay nhanh)",
+                "Cộng nhanh\nChỉ số",
+                "Quản lý\nĐệ tử",
+                "Đóng");
+    }
+
+    public static void openMenuCongNhanh(Player player) {
+        String npcSay = "|7|=== CỘNG NHANH CHỈ SỐ GỐC ===\n"
+                + "|2|Tiềm năng hiện có: " + Util.numberToMoney(player.nPoint.tiemNang) + "\n"
+                + "|1|HP gốc: " + Util.numberToMoney(player.nPoint.hpg) + " / " + Util.numberToMoney(player.nPoint.getHpMpLimit()) + "\n"
+                + "|1|KI gốc: " + Util.numberToMoney(player.nPoint.mpg) + " / " + Util.numberToMoney(player.nPoint.getHpMpLimit()) + "\n"
+                + "|1|Sức đánh gốc: " + Util.numberToMoney(player.nPoint.dameg) + " / " + Util.numberToMoney(player.nPoint.getDameLimit());
+        NpcService.gI().createMenuConMeo(player, 9901, -1, npcSay,
+                "+20.000\nHP gốc",
+                "Max HP\nTới giới hạn",
+                "+20.000\nKI gốc",
+                "Max KI\nTới giới hạn",
+                "+1.000\nSức đánh",
+                "Max S.Đánh\nTới giới hạn",
+                "Quay lại");
+    }
+
+    public static void openMenuQuanLyDeTu(Player player) {
+        if (player.pet == null) {
+            NpcService.gI().createMenuConMeo(player, 9902, -1,
+                    "Bạn hiện chưa có Đệ tử.\nBạn có muốn nhận ngay 1 Đệ tử miễn phí không?",
+                    "Nhận Đệ tử\nMiễn phí",
+                    "Quay lại");
+            return;
+        }
+        String npcSay = "|7|=== QUẢN LÝ ĐỆ TỬ ===\n"
+                + "|2|Tên: " + player.pet.name + " | Sức mạnh: " + Util.numberToMoney(player.pet.nPoint.power) + "\n"
+                + "|1|HP: " + Util.numberToMoney(player.pet.nPoint.hpMax)
+                + " | KI: " + Util.numberToMoney(player.pet.nPoint.mpMax)
+                + " | SĐ: " + Util.numberToMoney(player.pet.nPoint.dame);
+        NpcService.gI().createMenuConMeo(player, 9902, -1, npcSay,
+                "Đi theo",
+                "Bảo vệ",
+                "Tấn công",
+                "Về nhà",
+                "Biến hình",
+                "Mặc Sách\nTuyệt Kỹ",
+                "Quay lại");
     }
 
 }

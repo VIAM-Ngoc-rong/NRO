@@ -325,6 +325,10 @@ parameterizedCommands.put("henbaotri", (player, text) -> {
                 nro.models.boss.Boss_Manager.BossManager.gI().showListBoss(player);
                 return true;
             }
+            case "auto", "menu", "tienich", "caidat", "hotro" -> {
+                nro.models.npc.NpcFactory.openMenuTienIch(player);
+                return true;
+            }
         }
 
         if (player.pet != null) {

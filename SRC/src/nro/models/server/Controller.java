@@ -662,13 +662,11 @@ public class Controller implements IMessageHandler {
                                 SuperRankService.gI().competing(player, _id);
                             }
                             default -> {
-                                if (player.isAdmin()) {
-                                    Boss boss = BossManager.gI().getBoss(_id);
-                                    if (boss != null) {
-                                        ChangeMapService.gI().changeMapYardrat(player, boss.zone, boss.location.x, boss.location.y);
-                                    }
+                                Boss boss = BossManager.gI().getBoss(_id);
+                                if (boss != null && boss.zone != null && !boss.isDie()) {
+                                    ChangeMapService.gI().changeMapYardrat(player, boss.zone, boss.location.x, boss.location.y);
                                 } else {
-                                    Service.gI().sendThongBao(player, "Không thể thực hiện");
+                                    Service.gI().sendThongBao(player, "Boss này hiện chưa xuất hiện hoặc đã bị tiêu diệt!");
                                 }
                             }
                         }

@@ -951,6 +951,10 @@ public class Service {
         if (player.isPet) {
             player.nPoint.powerUp(param);
             player.nPoint.tiemNangUp(param);
+            while (player.nPoint.limitPower < nro.models.player.NPoint.MAX_LIMIT
+                    && player.nPoint.power >= player.nPoint.getPowerLimit()) {
+                player.nPoint.limitPower++;
+            }
 
             Player master = ((Pet) player).master;
 

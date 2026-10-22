@@ -106,7 +106,7 @@ public class NangCapVatPham {
                                 npcSay, "Còn thiếu\n" + (player.combineNew.countDaBaoVe - itemDBV.quantity) + " đá bảo vệ");
                     } else {
                         CombineService.gI().baHatMit.createOtherMenu(player, ConstNpc.MENU_START_COMBINE,
-                                npcSay, "Nâng cấp\n" + Util.numberToMoney(player.combineNew.goldCombine) + " vàng" + daNPC, "Từ chối");
+                                npcSay, "Nâng cấp\n" + Util.numberToMoney(player.combineNew.goldCombine) + " vàng" + daNPC, "Đập liên tục\nđến khi lên", "Từ chối");
                     }
                 } else {
                     CombineService.gI().baHatMit.createOtherMenu(player, ConstNpc.IGNORE_MENU, "Trang bị của ngươi đã đạt cấp tối đa", "Đóng");
@@ -123,7 +123,8 @@ public class NangCapVatPham {
         }
     }
 
-    public static void nangCapVatPham(Player player) {
+    public static void nangCapVatPham(Player player, int... numm) {
+        int maxAttempts = (numm != null && numm.length > 0) ? numm[0] : 1;
         if (player.combineNew.itemsCombine.size() >= 2 && player.combineNew.itemsCombine.size() < 4) {
             if (player.combineNew.itemsCombine.stream().filter(item -> item.isNotNullItem() && item.template.type < 5).count() != 1) {
                 return;
@@ -151,37 +152,48 @@ public class NangCapVatPham {
                 }
             }
             if (CombineSystem.isCoupleItemNangCapCheck(itemDo, itemDNC)) {
-                int countDaNangCap = player.combineNew.countDaNangCap;
-                int gold = player.combineNew.goldCombine;
-                short countDaBaoVe = player.combineNew.countDaBaoVe;
-                if (player.inventory.gold < gold) {
-                    Service.gI().sendThongBao(player, "Không đủ vàng để thực hiện");
-                    return;
-                }
-
-                if (itemDNC.quantity < countDaNangCap) {
-                    return;
-                }
-                if (player.combineNew.itemsCombine.size() == 3) {
-                    if (Objects.isNull(itemDBV)) {
-                        return;
+                int attemptsDone = 0;
+                boolean upSuccess = false;
+                for (int attempt = 0; attempt < maxAttempts; attempt++) {
+                    int level = 0;
+                    Item.ItemOption optionLevel = null;
+                    for (Item.ItemOption io : itemDo.itemOptions) {
+                        if (io.optionTemplate.id == 72) {
+                            level = io.param;
+                            optionLevel = io;
+                            break;
+                        }
                     }
-                    if (itemDBV.quantity < countDaBaoVe) {
-                        return;
-                    }
-                }
-
-                int level = 0;
-                Item.ItemOption optionLevel = null;
-                for (Item.ItemOption io : itemDo.itemOptions) {
-                    if (io.optionTemplate.id == 72) {
-                        level = io.param;
-                        optionLevel = io;
+                    if (level >= MAX_LEVEL_ITEM) {
                         break;
                     }
-                }
-                if (level < MAX_LEVEL_ITEM) {
+                    int countDaNangCap = CombineSystem.getCountDaNangCapDo(level);
+                    int gold = CombineSystem.getGoldNangCapDo(level);
+                    short countDaBaoVe = (short) CombineSystem.getCountDaBaoVe(level);
+                    float ratio = (float) CombineSystem.getTileNangCapDo(level);
+
+                    if (player.inventory.gold < gold) {
+                        if (attemptsDone == 0) {
+                            Service.gI().sendThongBao(player, "Không đủ vàng để thực hiện");
+                        }
+                        break;
+                    }
+                    if (!itemDNC.isNotNullItem() || itemDNC.quantity < countDaNangCap) {
+                        break;
+                    }
+                    if (player.combineNew.itemsCombine.size() == 3) {
+                        if (Objects.isNull(itemDBV) || !itemDBV.isNotNullItem() || itemDBV.quantity < countDaBaoVe) {
+                            break;
+                        }
+                    }
+
                     player.inventory.gold -= gold;
+                    if (player.combineNew.itemsCombine.size() == 3) {
+                        InventoryService.gI().subQuantityItemsBag(player, itemDBV, countDaBaoVe);
+                    }
+                    InventoryService.gI().subQuantityItemsBag(player, itemDNC, countDaNangCap);
+                    attemptsDone++;
+
                     Item.ItemOption option = null;
                     Item.ItemOption option2 = null;
                     for (Item.ItemOption io : itemDo.itemOptions) {
@@ -198,7 +210,8 @@ public class NangCapVatPham {
                             option2 = io;
                         }
                     }
-                    if (Util.isTrue(player.combineNew.ratioCombine, 100)) {
+
+                    if (Util.isTrue(ratio, 100)) {
                         option.param += (option.param * 10 / 100) < 1 ? 1 : (option.param * 10 / 100);
                         if (option2 != null) {
                             option2.param += (option2.param * 10 / 100) < 1 ? 1 : (option2.param * 10 / 100);
@@ -208,14 +221,11 @@ public class NangCapVatPham {
                         } else {
                             optionLevel.param++;
                         }
-                        if (optionLevel != null && optionLevel.param >= 5) {
-                         //   ChatGlobalService.gI().ThongBaoRoiDo(player, "Chúc mừng " + player.name + " vừa nâng cấp " + "thành công " + itemDo.template.name + " lên +" + optionLevel.param);
-                        }
-                        CombineService.gI().sendEffectSuccessCombine(player);
-                        CombineService.gI().baHatMit.npcChat(player, "Chúc mừng con nhé");
                         if (level == 7) {
                             BadgesTaskService.updateCountBagesTask(player, ConstTaskBadges.THANH_DAP_DO_7, 1);
                         }
+                        upSuccess = true;
+                        break;
                     } else {
                         if ((level == 2 || level == 4 || level == 6) && (player.combineNew.itemsCombine.size() != 3)) {
                             option.param -= (option.param * 11 / 100) < 1 ? 1 : (option.param * 11 / 100);
@@ -234,7 +244,16 @@ public class NangCapVatPham {
                             } else {
                                 downgradeOption.param++;
                             }
+                            break;
                         }
+                    }
+                }
+
+                if (attemptsDone > 0) {
+                    if (upSuccess) {
+                        CombineService.gI().sendEffectSuccessCombine(player);
+                        CombineService.gI().baHatMit.npcChat(player, "Chúc mừng con nhé! (Sau " + attemptsDone + " lần đập)");
+                    } else {
                         CombineService.gI().sendEffectFailCombine(player);
                         String[] failMessages = {
                             "Lần này xui thôi, đập tiếp đi!",
@@ -246,12 +265,8 @@ public class NangCapVatPham {
                             "Ai đó gọi thầy độ chưa?"
                         };
                         String msg = failMessages[Util.nextInt(failMessages.length)];
-                        CombineService.gI().baHatMit.npcChat(player, msg);
+                        CombineService.gI().baHatMit.npcChat(player, attemptsDone > 1 ? (msg + " (Xịt " + attemptsDone + " lần)") : msg);
                     }
-                    if (player.combineNew.itemsCombine.size() == 3) {
-                        InventoryService.gI().subQuantityItemsBag(player, itemDBV, countDaBaoVe);
-                    }
-                    InventoryService.gI().subQuantityItemsBag(player, itemDNC, player.combineNew.countDaNangCap);
                     InventoryService.gI().sendItemBags(player);
                     Service.gI().sendMoney(player);
                     CombineService.gI().reOpenItemCombine(player);

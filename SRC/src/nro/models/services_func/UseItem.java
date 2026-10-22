@@ -764,6 +764,9 @@ public class UseItem {
                             case 380: //cskb
                                 openCSKB(pl, item);
                                 break;
+                            case 457: //thỏi vàng
+                                useThoiVang(pl, item);
+                                break;
                             case 1614:
                             case 1615:
                             case 1616:
@@ -1488,30 +1491,57 @@ public class UseItem {
         }
     }
 
+    private void useThoiVang(Player pl, Item item) {
+        if (pl.inventory.gold >= Inventory.LIMIT_GOLD) {
+            Service.gI().sendThongBao(pl, "Số vàng của bạn đã đạt giới hạn tối đa!");
+            return;
+        }
+        long goldAdd = 500_000_000L;
+        if (pl.inventory.gold + goldAdd > Inventory.LIMIT_GOLD) {
+            goldAdd = Inventory.LIMIT_GOLD - pl.inventory.gold;
+        }
+        pl.inventory.gold += goldAdd;
+        InventoryService.gI().subQuantityItemsBag(pl, item, 1);
+        InventoryService.gI().sendItemBags(pl);
+        PlayerService.gI().sendInfoHpMpMoney(pl);
+        Service.gI().sendThongBao(pl, "Bạn vừa dùng 1 Thỏi vàng và nhận được " + Util.numberToMoney(goldAdd) + " vàng!");
+    }
+
     private void openCSKB(Player pl, Item item) {
         if (InventoryService.gI().getCountEmptyBag(pl) > 0) {
             short[] temp = {76, 188, 189, 190, 381, 382, 383, 384, 385};
             int[][] gold = {{5000, 20000}};
-            byte index = (byte) Util.nextInt(0, temp.length - 1);
+            int countToOpen = (item.quantity >= 10 && InventoryService.gI().getCountEmptyBag(pl) >= 5) ? 10 : 1;
             short[] icon = new short[2];
             icon[0] = item.template.iconID;
-            if (index <= 3) {
-                pl.inventory.gold += Util.nextInt(gold[0][0], gold[0][1]);
-                if (pl.inventory.gold > Inventory.LIMIT_GOLD) {
-                    pl.inventory.gold = Inventory.LIMIT_GOLD;
+            int totalGold = 0;
+            int totalItems = 0;
+            for (int c = 0; c < countToOpen; c++) {
+                byte index = (byte) Util.nextInt(0, temp.length - 1);
+                if (index <= 3) {
+                    int g = Util.nextInt(gold[0][0], gold[0][1]);
+                    totalGold += g;
+                    pl.inventory.gold += g;
+                    if (pl.inventory.gold > Inventory.LIMIT_GOLD) {
+                        pl.inventory.gold = Inventory.LIMIT_GOLD;
+                    }
+                    icon[1] = 930;
+                } else {
+                    Item it = ItemService.gI().createNewItem(temp[index]);
+                    it.itemOptions.add(new ItemOption(73, 0));
+                    InventoryService.gI().addItemBag(pl, it);
+                    icon[1] = it.template.iconID;
+                    totalItems++;
                 }
-                PlayerService.gI().sendInfoHpMpMoney(pl);
-                icon[1] = 930;
-            } else {
-                Item it = ItemService.gI().createNewItem(temp[index]);
-                it.itemOptions.add(new ItemOption(73, 0));
-                InventoryService.gI().addItemBag(pl, it);
-                icon[1] = it.template.iconID;
             }
-            InventoryService.gI().subQuantityItemsBag(pl, item, 1);
+            PlayerService.gI().sendInfoHpMpMoney(pl);
+            InventoryService.gI().subQuantityItemsBag(pl, item, countToOpen);
             InventoryService.gI().sendItemBags(pl);
 
             CombineService.gI().sendEffectOpenItem(pl, icon[0], icon[1]);
+            if (countToOpen > 1) {
+                Service.gI().sendThongBao(pl, "Đã mở nhanh x" + countToOpen + " CSKB (Nhận " + totalItems + " item & " + Util.numberToMoney(totalGold) + " vàng)");
+            }
         } else {
             Service.gI().sendThongBao(pl, "Hàng trang đã đầy");
         }

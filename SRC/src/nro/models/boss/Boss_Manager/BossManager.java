@@ -381,21 +381,39 @@ public class BossManager implements Runnable {
     }
 
     public void showListBoss(Player player) {
-        if (!player.isAdmin()) {
-            return;
-        }
         player.idMark.setMenuType(3);
         Message msg;
         try {
-            msg = new Message(-96);
-            msg.writer().writeByte(0);
-            msg.writer().writeUTF("Boss");
-            msg.writer().writeByte((int) bosses.stream().filter(boss -> !MapService.gI().isMapBossFinal(boss.data[0].getMapJoin()[0]) && !MapService.gI().isMapHuyDiet(boss.data[0].getMapJoin()[0]) && !MapService.gI().isMapCadic(boss.data[0].getMapJoin()[0]) && !MapService.gI().isMapYardart(boss.data[0].getMapJoin()[0]) && !MapService.gI().isMapMaBu(boss.data[0].getMapJoin()[0]) && !MapService.gI().isMapBlackBallWar(boss.data[0].getMapJoin()[0])).count());
+            List<Integer> validIndices = new ArrayList<>();
             for (int i = 0; i < bosses.size(); i++) {
                 Boss boss = this.bosses.get(i);
-                if (MapService.gI().isMapBossFinal(boss.data[0].getMapJoin()[0]) || MapService.gI().isMapCadic(boss.data[0].getMapJoin()[0]) || MapService.gI().isMapYardart(boss.data[0].getMapJoin()[0]) || MapService.gI().isMapHuyDiet(boss.data[0].getMapJoin()[0]) || MapService.gI().isMapMaBu(boss.data[0].getMapJoin()[0]) || MapService.gI().isMapBlackBallWar(boss.data[0].getMapJoin()[0])) {
+                if (boss == null || boss.data == null || boss.data.length == 0 || boss.data[0].getMapJoin() == null || boss.data[0].getMapJoin().length == 0) {
                     continue;
                 }
+                int mapId = boss.data[0].getMapJoin()[0];
+                if (MapService.gI().isMapBossFinal(mapId) || MapService.gI().isMapCadic(mapId) || MapService.gI().isMapYardart(mapId) || MapService.gI().isMapHuyDiet(mapId) || MapService.gI().isMapMaBu(mapId) || MapService.gI().isMapBlackBallWar(mapId)) {
+                    continue;
+                }
+                validIndices.add(i);
+            }
+            validIndices.sort((idx1, idx2) -> {
+                Boss b1 = this.bosses.get(idx1);
+                Boss b2 = this.bosses.get(idx2);
+                boolean alive1 = b1.zone != null && !b1.isDie();
+                boolean alive2 = b2.zone != null && !b2.isDie();
+                return Boolean.compare(alive2, alive1);
+            });
+
+            msg = new Message(-96);
+            msg.writer().writeByte(0);
+            msg.writer().writeUTF("Danh Sách Boss (Bấm để dịch chuyển)");
+            msg.writer().writeByte(Math.min(validIndices.size(), 120));
+            int count = 0;
+            for (int i : validIndices) {
+                if (count++ >= 120) {
+                    break;
+                }
+                Boss boss = this.bosses.get(i);
                 msg.writer().writeInt(i);
                 msg.writer().writeInt(i);
                 msg.writer().writeShort(boss.data[0].getOutfit()[0]);
@@ -405,12 +423,12 @@ public class BossManager implements Runnable {
                 msg.writer().writeShort(boss.data[0].getOutfit()[1]);
                 msg.writer().writeShort(boss.data[0].getOutfit()[2]);
                 msg.writer().writeUTF(boss.data[0].getName());
-                if (boss.zone != null) {
-                    msg.writer().writeUTF(boss.bossStatus.toString());
-                    msg.writer().writeUTF(boss.zone.map.mapName + "(" + boss.zone.map.mapId + ") khu " + boss.zone.zoneId + "");
+                if (boss.zone != null && !boss.isDie()) {
+                    msg.writer().writeUTF("Đang sống - Bấm để đến");
+                    msg.writer().writeUTF(boss.zone.map.mapName + " (" + boss.zone.map.mapId + ") khu " + boss.zone.zoneId);
                 } else {
-                    msg.writer().writeUTF(boss.bossStatus.toString());
-                    msg.writer().writeUTF("=))");
+                    msg.writer().writeUTF("Đang chờ hồi sinh");
+                    msg.writer().writeUTF("Chưa xuất hiện");
                 }
             }
             player.sendMessage(msg);

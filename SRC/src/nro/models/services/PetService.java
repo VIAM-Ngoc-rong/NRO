@@ -300,6 +300,9 @@ public class PetService {
         pet.id = player.isPl() ? -player.id : -Math.abs(player.id) - 100000;
 
         pet.nPoint.power = isUub ? 40000000000L : isMabu ? 1500000L : isKidBeer ? 40000000000L : isJiren ? 40000000000L : 2000L;
+        if (isUub || isKidBeer || isJiren) {
+            pet.nPoint.limitPower = nro.models.player.NPoint.MAX_LIMIT;
+        }
 
         pet.typePet = (byte) (isMabu ? 1 : isUub ? 2 : isKidBeer ? 3 : isJiren ? 4 : 0);
 

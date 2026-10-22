@@ -15,11 +15,12 @@ public class OngParagus extends OngGohan {
         if (canOpenNpc(player)) {
             if (!TaskService.gI().checkDoneTaskTalkNpc(player, this)) {
                 this.createOtherMenu(player, ConstNpc.BASE_MENU,
-                        "Con cố gắng theo Vua Vegeta học thành tài, đừng lo lắng cho ta.",
+                        "Con cố gắng theo Vua Vegeta học thành tài, đừng lo lắng cho ta.\n(Gõ 'auto' vào chat để mở nhanh Menu Tiện Ích ở mọi nơi)",
                         "Nhận\n200k Ngọc",
                         "Nhận Đậu\n10 x99",
                         "Nhận Quà\nTân Thủ",
-                        "Đi Ngũ\nHành Sơn");
+                        "Đi Ngũ\nHành Sơn",
+                        "Tiện ích\nTự động");
             }
         }
     }

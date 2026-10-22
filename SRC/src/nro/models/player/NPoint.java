@@ -1739,7 +1739,12 @@ public class NPoint {
     }
 
     public long calSucManhTiemNang(long tiemNang) {
-        if (power < getPowerLimit()) {
+        if (this.player != null && this.player.isPet) {
+            while (this.limitPower < MAX_LIMIT && this.power >= getPowerLimit()) {
+                this.limitPower++;
+            }
+        }
+        if ((this.player != null && this.player.isPet) || power < getPowerLimit()) {
             if (this.tlTNSM != null) {
                 for (Integer tl : this.tlTNSM) {
                     if (tl != null) {
@@ -1784,7 +1789,7 @@ public class NPoint {
             if (this.intrinsic != null && this.intrinsic.id == 24) {
                 tiemNang += ((long) tiemNang * this.intrinsic.param1 / 100);
             }
-            if (this.power >= 60_000_000_000L) {
+            if (!this.player.isPet && this.power >= 60_000_000_000L) {
                 tiemNang -= ((long) tiemNang * 80 / 100);
             }
             if (this.player.isPet) {
@@ -1826,6 +1831,9 @@ public class NPoint {
     }
 
     public long calSubTNSM(long tiemNang) {
+        if (this.player != null && this.player.isPet) {
+            return tiemNang;
+        }
         if (power >= 90_000_000_000L) {
             tiemNang /= 100;
         } else if (power >= 80_000_000_000L) {
@@ -2046,49 +2054,70 @@ public class NPoint {
     }
 
     public void increasePoint(byte type, short point) {
-        if (point <= 0 || point > 1000) {
+        if (point <= 0 || point > 30000) {
             return;
         }
         long tiemNangUse;
         if (type == 0) {
-            int pointHp = point * 20;
-            tiemNangUse = point * (2 * (this.hpg + 1000) + pointHp - 20) / 2;
-            if ((this.hpg + pointHp) <= getHpMpLimit()) {
-                if (doUseTiemNang(tiemNangUse)) {
-                    hpg += pointHp;
-                }
-            } else {
+            int maxHpLimit = getHpMpLimit();
+            if (this.hpg >= maxHpLimit) {
                 Service.gI().sendThongBaoOK(player, "Vui lòng mở giới hạn sức mạnh");
                 return;
             }
+            if (this.hpg + point * 20 > maxHpLimit) {
+                point = (short) ((maxHpLimit - this.hpg) / 20);
+                if (point <= 0) {
+                    Service.gI().sendThongBaoOK(player, "Vui lòng mở giới hạn sức mạnh");
+                    return;
+                }
+            }
+            int pointHp = point * 20;
+            tiemNangUse = (long) point * (2L * (this.hpg + 1000L) + pointHp - 20L) / 2L;
+            if (doUseTiemNang(tiemNangUse)) {
+                hpg += pointHp;
+            }
         }
         if (type == 1) {
-            int pointMp = point * 20;
-            tiemNangUse = point * (2 * (this.mpg + 1000) + pointMp - 20) / 2;
-            if ((this.mpg + pointMp) <= getHpMpLimit()) {
-                if (doUseTiemNang(tiemNangUse)) {
-                    mpg += pointMp;
-                }
-            } else {
+            int maxMpLimit = getHpMpLimit();
+            if (this.mpg >= maxMpLimit) {
                 Service.gI().sendThongBaoOK(player, "Vui lòng mở giới hạn sức mạnh");
                 return;
+            }
+            if (this.mpg + point * 20 > maxMpLimit) {
+                point = (short) ((maxMpLimit - this.mpg) / 20);
+                if (point <= 0) {
+                    Service.gI().sendThongBaoOK(player, "Vui lòng mở giới hạn sức mạnh");
+                    return;
+                }
+            }
+            int pointMp = point * 20;
+            tiemNangUse = (long) point * (2L * (this.mpg + 1000L) + pointMp - 20L) / 2L;
+            if (doUseTiemNang(tiemNangUse)) {
+                mpg += pointMp;
             }
         }
         if (type == 2) {
             TaskService.gI().checkDoneTaskNangCS(player);
-            tiemNangUse = point * (2 * this.dameg + point - 1) / 2 * 100;
-            if ((this.dameg + point) <= getDameLimit()) {
-                if (doUseTiemNang(tiemNangUse)) {
-                    dameg += point;
-                }
-                TaskService.gI().checkDoneTaskNangCS(player);
-            } else {
+            int maxDameLimit = getDameLimit();
+            if (this.dameg >= maxDameLimit) {
                 Service.gI().sendThongBaoOK(player, "Vui lòng mở giới hạn sức mạnh");
                 return;
             }
+            if (this.dameg + point > maxDameLimit) {
+                point = (short) (maxDameLimit - this.dameg);
+                if (point <= 0) {
+                    Service.gI().sendThongBaoOK(player, "Vui lòng mở giới hạn sức mạnh");
+                    return;
+                }
+            }
+            tiemNangUse = (long) point * (2L * this.dameg + point - 1L) / 2L * 100L;
+            if (doUseTiemNang(tiemNangUse)) {
+                dameg += point;
+            }
+            TaskService.gI().checkDoneTaskNangCS(player);
         }
         if (type == 3) {
-            tiemNangUse = 2 * (this.defg + 5) / 2 * 100000;
+            tiemNangUse = 2L * (this.defg + 5L) / 2L * 100000L;
             if ((this.defg + point) <= getDefLimit()) {
                 if (doUseTiemNang(tiemNangUse)) {
                     defg += point;

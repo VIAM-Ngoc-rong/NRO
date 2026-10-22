@@ -26,11 +26,12 @@ public class OngGohan extends Npc {
         if (canOpenNpc(player)) {
             if (!TaskService.gI().checkDoneTaskTalkNpc(player, this)) {
                 this.createOtherMenu(player, ConstNpc.BASE_MENU,
-                        "Con cố gắng theo Quy Lão Kame học thành tài, đừng lo lắng cho ta.",
+                        "Con cố gắng theo Quy Lão Kame học thành tài, đừng lo lắng cho ta.\n(Gõ 'auto' vào chat để mở nhanh Menu Tiện Ích ở mọi nơi)",
                         "Nhận\n200k Ngọc",
                         "Nhận Đậu\n10 x99",
                         "Nhận Quà\nTân Thủ",
-                        "Đi Ngũ\nHành Sơn");
+                        "Đi Ngũ\nHành Sơn",
+                        "Tiện ích\nTự động");
             }
         }
     }
@@ -40,6 +41,9 @@ public class OngGohan extends Npc {
         if (canOpenNpc(player)) {
             if (player.idMark.isBaseMenu()) {
                 switch (select) {
+                    case 4 -> {
+                        nro.models.npc.NpcFactory.openMenuTienIch(player);
+                    }
                     case 3 -> {
                         ChangeMapService.gI().changeMapBySpaceShip(player, 122, -1, -1);
                     }

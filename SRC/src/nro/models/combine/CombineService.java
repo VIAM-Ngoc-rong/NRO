@@ -264,12 +264,18 @@ public class CombineService {
             case PHA_LE_HOA_TRANG_BI:
                 PhaLeHoaTrangBi.phaLeHoa(player, n);
                 break;
+            case EP_SAO_TRANG_BI:
+                EpSaoTrangBi.epSaoTrangBi(player, n);
+                break;
+            case NANG_CAP_VAT_PHAM:
+                NangCapVatPham.nangCapVatPham(player, n);
+                break;
         }
-        
+
         player.idMark.setIndexMenu(ConstNpc.IGNORE_MENU);
         player.combineNew.clearParamCombine();
         player.combineNew.lastTimeCombine = System.currentTimeMillis();
-        
+
     }
 
     /**

@@ -55,7 +55,7 @@ public class PhaLeHoaTrangBi {
         if (player.combineNew.goldCombine <= player.inventory.gold) {
             npcSay += "|1|Cần " + Util.numberToMoney(player.combineNew.goldCombine) + " vàng";
             CombineService.gI().baHatMit.createOtherMenu(player, ConstNpc.MENU_START_COMBINE, npcSay,
-                    "Nâng cấp\ncần " + Util.numberToMoney(player.combineNew.goldCombine) + " vàng", "Nâng cấp 10 lần", "Nâng cấp 100 lần");
+                    "Nâng cấp\ncần " + Util.numberToMoney(player.combineNew.goldCombine) + " vàng", "Nâng cấp 10 lần", "Nâng cấp 100 lần", "Đập đến khi\nlên sao");
         } else {
             npcSay += "Còn thiếu " + Util.numberToMoney(player.combineNew.goldCombine - player.inventory.gold) + " vàng";
             CombineService.gI().baHatMit.createOtherMenu(player, ConstNpc.IGNORE_MENU, npcSay, "Đóng");
@@ -182,7 +182,7 @@ public class PhaLeHoaTrangBi {
                     //  ChatGlobalService.gI().ThongBaoDapDo(player, "Chúc mừng " + player.name + " vừa pha lê hóa thành công " + item.template.name + " lên " + star + " sao pha lê");
                 }
                 CombineService.gI().sendEffectSuccessCombine(player);
-                CombineService.gI().baHatMit.npcChat(player, "Chúc mừng con nhé");
+                CombineService.gI().baHatMit.npcChat(player, "Chúc mừng con nhé! Lên " + star + " sao sau " + (num + 1) + " lần đập!");
             } else {
                 CombineService.gI().sendEffectFailCombine(player);
 
@@ -197,7 +197,7 @@ public class PhaLeHoaTrangBi {
                     "Còn vàng còn ngọc, đập tiếp đi!"
                 };
                 String msg = failMessages[Util.nextInt(failMessages.length)];
-                CombineService.gI().baHatMit.npcChat(player, msg);
+                CombineService.gI().baHatMit.npcChat(player, fail > 1 ? (msg + " (Xịt " + fail + " lần)") : msg);
             }
 
             InventoryService.gI().sendItemBags(player);

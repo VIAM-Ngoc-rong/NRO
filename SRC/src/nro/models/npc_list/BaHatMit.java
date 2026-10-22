@@ -198,6 +198,8 @@ public class BaHatMit extends Npc {
                                         CombineService.gI().startCombineVip(player, 10);
                                     case 2 ->
                                         CombineService.gI().startCombineVip(player, 100);
+                                    case 3 ->
+                                        CombineService.gI().startCombineVip(player, 500);
                                     default -> {
                                     }
                                 }
@@ -448,7 +450,7 @@ public class BaHatMit extends Npc {
                                 if (select == 0) {
                                     CombineService.gI().startCombine(player);
                                 } else if (select == 1) {
-                                    NangCapVatPham.nangCapVatPham(player);
+                                    CombineService.gI().startCombineVip(player, 100);
                                 }
                             }
                         }
