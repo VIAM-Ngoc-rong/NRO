@@ -941,7 +941,7 @@ public class Boss extends Player implements IBoss {
                 int nroId;
                 if (isBossFromTDSTNappaOnwards()) {
                     int rdNro = Util.nextInt(1, 100);
-                    if (rdNro <= 5) {
+                    if (rdNro <= 10) {
                         nroId = 14; // Ngọc rồng 1 sao (5%)
                     } else if (rdNro <= 20) {
                         nroId = 15; // Ngọc rồng 2 sao (15%)
