@@ -113,15 +113,11 @@ public class BlackGoku extends Boss {
     @Override
     public void autoLeaveMap() {
         if (Util.canDoWithTime(st, timeLeaveMap)) {
-            if (Util.isTrue(1, 2)) {
-                this.leaveMap();
-            } else {
-                this.leaveMapNew();
-            }
+            this.leaveMapNew();
         }
         if (this.zone != null && this.zone.getNumOfPlayers() > 0) {
             st = System.currentTimeMillis();
-            timeLeaveMap = Util.nextInt(300000, 900000);
+            timeLeaveMap = 900000;
         }
     }
 
@@ -130,7 +126,7 @@ public class BlackGoku extends Boss {
         this.name = this.data[this.currentLevel].getName();
         super.joinMap();
         st = System.currentTimeMillis();
-        timeLeaveMap = Util.nextInt(600000, 900000);
+        timeLeaveMap = 900000;
     }
 
     @Override

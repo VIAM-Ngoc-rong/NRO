@@ -119,7 +119,7 @@ public class Cumber extends Boss {
         }
         if (this.zone != null && this.zone.getNumOfPlayers() > 0) {
             st = System.currentTimeMillis();
-            timeLeaveMap = Util.nextInt(300000, 900000);
+            timeLeaveMap = 900000;
         }
     }
 
@@ -128,7 +128,7 @@ public class Cumber extends Boss {
         this.name = this.data[this.currentLevel].getName() + " " + Util.nextInt(1, 100);
         super.joinMap();
         st = System.currentTimeMillis();
-        timeLeaveMap = Util.nextInt(600000, 900000);
+        timeLeaveMap = 900000;
     }
 
     @Override

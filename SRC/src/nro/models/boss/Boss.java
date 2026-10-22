@@ -334,6 +334,20 @@ public class Boss extends Player implements IBoss {
         return false;
     }
 
+    public long getIdleResetTimeMs() {
+        long maxHp = this.nPoint != null ? Math.max(this.nPoint.hpMax, this.nPoint.hpg) : 0;
+        if (this.bossAppearTogether != null && this.currentLevel >= 0
+                && this.currentLevel < this.bossAppearTogether.length
+                && this.bossAppearTogether[this.currentLevel] != null) {
+            for (Boss sub : this.bossAppearTogether[this.currentLevel]) {
+                if (sub != null && sub.nPoint != null) {
+                    maxHp = Math.max(maxHp, Math.max(sub.nPoint.hpMax, sub.nPoint.hpg));
+                }
+            }
+        }
+        return maxHp > 100_000_000L ? 900_000L : 600_000L;
+    }
+
     //.outfit.
     @Override
     public short getHead() {
@@ -484,9 +498,11 @@ public class Boss extends Player implements IBoss {
         switch (this.bossStatus) {
             case CHAT_S, AFK, ACTIVE -> {
                 this.autoLeaveMap();
+                long idleResetTime = this.getIdleResetTimeMs();
                 if (this.parentBoss == null && !this.isExcludedFrom5MinReset() && !this.hasGroupDroppedBelow50Hp()
-                        && this.lastTimeSpawnOnMap > 0 && Util.canDoWithTime(this.lastTimeSpawnOnMap, 300000)) {
-                    this.chat("Quá 5 phút không ai đánh ta xuống dưới 50% HP, đổi khu vực khác!");
+                        && this.lastTimeSpawnOnMap > 0 && Util.canDoWithTime(this.lastTimeSpawnOnMap, idleResetTime)) {
+                    int minutes = (int) (idleResetTime / 60000L);
+                    this.chat("Quá " + minutes + " phút không ai đánh ta xuống dưới 50% HP, đổi khu vực khác!");
                     if (this.bossAppearTogether != null && this.currentLevel >= 0
                             && this.currentLevel < this.bossAppearTogether.length
                             && this.bossAppearTogether[this.currentLevel] != null) {
