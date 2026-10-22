@@ -2090,6 +2090,7 @@ public class NPoint {
         if (point <= 0 || point > 30000) {
             return;
         }
+        TaskService.gI().checkDoneTaskNangCS(player);
         long tiemNangUse;
         if (type == 0) {
             int maxHpLimit = getHpMpLimit();

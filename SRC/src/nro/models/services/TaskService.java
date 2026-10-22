@@ -120,6 +120,10 @@ public class TaskService {
         sendTaskMain(player);
         Service.gI().sendThongBao(player, "Nhiệm vụ tiếp theo của bạn là "
                 + player.playerTask.taskMain.subTasks.get(player.playerTask.taskMain.index).name);
+        if (player.nPoint != null) {
+            checkDoneTaskPower(player, player.nPoint.power);
+            checkDoneTaskNangCS(player);
+        }
     }
 
     public void sendUpdateCountSubTask(Player player) {
@@ -311,6 +315,10 @@ public class TaskService {
 
     public void checkDoneTaskGoToMap(Player player, Zone zoneJoin) {
         if (player.isPl()) {
+            if (player.nPoint != null) {
+                checkDoneTaskPower(player, player.nPoint.power);
+                checkDoneTaskNangCS(player);
+            }
             switch (zoneJoin.map.mapId) {
                 case 39, 40, 41 -> {
                     if (player.location.x >= 635) {
@@ -368,7 +376,7 @@ public class TaskService {
 
     public void checkDoneTaskNangCS(Player player) {
         if (!player.isBoss && !player.isBot && !player.isPet) {
-            if (player.nPoint.dameg < 35000) {
+            if (player.nPoint.dameg < 10000) {
                 return;
             }
             doneTask(player, ConstTask.TASK_27_0);
@@ -1030,7 +1038,7 @@ public class TaskService {
                 //---------------------------------
                 case ConstTask.TASK_27_0:
                     npcSay(player, ConstNpc.THAN_MEO_KARIN,
-                            "Tốt lắm! Bây giờ con hãy tìm cho ta 500 viên capsule kỳ bí nhé");
+                            "Tốt lắm! Bây giờ con hãy tìm cho ta 50 viên capsule kỳ bí nhé");
                     break;
                 case ConstTask.TASK_27_1:
                     break;
