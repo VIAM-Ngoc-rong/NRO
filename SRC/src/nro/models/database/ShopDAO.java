@@ -73,9 +73,9 @@ public class ShopDAO {
         int autoId = 100000;
 
         int[][] planetDefs = {
-            // --- TRÁI ĐẤT: Nhánh Chưởng (+100% / +150% sát thương chưởng) ---
-            {710,  50, 26, 77, 25, 103, 28, 159, 100, 98, 15, 14, 10},       // Quy Lão Kamê (+100% ST chưởng)
-            {711,  50, 27, 77, 26, 103, 28, 159, 150, 98, 15, 116, 0},       // Jacky Chun (+150% ST chưởng, Kháng TDHS)
+            // --- TRÁI ĐẤT: Nhánh Chưởng (Ngẫu nhiên 50% - 150% sát thương chưởng khi mua) ---
+            {710,  50, 26, 77, 25, 103, 28, 159, 150, 98, 15, 14, 10},       // Quy Lão Kamê (50-150% ST chưởng)
+            {711,  50, 27, 77, 26, 103, 28, 159, 150, 98, 15, 116, 0},       // Jacky Chun (50-150% ST chưởng, Kháng TDHS)
 
             // --- TRÁI ĐẤT: Nhánh Đánh KOK / Cận Chiến (Tăng nhẹ %SĐ + Hút HP, KI) ---
             {1553, 50, 32, 77, 28, 103, 27, 95, 15, 96, 15, 5, 15, 14, 10},  // Goku SSJ4 (32% SĐ, Hút 15% HP/KI)
@@ -85,9 +85,9 @@ public class ShopDAO {
             {898,  50, 32, 77, 28, 103, 27, 95, 15, 96, 15, 5, 15, 14, 10},  // Zamasu (32% SĐ, Hút 15% HP/KI)
             {1396, 50, 33, 77, 28, 103, 28, 95, 20, 96, 20, 5, 15, 99, 15},  // Super Píc (33% SĐ, Hút 20% HP/KI)
 
-            // --- NAMEK: Nhánh Chuyên KI / Laze (%KI cao hơn + Tăng 25% - 50% ST Laze) ---
-            {738,  50, 26, 77, 26, 103, 34, 66, 25, 98, 15},                 // Dr. Lychee (34% KI, +25% ST Laze)
-            {1567, 50, 27, 77, 26, 103, 36, 66, 50, 98, 18},                 // Frieren (36% KI, +50% ST Laze)
+            // --- NAMEK: Nhánh Chuyên KI / Laze (%KI cao hơn + Ngẫu nhiên 25% - 75% ST Laze khi mua) ---
+            {738,  50, 26, 77, 26, 103, 34, 66, 75, 98, 15},                 // Dr. Lychee (34% KI, 25-75% ST Laze)
+            {1567, 50, 27, 77, 26, 103, 36, 66, 75, 98, 18},                 // Frieren (36% KI, 25-75% ST Laze)
 
             // --- XAYDA: Nhánh Đánh Tay / Biến Khỉ (Giống KOK Trái Đất: Tăng nhẹ %SĐ + Hút HP, KI) ---
             {1783, 50, 32, 77, 28, 103, 27, 95, 15, 96, 15, 5, 15, 14, 10},  // Broly (32% SĐ, Hút 15% HP/KI)
@@ -95,9 +95,9 @@ public class ShopDAO {
             {1454, 50, 32, 77, 28, 103, 28, 95, 18, 96, 18, 5, 15, 14, 10},  // Super Black Goku Rose (32% SĐ, Hút 18% HP/KI)
             {1697, 50, 33, 77, 28, 103, 28, 95, 20, 96, 20, 5, 15, 14, 10},  // Gogeta (33% SĐ, Hút 20% HP/KI)
 
-            // --- XAYDA: Nhánh Đánh Bom (%HP cao hơn + Tăng 25% - 50% ST Nổ) ---
-            {1744, 50, 26, 77, 34, 103, 25, 153, 25, 97, 12},                // Cađíc SSJ2 M (34% HP, +25% ST Nổ)
-            {1693, 50, 27, 77, 36, 103, 26, 153, 50, 97, 15}                 // Cađíc SSJ4 (36% HP, +50% ST Nổ)
+            // --- XAYDA: Nhánh Đánh Bom (%HP cao hơn + Ngẫu nhiên 25% - 75% ST Nổ khi mua) ---
+            {1744, 50, 26, 77, 34, 103, 25, 153, 75, 97, 12},                // Cađíc SSJ2 M (34% HP, 25-75% ST Nổ)
+            {1693, 50, 27, 77, 36, 103, 26, 153, 75, 97, 15}                 // Cađíc SSJ4 (36% HP, 25-75% ST Nổ)
         };
 
         for (int[] def : planetDefs) {

@@ -880,7 +880,24 @@ public class ShopService {
         }
         InventoryService.gI().addItemBag(player, item);
         InventoryService.gI().sendItemBags(player);
-        Service.gI().sendThongBao(player, "Mua thành công " + is.temp.name);
+        String extraRollMsg = "";
+        if (item.itemOptions != null) {
+            for (ItemOption io : item.itemOptions) {
+                if (io.optionTemplate != null) {
+                    if (io.optionTemplate.id == 159) {
+                        extraRollMsg = " (Ngẫu nhiên: +" + io.param + "% ST chưởng)";
+                        break;
+                    } else if (io.optionTemplate.id == 153) {
+                        extraRollMsg = " (Ngẫu nhiên: +" + io.param + "% ST phát nổ)";
+                        break;
+                    } else if (io.optionTemplate.id == 66) {
+                        extraRollMsg = " (Ngẫu nhiên: +" + io.param + "% ST Laze)";
+                        break;
+                    }
+                }
+            }
+        }
+        Service.gI().sendThongBao(player, "Mua thành công " + is.temp.name + extraRollMsg);
 
         if (itemTempId == 1523 || itemTempId == 1524 || itemTempId == 521) {
             updateAutoTrainPurchase(player, itemTempId);
@@ -1278,7 +1295,24 @@ public class ShopService {
         item.itemOptions.addAll(itemoptions);
         InventoryService.gI().addItemBag(player, item);
         InventoryService.gI().sendItemBags(player);
-        Service.gI().sendThongBao(player, "Mua thành công " + is.temp.name);
+        String extraRollMsg = "";
+        if (item.itemOptions != null) {
+            for (ItemOption io : item.itemOptions) {
+                if (io.optionTemplate != null) {
+                    if (io.optionTemplate.id == 159) {
+                        extraRollMsg = " (Ngẫu nhiên: +" + io.param + "% ST chưởng)";
+                        break;
+                    } else if (io.optionTemplate.id == 153) {
+                        extraRollMsg = " (Ngẫu nhiên: +" + io.param + "% ST phát nổ)";
+                        break;
+                    } else if (io.optionTemplate.id == 66) {
+                        extraRollMsg = " (Ngẫu nhiên: +" + io.param + "% ST Laze)";
+                        break;
+                    }
+                }
+            }
+        }
+        Service.gI().sendThongBao(player, "Mua thành công " + is.temp.name + extraRollMsg);
     }
 
     private Item buyMagicPean(Player player, int[][] listDauThan, Item item) {

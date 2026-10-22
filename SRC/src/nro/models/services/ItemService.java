@@ -52,7 +52,15 @@ public class ItemService {
         item.content = item.getContent();
         item.info = item.getInfo();
         for (Item.ItemOption io : itemShop.options) {
-            item.itemOptions.add(new Item.ItemOption(io));
+            Item.ItemOption copyOpt = new Item.ItemOption(io);
+            if (copyOpt.optionTemplate != null) {
+                switch (copyOpt.optionTemplate.id) {
+                    case 159 -> copyOpt.param = Util.nextInt(50, 150); // Ngẫu nhiên 50% - 150% sát thương đòn chưởng
+                    case 153 -> copyOpt.param = Util.nextInt(25, 75);  // Ngẫu nhiên 25% - 75% sát thương chiêu phát nổ
+                    case 66  -> copyOpt.param = Util.nextInt(25, 75);  // Ngẫu nhiên 25% - 75% sát thương chiêu Laze
+                }
+            }
+            item.itemOptions.add(copyOpt);
         }
         return item;
     }
