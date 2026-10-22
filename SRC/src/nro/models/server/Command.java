@@ -38,7 +38,7 @@ public class Command {
     private static Command instance;
 
     private final Map<String, Consumer<Player>> adminCommands = new HashMap<>();
-    private final Map<String, BiConsumer<Player, String>> parameterizedCommands = new HashMap<>();
+    private final Map<String, BiConsumer<Player, String>> parameterizedCommands = new java.util.LinkedHashMap<>();
 
     public static Command gI() {
         if (instance == null) {
@@ -65,6 +65,26 @@ public class Command {
                 + "\nThreads: " + Thread.activeCount()
                 + " luồng" + "\n" + SystemMetrics.ToString(),
                 "Ngọc rồng", "Đệ tử", "Bảo trì", "Tìm kiếm\nngười chơi", "Boss", "Đóng"));
+        adminCommands.put("smdt", player -> {
+            if (player.pet == null) {
+                Service.gI().sendThongBao(player, "Bạn chưa có đệ tử");
+                return;
+            }
+            Service.gI().addSMTN(player.pet, (byte) 2, 1_500_000L, false);
+            Service.gI().sendThongBao(player, "Đã tăng 1.500.000 sức mạnh & tiềm năng cho đệ tử!");
+        });
+        adminCommands.put("updt", player -> {
+            if (player.pet == null) {
+                Service.gI().sendThongBao(player, "Bạn chưa có đệ tử");
+                return;
+            }
+            Service.gI().addSMTN(player.pet, (byte) 2, 1_500_000L, false);
+            Service.gI().sendThongBao(player, "Đã tăng 1.500.000 sức mạnh & tiềm năng cho đệ tử!");
+        });
+        adminCommands.put("baotri", player -> {
+            Maintenance.gI().startCountdown();
+            Service.gI().sendThongBao(player, "Đã kích hoạt đếm ngược bảo trì!");
+        });
     }
 
     private void initParameterizedCommands() {
@@ -170,16 +190,7 @@ parameterizedCommands.put("ki", (player, text) -> {
         Service.gI().sendThongBao(player, "Sai cú pháp: ki <số>");
     }
 });
-// up <power>
-parameterizedCommands.put("up", (player, text) -> {
-    try {
-        long power = Long.parseLong(text.replace("up", "").trim());
-        Service.gI().addSMTN(player, (byte) 2, power, false);
-        Service.gI().sendThongBao(player, "UP SMTN = " + power);
-    } catch (Exception e) {
-        Service.gI().sendThongBao(player, "Sai cú pháp: up <số>");
-    }
-});
+// upp <power> (đặt trước "up" để không bị "up" bắt nhầm prefix)
 parameterizedCommands.put("upp", (player, text) -> {
     try {
         if (player.pet == null) {
@@ -195,6 +206,30 @@ parameterizedCommands.put("upp", (player, text) -> {
         );
     } catch (Exception e) {
         Service.gI().sendThongBao(player, "Sai cú pháp: upp <số>");
+    }
+});
+// up <power>
+parameterizedCommands.put("up", (player, text) -> {
+    try {
+        long power = Long.parseLong(text.replace("up", "").trim());
+        Service.gI().addSMTN(player, (byte) 2, power, false);
+        Service.gI().sendThongBao(player, "UP SMTN = " + power);
+    } catch (Exception e) {
+        Service.gI().sendThongBao(player, "Sai cú pháp: up <số>");
+    }
+});
+parameterizedCommands.put("henbaotri", (player, text) -> {
+    try {
+        String arg = text.replace("henbaotri", "").trim();
+        String[] parts = arg.split(":");
+        int h = Integer.parseInt(parts[0].trim());
+        int m = parts.length > 1 ? Integer.parseInt(parts[1].trim()) : 0;
+        AutoMaintenance.hours = h;
+        AutoMaintenance.mins = m;
+        AutoMaintenance.AutoMaintenance = true;
+        Service.gI().sendThongBao(player, String.format("Đã hẹn bảo trì tự động hằng ngày lúc %02d:%02d", h, m));
+    } catch (Exception e) {
+        Service.gI().sendThongBao(player, "Sai cú pháp! Dùng: henbaotri <giờ:phút> (VD: henbaotri 05:00)");
     }
 });
 

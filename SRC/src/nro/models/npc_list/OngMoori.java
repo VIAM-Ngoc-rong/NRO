@@ -18,7 +18,8 @@ public class OngMoori extends OngGohan {
                         "Con cố gắng theo Trưởng Lão Guru học thành tài, đừng lo lắng cho ta.",
                         "Nhận\n200k Ngọc",
                         "Nhận Đậu\n10 x99",
-                        "Nhận Quà\nTân Thủ");
+                        "Nhận Quà\nTân Thủ",
+                        "Đi Ngũ\nHành Sơn");
             }
         }
     }

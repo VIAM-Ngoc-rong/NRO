@@ -397,6 +397,7 @@ public class MapService {
         addListMapCapsule(pl, list, getMapCanJoin(pl, 84, 0));
         addListMapCapsule(pl, list, getMapCanJoin(pl, 154, 0));
         addListMapCapsule(pl, list, getMapCanJoin(pl, 52, 0));
+        addListMapCapsule(pl, list, getMapCanJoin(pl, 122, 0));
         return list;
     }
 

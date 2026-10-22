@@ -1700,7 +1700,7 @@ public class NPoint {
                 }
             }
             if (MapService.gI().isMapNguHanhSon(this.player.zone.map.mapId)) {
-                tiemNang *= 1;
+                tiemNang *= 5;
             }
             if (MapService.gI().AllMap(this.player.zone.map.mapId)) {
                 //  tiemNang *= 10; //x x3 tiềm năng toàn server

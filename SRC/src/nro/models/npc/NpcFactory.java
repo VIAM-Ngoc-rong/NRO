@@ -229,6 +229,34 @@ public class NpcFactory {
                     new XeNuocMia(mapId, status, cx, cy, tempId, avatar);
                 case ConstNpc.BARDOCK ->
                     new Bardock(mapId, status, cx, cy, tempId, avatar);
+                case ConstNpc.DUONG_TANG, ConstNpc.NGO_KHONG ->
+                    new Npc(mapId, status, cx, cy, tempId, avatar) {
+                        @Override
+                        public void openBaseMenu(Player player) {
+                            if (canOpenNpc(player)) {
+                                if (this.mapId >= 122 && this.mapId <= 124) {
+                                    this.createOtherMenu(player, ConstNpc.BASE_MENU,
+                                            "A di đà phật! Nơi đây linh khí hội tụ (x5 TNSM).\nThí chủ có muốn quay về nhà không?",
+                                            "Về nhà", "Ở lại");
+                                } else {
+                                    this.createOtherMenu(player, ConstNpc.BASE_MENU,
+                                            "A di đà phật! Thí chủ có muốn cùng bần tăng đến Ngũ Hành Sơn tu luyện (x5 TNSM) không?",
+                                            "Đến\nNgũ Hành Sơn", "Từ chối");
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void confirmMenu(Player player, int select) {
+                            if (canOpenNpc(player) && player.idMark.isBaseMenu() && select == 0) {
+                                if (this.mapId >= 122 && this.mapId <= 124) {
+                                    ChangeMapService.gI().changeMapBySpaceShip(player, 21 + player.gender, -1, -1);
+                                } else {
+                                    ChangeMapService.gI().changeMapBySpaceShip(player, 122, -1, -1);
+                                }
+                            }
+                        }
+                    };
                 default ->
                     new Npc(mapId, status, cx, cy, tempId, avatar) {
                         @Override

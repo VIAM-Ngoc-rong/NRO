@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import nro.models.consts.ConstNpc;
 import nro.models.data.LocalManager;
 import nro.models.item.Item;
+import nro.models.map.service.ChangeMapService;
 import nro.models.npc.Npc;
 import nro.models.player.Player;
 import nro.models.services.InventoryService;
@@ -28,7 +29,8 @@ public class OngGohan extends Npc {
                         "Con cố gắng theo Quy Lão Kame học thành tài, đừng lo lắng cho ta.",
                         "Nhận\n200k Ngọc",
                         "Nhận Đậu\n10 x99",
-                        "Nhận Quà\nTân Thủ");
+                        "Nhận Quà\nTân Thủ",
+                        "Đi Ngũ\nHành Sơn");
             }
         }
     }
@@ -38,6 +40,9 @@ public class OngGohan extends Npc {
         if (canOpenNpc(player)) {
             if (player.idMark.isBaseMenu()) {
                 switch (select) {
+                    case 3 -> {
+                        ChangeMapService.gI().changeMapBySpaceShip(player, 122, -1, -1);
+                    }
                     case 0 -> {
                         long newGem = Math.min((long) player.inventory.gem + 200_000L, 2_000_000_000L);
                         player.inventory.gem = (int) newGem;

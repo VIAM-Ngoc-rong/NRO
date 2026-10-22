@@ -81,7 +81,7 @@ public class Player implements Runnable {
 
     public long lastTimeEatPea;
     public boolean isAutoBuffPea = true;
-    public boolean isAutoCleanBag = true;
+    public boolean isAutoCleanBag = false;
     public long lastTimeAutoCleanBag;
     public boolean hasSentInitialBossNotify = false;
     public long lastTimeSyncPetInfo;

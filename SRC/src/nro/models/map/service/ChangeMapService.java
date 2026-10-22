@@ -1050,9 +1050,6 @@ public class ChangeMapService {
     }
 
     public Zone checkMapCanJoinByYardart(Player player, Zone zoneJoin) {
-        if ((!player.isBoss && !player.isAdmin()) && (zoneJoin.map.mapId == 122 || zoneJoin.map.mapId == 123 || zoneJoin.map.mapId == 124)) {
-            return null;
-        }
         return zoneJoin;
     }
 
