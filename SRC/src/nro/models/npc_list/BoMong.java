@@ -45,6 +45,7 @@ public class BoMong extends Npc {
                 if (player.idMark.isBaseMenu()) {
                     switch (select) {
                         case 0 -> {
+                            player.playerTask.sideTask.renew();
                             if (player.playerTask.sideTask.template != null) {
                                 String npcSay = "Nhiệm vụ hiện tại: " + player.playerTask.sideTask.getName() + " ("
                                         + player.playerTask.sideTask.getLevel() + ")"
@@ -56,9 +57,10 @@ public class BoMong extends Npc {
                                         npcSay, "Trả nhiệm\nvụ", "Hủy nhiệm\nvụ");
                             } else {
                                 this.createOtherMenu(player, ConstNpc.MENU_OPTION_LEVEL_SIDE_TASK,
-                                        "Tôi có vài nhiệm vụ theo cấp bậc, "
-                                        + "sức cậu có thể làm được cái nào?",
-                                        "Dễ", "Bình thường", "Khó", "Từ chối");
+                                        "Tôi có các nhiệm vụ hàng ngày (" + player.playerTask.sideTask.leftTask + "/" + ConstTask.MAX_SIDE_TASK + " lượt/ngày).\n"
+                                        + "Hoàn thành sẽ nhận Vàng, Thỏi Vàng (500Tr) và Ngọc Bí Ngô!\n"
+                                        + "Sức cậu có thể làm được cấp độ nào?",
+                                        "Dễ\n(100Tr Vàng)", "Bình thường\n(250Tr Vàng)", "Khó\n(1 Thỏi vàng)", "Rất khó\n(1 Thỏi+250Tr)", "Địa ngục\n(2 Thỏi vàng)", "Từ chối");
                             }
                         }
                         case 1 -> {
@@ -70,7 +72,7 @@ public class BoMong extends Npc {
                     }
                 } else if (player.idMark.getIndexMenu() == ConstNpc.MENU_OPTION_LEVEL_SIDE_TASK) {
                     switch (select) {
-                        case 0, 1, 2 ->
+                        case 0, 1, 2, 3, 4 ->
                             TaskService.gI().changeSideTask(player, (byte) select);
                     }
                 } else if (player.idMark.getIndexMenu() == ConstNpc.MENU_OPTION_PAY_SIDE_TASK) {

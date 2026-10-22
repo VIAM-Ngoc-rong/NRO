@@ -1288,70 +1288,63 @@ public class TaskService {
     public void paySideTask(Player player) {
         if (player.playerTask.sideTask.template != null) {
             if (player.playerTask.sideTask.isDone()) {
-                int goldReward = 0;
+                long goldReward = 0;
+                int thoiVangReward = 0;
                 int ngocBi = 708;
-                int cayThong = -1;
                 switch (player.playerTask.sideTask.level) {
                     case ConstTask.EASY:
-                        BadgesTaskService.updateCountBagesTask(player, ConstTaskBadges.NONG_DAN_CHAM_CHI, 1);
-                        goldReward = ConstTask.GOLD_EASY;
+                        goldReward = ConstTask.GOLD_EASY; // 100tr Vàng
                         ngocBi = 708;
                         break;
                     case ConstTask.NORMAL:
-                        BadgesTaskService.updateCountBagesTask(player, ConstTaskBadges.NONG_DAN_CHAM_CHI, 1);
-                        goldReward = ConstTask.GOLD_NORMAL;
+                        goldReward = ConstTask.GOLD_NORMAL; // 250tr Vàng
                         ngocBi = 707;
                         break;
                     case ConstTask.HARD:
-                        BadgesTaskService.updateCountBagesTask(player, ConstTaskBadges.NONG_DAN_CHAM_CHI, 1);
-                        goldReward = ConstTask.GOLD_HARD;
+                        thoiVangReward = 1; // 1 Thỏi vàng (500tr)
                         ngocBi = 706;
                         break;
                     case ConstTask.VERY_HARD:
-                        BadgesTaskService.updateCountBagesTask(player, ConstTaskBadges.NONG_DAN_CHAM_CHI, 1);
-                        goldReward = ConstTask.GOLD_VERY_HARD;
+                        thoiVangReward = 1; // 1 Thỏi vàng + 250tr Vàng
+                        goldReward = 250_000_000L;
                         ngocBi = 705;
                         break;
                     case ConstTask.HELL:
-                        BadgesTaskService.updateCountBagesTask(player, ConstTaskBadges.NONG_DAN_CHAM_CHI, 1);
-                        goldReward = ConstTask.GOLD_HELL;
+                        thoiVangReward = 2; // 2 Thỏi vàng (1 Tỷ)
                         ngocBi = 704;
-                        if (player.playerTask.sideTask.leftTask < 15) {
-                            cayThong = 822;
-                        }
                         break;
                 }
 
                 if (InventoryService.gI().getCountEmptyBag(player) > 1) {
-                    if (cayThong != -1 && canNhanCayThong) {
-                        canNhanCayThong = false;
-                        Item cT = ItemService.gI().createNewItem((short) cayThong);
-                        if (Util.isTrue(1, 2)) {
-                            cT.itemOptions.add(new Item.ItemOption(Util.nextInt(11, 13), 100));
-                        }
-                        cT.itemOptions.add(new Item.ItemOption(24, 0));
-                        cT.itemOptions.add(new Item.ItemOption(110, Util.nextInt(118, 126)));
-                        cT.itemOptions.add(new Item.ItemOption(110, Util.nextInt(110, 113)));
-                        cT.itemOptions.add(new Item.ItemOption(93, 30));
-                        BadgesTaskService.updateCountBagesTask(player, ConstTaskBadges.NONG_DAN_CHAM_CHI, 1);
-                        InventoryService.gI().addItemBag(player, cT);
-                        Service.gI().sendThongBao(player, "Bạn nhận được " + cT.template.name);
-                    } else {
-                        Item bi = ItemService.gI().createNewItem((short) ngocBi);
-                        bi.itemOptions.add(new Item.ItemOption(93, 30));
-                        InventoryService.gI().addItemBag(player, bi);
-                        BadgesTaskService.updateCountBagesTask(player, ConstTaskBadges.NONG_DAN_CHAM_CHI, 1);
-                        Service.gI().sendThongBao(player, "Bạn nhận được " + bi.template.name);
+                    Item bi = ItemService.gI().createNewItem((short) ngocBi);
+                    InventoryService.gI().addItemBag(player, bi);
+
+                    if (thoiVangReward > 0) {
+                        Item tv = ItemService.gI().createNewItem((short) 457, thoiVangReward);
+                        InventoryService.gI().addItemBag(player, tv);
                     }
                     InventoryService.gI().sendItemBags(player);
-                    player.inventory.addGold(goldReward);
+
+                    if (goldReward > 0) {
+                        player.inventory.addGold(goldReward);
+                        Service.gI().sendMoney(player);
+                    }
                     BadgesTaskService.updateCountBagesTask(player, ConstTaskBadges.NONG_DAN_CHAM_CHI, 1);
-                    Service.gI().sendMoney(player);
-                    Service.gI().sendThongBao(player, "Bạn nhận được "
-                            + Util.numberToMoney(goldReward) + " vàng");
+
+                    StringBuilder msgReward = new StringBuilder("Hoàn thành nhiệm vụ! Bạn nhận được: ");
+                    if (thoiVangReward > 0) {
+                        msgReward.append(thoiVangReward).append(" Thỏi vàng");
+                        if (goldReward > 0) {
+                            msgReward.append(" + ").append(Util.numberToMoney(goldReward)).append(" vàng");
+                        }
+                    } else if (goldReward > 0) {
+                        msgReward.append(Util.numberToMoney(goldReward)).append(" vàng");
+                    }
+                    msgReward.append(" và 1 ").append(bi.template.name);
+                    Service.gI().sendThongBao(player, msgReward.toString());
                     player.playerTask.sideTask.reset();
                 } else {
-                    Service.gI().sendThongBao(player, "Hành trang không đủ chỗ trống.");
+                    Service.gI().sendThongBao(player, "Hành trang cần ít nhất 2 ô trống để nhận thưởng.");
                 }
             } else {
                 Service.gI().sendThongBao(player, "Bạn chưa hoàn thành nhiệm vụ");
@@ -1360,7 +1353,10 @@ public class TaskService {
     }
 
     public void checkDoneSideTaskKillMob(Player player, Mob mob) {
-        if (player.playerTask != null && player.playerTask.sideTask.template != null) {
+        if (player != null && player.isPet) {
+            player = ((nro.models.player.Pet) player).master;
+        }
+        if (player != null && player.playerTask != null && player.playerTask.sideTask.template != null) {
             if ((player.playerTask.sideTask.template.id == 0 && mob.tempId == ConstMob.KHUNG_LONG)
                     || (player.playerTask.sideTask.template.id == 1 && mob.tempId == ConstMob.LON_LOI)
                     || (player.playerTask.sideTask.template.id == 2 && mob.tempId == ConstMob.QUY_DAT)
