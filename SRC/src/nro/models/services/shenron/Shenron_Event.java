@@ -12,6 +12,7 @@ import nro.models.server.Client;
 import nro.models.services.ItemService;
 import nro.models.services.InventoryService;
 import nro.models.services.ItemTimeService;
+import nro.models.services.PlayerService;
 import nro.models.map.service.NpcService;
 import nro.models.services.Service;
 import nro.models.services.IntrinsicService;
@@ -52,6 +53,14 @@ public class Shenron_Event {
     public static final String SHENRONEVENT_SAY
             = "Ta sẽ ban cho người 1 điều ước, ngươi có 5 phút, hãy chọn đi:\n1) Đổi skill 3, 4 đệ tử (có thể trùng skill trước đó).\n2) Thay đổi nội tại.\n3) Cải trang siêu thần HSD 90 ngày.\n4) Cải trang Black Gohan Rose HSD 90 ngày.\n5) Tăng 10% HP, KI, SĐ trong 30 phút.";
 
+    public static final String SHENRON_TIM_SAY
+            = "Ta là Rồng Thần Tím! Ta sẽ ban cho ngươi 1 điều ước cao cấp, hãy chọn đi:\n"
+            + "1) Giàu có: +20 Tỷ Vàng & 50 Thỏi vàng.\n"
+            + "2) Chí mạng gốc +2% (Tối đa 12%).\n"
+            + "3) Găng tay đang đeo lên 1 cấp (Tối đa cấp 8).\n"
+            + "4) Đổi ngẫu nhiên Chiêu 2, 3, 4 Đệ tử.\n"
+            + "5) Tăng 10% HP, KI, SĐ trong 60 phút & 5 Đá Hematite.";
+
     public static final String[] SHENRON_WISHES
             = new String[]{"Điều ước 1", "Điều ước 2", "Điều ước 3", "Điều ước 4", "Điều ước 5"};
 
@@ -91,16 +100,15 @@ public class Shenron_Event {
     }
 
     public void sendBlackGokuhesShenron() {
-        NpcService.gI().createMenuRongThieng(player, ConstNpc.SHOW_SHENRON_EVENT_CONFIRM, SHENRONEVENT_SAY, SHENRON_WISHES);
+        String say = player.idMark.getShenronType() == 1 ? SHENRON_TIM_SAY : SHENRONEVENT_SAY;
+        NpcService.gI().createMenuRongThieng(player, ConstNpc.SHOW_SHENRON_EVENT_CONFIRM, say, SHENRON_WISHES);
     }
 
     public void showConfirmShenron(byte select) {
         this.select = select;
         String wish = null;
-        switch (player.idMark.getShenronType()) {
-            case 0:
-                wish = SHENRON_WISHES[select];
-                break;
+        if (select >= 0 && select < SHENRON_WISHES.length) {
+            wish = SHENRON_WISHES[select];
         }
         NpcService.gI().createMenuRongThieng(player, ConstNpc.SHENRON_EVENT_CONFIRM, "Ngươi có chắc muốn ước?", wish, "Từ chối");
     }
@@ -249,6 +257,114 @@ public class Shenron_Event {
                             sendBlackGokuhesShenron();
                             return;
                         }
+                }
+                break;
+            case 1: // Rồng Thần Tím (Ngọc Rồng Tím 1-7 sao)
+                switch (this.select) {
+                    case 0: // +20 Tỷ Vàng & 50 Thỏi vàng
+                        if (InventoryService.gI().getCountEmptyBag(player) > 0) {
+                            this.player.inventory.addGold(20_000_000_000L);
+                            PlayerService.gI().sendInfoHpMpMoney(this.player);
+                            Item thoiVang = ItemService.gI().createNewItem((short) 457, 50);
+                            InventoryService.gI().addItemBag(player, thoiVang);
+                            InventoryService.gI().sendItemBags(player);
+                        } else {
+                            Service.gI().sendThongBao(player, "Hành trang cần ít nhất 1 ô trống");
+                            sendBlackGokuhesShenron();
+                            return;
+                        }
+                        break;
+                    case 1: // Chí mạng gốc +2% (Tối đa 12%)
+                        if (this.player.nPoint.critdragon < 12) {
+                            this.player.nPoint.critdragon = (byte) Math.min(12, this.player.nPoint.critdragon + 2);
+                            Service.gI().point(player);
+                        } else {
+                            Service.gI().sendThongBao(player, "Chí mạng Rồng Thần của ngươi đã đạt tối đa (12%)!");
+                            sendBlackGokuhesShenron();
+                            return;
+                        }
+                        break;
+                    case 2: // Găng tay đang đeo lên 1 cấp (Tối đa cấp 8)
+                        Item gang = this.player.inventory.itemsBody.get(2);
+                        if (gang.isNotNullItem()) {
+                            int level = 0;
+                            for (Item.ItemOption io : gang.itemOptions) {
+                                if (io.optionTemplate.id == 72) {
+                                    level = io.param;
+                                    if (level < 8) {
+                                        io.param++;
+                                    }
+                                    break;
+                                }
+                            }
+                            if (level < 8) {
+                                if (level == 0) {
+                                    gang.itemOptions.add(new Item.ItemOption(72, 1));
+                                }
+                                for (Item.ItemOption io : gang.itemOptions) {
+                                    if (io.optionTemplate.id == 0) {
+                                        io.param += (io.param * 10 / 100);
+                                        break;
+                                    }
+                                }
+                                InventoryService.gI().sendItemBody(player);
+                                Service.gI().point(player);
+                            } else {
+                                Service.gI().sendThongBao(player, "Găng tay của ngươi đã đạt cấp tối đa (Cấp 8)");
+                                sendBlackGokuhesShenron();
+                                return;
+                            }
+                        } else {
+                            Service.gI().sendThongBao(player, "Ngươi hiện tại có đeo găng tay đâu!");
+                            sendBlackGokuhesShenron();
+                            return;
+                        }
+                        break;
+                    case 3: // Đổi ngẫu nhiên Chiêu 2, 3, 4 Đệ tử
+                        if (player.pet != null) {
+                            if (player.pet.playerSkill.skills.get(1).skillId != -1) {
+                                player.pet.openSkill2();
+                                if (player.pet.playerSkill.skills.get(2).skillId != -1) {
+                                    player.pet.openSkill3();
+                                }
+                                if (player.pet.playerSkill.skills.get(3).skillId != -1) {
+                                    player.pet.openSkill4();
+                                }
+                            } else {
+                                Service.gI().sendThongBao(player, "Ít nhất đệ tử ngươi phải mở chiêu 2 chứ!");
+                                sendBlackGokuhesShenron();
+                                return;
+                            }
+                        } else {
+                            Service.gI().sendThongBao(player, "Ngươi làm gì có đệ tử?");
+                            sendBlackGokuhesShenron();
+                            return;
+                        }
+                        break;
+                    case 4: // Tăng 10% HP, KI, SĐ trong 60 phút & 5 Đá Hematite
+                        if (InventoryService.gI().getCountEmptyBag(player) <= 0) {
+                            Service.gI().sendThongBao(player, "Hành trang cần ít nhất 1 ô trống");
+                            sendBlackGokuhesShenron();
+                            return;
+                        }
+                        int timeRX = player.itemTime.timeRX / 1000 + 3600;
+                        int maxTimeInSeconds = 32767;
+                        if (timeRX >= maxTimeInSeconds) {
+                            timeRX = maxTimeInSeconds - 1;
+                        }
+                        player.itemTime.isUseRX = true;
+                        player.itemTime.timeRX = timeRX * 1000;
+                        player.itemTime.lastTimeUseRX = System.currentTimeMillis();
+                        ItemTimeService.gI().sendItemTime(player, 6581, timeRX);
+                        player.nPoint.calPoint();
+                        player.nPoint.setHp((int) player.nPoint.hpMax);
+                        player.nPoint.setMp((int) player.nPoint.mpMax);
+                        Service.gI().point(player);
+                        Service.gI().Send_Info_NV(player);
+                        Item hematite = ItemService.gI().createNewItem((short) 1423, 5);
+                        InventoryService.gI().addItemBag(player, hematite);
+                        InventoryService.gI().sendItemBags(player);
+                        break;
                 }
                 break;
         }

@@ -19,7 +19,10 @@ public class CombineSystem {
     }
 
     public static boolean isDaPhaLe(Item item) {
-        return item != null && item.template != null && (item.template.type == 30 || (item.template.id >= 14 && item.template.id <= 20));
+        return item != null && item.template != null
+                && (item.template.type == 30
+                || (item.template.id >= 14 && item.template.id <= 20)
+                || (item.template.id >= 1827 && item.template.id <= 1833));
     }
 
     public static int getGemEpSao(int star) {
@@ -63,19 +66,19 @@ public class CombineSystem {
             return daPhaLe.itemOptions.get(0).optionTemplate.id;
         }
         return switch (daPhaLe.template.id) {
-            case 20 ->
+            case 20, 1833 ->
                 77;
-            case 19 ->
+            case 19, 1832 ->
                 103;
-            case 18 ->
+            case 18, 1831 ->
                 80;
-            case 17 ->
+            case 17, 1830 ->
                 81;
-            case 16 ->
+            case 16, 1829 ->
                 50;
-            case 15 ->
+            case 15, 1828 ->
                 94;
-            case 14 ->
+            case 14, 1827 ->
                 108;
             case 441 ->
                 95;
@@ -115,6 +118,20 @@ public class CombineSystem {
                 2;
             case 14 ->
                 2;
+            case 1833 ->
+                7;
+            case 1832 ->
+                7;
+            case 1831 ->
+                7;
+            case 1830 ->
+                7;
+            case 1829 ->
+                4;
+            case 1828 ->
+                3;
+            case 1827 ->
+                3;
             case 441 ->
                 5;
             case 442 ->

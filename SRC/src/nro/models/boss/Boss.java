@@ -864,6 +864,20 @@ public class Boss extends Player implements IBoss {
         return false;
     }
 
+    public boolean isDailyBossDropNgocRongTim() {
+        switch ((int) this.id) {
+            case BossID.BUJIN, BossID.KOGU, BossID.ZANGYA, BossID.BIDO, BossID.BOJACK, BossID.SUPER_BOJACK,
+                 BossID.SO_4_NM, BossID.SO_3_NM, BossID.SO_2_NM, BossID.SO_1_NM, BossID.TIEU_DOI_TRUONG_NM,
+                 BossID.SO_4, BossID.SO_3, BossID.SO_2, BossID.SO_1, BossID.TIEU_DOI_TRUONG, BossID.TDST,
+                 BossID.KUKU, BossID.MAP_DAU_DINH, BossID.RAMBO, BossID.FIDE,
+                 BossID.ANDROID_19, BossID.DR_KORE, BossID.ANDROID_13, BossID.ANDROID_14, BossID.ANDROID_15,
+                 BossID.PIC, BossID.POC, BossID.KING_KONG:
+                return true;
+            default:
+                return false;
+        }
+    }
+
     protected void dropExtraBossReward(Player plKill) {
         if (plKill == null || this.zone == null || this.zone.map == null) {
             return;
@@ -874,6 +888,11 @@ public class Boss extends Player implements IBoss {
         }
         int x = this.location.x;
         int y = this.zone.map.yPhysicInTop(x, this.location.y - 24);
+
+        if (isDailyBossDropNgocRongTim()) {
+            ItemMap nrTimMap = new ItemMap(this.zone, 1833, 1, x + Util.nextInt(-25, 25), y, plOwner.id);
+            Service.gI().dropItemMap(this.zone, nrTimMap);
+        }
 
         // 0. Đánh Boss rớt 5 cục vàng (tham chiếu TDST Nappa Số 4 -> Số 1: 5 cục x 1.000.000 vàng, x2 cuối tuần)
         long bossHp = this.nPoint != null ? Math.max(1L, (long) this.nPoint.hpMax) : 1L;

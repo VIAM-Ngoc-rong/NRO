@@ -30,9 +30,13 @@ import nro.models.map.service.MapService;
 import nro.models.utils.Logger;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.awt.Color;
+import java.awt.image.BufferedImage;
+import javax.imageio.ImageIO;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -632,6 +636,22 @@ public final class Manager {
             } catch (Exception ignored) {
             }
 
+            ensurePurpleDragonBallIcons();
+            for (int star = 1; star <= 7; star++) {
+                int itemId = 1826 + star; // 1827..1833
+                int iconId = 25000 + star; // 25001..25007
+                try (PreparedStatement psUpdateNRT = ConnectionDatabase.prepareStatement(
+                        "UPDATE item_template SET TYPE = 12, gender = 3, NAME = ?, "
+                        + "description = 'Thu thập đủ 7 viên để gọi Rồng Thần Tím hoặc ép vào trang bị', "
+                        + "level = 0, icon_id = ?, part = -1, is_up_to_up = 1 WHERE id = ?")) {
+                    psUpdateNRT.setString(1, "Ngọc Rồng Tím " + star + " sao");
+                    psUpdateNRT.setInt(2, iconId);
+                    psUpdateNRT.setInt(3, itemId);
+                    psUpdateNRT.executeUpdate();
+                } catch (Exception ignored) {
+                }
+            }
+
             try {
                 while (true) {
                     ps = ConnectionDatabase.prepareStatement("SELECT * FROM item_template LIMIT ? OFFSET ?");
@@ -1170,6 +1190,52 @@ public final class Manager {
             return Byte.parseByte(String.valueOf(n));
         } else {
             return 0;
+        }
+    }
+
+    private void ensurePurpleDragonBallIcons() {
+        int[] baseIcons = {419, 420, 421, 422, 423, 424, 425};
+        for (int zoom = 1; zoom <= 4; zoom++) {
+            for (int i = 0; i < 7; i++) {
+                int srcIcon = baseIcons[i];
+                int dstIcon = 25001 + i;
+                File dstFile = new File("data/icon/x" + zoom + "/" + dstIcon + ".png");
+                if (dstFile.exists()) {
+                    continue;
+                }
+                File srcFile = new File("data/icon/x" + zoom + "/" + srcIcon + ".png");
+                if (!srcFile.exists()) {
+                    continue;
+                }
+                try {
+                    BufferedImage src = ImageIO.read(srcFile);
+                    if (src == null) {
+                        continue;
+                    }
+                    BufferedImage dst = new BufferedImage(src.getWidth(), src.getHeight(), BufferedImage.TYPE_INT_ARGB);
+                    for (int y = 0; y < src.getHeight(); y++) {
+                        for (int x = 0; x < src.getWidth(); x++) {
+                            int argb = src.getRGB(x, y);
+                            int a = (argb >> 24) & 0xFF;
+                            if (a == 0) {
+                                dst.setRGB(x, y, 0);
+                                continue;
+                            }
+                            int r = (argb >> 16) & 0xFF;
+                            int g = (argb >> 8) & 0xFF;
+                            int b = argb & 0xFF;
+                            float[] hsb = Color.RGBtoHSB(r, g, b, null);
+                            // Shift yellow/orange/red hues into purple/magenta spectrum
+                            float newHue = (hsb[0] + 0.68f) % 1.0f;
+                            float newSat = Math.min(1.0f, hsb[1] * 1.15f);
+                            int rgb = Color.HSBtoRGB(newHue, newSat, hsb[2]);
+                            dst.setRGB(x, y, (a << 24) | (rgb & 0x00FFFFFF));
+                        }
+                    }
+                    ImageIO.write(dst, "png", dstFile);
+                } catch (Exception ignored) {
+                }
+            }
         }
     }
 

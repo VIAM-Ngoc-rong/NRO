@@ -270,6 +270,9 @@ public class CombineService {
             case NANG_CAP_VAT_PHAM:
                 NangCapVatPham.nangCapVatPham(player, n);
                 break;
+            case NHAP_NGOC_RONG:
+                NhapNgocRong.nhapNgocRong(player, true);
+                break;
         }
 
         player.idMark.setIndexMenu(ConstNpc.IGNORE_MENU);

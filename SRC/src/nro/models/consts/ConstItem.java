@@ -31,6 +31,13 @@ public class ConstItem {
     public static final int NGOC_RONG_5_SAO = 18;
     public static final int NGOC_RONG_6_SAO = 19;
     public static final int NGOC_RONG_7_SAO = 20;
+    public static final int NGOC_RONG_TIM_1_SAO = 1827;
+    public static final int NGOC_RONG_TIM_2_SAO = 1828;
+    public static final int NGOC_RONG_TIM_3_SAO = 1829;
+    public static final int NGOC_RONG_TIM_4_SAO = 1830;
+    public static final int NGOC_RONG_TIM_5_SAO = 1831;
+    public static final int NGOC_RONG_TIM_6_SAO = 1832;
+    public static final int NGOC_RONG_TIM_7_SAO = 1833;
     public static final int GANG_VAI_DEN = 21;
     public static final int GANG_SOI_LEN = 22;
     public static final int GANG_VAI_THO = 23;

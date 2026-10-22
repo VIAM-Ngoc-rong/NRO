@@ -1772,6 +1772,12 @@ public class UseItem {
             }
         } else if (tempId >= Shenron_Service.NGOC_RONG_1_SAO && tempId <= Shenron_Service.NGOC_RONG_7_SAO) {
             Shenron_Service.gI().openMenuSummonShenron(pl, 0);
+        } else if (tempId >= ConstItem.NGOC_RONG_TIM_1_SAO && tempId <= ConstItem.NGOC_RONG_TIM_7_SAO) {
+            if (tempId == ConstItem.NGOC_RONG_TIM_1_SAO) {
+                Shenron_Service.gI().openMenuSummonShenron(pl, 1);
+            } else {
+                Service.gI().sendThongBao(pl, "Bạn chỉ có thể gọi Rồng Thần Tím từ Ngọc Rồng Tím 1 sao (cần đủ bộ 1-7 sao Tím)!");
+            }
         }
     }
 
