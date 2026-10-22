@@ -746,9 +746,12 @@ public class SkillService {
                     }
                     long dame = player.nPoint.hp;
                     if (player.setClothes.cadicM == 4) {
-                        dame += player.nPoint.hpMax * 20 / 100;
+                        dame += (long) player.nPoint.hpMax * 20L / 100L;
                     } else if (player.setClothes.cadicM == 5) {
-                        dame += player.nPoint.hpMax * 50 / 100;
+                        dame += (long) player.nPoint.hpMax * 50L / 100L;
+                    }
+                    if (player.nPoint.tlBom > 0) {
+                        dame += dame * player.nPoint.tlBom / 100L;
                     }
                     if (!player.isBoss) {
                         for (Mob mob : player.zone.mobs) {
@@ -766,8 +769,8 @@ public class SkillService {
                     if (!MapService.gI().isMapOffline(player.zone.map.mapId)) {
                         for (Player pl : playersMap) {
                             if (!player.equals(pl) && canAttackPlayer(player, pl) && Util.getDistance(player, pl) <= rangeBom) {
-                                dame = pl.isBoss ? player.effectSkill.isMonkey ? dame / 3 : dame / 2 : dame;
-                                pl.injured(player, dame, MapService.gI().isMapYardart(player.zone.map.mapId), false);
+                                long dameTarget = pl.isBoss ? (player.effectSkill.isMonkey ? dame / 3 : dame / 2) : dame;
+                                pl.injured(player, dameTarget, MapService.gI().isMapYardart(player.zone.map.mapId), false);
                                 PlayerService.gI().sendInfoHpMpMoney(pl);
                                 Service.gI().Send_Info_NV(pl);
                             }

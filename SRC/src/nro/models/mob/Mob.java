@@ -884,9 +884,9 @@ public class Mob {
             candidateItems.add(new ItemMap(zone, Util.nextInt(541, 542), 1, x, yEnd, player.id));
         }
 
-        //========================Ngọc Rồng 5-7 sao từ quái (Đã tăng tỷ lệ rơi)========================
+        //========================Ngọc Rồng 5-7 sao từ quái (Đã cân bằng giảm tỷ lệ rơi)========================
         if (MapService.gI().isMap3Planets(mapid) || MapService.gI().isMapNappa(mapid) || MapService.gI().isMapTuongLai(mapid) || MapService.gI().isMapCold(mapid) || this.zone.map.mapId >= 0) {
-            int dropRate = 50; // 50 / 1000 = 5.0% cơ hội rơi Ngọc Rồng 5-7 sao
+            int dropRate = 12; // 12 / 1000 = 1.2% cơ hội rơi Ngọc Rồng 5-7 sao
             if (player.itemTime != null && player.itemTime.isUseCoBonLa) {
                 dropRate = (int) (dropRate * 1.2);
             }
@@ -896,7 +896,7 @@ public class Mob {
                 int nroId = rollNro <= 20 ? 18 : (rollNro <= 55 ? 19 : 20); // 5 sao (20%), 6 sao (35%), 7 sao (45%)
                 ItemMap it = new ItemMap(zone, nroId, 1, x, yEnd, plOwner.id);
                 candidateItems.add(0, it);
-            } else if (Util.isTrue(8, 1000)) { // 0.8% cơ hội rơi Ngọc Rồng 4 sao
+            } else if (Util.isTrue(2, 1000)) { // 0.2% cơ hội rơi Ngọc Rồng 4 sao
                 candidateItems.add(0, new ItemMap(zone, 17, 1, x, yEnd, plOwner.id));
             }
         }

@@ -162,6 +162,8 @@ public class NPoint {
 
     public short tlTNSMPet;
     public short xChuong;
+    public short tlDameChuong;
+    public short tlDameLaze;
 
     public short setltdb;
     public short setTinhAn;
@@ -724,8 +726,16 @@ public class NPoint {
             case 162: //Cute hồi #% KI/s bản thân và xung quanh
                 this.mpHoiCute += io.param;
                 break;
-            case 159: // x chưởng
-                this.xChuong = (short) io.param;
+            case 66: // +#% sát thương chiêu Laze
+                this.tlDameLaze += io.param;
+                break;
+            case 159: // +#% sát thương đòn chưởng (hoặc x# chưởng cũ)
+                if (io.param <= 10) {
+                    this.xChuong = (short) io.param;
+                    this.tlDameChuong += (short) (io.param * 50);
+                } else {
+                    this.tlDameChuong += (short) io.param;
+                }
                 break;
             case 160: // TNSM PET;
                 this.tlTNSMPet += io.param;
@@ -1441,6 +1451,8 @@ public class NPoint {
         this.tlchinhxac = 0;
         this.tlTNSMPet = 0;
         this.xChuong = 0;
+        this.tlDameChuong = 0;
+        this.tlDameLaze = 0;
         this.setltdb = 0;
         this.setTinhAn = 0;
         this.setNhatAn = 0;
@@ -1520,7 +1532,7 @@ public class NPoint {
         intrinsic = this.player.playerIntrinsic.intrinsic;
         percentDameIntrinsic = 0;
         int percentDameSkill = 0;
-        byte percentXDame = 0;
+        int percentXDame = 0;
         Skill skillSelect = player.playerSkill.skillSelect;
         if (skillSelect.template.id != Skill.DICH_CHUYEN_TUC_THOI && isCritTele) {
             isCrit = true;
@@ -1539,7 +1551,10 @@ public class NPoint {
                 }
                 percentDameSkill = skillSelect.damage;
                 if (this.player.setClothes.songoku == 5) {
-                    percentXDame = 100;
+                    percentXDame += 100;
+                }
+                if (this.tlDameChuong > 0) {
+                    percentXDame += this.tlDameChuong;
                 }
                 break;
             case Skill.GALICK:
@@ -1556,13 +1571,19 @@ public class NPoint {
                     percentDameIntrinsic = intrinsic.param1;
                 }
                 percentDameSkill = skillSelect.damage;
+                if (this.tlDameChuong > 0) {
+                    percentXDame += this.tlDameChuong;
+                }
                 break;
             case Skill.TU_SAT:
                 percentDameSkill = skillSelect.damage;
                 if (this.player.setClothes.cadicM == 4) {
-                    percentXDame = 50;
+                    percentXDame += 50;
                 } else if (this.player.setClothes.cadicM == 5) {
-                    percentXDame = 100;
+                    percentXDame += 100;
+                }
+                if (this.tlBom > 0) {
+                    percentXDame += this.tlBom;
                 }
                 break;
             case Skill.DEMON:
@@ -1578,7 +1599,9 @@ public class NPoint {
                 if (this.player.setClothes.nail == 5) {
                     percentXDame += 100;
                 }
-
+                if (this.tlDameChuong > 0) {
+                    percentXDame += this.tlDameChuong;
+                }
                 percentDameSkill = skillSelect.damage + percentXDame;
                 break;
 
@@ -1605,11 +1628,14 @@ public class NPoint {
                 break;
             case Skill.MAKANKOSAPPO:
                 percentDameSkill = skillSelect.damage;
-                int dameSkill = (int) Math.min(2_147_483_647L, (long) this.mpMax * percentDameSkill / 100);
+                long dameSkill = (long) this.mpMax * percentDameSkill / 100L;
                 if (this.player.setClothes.picolo == 5) {
-                    dameSkill *= 3 / 2;
+                    dameSkill += dameSkill * 50L / 100L;
                 }
-                return dameSkill;
+                if (this.tlDameLaze > 0) {
+                    dameSkill += dameSkill * this.tlDameLaze / 100L;
+                }
+                return (int) Math.min(2_147_483_647L, dameSkill);
             case Skill.QUA_CAU_KENH_KHI:
                 long hpmob = 0;
                 long hppl = 0;

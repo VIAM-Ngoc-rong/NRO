@@ -31,30 +31,15 @@ public class BUJIN extends Boss {
 
     @Override
     public void reward(Player plKill) {
-        Service.gI().dropItemMap(this.zone, new ItemMap(zone, 77, Util.nextInt(5, 20), this.location.x + Util.nextInt(-50, 50), this.zone.map.yPhysicInTop(this.location.x, this.location.y - 24), plKill.id));
-        for (int i = 0; i < Util.nextInt(2); i++) {
-            Service.gI().dropItemMap(this.zone, new ItemMap(zone, 77, Util.nextInt(5, 20), this.location.x + i * Util.nextInt(-50, 50), this.zone.map.yPhysicInTop(this.location.x, this.location.y - 24), plKill.id));
-        }
-        for (int i = 0; i < Util.nextInt(3, 4); i++) {
-            Service.gI().dropItemMap(this.zone, new ItemMap(zone, 77, Util.nextInt(5, 20), this.location.x + i * 10, this.zone.map.yPhysicInTop(this.location.x,
-                    this.location.y - 24), plKill.id));
-        }
-        for (int i = 1; i < Util.nextInt(3, 3) + 1; i++) {
-            Service.gI().dropItemMap(this.zone, new ItemMap(zone, 77, Util.nextInt(5, 20), this.location.x - i * 10, this.zone.map.yPhysicInTop(this.location.x, this.location.y - 24), plKill.id));
-        }
+        super.reward(plKill);
+        Service.gI().dropItemMap(this.zone, new ItemMap(zone, 77, Util.nextInt(1, 3), this.location.x + Util.nextInt(-30, 30), this.zone.map.yPhysicInTop(this.location.x, this.location.y - 24), plKill.id));
         short itTemp = 423;
-        short nrTim7s = 1833;
         ItemMap it = new ItemMap(zone, itTemp, 1, this.location.x + Util.nextInt(-50, 50), this.zone.map.yPhysicInTop(this.location.x, this.location.y - 24), plKill.id);
-        ItemMap it1 = new ItemMap(zone, nrTim7s, 1, this.location.x + Util.nextInt(-50, 50), this.zone.map.yPhysicInTop(this.location.x, this.location.y - 24), plKill.id);
-        ItemMap it2 = new ItemMap(zone, nrTim7s, 1, this.location.x + Util.nextInt(-50, 50), this.zone.map.yPhysicInTop(this.location.x, this.location.y - 24), plKill.id);
-
         List<Item.ItemOption> ops = ItemService.gI().getListOptionItemShop(itTemp);
         if (!ops.isEmpty()) {
             it.options = ops;
         }
         Service.gI().dropItemMap(this.zone, it);
-        Service.gI().dropItemMap(this.zone, it1);
-        Service.gI().dropItemMap(this.zone, it2);
         int diem = 5;
         plKill.event.addEventPoint(diem);
         Service.gI().sendThongBao(plKill, "+5 Point");

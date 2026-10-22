@@ -702,12 +702,28 @@ public final class Manager {
             }
 
             //load item option template
+            try (PreparedStatement psUpdateOpt = ConnectionDatabase.prepareStatement(
+                    "UPDATE item_option_template SET NAME = CASE id "
+                    + "WHEN 66 THEN '+#% sát thương chiêu Laze' "
+                    + "WHEN 153 THEN '+#% sát thương chiêu phát nổ' "
+                    + "WHEN 159 THEN '+#% sát thương đòn chưởng' "
+                    + "ELSE NAME END WHERE id IN (66, 153, 159)")) {
+                psUpdateOpt.executeUpdate();
+            } catch (Exception ignored) {
+            }
             ps = ConnectionDatabase.prepareStatement("select id, name from item_option_template");
             rs = ps.executeQuery();
             while (rs.next()) {
                 ItemOptionTemplate optionTemp = new ItemOptionTemplate();
                 optionTemp.id = rs.getInt("id");
                 optionTemp.name = rs.getString("name");
+                if (optionTemp.id == 66) {
+                    optionTemp.name = "+#% sát thương chiêu Laze";
+                } else if (optionTemp.id == 153) {
+                    optionTemp.name = "+#% sát thương chiêu phát nổ";
+                } else if (optionTemp.id == 159) {
+                    optionTemp.name = "+#% sát thương đòn chưởng";
+                }
                 ITEM_OPTION_TEMPLATES.add(optionTemp);
             }
             Logger.success(Logger.PURPLE + "Successfully loaded map item option template (" + ITEM_OPTION_TEMPLATES.size() + ")\n");

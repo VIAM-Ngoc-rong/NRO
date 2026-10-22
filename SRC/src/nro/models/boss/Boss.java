@@ -898,11 +898,11 @@ public class Boss extends Player implements IBoss {
         long bossHpForRuby = this.nPoint != null ? Math.max(1L, (long) this.nPoint.hpMax) : 1L;
         int rubyDrop;
         if (bossHpForRuby < 50_000_000L) {
-            rubyDrop = Util.nextInt(5, 15);
+            rubyDrop = Util.nextInt(1, 3);
         } else if (bossHpForRuby <= 300_000_000L) {
-            rubyDrop = Util.nextInt(15, 30);
+            rubyDrop = Util.nextInt(3, 6);
         } else {
-            rubyDrop = Util.nextInt(30, 60);
+            rubyDrop = Util.nextInt(6, 12);
         }
         ItemMap rubyMap = new ItemMap(this.zone, 861, rubyDrop, x + Util.nextInt(-20, 20), y, plOwner.id);
         Service.gI().dropItemMap(this.zone, rubyMap);
