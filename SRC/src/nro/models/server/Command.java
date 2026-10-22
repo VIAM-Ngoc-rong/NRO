@@ -234,6 +234,43 @@ parameterizedCommands.put("henbaotri", (player, text) -> {
 });
 
 
+        parameterizedCommands.put("dctt", (player, text) -> {
+            try {
+                String arg = text.replace("dctt", "").trim();
+                short param = arg.isEmpty() ? (short) 145 : Short.parseShort(arg);
+                nro.models.intrinsic.Intrinsic intrinsic = nro.models.services.IntrinsicService.gI().getIntrinsicById(6);
+                if (intrinsic != null) {
+                    player.playerIntrinsic.intrinsic = intrinsic;
+                    player.playerIntrinsic.intrinsic.param1 = param;
+                    nro.models.services.IntrinsicService.gI().sendInfoIntrinsic(player);
+                    Service.gI().sendThongBao(player, "Đã cài Nội tại Dịch Chuyển Tức Thời +" + param + "%!");
+                }
+            } catch (Exception e) {
+                Service.gI().sendThongBao(player, "Sai cú pháp! Dùng: dctt <phần_trăm> (VD: dctt 145)");
+            }
+        });
+
+        parameterizedCommands.put("nt ", (player, text) -> {
+            try {
+                String[] parts = text.trim().split("\\s+");
+                int id = Integer.parseInt(parts[1]);
+                short param1 = parts.length >= 3 ? Short.parseShort(parts[2]) : 150;
+                short param2 = parts.length >= 4 ? Short.parseShort(parts[3]) : 0;
+                nro.models.intrinsic.Intrinsic intrinsic = nro.models.services.IntrinsicService.gI().getIntrinsicById(id);
+                if (intrinsic != null) {
+                    player.playerIntrinsic.intrinsic = intrinsic;
+                    player.playerIntrinsic.intrinsic.param1 = param1;
+                    player.playerIntrinsic.intrinsic.param2 = param2;
+                    nro.models.services.IntrinsicService.gI().sendInfoIntrinsic(player);
+                    Service.gI().sendThongBao(player, "Đã cài Nội tại: " + intrinsic.getName());
+                } else {
+                    Service.gI().sendThongBao(player, "Không tìm thấy nội tại ID: " + id);
+                }
+            } catch (Exception e) {
+                Service.gI().sendThongBao(player, "Sai cú pháp! Dùng: nt <id> <chỉ_số> (VD: nt 6 145)");
+            }
+        });
+
         parameterizedCommands.put("i ", (player, text) -> {
             try {
                 String[] split = text.split(" ");
