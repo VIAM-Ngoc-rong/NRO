@@ -514,10 +514,10 @@ public class ShopService {
             Service.gI().sendThongBao(player, "Bạn không có đủ vàng");
             return false;
         } else if (player.inventory.gem < gem) {
-            Service.gI().sendThongBao(player, "Bạn không có đủ ngọc");
+            Service.gI().sendThongBao(player, "Bạn không có đủ ngọc xanh");
             return false;
-        } else if (player.inventory.gem < ruby) {
-            Service.gI().sendThongBao(player, "Bạn không có đủ ngọc");
+        } else if (player.inventory.ruby < ruby) {
+            Service.gI().sendThongBao(player, "Bạn không có đủ Hồng ngọc (cần " + ruby + " Hồng ngọc, hiện có " + player.inventory.ruby + ")");
             return false;
         } else if (player.inventory.coupon < coupon) {
             Service.gI().sendThongBao(player, "Bạn không có đủ điểm");
@@ -716,12 +716,6 @@ public class ShopService {
         // Hành trang đầy
         if (InventoryService.gI().getCountEmptyBag(player) == 0) {
             Service.gI().sendThongBao(player, "Hành trang đã đầy");
-            return;
-        }
-
-        // Yêu cầu có cải trang Quy Lão Kame
-        if (itemTempId == 711 && !InventoryService.gI().findItemSkinQuyLaoKame(player)) {
-            Service.gI().sendThongBao(player, "Bạn phải có cải trang thành Quy Lão Kame mới có thể đổi.");
             return;
         }
 

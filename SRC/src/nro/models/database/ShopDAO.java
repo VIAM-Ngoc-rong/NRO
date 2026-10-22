@@ -65,49 +65,127 @@ public class ShopDAO {
             return;
         }
 
-        // Thu thập toàn bộ cải trang (type == 5, có đủ head, body, leg) theo thứ tự ID từ cũ đến mới
-        List<ItemShop> allCostumes = new ArrayList<>();
+        // Tạo 2 danh sách Cải trang tinh tuyển:
+        // 1) CT Hành Tinh (Tối ưu cho Trái Đất, Namek, Xayda - giá 1.000 Hồng ngọc, chỉ số cân bằng 25-30%)
+        // 2) CT Hỗ Trợ (Up đệ tử, Kháng lạnh, Hóa đá, Sôcôla, Hút HP/KI... - giá 50 Ngọc xanh, chỉ số 18-22%)
+        List<ItemShop> planetCostumes = new ArrayList<>();
+        List<ItemShop> supportCostumes = new ArrayList<>();
         int autoId = 100000;
-        for (ItemTemplate temp : Manager.ITEM_TEMPLATES) {
-            if (temp != null && temp.type == 5 && temp.head != -1 && temp.body != -1 && temp.leg != -1 && temp.id < 1815) {
-                ItemShop itemShop = new ItemShop();
-                itemShop.id = autoId++;
-                itemShop.temp = temp;
-                itemShop.isNew = true;
-                itemShop.typeSell = 1; // Bán bằng Ngọc xanh
-                itemShop.cost = 10;    // Giá 10 Ngọc
-                itemShop.iconSpec = 0;
 
-                applyClassicCostumeOptions(itemShop, temp);
-                allCostumes.add(itemShop);
+        int[][] planetDefs = {
+            // --- TRÁI ĐẤT (Chuyên Chưởng Kamejoko / Chí mạng / Dịch chuyển) ---
+            {710,  50, 26, 77, 24, 103, 28, 98, 15, 5, 10, 14, 10},       // Quy Lão Kamê
+            {711,  50, 27, 77, 25, 103, 28, 5, 12, 14, 10, 116, 0},       // Jacky Chun (Kháng TDHS)
+            {1553, 50, 28, 77, 27, 103, 27, 5, 15, 14, 10, 33, 1},        // Goku SSJ4 (Dịch chuyển)
+            {1590, 50, 27, 77, 26, 103, 28, 5, 14, 98, 15, 14, 8},        // Goku SSJ Blue
+
+            // --- NAMEK (Chuyên KI / Xuyên giáp chưởng / Liên hoàn / Hồi phục đồng đội) ---
+            {1567, 50, 26, 77, 26, 103, 32, 98, 18, 5, 12},               // Frieren
+            {738,  50, 25, 77, 26, 103, 30, 98, 15, 80, 15, 81, 15},      // Dr. Lychee
+            {806,  50, 25, 77, 28, 103, 30, 173, 12, 94, 12},             // Đôrêmon (Hồi 12% HP/KI đồng đội)
+            {898,  50, 26, 77, 30, 103, 30, 173, 10, 94, 15},             // Zamasu (Hồi 10% HP/KI đồng đội)
+            {1396, 50, 27, 77, 27, 103, 28, 162, 3, 99, 15},              // Super Píc (Hồi KI xung quanh & XGCC)
+
+            // --- XAYDA (Chuyên Biến Khỉ / SĐ Chí mạng / Phản sát thương / Phát nổ) ---
+            {1275, 50, 28, 77, 32, 103, 25, 5, 15, 97, 12},               // Cumber SSJ (Phản sát thương)
+            {1783, 50, 29, 77, 30, 103, 25, 5, 15, 97, 10},               // Broly
+            {1693, 50, 28, 77, 30, 103, 26, 153, 35, 5, 14},              // Cađíc SSJ4 (+35% Nổ)
+            {1744, 50, 27, 77, 28, 103, 25, 153, 40, 5, 12},              // Cađíc SSJ2 M (+40% Nổ)
+            {1454, 50, 29, 77, 28, 103, 28, 5, 15, 14, 10},               // Super Black Goku Rose
+            {1697, 50, 30, 77, 29, 103, 29, 5, 15, 14, 10}                // Gogeta
+        };
+
+        for (int[] def : planetDefs) {
+            ItemTemplate temp = ItemService.gI().getTemplate((short) def[0]);
+            if (temp != null) {
+                ItemShop is = new ItemShop();
+                is.id = autoId++;
+                is.temp = temp;
+                is.isNew = true;
+                is.typeSell = 3; // Bán bằng Hồng ngọc (COST_RUBY)
+                is.cost = 1000;  // Giá 1.000 Hồng ngọc
+                is.iconSpec = 0;
+                for (int i = 1; i + 1 < def.length; i += 2) {
+                    is.options.add(new Item.ItemOption(def[i], def[i + 1]));
+                }
+                planetCostumes.add(is);
             }
         }
 
-        // Chia thành các Tab (mỗi Tab tối đa 90 cải trang để không vượt giới hạn byte 127 của Client)
-        int maxPerTab = 90;
+        int[][] supportDefs = {
+            // --- UP ĐỆ TỬ & SƯ PHỤ ---
+            {547,  50, 20, 77, 20, 103, 20, 160, 30, 101, 25},            // Tôn Ngộ Không Đệ Tử (+30% TNSM Đệ)
+            {548,  50, 18, 77, 24, 103, 20, 160, 30, 80, 15},             // Bát Giới Đệ Tử (+30% TNSM Đệ)
+            {1302, 50, 20, 77, 22, 103, 22, 160, 30, 94, 12},             // Sa Tăng Đệ Tử (+30% TNSM Đệ)
+            {1362, 50, 20, 77, 20, 103, 20, 101, 40, 160, 30, 100, 80},   // Thầy Giáo (+40% TNSM, +30% TNSM Đệ)
+
+            // --- KHÁNG LẠNH (ĐI MAP COLD) ---
+            {629,  50, 22, 77, 22, 103, 22, 106, 0, 5, 10},               // Fide Vàng (Kháng lạnh)
+            {878,  50, 23, 77, 22, 103, 22, 106, 0, 5, 10},               // Cooler Vàng (Kháng lạnh)
+            {937,  50, 21, 77, 24, 103, 21, 106, 0, 29, 0, 80, 15},       // Mabư Noel (Kháng lạnh + Sôcôla)
+
+            // --- HIỆU ỨNG PK & SĂN BOSS ---
+            {1437, 50, 20, 77, 24, 103, 20, 26, 0, 94, 12},               // Bông Băng Vàng (Hóa đá)
+            {1205, 50, 22, 77, 22, 103, 22, 26, 0, 106, 0},               // Drabura Frost (Hóa đá + Kháng lạnh)
+            {578,  50, 20, 77, 25, 103, 20, 29, 0, 80, 10},               // Mabư Mập (Biến Sôcôla)
+            {549,  50, 21, 77, 21, 103, 21, 8, 4, 14, 5},                 // Xên Con (Hút 4% HP, KI mỗi 5s)
+            {525,  50, 20, 77, 20, 103, 22, 3, 100, 4, 2},                // Android 20 (Vô hiệu chưởng thành KI)
+            {455,  50, 18, 77, 20, 103, 18, 109, 10},                     // Ở Dơ (Hôi giảm 10% HP xung quanh)
+            {458,  50, 19, 77, 19, 103, 19, 108, 20, 111, 0},             // Xinbatô (+20% Né đòn)
+            {463,  50, 20, 77, 20, 103, 20, 116, 0},                      // Thỏ Đại Ca (Kháng TDHS)
+            {449,  50, 20, 77, 18, 103, 18, 25, 0, 105, 0},               // Người Vô Hình (Tàng hình)
+            {1557, 50, 22, 77, 22, 103, 22, 117, 15, 162, 3},             // Hắc Mị Nương (Đẹp +15% SĐ xung quanh)
+
+            // --- VÕ PHỤC YARDRAT (3 HÀNH TINH) ---
+            {592,  50, 20, 77, 20, 103, 20, 33, 1, 108, 15},              // Võ phục Yardrat Trái Đất
+            {593,  50, 20, 77, 20, 103, 20, 33, 1, 108, 15},              // Võ phục Yardrat Namek
+            {594,  50, 20, 77, 20, 103, 20, 33, 1, 108, 15}               // Võ phục Yardrat Xayda
+        };
+
+        for (int[] def : supportDefs) {
+            ItemTemplate temp = ItemService.gI().getTemplate((short) def[0]);
+            if (temp != null) {
+                ItemShop is = new ItemShop();
+                is.id = autoId++;
+                is.temp = temp;
+                is.isNew = true;
+                is.typeSell = 1; // Bán bằng Ngọc xanh
+                is.cost = 50;    // Giá 50 Ngọc xanh
+                is.iconSpec = 0;
+                for (int i = 1; i + 1 < def.length; i += 2) {
+                    is.options.add(new Item.ItemOption(def[i], def[i + 1]));
+                }
+                supportCostumes.add(is);
+            }
+        }
+
         List<TabShop> newSantaTabs = new ArrayList<>();
         boolean insertedCostumeTabs = false;
-        int nextTabId = 1800;
 
         boolean addedCskb = false;
         for (TabShop oldTab : santaShop.tabShops) {
             if (oldTab.id == 18) {
                 if (!insertedCostumeTabs) {
-                    int tabIndex = 1;
-                    for (int i = 0; i < allCostumes.size(); i += maxPerTab) {
-                        TabShop ctTab = new TabShop();
-                        ctTab.shop = santaShop;
-                        ctTab.id = (tabIndex == 1) ? 18 : (nextTabId++);
-                        ctTab.name = "Cải Trang\n" + tabIndex;
-                        int end = Math.min(i + maxPerTab, allCostumes.size());
-                        for (int j = i; j < end; j++) {
-                            ItemShop is = allCostumes.get(j);
-                            is.tabShop = ctTab;
-                            ctTab.itemShops.add(is);
-                        }
-                        newSantaTabs.add(ctTab);
-                        tabIndex++;
+                    TabShop tabPlanet = new TabShop();
+                    tabPlanet.shop = santaShop;
+                    tabPlanet.id = 18;
+                    tabPlanet.name = "CT Hành Tinh\n(1K Hồng Ngọc)";
+                    for (ItemShop is : planetCostumes) {
+                        is.tabShop = tabPlanet;
+                        tabPlanet.itemShops.add(is);
                     }
+                    newSantaTabs.add(tabPlanet);
+
+                    TabShop tabSupport = new TabShop();
+                    tabSupport.shop = santaShop;
+                    tabSupport.id = 1800;
+                    tabSupport.name = "CT Hỗ Trợ\n(Đệ/Cold/PK)";
+                    for (ItemShop is : supportCostumes) {
+                        is.tabShop = tabSupport;
+                        tabSupport.itemShops.add(is);
+                    }
+                    newSantaTabs.add(tabSupport);
+
                     insertedCostumeTabs = true;
                 }
             } else {
@@ -145,22 +223,26 @@ public class ShopDAO {
             }
         }
 
-        if (!insertedCostumeTabs && !allCostumes.isEmpty()) {
-            int tabIndex = 1;
-            for (int i = 0; i < allCostumes.size(); i += maxPerTab) {
-                TabShop ctTab = new TabShop();
-                ctTab.shop = santaShop;
-                ctTab.id = (tabIndex == 1) ? 18 : (nextTabId++);
-                ctTab.name = "Cải Trang\n" + tabIndex;
-                int end = Math.min(i + maxPerTab, allCostumes.size());
-                for (int j = i; j < end; j++) {
-                    ItemShop is = allCostumes.get(j);
-                    is.tabShop = ctTab;
-                    ctTab.itemShops.add(is);
-                }
-                newSantaTabs.add(ctTab);
-                tabIndex++;
+        if (!insertedCostumeTabs) {
+            TabShop tabPlanet = new TabShop();
+            tabPlanet.shop = santaShop;
+            tabPlanet.id = 18;
+            tabPlanet.name = "CT Hành Tinh\n(1K Hồng Ngọc)";
+            for (ItemShop is : planetCostumes) {
+                is.tabShop = tabPlanet;
+                tabPlanet.itemShops.add(is);
             }
+            newSantaTabs.add(tabPlanet);
+
+            TabShop tabSupport = new TabShop();
+            tabSupport.shop = santaShop;
+            tabSupport.id = 1800;
+            tabSupport.name = "CT Hỗ Trợ\n(Đệ/Cold/PK)";
+            for (ItemShop is : supportCostumes) {
+                is.tabShop = tabSupport;
+                tabSupport.itemShops.add(is);
+            }
+            newSantaTabs.add(tabSupport);
         }
 
         santaShop.tabShops = newSantaTabs;

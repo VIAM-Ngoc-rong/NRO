@@ -894,6 +894,19 @@ public class Boss extends Player implements IBoss {
             Service.gI().dropItemMap(this.zone, nrTimMap);
         }
 
+        // Rớt Hồng Ngọc (ID 861) khi tiêu diệt Boss (phục vụ mua Cải trang tối ưu hành tinh 1000 Hồng ngọc)
+        long bossHpForRuby = this.nPoint != null ? Math.max(1L, (long) this.nPoint.hpMax) : 1L;
+        int rubyDrop;
+        if (bossHpForRuby < 50_000_000L) {
+            rubyDrop = Util.nextInt(5, 15);
+        } else if (bossHpForRuby <= 300_000_000L) {
+            rubyDrop = Util.nextInt(15, 30);
+        } else {
+            rubyDrop = Util.nextInt(30, 60);
+        }
+        ItemMap rubyMap = new ItemMap(this.zone, 861, rubyDrop, x + Util.nextInt(-20, 20), y, plOwner.id);
+        Service.gI().dropItemMap(this.zone, rubyMap);
+
         // 0. Đánh Boss rớt 5 cục vàng (tham chiếu TDST Nappa Số 4 -> Số 1: 5 cục x 1.000.000 vàng, x2 cuối tuần)
         long bossHp = this.nPoint != null ? Math.max(1L, (long) this.nPoint.hpMax) : 1L;
         int piles = 5;
