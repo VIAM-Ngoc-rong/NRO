@@ -63,14 +63,12 @@ public class KidBuWorld extends Boss {
                 return 1;
             }
             damage = this.nPoint.subDameInjureWithDeff(damage);
-            // Đánh theo % máu giảm dần từ 0.5% xuống 0.1% giống Broly
+            // Đánh vào Kid Bư tối đa 5% máu mỗi đòn
             boolean isTuSat = plAtt != null && plAtt.playerSkill != null
                     && plAtt.playerSkill.skillSelect != null
                     && plAtt.playerSkill.skillSelect.template.id == Skill.TU_SAT;
             if (!piercing && !isTuSat && this.nPoint.hpMax > 0) {
-                double hpRatio = Math.max(0.0, Math.min(1.0, (double) this.nPoint.hp / (double) this.nPoint.hpMax));
-                double maxPercent = 0.001 + (0.004 * hpRatio);
-                long maxDamage = Math.max(1L, (long) (this.nPoint.hpMax * maxPercent));
+                long maxDamage = Math.max(1L, this.nPoint.hpMax * 5L / 100L);
                 if (damage > maxDamage) {
                     damage = maxDamage;
                 }
@@ -105,3 +103,4 @@ public class KidBuWorld extends Boss {
         }
     }
 }
+
