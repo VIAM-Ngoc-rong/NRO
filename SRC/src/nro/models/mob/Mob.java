@@ -884,28 +884,20 @@ public class Mob {
             candidateItems.add(new ItemMap(zone, Util.nextInt(541, 542), 1, x, yEnd, player.id));
         }
 
-        //========================Ngọc Rồng từ quái (Đã giảm mạnh tỷ lệ)========================
-        if (MapService.gI().isMap3Planets(mapid) || MapService.gI().isMapNappa(mapid) || MapService.gI().isMapTuongLai(mapid) || MapService.gI().isMapCold(mapid)) {
-            int dropRate = 8; // 8 / 1000 = 0.8% (trước đây là 10/70 ~ 14.3%)
-            if (player.itemTime.isUseCoBonLa) {
-                dropRate = (int) (dropRate * 1.15);
+        //========================Ngọc Rồng 5-7 sao từ quái (Đã tăng tỷ lệ rơi)========================
+        if (MapService.gI().isMap3Planets(mapid) || MapService.gI().isMapNappa(mapid) || MapService.gI().isMapTuongLai(mapid) || MapService.gI().isMapCold(mapid) || this.zone.map.mapId >= 0) {
+            int dropRate = 50; // 50 / 1000 = 5.0% cơ hội rơi Ngọc Rồng 5-7 sao
+            if (player.itemTime != null && player.itemTime.isUseCoBonLa) {
+                dropRate = (int) (dropRate * 1.2);
             }
 
             if (Util.isTrue(dropRate, 1000)) {
-                int rand = Util.nextInt(0, 1);
-                ItemMap it = new ItemMap(zone, 19 + rand, 1, x, yEnd, player.id);
-                candidateItems.add(it);
-            }
-        }
-
-        if (this.zone.map.mapId >= 0) {
-            int dropRate = 2; // 2 / 1000 = 0.2% (trước đây là 1/100 = 1%)
-            if (player.itemTime.isUseCoBonLa) {
-                dropRate = (int) (dropRate * 1.15);
-            }
-
-            if (Util.isTrue(dropRate, 1000)) { // nro 4-7 sao
-                candidateItems.add(new ItemMap(zone, Util.nextInt(17, 20), 1, x, yEnd, player.id));
+                int rollNro = Util.nextInt(1, 100);
+                int nroId = rollNro <= 20 ? 18 : (rollNro <= 55 ? 19 : 20); // 5 sao (20%), 6 sao (35%), 7 sao (45%)
+                ItemMap it = new ItemMap(zone, nroId, 1, x, yEnd, plOwner.id);
+                candidateItems.add(0, it);
+            } else if (Util.isTrue(8, 1000)) { // 0.8% cơ hội rơi Ngọc Rồng 4 sao
+                candidateItems.add(0, new ItemMap(zone, 17, 1, x, yEnd, plOwner.id));
             }
         }
 

@@ -127,6 +127,7 @@ public class SuperBu extends Boss {
                 players.clear();
             }
             reward(plKill);
+            dropExtraBossReward(plKill);
             ServerNotify.gI().notify(plKill.name + ": Đã tiêu diệt được " + this.name + " mọi người đều ngưỡng mộ.");
         }
         this.changeStatus(BossStatus.DIE);
