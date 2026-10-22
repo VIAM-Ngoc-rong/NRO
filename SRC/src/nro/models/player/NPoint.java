@@ -247,7 +247,7 @@ public class NPoint {
         if (this.player.rewardBlackBall.timeOutOfDateReward[6] > System.currentTimeMillis()) {
             tlNeDon += RewardBlackBall.R7S_1;
         }
-        // Chỉ số Hào Quang săn Boss (3 cấp: 1.000 / 10.000 / 100.000 điểm)
+        // Chỉ số Hào Quang săn Boss (3 cấp: 100 / 1.000 / 10.000 điểm)
         int lvHQ = this.player.isPet && ((Pet) this.player).master != null
                 ? ((Pet) this.player).master.levelHaoQuang
                 : this.player.levelHaoQuang;

@@ -190,13 +190,13 @@ public class QuyLaoKame extends Npc {
         String npcSay = "|7|ĐỔI ĐIỂM SĂN BOSS LẤY HÀO QUANG\n"
                 + "|2|Điểm săn Boss hiện tại: " + Util.numberToMoney(player.pointSanBoss) + " điểm\n"
                 + "Hào Quang đang kích hoạt: " + curAuraInfo + "\n"
-                + "|1|• Cấp 1 (1.000 điểm): +3% SĐ, HP, KI\n"
-                + "• Cấp 2 (10.000 điểm): +5% SĐ, HP, KI, Hút HP, Hút KI\n"
-                + "• Cấp 3 (100.000 điểm): +10% SĐ, HP, KI, Hút HP, Hút KI";
+                + "|1|• Cấp 1 (100 điểm): +3% SĐ, HP, KI\n"
+                + "• Cấp 2 (1.000 điểm): +5% SĐ, HP, KI, Hút HP, Hút KI\n"
+                + "• Cấp 3 (10.000 điểm): +10% SĐ, HP, KI, Hút HP, Hút KI";
         this.createOtherMenu(player, 99, npcSay,
-                "Hào Quang\nCấp 1\n(1.000 đ)",
-                "Hào Quang\nCấp 2\n(10.000 đ)",
-                "Hào Quang\nCấp 3\n(100.000 đ)",
+                "Hào Quang\nCấp 1\n(100 đ)",
+                "Hào Quang\nCấp 2\n(1.000 đ)",
+                "Hào Quang\nCấp 3\n(10.000 đ)",
                 "Đóng");
     }
 
@@ -206,9 +206,9 @@ public class QuyLaoKame extends Npc {
         }
         int targetLevel = select + 1;
         int cost = switch (targetLevel) {
-            case 1 -> 1000;
-            case 2 -> 10000;
-            default -> 100000;
+            case 1 -> 100;
+            case 2 -> 1000;
+            default -> 10000;
         };
         if (player.levelHaoQuang >= targetLevel) {
             Service.gI().sendThongBao(player, "Bạn đã sở hữu Hào Quang cấp " + player.levelHaoQuang + " rồi!");
