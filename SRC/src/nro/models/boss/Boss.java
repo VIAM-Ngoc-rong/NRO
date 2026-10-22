@@ -284,6 +284,10 @@ public class Boss extends Player implements IBoss {
         if (this.usedTTNL || this.isDie() || this.zone == null) {
             return;
         }
+        if (this.effectSkill != null && (this.effectSkill.anTroi || this.effectSkill.isHaveEffectSkill() || this.effectSkill.isBinh || this.effectSkill.isSocola)) {
+            this.usedTTNL = true;
+            return;
+        }
         this.usedTTNL = true;
         this.isUsingTTNL = true;
         this.lastTimeStartTTNL = System.currentTimeMillis();
@@ -462,7 +466,8 @@ public class Boss extends Player implements IBoss {
             }
         }
         if (this.isUsingTTNL) {
-            if (this.isDie() || this.zone == null) {
+            if (this.isDie() || this.zone == null
+                    || (this.effectSkill != null && (this.effectSkill.anTroi || this.effectSkill.isHaveEffectSkill() || this.effectSkill.isBinh || this.effectSkill.isSocola))) {
                 this.isUsingTTNL = false;
                 if (this.zone != null) {
                     EffectSkillService.gI().sendEffectStopCharge(this);

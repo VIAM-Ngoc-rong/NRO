@@ -118,6 +118,9 @@ public class EffectSkillService {
     public void setAnTroi(Player player, Player plTroi, long lastTimeAnTroi, int timeAnTroi) {
         player.effectSkill.anTroi = true;
         player.effectSkill.plTroi = plTroi;
+        if (player.effectSkill.isCharging || (player instanceof nro.models.boss.Boss boss && boss.isUsingTTNL)) {
+            stopCharge(player);
+        }
     }
 
     public void setUseTroi(Player player, long lastTimeTroi, int timeTroi) {
@@ -130,6 +133,9 @@ public class EffectSkillService {
         player.effectSkill.isThoiMien = true;
         player.effectSkill.lastTimeThoiMien = lastTimeThoiMien;
         player.effectSkill.timeThoiMien = timeThoiMien;
+        if (player.effectSkill.isCharging || (player instanceof nro.models.boss.Boss boss && boss.isUsingTTNL)) {
+            stopCharge(player);
+        }
     }
 
     public void removeThoiMien(Player player) {
@@ -141,6 +147,9 @@ public class EffectSkillService {
         player.effectSkill.lastTimeStartStun = lastTimeStartBlind;
         player.effectSkill.timeStun = timeBlind;
         player.effectSkill.isStun = true;
+        if (player.effectSkill.isCharging || (player instanceof nro.models.boss.Boss boss && boss.isUsingTTNL)) {
+            stopCharge(player);
+        }
         sendEffectPlayer(player, player, TURN_ON_EFFECT, BLIND_EFFECT);
     }
 
@@ -154,6 +163,9 @@ public class EffectSkillService {
         player.effectSkill.timeSocola = timeSocola;
         player.effectSkill.isSocola = true;
         player.effectSkill.countPem1hp = 0;
+        if (player.effectSkill.isCharging || (player instanceof nro.models.boss.Boss boss && boss.isUsingTTNL)) {
+            stopCharge(player);
+        }
     }
 
     public void removeSocola(Player player) {
@@ -180,6 +192,9 @@ public class EffectSkillService {
         player.effectSkill.isBlindDCTT = true;
         player.effectSkill.lastTimeBlindDCTT = lastTimeDCTT;
         player.effectSkill.timeBlindDCTT = timeBlindDCTT;
+        if (player.effectSkill.isCharging || (player instanceof nro.models.boss.Boss boss && boss.isUsingTTNL)) {
+            stopCharge(player);
+        }
     }
 
     public void removeBlindDCTT(Player player) {
@@ -473,6 +488,9 @@ public class EffectSkillService {
     //**************************************************************************
     //Tái tạo năng lượng *******************************************************
     public void startCharge(Player player) {
+        if (player.effectSkill != null && (player.effectSkill.anTroi || player.effectSkill.isHaveEffectSkill() || player.effectSkill.isBinh || player.effectSkill.isSocola)) {
+            return;
+        }
         if (!player.effectSkill.isCharging) {
             player.effectSkill.isCharging = true;
             sendEffectCharge(player);
@@ -481,7 +499,10 @@ public class EffectSkillService {
 
     public void stopCharge(Player player) {
         player.effectSkill.countCharging = 0;
-        player.effectSkill.isCharging = false;;
+        player.effectSkill.isCharging = false;
+        if (player instanceof nro.models.boss.Boss boss && boss.isUsingTTNL) {
+            boss.isUsingTTNL = false;
+        }
         sendEffectStopCharge(player);
 
     }
