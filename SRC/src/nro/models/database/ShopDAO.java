@@ -125,8 +125,21 @@ public class ShopDAO {
                         cskbShop.options.add(new Item.ItemOption(31, 99)); // Số lượng 99
                         cskbShop.options.add(new Item.ItemOption(30, 0));
                         oldTab.itemShops.add(0, cskbShop);
-                        addedCskb = true;
                     }
+                    ItemTemplate thoiVangTemp = ItemService.gI().getTemplate(457);
+                    if (thoiVangTemp != null) {
+                        ItemShop tvShop = new ItemShop();
+                        tvShop.id = autoId++;
+                        tvShop.tabShop = oldTab;
+                        tvShop.temp = thoiVangTemp;
+                        tvShop.isNew = true;
+                        tvShop.typeSell = 0; // Bán bằng Vàng
+                        tvShop.cost = 500_000_000; // 500tr Vàng / 1 Thỏi vàng
+                        tvShop.iconSpec = 0;
+                        tvShop.options.add(new Item.ItemOption(73, 0));
+                        oldTab.itemShops.add(0, tvShop);
+                    }
+                    addedCskb = true;
                 }
                 newSantaTabs.add(oldTab);
             }
