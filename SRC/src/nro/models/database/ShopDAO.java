@@ -134,7 +134,7 @@ public class ShopDAO {
                         tvShop.temp = thoiVangTemp;
                         tvShop.isNew = true;
                         tvShop.typeSell = 0; // Bán bằng Vàng
-                        tvShop.cost = 500_000_000; // 500tr Vàng / 1 Thỏi vàng
+                        tvShop.cost = 40_000_000; // 500tr Vàng / 1 Thỏi vàng
                         tvShop.iconSpec = 0;
                         tvShop.options.add(new Item.ItemOption(73, 0));
                         oldTab.itemShops.add(0, tvShop);

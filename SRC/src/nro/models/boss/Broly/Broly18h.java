@@ -182,3 +182,4 @@ public class Broly18h extends Boss {
         }
     }
 }
+

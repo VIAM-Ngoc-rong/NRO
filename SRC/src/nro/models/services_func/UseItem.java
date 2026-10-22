@@ -1519,7 +1519,7 @@ public class UseItem {
             Service.gI().sendThongBao(pl, "Số vàng của bạn đã đạt giới hạn tối đa!");
             return;
         }
-        long goldAdd = 500_000_000L;
+        long goldAdd = 40_000_000L;
         if (pl.inventory.gold + goldAdd > Inventory.LIMIT_GOLD) {
             goldAdd = Inventory.LIMIT_GOLD - pl.inventory.gold;
         }
