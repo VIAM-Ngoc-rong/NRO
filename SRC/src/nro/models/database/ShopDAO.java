@@ -89,6 +89,7 @@ public class ShopDAO {
         boolean insertedCostumeTabs = false;
         int nextTabId = 1800;
 
+        boolean addedCskb = false;
         for (TabShop oldTab : santaShop.tabShops) {
             if (oldTab.id == 18) {
                 if (!insertedCostumeTabs) {
@@ -110,6 +111,23 @@ public class ShopDAO {
                     insertedCostumeTabs = true;
                 }
             } else {
+                if (!addedCskb) {
+                    ItemTemplate cskbTemp = ItemService.gI().getTemplate(380);
+                    if (cskbTemp != null) {
+                        ItemShop cskbShop = new ItemShop();
+                        cskbShop.id = autoId++;
+                        cskbShop.tabShop = oldTab;
+                        cskbShop.temp = cskbTemp;
+                        cskbShop.isNew = true;
+                        cskbShop.typeSell = 0; // Bán bằng Vàng
+                        cskbShop.cost = 50_000_000; // 50tr Vàng
+                        cskbShop.iconSpec = 0;
+                        cskbShop.options.add(new Item.ItemOption(31, 99)); // Số lượng 99
+                        cskbShop.options.add(new Item.ItemOption(30, 0));
+                        oldTab.itemShops.add(0, cskbShop);
+                        addedCskb = true;
+                    }
+                }
                 newSantaTabs.add(oldTab);
             }
         }

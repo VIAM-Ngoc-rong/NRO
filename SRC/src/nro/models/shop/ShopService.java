@@ -880,6 +880,9 @@ public class ShopService {
         if (item.template.id == 1523 || item.template.id == 1524) {
             item = ItemService.gI().createNewItem((short) 521);
             item.itemOptions.addAll(is.options);
+        } else if (item.template.id == 380 && is.cost == 50_000_000) {
+            item = ItemService.gI().createNewItem((short) 380, 99);
+            item.itemOptions.add(new ItemOption(30, 0));
         }
         InventoryService.gI().addItemBag(player, item);
         InventoryService.gI().sendItemBags(player);
