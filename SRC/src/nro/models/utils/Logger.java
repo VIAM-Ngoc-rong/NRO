@@ -170,8 +170,10 @@ public class Logger {
         }
     }
 
+    private static final java.util.concurrent.ExecutorService FILE_LOG_EXECUTOR = Executors.newSingleThreadExecutor();
+
     public static void fileLog(String playerName, String string) {
-        Executors.newSingleThreadExecutor().submit(() -> {
+        FILE_LOG_EXECUTOR.submit(() -> {
             try {
                 SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy + HH:mm:ss");
                 String timeNow = formatter.format(new Date());

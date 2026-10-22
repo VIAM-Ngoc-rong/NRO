@@ -84,9 +84,8 @@ public final class Manager {
     public static boolean DAO_AUTO_UPDATER = false;
     public static MapTemplate[] MAP_TEMPLATES;
     public static final List<nro.models.map.Map> MAPS = new ArrayList<>();
-    private final ScheduledExecutorService mapUpdater = Executors.newSingleThreadScheduledExecutor();
-    private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors());
-    private static final ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+    private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(Math.max(2, Runtime.getRuntime().availableProcessors()));
+    private static final ExecutorService executor = Executors.newFixedThreadPool(Math.max(2, Runtime.getRuntime().availableProcessors()));
     public static final List<ItemOptionTemplate> ITEM_OPTION_TEMPLATES = new ArrayList<>();
     public static final List<ArrHead2Frames> ARR_HEAD_2_FRAMES = new ArrayList<>();
     public static final Map<String, Byte> IMAGES_BY_NAME = new HashMap<>();
@@ -200,43 +199,42 @@ public final class Manager {
         }
         new NonInteractiveNPC().initNonInteractiveNPC();
 
+        final List<Callable<Void>> zoneTasks = new ArrayList<>();
+        List<Zone> currentBatch = new ArrayList<>(16);
+        for (nro.models.map.Map map : MAPS) {
+            for (Zone zone : map.zones) {
+                currentBatch.add(zone);
+                if (currentBatch.size() >= 16) {
+                    final List<Zone> finalBatch = new ArrayList<>(currentBatch);
+                    zoneTasks.add(() -> {
+                        for (Zone z : finalBatch) {
+                            z.update();
+                        }
+                        return null;
+                    });
+                    currentBatch.clear();
+                }
+            }
+        }
+        if (!currentBatch.isEmpty()) {
+            final List<Zone> finalBatch = new ArrayList<>(currentBatch);
+            zoneTasks.add(() -> {
+                for (Zone z : finalBatch) {
+                    z.update();
+                }
+                return null;
+            });
+        }
+
         scheduler.scheduleAtFixedRate(() -> {
             try {
-                List<Callable<Void>> tasks = new ArrayList<>();
-                for (nro.models.map.Map map : MAPS) {
-                    List<Zone> batch = new ArrayList<>();
-                    for (Zone zone : map.zones) {
-                        batch.add(zone);
-                        if (batch.size() >= 10) {
-                            List<Zone> finalBatch = new ArrayList<>(batch);
-                            tasks.add(() -> {
-                                for (Zone z : finalBatch) {
-                                    z.update();
-                                }
-                                return null;
-                            });
-                            batch.clear();
-                        }
-                    }
-                    if (!batch.isEmpty()) {
-                        List<Zone> finalBatch = new ArrayList<>(batch);
-                        tasks.add(() -> {
-                            for (Zone z : finalBatch) {
-                                z.update();
-                            }
-                            return null;
-                        });
-                    }
-                }
-
                 CompletionService<Void> completionService = new ExecutorCompletionService<>(executor);
-                for (Callable<Void> task : tasks) {
+                for (Callable<Void> task : zoneTasks) {
                     completionService.submit(task);
                 }
-                for (int i = 0; i < tasks.size(); i++) {
+                for (int i = 0; i < zoneTasks.size(); i++) {
                     completionService.take();
                 }
-
             } catch (Exception e) {
                 e.printStackTrace();
             }

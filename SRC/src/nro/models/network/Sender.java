@@ -39,7 +39,7 @@ public final class Sender implements Runnable {
             throw new NullPointerException("socket is marked non-null but is null");
         }
         try {
-            this.dos = new DataOutputStream(socket.getOutputStream());
+            this.dos = new DataOutputStream(new java.io.BufferedOutputStream(socket.getOutputStream(), 8192));
         } catch (IOException iOException) {
         }
         return this;
@@ -48,16 +48,12 @@ public final class Sender implements Runnable {
     @Override
     public void run() {
         try {
-            while (this.session.isConnected()) {
-                while (!this.messages.isEmpty()) {
-                    Message message = this.messages.poll(5L, TimeUnit.SECONDS);
-                    if (message == null) {
-                        continue;
-                    }
+            while (this.session != null && this.session.isConnected()) {
+                Message message = this.messages.poll(1L, TimeUnit.SECONDS);
+                if (message != null) {
                     this.doSendMessage(message);
                     message.cleanup();
                 }
-                TimeUnit.MILLISECONDS.sleep(10L);
             }
         } catch (Exception exception) {
         }

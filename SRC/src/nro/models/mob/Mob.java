@@ -185,12 +185,9 @@ public class Mob {
                 if (plAtt.isPl() && plAtt.satellite != null && plAtt.satellite.isDefend) {
                     plAtt.satellite.isDefend = false;
                 }
-                Service.gI().addSMTN(plAtt, (byte) 2, getTiemNangForPlayer(plAtt, damage), true);
-                TrainingService.gI().tangTnsmLuyenTap(plAtt, getTiemNangForPlayer(plAtt, damage));
-                plAtt.total_damage_maydam += damage;
-                Service.gI().updatePlayerTotalDamage(plAtt);
-                long realDamage = this.point.hp / 100 > 0 ? this.point.hp / 100 : 1;
-
+                long tiemNang = getTiemNangForPlayer(plAtt, damage);
+                Service.gI().addSMTN(plAtt, (byte) 2, tiemNang, true);
+                TrainingService.gI().tangTnsmLuyenTap(plAtt, tiemNang);
                 damage = this.point.hp / 100 > 0 ? this.point.hp / 100 : 1;
             }
         }

@@ -30,10 +30,6 @@ import com.google.gson.Gson;
 
 public class PlayerDAO {
 
-    private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-
-    ; 
-
     public static boolean createNewPlayer(int userId, String name, byte gender, int hair) {
         try {
             JSONArray dataArray = new JSONArray();

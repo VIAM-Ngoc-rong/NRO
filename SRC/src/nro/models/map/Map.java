@@ -54,7 +54,6 @@ public class Map implements Runnable {
     public static final byte T_EMPTY = 0;
     public static final byte T_TOP = 2;
     private static final int SIZE = 24;
-    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     public final List<BotAttackplayer> bots = new ArrayList<>();
     public List<Player> players = new ArrayList<>();
 
@@ -185,16 +184,15 @@ public class Map implements Runnable {
         this.npcs.add(npc);
     }
 
+    @Override
     public void run() {
-        scheduler.scheduleAtFixedRate(() -> {
-            try {
-                for (Zone zone : this.zones) {
-                    zone.update();
-                }
-            } catch (Exception e) {
-                Logger.logException(Map.class, e, "Lỗi update map " + this.mapName);
+        try {
+            for (Zone zone : this.zones) {
+                zone.update();
             }
-        }, 0, 5000, TimeUnit.MILLISECONDS);  // Cập nhật mỗi 1 giây
+        } catch (Exception e) {
+            Logger.logException(Map.class, e, "Lỗi update map " + this.mapName);
+        }
     }
 
     public void initMob(byte[] mobTemp, byte[] mobLevel, int[] mobHp, short[] mobX, short[] mobY) {

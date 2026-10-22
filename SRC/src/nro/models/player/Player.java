@@ -433,7 +433,8 @@ public class Player implements Runnable {
     }
 
     public void start() {
-        Executors.newSingleThreadExecutor().submit(this, "Update player " + this.name);
+        // Đã được cập nhật định kỳ mỗi 1 giây qua Zone.udPlayer() trong Manager.scheduler,
+        // không tạo thêm SingleThreadExecutor riêng cho từng player để tránh rò rỉ thread và chạy update() 2 lần/giây.
     }
 
     public boolean isTrashEquipToAutoSell(Item item) {
@@ -530,6 +531,14 @@ public class Player implements Runnable {
                     if (this.isPl() && this.zone != null && this.zone.map.mapId == this.gender + 21 && (TaskService.gI().getIdTask(this) == ConstTask.TASK_0_0 || TaskService.gI().getIdTask(this) == ConstTask.TASK_0_1)) {
                         this.playerTask.taskMain.index = 2;
                         TaskService.gI().sendTaskMain(this);
+                    }
+                    if (this.zone != null && this.zone.map.mapId == (21 + this.gender)) {
+                        if (this.mabuEgg != null) {
+                            this.mabuEgg.sendMabuEgg();
+                        }
+                        if (this.DuaHauEgg != null) {
+                            this.DuaHauEgg.sendDuaHauEgg();
+                        }
                     }
                 }
                 if ((this.zone != null && !MapService.gI().isHome(this.zone.map.mapId)) || (!this.isPl() && this.zone == null)) {
@@ -669,17 +678,6 @@ public class Player implements Runnable {
                         fixBlackBallWar();
                     }
 
-                    if (this.zone != null && this.zone.map.mapId == (21 + this.gender)) {
-                        if (this.mabuEgg != null) {
-                            this.mabuEgg.sendMabuEgg();
-                        }
-                    }
-                    if (this.zone != null && this.zone.map.mapId == (21 + this.gender)) {
-                        if (this.DuaHauEgg != null) {
-                            this.DuaHauEgg.sendDuaHauEgg();
-                        }
-                    }
-
                     if (this.isPhuHoMapMabu && this.zone != null && !MapService.gI().isMapMabu2H(this.zone.map.mapId)) {
                         this.isPhuHoMapMabu = false;
                         this.nPoint.calPoint();
@@ -697,10 +695,6 @@ public class Player implements Runnable {
                     }
                     if (this.isPl() && this.zone != null && !MapService.gI().isMapMaBu(this.zone.map.mapId) && (this.cFlag == 9 || this.cFlag == 10)) {
                         Service.gI().changeFlag(this, 0);
-                    }
-                    if (this.isPl()) {
-                        autoSendBadges();
-                        BadgesTaskService.updateDoneTask(this);
                     }
 
                     if (this.isPl() && this.superRank != null) {
@@ -1950,7 +1944,10 @@ public class Player implements Runnable {
         friends = null;
         enemies = null;
         session = null;
-        newSkill = null;
+        if (newSkill != null) {
+            newSkill.dispose();
+            newSkill = null;
+        }
         name = null;
         textThongBaoChangeMap = null;
         textThongBaoThua = null;

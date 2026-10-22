@@ -395,15 +395,14 @@ public class Util {
         return str;
     }
 
+    private static final java.util.concurrent.ScheduledExecutorService SHARED_SCHEDULER = Executors.newScheduledThreadPool(4);
+
     public static void threadPool(Runnable task) {
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.submit(() -> {
+        SHARED_SCHEDULER.execute(() -> {
             try {
                 task.run();
             } catch (Exception e) {
                 Logger.error(e + "\n");
-            } finally {
-                executor.shutdown();
             }
         });
     }
@@ -421,13 +420,13 @@ public class Util {
     }
 
     public static void setTimeout(Runnable runnable, int delay) {
-        Executors.newSingleThreadExecutor().submit(() -> {
+        SHARED_SCHEDULER.schedule(() -> {
             try {
-                Thread.sleep(delay);
                 runnable.run();
-            } catch (InterruptedException e) {
+            } catch (Exception e) {
+                Logger.error(e + "\n");
             }
-        });
+        }, Math.max(0, delay), java.util.concurrent.TimeUnit.MILLISECONDS);
     }
 
     public static String addSlashes(String input) {

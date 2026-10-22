@@ -26,7 +26,7 @@ public final class MajinBuu14H implements Runnable {
     }
 
     public void init() {
-        Executors.newSingleThreadExecutor().submit(this, "MajinBuu 14H - Id : " + id);
+        new Thread(this, "MajinBuu 14H - Id : " + id).start();
     }
 
     @Override
@@ -35,7 +35,7 @@ public final class MajinBuu14H implements Runnable {
             try {
                 long startTime = System.currentTimeMillis();
                 update();
-                Functions.sleep(Math.max(150 - (System.currentTimeMillis() - startTime), 10));
+                Functions.sleep(Math.max(1000 - (System.currentTimeMillis() - startTime), 50));
             } catch (Exception e) {
                 e.printStackTrace();
             }

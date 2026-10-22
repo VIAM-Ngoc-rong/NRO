@@ -175,6 +175,7 @@ public class NewSkill {
     }
 
     public void dispose() {
+        close();
         this.player = null;
         this.skillSelect = null;
     }

@@ -151,7 +151,7 @@ public class TrainingService {
                 Service.gI().addSMTN(player, (byte) 2, tnsm, false);
             } else if (player.dangKyTapTuDong && time > 1800) {
                 if (player.inventory.gold >= 1_000_000) {
-                    Executors.newSingleThreadExecutor().submit(() -> {
+                    Util.threadPool(() -> {
                         try {
                             player.inventory.subGold(1_000_000);
                             Thread.sleep(1000);
@@ -168,7 +168,7 @@ public class TrainingService {
                             Service.gI().sendMoney(player);
                         } catch (InterruptedException e) {
                         }
-                    }, "Luyện Tập");
+                    });
                 } else {
                     player.dangKyTapTuDong = false;
                     Service.gI().sendThongBao(player, "Bạn không đủ vàng, đăng ký luyện tập tự động đã bị hủy");

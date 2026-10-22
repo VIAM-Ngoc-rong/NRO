@@ -1,20 +1,15 @@
 package nro.models.mob_bigboss;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import nro.models.map.service.MapService;
 import nro.models.mob.BigBoss;
 import nro.models.mob.Mob;
-import nro.models.network.Message;
 import nro.models.player.Player;
 import nro.models.server.Manager;
 import nro.models.services.Service;
-import nro.models.utils.Util;
 
 /**
  *
@@ -68,6 +63,7 @@ public class MayDoSucManh extends BigBoss {
 
         long totalDamage = damageMap.getOrDefault(playerId, 0L) + realDamage;
         damageMap.put(playerId, totalDamage);
+        pl.total_damage_maydam += realDamage;
 
         int prevMilestone = milestoneMap.getOrDefault(playerId, 0);
         int currentMilestone = (int) (totalDamage / 10_000_000L);
@@ -85,10 +81,8 @@ public class MayDoSucManh extends BigBoss {
 
             Service.gI().sendThongBao(pl, "Bạn đã nhận được " + points + " điểm Máy Đấm!");
             Service.gI().updatePlayerPointMayDam(pl);
+            Service.gI().updatePlayerTotalDamage(pl);
         }
-
-        pl.total_damage_maydam += realDamage;
-        Service.gI().updatePlayerTotalDamage(pl);
     }
 
     private void startHealthRegeneration() {

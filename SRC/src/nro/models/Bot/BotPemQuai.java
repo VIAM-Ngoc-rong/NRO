@@ -21,7 +21,7 @@ public class BotPemQuai {
     private Mob mAttack;
     public long lastTimeChanM;
     public Bot bot;
-    private boolean isPickingItem = false;
+    private long lastTimePickItem = 0;
     private long lastSpecialSkillTime;
     private long lastChatTime = 0;
     private final long chatInterval = 3000;
@@ -142,7 +142,7 @@ public class BotPemQuai {
         if (this.bot == null || this.bot.zone == null || this.bot.zone.items == null) {
             return;
         }
-        if (isPickingItem) {
+        if (System.currentTimeMillis() - lastTimePickItem < 500) {
             return;
         }
 
@@ -163,7 +163,7 @@ public class BotPemQuai {
                 return;
             }
 
-            isPickingItem = true;
+            lastTimePickItem = System.currentTimeMillis();
 
             for (ItemMap item : itemsToPick) {
                 try {
@@ -174,13 +174,6 @@ public class BotPemQuai {
                     e.printStackTrace();
                 }
             }
-
-            new Timer().schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    isPickingItem = false;
-                }
-            }, 500);
         }
     }
 }

@@ -527,6 +527,7 @@ public class ShopService {
         player.inventory.gem -= gem;
         player.inventory.ruby -= ruby;
         player.inventory.coupon -= coupon;
+        Service.gI().sendMoney(player);
         return true;
     }
 

@@ -173,12 +173,12 @@ public class Client implements Runnable {
                 }
             }
         }
-        if (System.currentTimeMillis() - lastTimeAutoSave >= 60000L) {
+        if (System.currentTimeMillis() - lastTimeAutoSave >= 180000L) {
             lastTimeAutoSave = System.currentTimeMillis();
             for (int i = players.size() - 1; i >= 0; i--) {
                 try {
                     Player pl = players.get(i);
-                    if (pl != null && !pl.isPet && !pl.isNewPet && !pl.isBoss) {
+                    if (pl != null && !pl.isPet && !pl.isNewPet && !pl.isBoss && !pl.isBot) {
                         if (pl.zone != null && pl.zone.map != null) {
                             pl.mapIdBeforeLogout = pl.zone.map.mapId;
                         }

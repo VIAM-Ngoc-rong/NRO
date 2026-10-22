@@ -22,7 +22,7 @@ public final class Collector
 
     public Collector setSocket(Socket socket) {
         try {
-            this.dis = new DataInputStream(socket.getInputStream());
+            this.dis = new DataInputStream(new java.io.BufferedInputStream(socket.getInputStream(), 8192));
         } catch (IOException iOException) {
         }
         return this;

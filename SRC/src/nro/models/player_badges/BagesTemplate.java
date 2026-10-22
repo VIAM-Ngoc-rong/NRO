@@ -61,11 +61,16 @@ public class BagesTemplate {
     }
 
     public static List<Item.ItemOption> sendListItemOption(Player player) {
+        if (player == null || player.dataBadges == null || player.dataBadges.isEmpty()) {
+            return java.util.Collections.emptyList();
+        }
         List<Item.ItemOption> listOptions = new ArrayList<>();
         for (BadgesData data : player.dataBadges) {
-            for (BagesTemplate temp : Manager.BAGES_TEMPLATES) {
-                if (data.idBadGes == temp.idEffect && data.isUse) {
-                    listOptions.addAll(temp.options);
+            if (data != null && data.isUse) {
+                for (BagesTemplate temp : Manager.BAGES_TEMPLATES) {
+                    if (data.idBadGes == temp.idEffect) {
+                        listOptions.addAll(temp.options);
+                    }
                 }
             }
         }

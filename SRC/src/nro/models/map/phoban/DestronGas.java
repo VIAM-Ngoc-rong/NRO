@@ -54,7 +54,7 @@ public class DestronGas implements Runnable {
             try {
                 long startTime = System.currentTimeMillis();
                 update();
-                Functions.sleep(Math.max(150 - (System.currentTimeMillis() - startTime), 10));
+                Functions.sleep(Math.max(500 - (System.currentTimeMillis() - startTime), 10));
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -191,7 +191,7 @@ public class DestronGas implements Runnable {
                 }
             }
         }
-        Executors.newSingleThreadExecutor().submit(this, "Khí Gas Hủy Diệt: " + this.clan.name);
+        new Thread(this, "Khí Gas Hủy Diệt: " + this.clan.name).start();
     }
 
     //kết thúc khí gas hủy diệt

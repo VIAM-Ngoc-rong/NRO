@@ -49,7 +49,7 @@ public class BlackBallWar implements Runnable {
     }
 
     private void start() {
-    Executors.newSingleThreadExecutor().submit(this, "Zone " + zone.zoneId);
+        new Thread(this, "BlackBallWar Zone " + zone.zoneId).start();
     }
 
     @Override
@@ -57,8 +57,10 @@ public class BlackBallWar implements Runnable {
         while (!Maintenance.isRunning) {
             try {
                 long startTime = System.currentTimeMillis();
-                update();
-                Functions.sleep(Math.max(150 - (System.currentTimeMillis() - startTime), 10));
+                if (!zone.getPlayers().isEmpty() || zone.finishBlackBallWar) {
+                    update();
+                }
+                Functions.sleep(Math.max(1000 - (System.currentTimeMillis() - startTime), 50));
             } catch (Exception e) {
                 e.printStackTrace();
             }
