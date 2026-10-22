@@ -37,6 +37,7 @@ public class CombineService {
     public static final int PHAN_RA_TRANG_BI_KH = 996;
     public static final int TAI_TAO_CAPSULE_KH = 997;
     public static final int DAP_DO_KICH_HOAT = 998;
+    public static final int PHAN_RA_DO_SAO = 999;
     public static final int NANG_CAP_SAO_PHA_LE = 100;
     public static final int DANH_BONG_SAO_PHA_LE = 101;
     public static final int CUONG_HOA_LO_SAO_PHA_LE = 102;
@@ -111,6 +112,9 @@ public class CombineService {
                 break;
             case DAP_DO_KICH_HOAT:
                 DapDoKichHoat.showInfoCombine(player);
+                break;
+            case PHAN_RA_DO_SAO:
+                PhanRaDoSao.showInfoCombine(player);
                 break;
             case NHAP_NGOC_RONG:
                 NhapNgocRong.showInfoCombine(player);
@@ -196,6 +200,9 @@ public class CombineService {
                 break;
             case DAP_DO_KICH_HOAT:
                 DapDoKichHoat.thucHienDapDo(player);
+                break;
+            case PHAN_RA_DO_SAO:
+                PhanRaDoSao.thucHienPhanRa(player);
                 break;
             case NHAP_NGOC_RONG:
                 NhapNgocRong.nhapNgocRong(player);
@@ -635,6 +642,8 @@ public class CombineService {
                 return "Ta sẽ phù phép\ntái tạo thành 1 viên\nCapsule kích hoạt tự chọn";
             case DAP_DO_KICH_HOAT:
                 return "Ta sẽ phù phép\n3 món đồ Kích Hoạt\nthành 1 món đồ Kích Hoạt mới";
+            case PHAN_RA_DO_SAO:
+                return "Ta sẽ phù phép\nphân rã Đồ Sao nhận\nVàng, Hồng Ngọc, SPL & Hematite";
             case NHAP_NGOC_RONG:
                 return "Ta sẽ phù phép\ncho 7 viên Ngọc Rồng\nthành 1 viên Ngọc Rồng cấp cao";
             case NANG_CAP_VAT_PHAM:
@@ -695,6 +704,8 @@ public class CombineService {
                 return "Vào hành trang\nChọn 3 khoáng tái chế\nChọn 1 Capsule vỡ\nSau đó chọn 'Tái tạo'";
             case DAP_DO_KICH_HOAT:
                 return "Vào hành trang\nChọn 3 món đồ Kích Hoạt bất kỳ\nCần 100 triệu vàng\nĐập ra đồ Kích Hoạt mới (từ 200tr SM đến Đồ Thần Linh)";
+            case PHAN_RA_DO_SAO:
+                return "Vào hành trang\nChọn 1 hoặc nhiều trang bị có Sao Pha Lê (1s - 9s)\nPhân rã miễn phí nhận Vàng, Hồng Ngọc, Sao Pha Lê, Đá Hematite và Capsule Kích Hoạt";
             case CHUYEN_HOA_TRANG_BI_NGOC:
             case CHUYEN_HOA_TRANG_BI_VANG:
                 return "Vào hành trang\nChọn trang bị gốc\n(Áo,quần,găng,giày hoặc rada)\ntừ cấp[+4] trở lên\nChọn tiếp trang bị mới\nchưa nâng cấp cần nhập thể\nsau đó chọn 'Nâng cấp'";
