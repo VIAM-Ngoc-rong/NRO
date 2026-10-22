@@ -959,35 +959,64 @@ public class InventoryService {
     }
 
     public int getParam(Player player, int idoption, int itemID) {
+        int total = 0;
         for (Item it : player.inventory.itemsBag) {
             if (it != null && it.itemOptions != null && it.isNotNullItem() && it.template.id == itemID) {
+                int optVal = 0;
                 for (ItemOption iop : it.itemOptions) {
-                    if (iop.optionTemplate.id == idoption) {
-                        return iop.param;
-                    }
-                }
-            }
-        }
-        return 0;
-    }
-
-    public void subParamItemsBag(Player player, int itemID, int idoption, int param) {
-        Item itemRemove = null;
-        for (Item it : player.inventory.itemsBag) {
-            if (it != null && it.template.id == itemID) {
-                for (ItemOption op : it.itemOptions) {
-                    if (op != null && op.optionTemplate.id == idoption) {
-                        op.param -= param;
-                        if (op.param <= 0) {
-                            itemRemove = it;
-                        }
+                    if (iop != null && iop.optionTemplate != null && iop.optionTemplate.id == idoption) {
+                        optVal = iop.param;
                         break;
                     }
                 }
-                break;
+                if (idoption == 31) {
+                    total += Math.max(optVal, it.quantity);
+                } else if (optVal > 0) {
+                    return optVal;
+                }
             }
         }
-        if (itemRemove != null) {
+        return total;
+    }
+
+    public void subParamItemsBag(Player player, int itemID, int idoption, int param) {
+        int remaining = param;
+        List<Item> itemsToRemove = new ArrayList<>();
+        for (Item it : player.inventory.itemsBag) {
+            if (it != null && it.isNotNullItem() && it.template.id == itemID && remaining > 0) {
+                ItemOption targetOp = null;
+                if (it.itemOptions != null) {
+                    for (ItemOption op : it.itemOptions) {
+                        if (op != null && op.optionTemplate != null && op.optionTemplate.id == idoption) {
+                            targetOp = op;
+                            break;
+                        }
+                    }
+                }
+                if (targetOp != null && (idoption != 31 || targetOp.param >= it.quantity)) {
+                    int take = Math.min(remaining, targetOp.param);
+                    targetOp.param -= take;
+                    remaining -= take;
+                    if (idoption == 31 && it.quantity > 1) {
+                        it.quantity = Math.max(1, targetOp.param);
+                    }
+                    if (targetOp.param <= 0) {
+                        itemsToRemove.add(it);
+                    }
+                } else if (idoption == 31) {
+                    int take = Math.min(remaining, it.quantity);
+                    it.quantity -= take;
+                    remaining -= take;
+                    if (targetOp != null) {
+                        targetOp.param = it.quantity;
+                    }
+                    if (it.quantity <= 0) {
+                        itemsToRemove.add(it);
+                    }
+                }
+            }
+        }
+        for (Item itemRemove : itemsToRemove) {
             removeItem(player.inventory.itemsBag, itemRemove);
         }
     }

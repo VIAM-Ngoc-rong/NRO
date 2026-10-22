@@ -100,6 +100,11 @@ public class ShopDAO {
             {1693, 50, 27, 77, 36, 103, 26, 153, 75, 97, 15}                 // Cađíc SSJ4 (36% HP, 25-75% ST Nổ)
         };
 
+        ItemTemplate rubyTemp = ItemService.gI().getTemplate((short) 861);
+        int iconRuby = rubyTemp != null ? rubyTemp.iconID : 7743;
+        ItemTemplate gemTemp = ItemService.gI().getTemplate((short) 77);
+        int iconGem = gemTemp != null ? gemTemp.iconID : 932;
+
         for (int[] def : planetDefs) {
             ItemTemplate temp = ItemService.gI().getTemplate((short) def[0]);
             if (temp != null) {
@@ -109,7 +114,7 @@ public class ShopDAO {
                 is.isNew = true;
                 is.typeSell = 3; // Bán bằng Hồng ngọc (COST_RUBY)
                 is.cost = 1000;  // Giá 1.000 Hồng ngọc
-                is.iconSpec = 0;
+                is.iconSpec = iconRuby;
                 for (int i = 1; i + 1 < def.length; i += 2) {
                     is.options.add(new Item.ItemOption(def[i], def[i + 1]));
                 }
@@ -157,7 +162,7 @@ public class ShopDAO {
                 is.isNew = true;
                 is.typeSell = 1; // Bán bằng Ngọc xanh
                 is.cost = 50;    // Giá 50 Ngọc xanh
-                is.iconSpec = 0;
+                is.iconSpec = iconGem;
                 for (int i = 1; i + 1 < def.length; i += 2) {
                     is.options.add(new Item.ItemOption(def[i], def[i + 1]));
                 }
@@ -252,6 +257,37 @@ public class ShopDAO {
         }
 
         santaShop.tabShops = newSantaTabs;
+
+        // Tạo thêm shop SPEC_SHOP ("SANTA_CAITRANG") để hiển thị chuẩn icon Hồng Ngọc / Ngọc Xanh trên client
+        Shop santaCostumeShop = new Shop();
+        santaCostumeShop.id = 9999;
+        santaCostumeShop.npcId = santaShop.npcId;
+        santaCostumeShop.tagName = "SANTA_CAITRANG";
+        santaCostumeShop.typeShop = 3; // SPEC_SHOP hiển thị iconSpec (Hồng Ngọc / Ngọc Xanh)
+
+        TabShop specTabPlanet = new TabShop();
+        specTabPlanet.shop = santaCostumeShop;
+        specTabPlanet.id = 1801;
+        specTabPlanet.name = "CT Hành Tinh\n(1K Hồng Ngọc)";
+        for (ItemShop is : planetCostumes) {
+            ItemShop copy = new ItemShop(is);
+            copy.tabShop = specTabPlanet;
+            specTabPlanet.itemShops.add(copy);
+        }
+        santaCostumeShop.tabShops.add(specTabPlanet);
+
+        TabShop specTabSupport = new TabShop();
+        specTabSupport.shop = santaCostumeShop;
+        specTabSupport.id = 1802;
+        specTabSupport.name = "CT Hỗ Trợ\n(Đệ/Cold/PK)";
+        for (ItemShop is : supportCostumes) {
+            ItemShop copy = new ItemShop(is);
+            copy.tabShop = specTabSupport;
+            specTabSupport.itemShops.add(copy);
+        }
+        santaCostumeShop.tabShops.add(specTabSupport);
+
+        shops.add(santaCostumeShop);
     }
 
     private static void addOpts(ItemShop is, int... pairs) {

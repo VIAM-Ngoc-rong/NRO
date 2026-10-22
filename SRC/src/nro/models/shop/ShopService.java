@@ -864,7 +864,11 @@ public class ShopService {
             }
         } // Shop đặc biệt
         else if (shop.typeShop == ShopService.SPEC_SHOP) {
-            if (!this.subIemByItemShop(player, is)) {
+            if ("SANTA".equals(shop.tagName) || "SANTA_CAITRANG".equals(shop.tagName)) {
+                if (!subMoneyByItemShop(player, is)) {
+                    return;
+                }
+            } else if (!this.subIemByItemShop(player, is)) {
                 return;
             }
         }
@@ -1001,9 +1005,21 @@ public class ShopService {
                 break;
             case 77:
                 if (pl.inventory.gem >= buySpec) {
+                    pl.inventory.gem -= buySpec;
+                    Service.gI().sendMoney(pl);
                     isBuy = true;
                 } else {
                     Service.gI().sendThongBao(pl, "Bạn Không Đủ Ngọc Để Mua Vật Phẩm");
+                    isBuy = false;
+                }
+                break;
+            case 861:
+                if (pl.inventory.ruby >= buySpec) {
+                    pl.inventory.ruby -= buySpec;
+                    Service.gI().sendMoney(pl);
+                    isBuy = true;
+                } else {
+                    Service.gI().sendThongBao(pl, "Bạn không có đủ Hồng ngọc (cần " + buySpec + " Hồng ngọc, hiện có " + pl.inventory.ruby + ")");
                     isBuy = false;
                 }
                 break;

@@ -110,6 +110,7 @@ public class NangCapBongTai {
 
                 if (Util.isTrue(RATIO_BONG_TAI, 100)) {
                     bongTai.template = ItemService.gI().getTemplate(ITEM_ID_BONG_TAI_C2);
+                    bongTai.quantity = 1;
                     bongTai.itemOptions.clear();
                     bongTai.itemOptions.add(new ItemOption(ITEM_OPTION_ID_CAP, ITEM_OPTION_VALUE_CAP_2));
                     InventoryService.gI().subParamItemsBag(player, ITEM_ID_MANH_VO_BT, ITEM_PARAM_INDEX, REQUIRED_MANH_VO_FULL);
