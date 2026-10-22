@@ -496,34 +496,6 @@ public class Boss extends Player implements IBoss {
             return;
         }
         switch (this.bossStatus) {
-            case CHAT_S, AFK, ACTIVE -> {
-                this.autoLeaveMap();
-                long idleResetTime = this.getIdleResetTimeMs();
-                if (this.parentBoss == null && !this.isExcludedFrom5MinReset() && !this.hasGroupDroppedBelow50Hp()
-                        && this.lastTimeSpawnOnMap > 0 && Util.canDoWithTime(this.lastTimeSpawnOnMap, idleResetTime)) {
-                    int minutes = (int) (idleResetTime / 60000L);
-                    this.chat("Quá " + minutes + " phút không ai đánh ta xuống dưới 50% HP, đổi khu vực khác!");
-                    if (this.bossAppearTogether != null && this.currentLevel >= 0
-                            && this.currentLevel < this.bossAppearTogether.length
-                            && this.bossAppearTogether[this.currentLevel] != null) {
-                        for (Boss sub : this.bossAppearTogether[this.currentLevel]) {
-                            if (sub != null) {
-                                ChangeMapService.gI().exitMap(sub);
-                                sub.lastZone = null;
-                                sub.currentLevel = -1;
-                                sub.changeStatus(BossStatus.REST);
-                            }
-                        }
-                    }
-                    ChangeMapService.gI().exitMap(this);
-                    this.lastZone = null;
-                    this.currentLevel = -1;
-                    this.changeStatus(BossStatus.RESPAWN);
-                    return;
-                }
-            }
-        }
-        switch (this.bossStatus) {
             case REST ->
                 this.rest();
             case RESPAWN -> {
