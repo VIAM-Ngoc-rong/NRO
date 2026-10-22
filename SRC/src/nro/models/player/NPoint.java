@@ -546,45 +546,6 @@ public class NPoint {
                 }
             }
         }
-        // Kế thừa nội tại cải trang của đệ tử khi hợp thể
-        if (!this.player.isPet && this.player.fusion != null && this.player.fusion.typeFusion != ConstPlayer.NON_FUSION
-                && this.player.pet != null && this.player.pet.nPoint != null) {
-            NPoint petPoint = this.player.pet.nPoint;
-            this.tlHutHpMpXQ += petPoint.tlHutHpMpXQ;
-            this.tlHpGiamODo += petPoint.tlHpGiamODo;
-            if (petPoint.tlSexyDame > this.tlSexyDame) {
-                this.tlSexyDame = petPoint.tlSexyDame;
-            }
-            if (petPoint.isLamCham) {
-                this.isLamCham = true;
-            }
-            if (petPoint.isTanHinh) {
-                this.isTanHinh = true;
-            }
-            if (petPoint.isHoaDa) {
-                this.isHoaDa = true;
-            }
-            if (petPoint.isSocolaXQ) {
-                this.isSocolaXQ = true;
-            }
-            if (petPoint.tlLanhXQ > this.tlLanhXQ) {
-                this.tlLanhXQ = petPoint.tlLanhXQ;
-            }
-            this.voHieuChuong += petPoint.voHieuChuong;
-            this.tlHoiMpKhiBiDanh += petPoint.tlHoiMpKhiBiDanh;
-            this.mpHoiCute += petPoint.mpHoiCute;
-            this.tlHpHoiBanThanVaDongDoi += petPoint.tlHpHoiBanThanVaDongDoi;
-            this.tlMpHoiBanThanVaDongDoi += petPoint.tlMpHoiBanThanVaDongDoi;
-            if (petPoint.isKhongLanh) {
-                this.isKhongLanh = true;
-            }
-            if (petPoint.wearingVoHinh) {
-                this.wearingVoHinh = true;
-            }
-            if (petPoint.isXinbato) {
-                this.isXinbato = true;
-            }
-        }
         setDameTrainArmor();
         setBasePoint();
         setOutfitFusion();
@@ -1787,19 +1748,19 @@ public class NPoint {
                 }
             }
             long tn = tiemNang;
-            if (this.player.charms.tdTriTue > System.currentTimeMillis()) {
-                tiemNang += tn;
+            Player owner = this.player.isPet ? ((Pet) this.player).master : this.player;
+            if (owner != null && owner.charms != null) {
+                if (owner.charms.tdTriTue > System.currentTimeMillis()) {
+                    tiemNang += tn;
+                }
+                if (owner.charms.tdTriTue3 > System.currentTimeMillis()) {
+                    tiemNang += tn * 3;
+                }
+                if (owner.charms.tdTriTue4 > System.currentTimeMillis()) {
+                    tiemNang += tn * 4;
+                }
             }
-            if (this.player.charms.tdTriTue3 > System.currentTimeMillis()) {
-                tiemNang += tn * 3;
-            }
-            if (this.player.charms.tdTriTue4 > System.currentTimeMillis()) {
-                tiemNang += tn * 4;
-            }
-            if (this.player.charms.tdTriTue4 > System.currentTimeMillis()) {
-                tiemNang += tn * 4;
-            }
-            if (this.player.timevip > System.currentTimeMillis()) {
+            if (owner != null && owner.timevip > System.currentTimeMillis()) {
                 tiemNang += tn * 3;
             }
             if (this.player.effectSkill.isChibi && this.player.typeChibi == 2) {
@@ -1809,11 +1770,11 @@ public class NPoint {
                     && ((Pet) this.player).master.getSession() != null && ((Pet) this.player).master.getSession().vip > 0) {
                 tiemNang += tn * 3;
             }
-            if (this.player.itemTime != null && this.player.itemTime.isUseDK) {
+            if (owner != null && owner.itemTime != null && owner.itemTime.isUseDK) {
                 tiemNang += tn * 2;
             }
             if (player.zone.map.mapId >= 135 && player.zone.map.mapId <= 138) {
-                if (this.player.itemTime != null && this.player.itemTime.isUseKhoBauX2) {
+                if (owner != null && owner.itemTime != null && owner.itemTime.isUseKhoBauX2) {
                     tiemNang += tn * 2;
                 }
             }
@@ -1835,7 +1796,7 @@ public class NPoint {
                 }
             }
             if (MapService.gI().isMapNguHanhSon(this.player.zone.map.mapId)) {
-                tiemNang *= 2;
+                tiemNang *= 5;
             }
             if (MapService.gI().AllMap(this.player.zone.map.mapId)) {
                 //  tiemNang *= 10; //x x3 tiềm năng toàn server

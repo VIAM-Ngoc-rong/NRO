@@ -232,20 +232,22 @@ public class Mob {
                 tiemNang = 1;
                 break;
         }
-        if (checkLevel > 5 && levelPlayer > levelMob) {
-            tiemNang = 1;
-        } else {
-            if (checkLevel < 0) {
-                checkLevel = Math.abs(levelMob - levelPlayer);
+        if (!MapService.gI().isMapNguHanhSon(this.zone.map.mapId)) {
+            if (checkLevel > 5 && levelPlayer > levelMob) {
+                tiemNang = 1;
             } else {
-                tiemNang /= (int) (checkLevel * 0.5) + 1.25;
+                if (checkLevel < 0) {
+                    checkLevel = Math.abs(levelMob - levelPlayer);
+                } else {
+                    tiemNang /= (int) (checkLevel * 0.5) + 1.25;
+                }
             }
         }
         if (tiemNang < 1) {
             tiemNang = 1;
         }
         if (pl.nPoint != null) {
-            tiemNang = (int) pl.nPoint.calSucManhTiemNang(tiemNang);
+            tiemNang = pl.nPoint.calSucManhTiemNang(tiemNang);
         } else {
             return 0;
         }
