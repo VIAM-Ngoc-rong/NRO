@@ -10,22 +10,32 @@ import nro.models.utils.Logger;
 
 public class MabuEgg {
 
-    private static final long DEFAULT_TIME_DONE = 864000000L;
+    private static final long DEFAULT_TIME_DONE = 86_400_000L; // 1 ngày (24h)
 
     private Player player;
     public long lastTimeCreate;
     public long timeDone;
+    public int typeEgg = 0; // 0: Trứng Mabư, 1: Trứng Broly
 
     private final short id = 50;
 
     public MabuEgg(Player player, long lastTimeCreate, long timeDone) {
+        this(player, lastTimeCreate, timeDone, 0);
+    }
+
+    public MabuEgg(Player player, long lastTimeCreate, long timeDone, int typeEgg) {
         this.player = player;
         this.lastTimeCreate = lastTimeCreate;
         this.timeDone = timeDone;
+        this.typeEgg = typeEgg;
     }
 
     public static void createMabuEgg(Player player) {
-        player.mabuEgg = new MabuEgg(player, System.currentTimeMillis(), DEFAULT_TIME_DONE);
+        player.mabuEgg = new MabuEgg(player, System.currentTimeMillis(), DEFAULT_TIME_DONE, 0);
+    }
+
+    public static void createBrolyEgg(Player player) {
+        player.mabuEgg = new MabuEgg(player, System.currentTimeMillis(), DEFAULT_TIME_DONE, 1);
     }
 
     public void sendMabuEgg() {
@@ -51,6 +61,21 @@ public class MabuEgg {
     }
 
     public void openEgg(int gender) {
+        if (this.typeEgg == 1) {
+            if (this.player.pet == null || this.player.pet.typePet != 1) {
+                Service.gI().sendThongBao(player, "Bắt buộc phải có Đệ tử Mabư trước mới mở được Trứng Broly!");
+                return;
+            }
+            try {
+                destroyEgg();
+                Thread.sleep(4000);
+                PetService.gI().changeBrolyPet(this.player, gender);
+                ChangeMapService.gI().changeMapInYard(this.player, this.player.gender * 7, -1, Util.nextInt(300, 500));
+                player.mabuEgg = null;
+            } catch (Exception e) {
+            }
+            return;
+        }
         if (this.player.pet != null) {
             try {
                 destroyEgg();
@@ -65,7 +90,7 @@ public class MabuEgg {
             } catch (Exception e) {
             }
         } else {
-            Service.gI().sendThongBao(player, "Yêu cầu phải có đệ tử");
+            Service.gI().sendThongBao(player, "Bắt buộc phải có Đệ tử trước mới mở được Trứng Mabư!");
         }
     }
 

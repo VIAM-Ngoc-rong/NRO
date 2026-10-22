@@ -64,6 +64,10 @@ public class BossID {
 
     public static final int BROLY = -1822;
     public static final int SUPER_BROLY = -82282;
+    public static final int BROLY_18H = -1823;
+    public static final int SIEU_BROLY_18H = -82283;
+    public static final int KID_BU_MAP = -1824;
+    public static final int MABU_MAP = -82284;
 
     //================MINIBOSSS=============
     public static final int SOI_HEC_QUYN1 = -77;

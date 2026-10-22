@@ -734,8 +734,9 @@ public class MrBlue {
             //data trứng bư
             dataArray = (JSONArray) JSONValue.parse(rs.getString("data_mabu_egg"));
             if (!dataArray.isEmpty()) {
+                int typeEgg = dataArray.size() >= 3 ? Integer.parseInt(String.valueOf(dataArray.get(2))) : 0;
                 player.mabuEgg = new MabuEgg(player, Long.parseLong(String.valueOf(dataArray.get(0))),
-                        Long.parseLong(String.valueOf(dataArray.get(1))));
+                        Long.parseLong(String.valueOf(dataArray.get(1))), typeEgg);
             }
             dataArray.clear();
 

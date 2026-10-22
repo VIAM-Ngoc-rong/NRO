@@ -168,6 +168,7 @@ public class Pet extends Player {
             ChangeMapService.gI().exitMap(this);
             fusionEffect(master.fusion.typeFusion);
             Service.gI().Send_Caitrang(master);
+            this.nPoint.calPoint();
             master.nPoint.calPoint();
             master.nPoint.setFullHpMp();
             Service.gI().point(master);
@@ -198,6 +199,7 @@ public class Pet extends Player {
             this.status = FUSION;
             ChangeMapService.gI().exitMap(this);
             fusionEffect(master.fusion.typeFusion);
+            this.nPoint.calPoint();
             master.nPoint.calPoint();
             master.nPoint.setFullHpMp();
             Service.gI().point(master);
@@ -219,6 +221,7 @@ public class Pet extends Player {
             this.status = FUSION;
             ChangeMapService.gI().exitMap(this);
             fusionEffect(master.fusion.typeFusion);
+            this.nPoint.calPoint();
             master.nPoint.calPoint();
             master.nPoint.setFullHpMp();
             Service.gI().point(master);
@@ -246,6 +249,7 @@ public class Pet extends Player {
             ChangeMapService.gI().exitMap(this);
             fusionEffect(master.fusion.typeFusion);
             Service.gI().Send_Caitrang(master);
+            this.nPoint.calPoint();
             master.nPoint.calPoint();
             master.nPoint.setFullHpMp();
             Service.gI().point(master);
@@ -258,6 +262,8 @@ public class Pet extends Player {
     public void unFusion() {
         master.fusion.typeFusion = 0;
         this.status = PROTECT;
+        this.nPoint.calPoint();
+        master.nPoint.calPoint();
         Service.gI().point(master);
         joinMapMaster();
         fusionEffect(master.fusion.typeFusion);
@@ -358,7 +364,7 @@ public class Pet extends Player {
 
                         playerAttack = findPlayerAttack();
                         if (playerAttack != null) {
-                            if ((this.typePet == 2 || this.typePet == 4 || this.typePet == 5)
+                            if ((this.typePet == 2 || this.typePet == 4)
                                     && Util.isTrue(1, 5)
                                     && playerAttack.nPoint.hp < 1_000_000_000
                                     && !playerAttack.nPoint.islinhthuydanhbac
@@ -805,6 +811,8 @@ public class Pet extends Player {
                 return 1422;
             case 4:
                 return 876;
+            case 5:
+                return (short) (this.isTransform ? 1083 : 1080);
             default:
                 return PET_ID[3][this.gender];
         }
@@ -833,6 +841,8 @@ public class Pet extends Player {
             return 1422;
         } else if (this.typePet == 4) {
             return 876;
+        } else if (this.typePet == 5) {
+            return (short) (this.isTransform ? 1083 : 1080);
         } else if (inventory.itemsBody.get(5).isNotNullItem()) {
             int part = inventory.itemsBody.get(5).template.head;
             if (part != -1) {
@@ -869,6 +879,8 @@ public class Pet extends Player {
             return 1423;
         } else if (this.typePet == 4) {
             return 877;
+        } else if (this.typePet == 5) {
+            return (short) (this.isTransform ? 1084 : 1081);
         } else if (inventory.itemsBody.get(5).isNotNullItem()) {
             int body = inventory.itemsBody.get(5).template.body;
             if (body != -1) {
@@ -908,6 +920,8 @@ public class Pet extends Player {
             return 1424;
         } else if (this.typePet == 4) {
             return 878;
+        } else if (this.typePet == 5) {
+            return (short) (this.isTransform ? 1085 : 1082);
         } else if (inventory.itemsBody.get(5).isNotNullItem()) {
             int leg = inventory.itemsBody.get(5).template.leg;
             if (leg != -1) {
@@ -1118,6 +1132,11 @@ public class Pet extends Player {
             this.isTransform = !this.isTransform;
             Service.gI().Send_Caitrang(this);
             Service.gI().chat(this, "Hỡi nhân loại thấp kém! Hãy chiêm ngưỡng vẻ đẹp của ta!");
+        }
+        if (this.typePet == 5) {
+            this.isTransform = !this.isTransform;
+            Service.gI().Send_Caitrang(this);
+            Service.gI().chat(this, "Kakarotttt!! Sức mạnh Siêu Xayda Huyền Thoại!");
         }
     }
 

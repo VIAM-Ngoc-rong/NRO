@@ -90,11 +90,6 @@ public class Hirudegarn extends BigBoss {
                 );
             }
             if (Util.isTrue(20, 100)) {
-                ItemMap it = new ItemMap(this.zone, 568, 1, this.location.x, this.zone.map.yPhysicInTop(this.location.x,
-                        this.location.y - 24), -1);
-                Service.gI().dropItemMap(this.zone, it);
-            }
-            if (Util.isTrue(20, 100)) {
                 ItemMap it = new ItemMap(this.zone, 1795, 1, this.location.x,
                         this.zone.map.yPhysicInTop(this.location.x, this.location.y - 24), -1);
 

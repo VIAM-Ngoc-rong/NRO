@@ -660,6 +660,7 @@ public class PlayerDAO {
                 if (player.mabuEgg != null) {
                     dataArray.add(player.mabuEgg.lastTimeCreate);
                     dataArray.add(player.mabuEgg.timeDone);
+                    dataArray.add(player.mabuEgg.typeEgg);
                 }
                 String mabuEgg = dataArray.toJSONString();
                 dataArray.clear();

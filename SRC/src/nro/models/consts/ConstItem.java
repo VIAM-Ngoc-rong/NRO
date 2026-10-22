@@ -579,6 +579,7 @@ public class ConstItem {
     public static final int GANG_THAN_XAYDA = 566;
     public static final int GIAY_THAN_XAYDA = 567;
     public static final int QUA_TRUNG = 568;
+    public static final int TRUNG_BROLY = 1826;
     public static final int DUA_HAU = 569;
     public static final int RUONG_GO = 570;
     public static final int RUONG_BAC = 571;

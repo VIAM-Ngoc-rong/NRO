@@ -865,17 +865,40 @@ public class UseItem {
                             case 987:
                                 Service.gI().sendThongBao(pl, "Bảo vệ trang bị không bị rớt cấp"); //đá bảo vệ
                                 break;
-                            case 568: //quả trứng
+                            case 568: //quả trứng mabư
+                                if (pl.pet == null) {
+                                    Service.gI().sendThongBao(pl, "Bắt buộc phải có Đệ tử trước mới sử dụng được Quả Trứng Mabư!");
+                                    break;
+                                }
                                 if (pl.mabuEgg == null) {
                                     MabuEgg.createMabuEgg(pl);
                                     InventoryService.gI().subQuantityItemsBag(pl, item, 1);
+                                    Service.gI().sendThongBao(pl, "Đã đặt Quả Trứng Mabư tại nhà! Hãy về nhà để đợi 1 ngày hoặc mở ngay bằng 1 tỷ vàng.");
                                     if (pl.zone.map.mapId == (21 + pl.gender)) {
                                         if (pl.mabuEgg != null) {
                                             pl.mabuEgg.sendMabuEgg();
                                         }
                                     }
                                 } else {
-                                    Service.gI().sendThongBao(pl, "Bạn đã có quả trứng nên không thể sử dụng");
+                                    Service.gI().sendThongBao(pl, "Bạn đang có Quả Trứng ở nhà nên không thể sử dụng thêm!");
+                                }
+                                break;
+                            case 1826: //quả trứng broly
+                                if (pl.pet == null || pl.pet.typePet != 1) {
+                                    Service.gI().sendThongBao(pl, "Bắt buộc phải có Đệ tử Mabư trước mới sử dụng được Quả Trứng Broly!");
+                                    break;
+                                }
+                                if (pl.mabuEgg == null) {
+                                    MabuEgg.createBrolyEgg(pl);
+                                    InventoryService.gI().subQuantityItemsBag(pl, item, 1);
+                                    Service.gI().sendThongBao(pl, "Đã đặt Quả Trứng Broly tại nhà! Hãy về nhà để đợi 1 ngày hoặc mở ngay bằng 1 tỷ vàng.");
+                                    if (pl.zone.map.mapId == (21 + pl.gender)) {
+                                        if (pl.mabuEgg != null) {
+                                            pl.mabuEgg.sendMabuEgg();
+                                        }
+                                    }
+                                } else {
+                                    Service.gI().sendThongBao(pl, "Bạn đang có Quả Trứng ở nhà nên không thể sử dụng thêm!");
                                 }
                                 break;
                             case 2006:

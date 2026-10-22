@@ -624,6 +624,14 @@ public final class Manager {
             int batchSize = 750;
             int offset = 0;
 
+            try (PreparedStatement psUpdateEgg = ConnectionDatabase.prepareStatement(
+                    "UPDATE item_template SET TYPE = 27, gender = 3, NAME = 'Quả Trứng Broly', "
+                    + "description = 'Sử dụng để ấp Đệ tử Broly tại nhà (Hợp thể +50% chỉ số)', "
+                    + "level = 1, icon_id = 15128, part = -1, is_up_to_up = 0 WHERE id = 1826")) {
+                psUpdateEgg.executeUpdate();
+            } catch (Exception ignored) {
+            }
+
             try {
                 while (true) {
                     ps = ConnectionDatabase.prepareStatement("SELECT * FROM item_template LIMIT ? OFFSET ?");

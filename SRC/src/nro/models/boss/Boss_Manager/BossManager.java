@@ -17,6 +17,8 @@ import nro.models.boss.Boss_mini.RongNhi;
 import nro.models.boss.Boss_mini.SoiHecQuyn;
 import nro.models.boss.Boss_mini.Virut;
 import nro.models.boss.Broly.Broly;
+import nro.models.boss.Broly.Broly18h;
+import nro.models.boss.Broly.KidBuWorld;
 import nro.models.boss.Cell.SieuBoHung;
 import nro.models.boss.Cell.XENCON1;
 import nro.models.boss.Cell.XENCON2;
@@ -160,6 +162,8 @@ public class BossManager implements Runnable {
         this.createBoss(BossID.AN_TROM, 3);
         this.createBoss(BossID.O_DO1, 3);
         this.createBoss(BossID.BABY, 2);
+        this.createBoss(BossID.BROLY_18H, 5);
+        this.createBoss(BossID.KID_BU_MAP, 5);
         // this.createBoss(BossID.MAT_TROI, 20); // Tắt boss sự kiện mùa hè Mặt Trời
     }
 
@@ -174,6 +178,10 @@ public class BossManager implements Runnable {
             return switch (bossID) {               
                 case BossID.BROLY ->
                     new Broly();
+                case BossID.BROLY_18H ->
+                    new Broly18h();
+                case BossID.KID_BU_MAP ->
+                    new KidBuWorld();
                 case BossID.TAP_SU_0 ->
                     new TAPSU0();
                 case BossID.TAP_SU_1 ->
