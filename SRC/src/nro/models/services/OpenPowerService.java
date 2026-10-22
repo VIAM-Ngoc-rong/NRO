@@ -12,7 +12,7 @@ import nro.models.player.Player;
 
 public class OpenPowerService {
 
-    public static final int COST_SPEED_OPEN_LIMIT_POWER = 50000000;
+    public static final int COST_SPEED_OPEN_LIMIT_POWER = 1000;
 
     private static OpenPowerService i;
 

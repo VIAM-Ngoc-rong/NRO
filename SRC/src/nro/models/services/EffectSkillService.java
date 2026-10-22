@@ -393,10 +393,15 @@ public class EffectSkillService {
         player.effectSkill.timeDameBuff = time;
         player.effectSkill.tileDameBuff = tiLe;
         player.effectSkill.lastTimeDameBuff = System.currentTimeMillis();
+        player.nPoint.calPoint();
+        Service.gI().point(player);
     }
 
     public void removeDameBuff(Player player) {
         player.effectSkill.isDameBuff = false;
+        player.effectSkill.tileDameBuff = 0;
+        player.nPoint.calPoint();
+        Service.gI().point(player);
     }
 
     public void setMabuHold(Player player, MaBuHold MabuHold) {

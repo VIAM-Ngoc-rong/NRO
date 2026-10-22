@@ -17,6 +17,7 @@ import nro.models.services.TaskService;
 import nro.models.map.service.ChangeMapService;
 import nro.models.services_func.Input;
 import nro.models.services.PlayerService;
+import nro.models.services.RadarService;
 import nro.models.skill.Skill;
 import nro.models.utils.Logger;
 import nro.models.utils.SkillUtil;
@@ -95,6 +96,7 @@ public class QuyLaoKame extends Npc {
             if (!player.canReward) {
                 menu.add("Nói\nchuyện");
                 menu.add("Đổi điểm\nsự kiện\n[" + player.event.getEventPoint() + "]");
+                menu.add("Đổi điểm\nsăn Boss\n[" + player.pointSanBoss + "]");
                 menu.add("Nhận quà\nKOL");
                 menu.add("Nhận quà\nKOL VIP");
                 if (ruacon != null && ruacon.quantity >= 1) {
@@ -149,6 +151,9 @@ public class QuyLaoKame extends Npc {
             case ConstNpc.KOL_VIP_REWARD_MENU:
                 handleKOLQuestRewardConfirm(player, select, true);
                 break;
+            case 99:
+                handleConfirmDoiHaoQuang(player, select);
+                break;
         }
     }
 
@@ -161,15 +166,68 @@ public class QuyLaoKame extends Npc {
                 ShopService.gI().opendShop(player, "SHOP_DOI_DIEM", false);
                 break;
             case 2:
-                handleKOLQuest(player, false);
+                openDoiDiemSanBossMenu(player);
                 break;
             case 3:
-                handleKOLQuest(player, true);
+                handleKOLQuest(player, false);
                 break;
             case 4:
+                handleKOLQuest(player, true);
+                break;
+            case 5:
                 handleTradeRuacon(player);
                 break;
         }
+    }
+
+    private void openDoiDiemSanBossMenu(Player player) {
+        String curAuraInfo = switch (player.levelHaoQuang) {
+            case 1 -> "Cấp 1 (+3% SĐ, HP, KI)";
+            case 2 -> "Cấp 2 (+5% SĐ, HP, KI, Hút HP, KI)";
+            case 3 -> "Cấp 3 (+10% SĐ, HP, KI, Hút HP, KI)";
+            default -> "Chưa sở hữu";
+        };
+        String npcSay = "|7|ĐỔI ĐIỂM SĂN BOSS LẤY HÀO QUANG\n"
+                + "|2|Điểm săn Boss hiện tại: " + Util.numberToMoney(player.pointSanBoss) + " điểm\n"
+                + "Hào Quang đang kích hoạt: " + curAuraInfo + "\n"
+                + "|1|• Cấp 1 (1.000 điểm): +3% SĐ, HP, KI\n"
+                + "• Cấp 2 (10.000 điểm): +5% SĐ, HP, KI, Hút HP, Hút KI\n"
+                + "• Cấp 3 (100.000 điểm): +10% SĐ, HP, KI, Hút HP, Hút KI";
+        this.createOtherMenu(player, 99, npcSay,
+                "Hào Quang\nCấp 1\n(1.000 đ)",
+                "Hào Quang\nCấp 2\n(10.000 đ)",
+                "Hào Quang\nCấp 3\n(100.000 đ)",
+                "Đóng");
+    }
+
+    private void handleConfirmDoiHaoQuang(Player player, int select) {
+        if (select < 0 || select > 2) {
+            return;
+        }
+        int targetLevel = select + 1;
+        int cost = switch (targetLevel) {
+            case 1 -> 1000;
+            case 2 -> 10000;
+            default -> 100000;
+        };
+        if (player.levelHaoQuang >= targetLevel) {
+            Service.gI().sendThongBao(player, "Bạn đã sở hữu Hào Quang cấp " + player.levelHaoQuang + " rồi!");
+            return;
+        }
+        if (player.pointSanBoss < cost) {
+            Service.gI().sendThongBao(player, "Bạn không đủ điểm săn Boss! Cần "
+                    + Util.numberToMoney(cost) + " điểm (Hiện có: " + Util.numberToMoney(player.pointSanBoss) + " điểm)");
+            return;
+        }
+        player.pointSanBoss -= cost;
+        player.levelHaoQuang = targetLevel;
+        player.nPoint.calPoint();
+        Service.gI().point(player);
+        PlayerService.gI().sendInfoHpMpMoney(player);
+        Service.gI().Send_Info_NV(player);
+        Service.gI().Send_Caitrang(player);
+        RadarService.gI().sendAura(player, player.getAura(), player.getEffFront());
+        Service.gI().sendThongBao(player, "Chúc mừng bạn đã đổi thành công Hào Quang Cấp " + targetLevel + "!");
     }
 
     private void handleTalk(Player player) {

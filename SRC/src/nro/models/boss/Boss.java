@@ -795,7 +795,11 @@ public class Boss extends Player implements IBoss {
 
     @Override
     public void die(Player plKill) {
-
+        Player plOwner = plKill != null && plKill.isPet ? ((Pet) plKill).master : plKill;
+        if (plOwner != null && !plOwner.isBot && plOwner.isPl()) {
+            plOwner.pointSanBoss++;
+            Service.gI().sendThongBao(plOwner, "Bạn nhận được 1 điểm săn Boss (Hiện có: " + plOwner.pointSanBoss + " điểm)");
+        }
         if (plKill != null
                 && (this.zone.map.mapId != 140 || !MapService.gI().isMapMaBu(this.zone.map.mapId)
                 || !MapService.gI().isMapDoanhTrai(this.zone.map.mapId)

@@ -1175,6 +1175,10 @@ public class MrBlue {
                     player.checkTopReward1 = Boolean.parseBoolean(String.valueOf(dataArray.get(7)));
                     player.checkTopReward2 = Boolean.parseBoolean(String.valueOf(dataArray.get(8)));
                     player.checkTopReward3 = Boolean.parseBoolean(String.valueOf(dataArray.get(9)));
+                    if (dataArray.size() >= 12) {
+                        player.pointSanBoss = Integer.parseInt(String.valueOf(dataArray.get(10)));
+                        player.levelHaoQuang = Integer.parseInt(String.valueOf(dataArray.get(11)));
+                    }
                 } else {
                 }
             } catch (Exception e) {

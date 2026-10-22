@@ -6,9 +6,11 @@ import nro.models.consts.ConstPlayer;
 import nro.models.item.Item;
 import java.util.ArrayList;
 import nro.models.npc.Npc;
+import nro.models.player.NPoint;
 import nro.models.player.Player;
 import nro.models.services.ItemService;
 import nro.models.map.service.NpcService;
+import nro.models.services.OpenPowerService;
 import nro.models.services.RewardService;
 import nro.models.services.Service;
 import nro.models.shop.ShopService;
@@ -32,13 +34,12 @@ public class TruongLaoGuru extends Npc {
     public void openBaseMenu(Player player) {
         if (canOpenNpc(player)) {
             if (!TaskService.gI().checkDoneTaskTalkNpc(player, this)) {
-                if (player.gender != ConstPlayer.NAMEC) {
-                    NpcService.gI().createTutorial(player, tempId, avartar, "Con hãy về hành tinh của mình mà thể hiện");
-                    return;
-                }
                 ArrayList<String> menu = new ArrayList<>();
-                menu.add("Nhiệm vụ");
-                menu.add("Học\nKỹ năng");
+                if (player.gender == ConstPlayer.NAMEC) {
+                    menu.add("Nhiệm vụ");
+                    menu.add("Học\nKỹ năng");
+                }
+                menu.add("Mở giới hạn\nSức mạnh");
 
                 String[] menus = menu.toArray(String[]::new);
                 createOtherMenu(player, ConstNpc.BASE_MENU,
@@ -54,16 +55,108 @@ public class TruongLaoGuru extends Npc {
                 handleBaseMenu(player, select);
             } else if (player.idMark.getIndexMenu() == 12) {
                 handleSkillLearning(player, select);
+            } else if (player.idMark.getIndexMenu() == 20) {
+                handleOpenPowerMenu(player, select);
+            } else if (player.idMark.getIndexMenu() == ConstNpc.OPEN_POWER_MYSEFT) {
+                switch (select) {
+                    case 0 -> {
+                        if (player.nPoint.limitPower < NPoint.MAX_LIMIT) {
+                            OpenPowerService.gI().openPowerBasic(player);
+                        } else {
+                            Service.gI().sendThongBao(player, "Giới hạn sức mạnh của bạn đã đạt tới mức tối đa hiện tại");
+                        }
+                    }
+                    case 1 -> {
+                        if (player.nPoint.limitPower < NPoint.MAX_LIMIT) {
+                            if (player.inventory.gem >= OpenPowerService.COST_SPEED_OPEN_LIMIT_POWER) {
+                                if (OpenPowerService.gI().openPowerSpeed(player)) {
+                                    player.inventory.gem -= OpenPowerService.COST_SPEED_OPEN_LIMIT_POWER;
+                                    Service.gI().sendMoney(player);
+                                }
+                            } else {
+                                Service.gI().sendThongBao(player,
+                                        "Bạn không đủ ngọc để mở, còn thiếu "
+                                        + Util.numberToMoney((OpenPowerService.COST_SPEED_OPEN_LIMIT_POWER - player.inventory.gem)) + " ngọc");
+                            }
+                        } else {
+                            Service.gI().sendThongBao(player, "Giới hạn sức mạnh của bạn đã đạt tới mức tối đa hiện tại");
+                        }
+                    }
+                }
+            } else if (player.idMark.getIndexMenu() == ConstNpc.OPEN_POWER_PET) {
+                if (select == 0) {
+                    if (player.pet != null && player.pet.nPoint.limitPower < NPoint.MAX_LIMIT) {
+                        if (player.inventory.gem >= OpenPowerService.COST_SPEED_OPEN_LIMIT_POWER) {
+                            if (OpenPowerService.gI().openPowerSpeed(player.pet)) {
+                                player.inventory.gem -= OpenPowerService.COST_SPEED_OPEN_LIMIT_POWER;
+                                Service.gI().sendMoney(player);
+                            }
+                        } else {
+                            Service.gI().sendThongBao(player,
+                                    "Bạn không đủ ngọc để mở, còn thiếu "
+                                    + Util.numberToMoney((OpenPowerService.COST_SPEED_OPEN_LIMIT_POWER - player.inventory.gem)) + " ngọc");
+                        }
+                    } else {
+                        Service.gI().sendThongBao(player, "Giới hạn sức mạnh của đệ tử đã đạt tới mức tối đa hiện tại");
+                    }
+                }
             }
         }
     }
 
     private void handleBaseMenu(Player player, int select) {
+        if (player.gender != ConstPlayer.NAMEC) {
+            if (select == 0) {
+                this.createOtherMenu(player, 20,
+                        "Con muốn nâng giới hạn sức mạnh cho bản thân hay đệ tử?",
+                        "Bản thân", "Đệ tử", "Từ chối");
+            }
+            return;
+        }
         switch (select) {
             case 0 ->
                 NpcService.gI().createTutorial(player, tempId, avartar, player.playerTask.taskMain.subTasks.get(player.playerTask.taskMain.index).name);
             case 1 ->
                 handleSkillLearningMenu(player);
+            case 2 ->
+                this.createOtherMenu(player, 20,
+                        "Con muốn nâng giới hạn sức mạnh cho bản thân hay đệ tử?",
+                        "Bản thân", "Đệ tử", "Từ chối");
+        }
+    }
+
+    private void handleOpenPowerMenu(Player player, int select) {
+        switch (select) {
+            case 0 -> {
+                if (player.nPoint.limitPower < NPoint.MAX_LIMIT) {
+                    this.createOtherMenu(player, ConstNpc.OPEN_POWER_MYSEFT,
+                            "Ta sẽ truyền năng lượng giúp con mở giới hạn sức mạnh của bản thân lên "
+                            + Util.numberToMoney(player.nPoint.getPowerNextLimit()),
+                            "Nâng\ngiới hạn\nsức mạnh",
+                            "Nâng ngay\n" + Util.numberToMoney(OpenPowerService.COST_SPEED_OPEN_LIMIT_POWER) + " ngọc",
+                            "Đóng");
+                } else {
+                    this.createOtherMenu(player, ConstNpc.IGNORE_MENU,
+                            "Sức mạnh của con đã đạt tới giới hạn hiện tại",
+                            "Đóng");
+                }
+            }
+            case 1 -> {
+                if (player.pet != null) {
+                    if (player.pet.nPoint.limitPower < NPoint.MAX_LIMIT) {
+                        this.createOtherMenu(player, ConstNpc.OPEN_POWER_PET,
+                                "Ta sẽ truyền năng lượng giúp con mở giới hạn sức mạnh của đệ tử lên "
+                                + Util.numberToMoney(player.pet.nPoint.getPowerNextLimit()),
+                                "Nâng ngay\n" + Util.numberToMoney(OpenPowerService.COST_SPEED_OPEN_LIMIT_POWER) + " ngọc", "Đóng");
+                    } else {
+                        this.createOtherMenu(player, ConstNpc.IGNORE_MENU,
+                                "Sức mạnh của đệ con đã đạt tới giới hạn hiện tại",
+                                "Đóng");
+                    }
+                } else {
+                    Service.gI().sendThongBao(player, "Không thể thực hiện");
+                }
+            }
         }
     }
 

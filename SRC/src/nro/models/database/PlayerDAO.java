@@ -969,6 +969,8 @@ public class PlayerDAO {
                 dataArray.add(player.checkTopReward1);
                 dataArray.add(player.checkTopReward2);
                 dataArray.add(player.checkTopReward3);
+                dataArray.add(player.pointSanBoss);
+                dataArray.add(player.levelHaoQuang);
                 String dataEvent = dataArray.toJSONString();
                 dataArray.clear();
 

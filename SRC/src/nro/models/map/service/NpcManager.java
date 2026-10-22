@@ -48,10 +48,6 @@ public class NpcManager {
             // Điều kiện loại trừ NPC CALICK dựa vào nhiệm vụ
             else if (npc.tempId == ConstNpc.CALICK && TaskService.gI().getIdTask(player) < ConstTask.TASK_21_0) {
                 continue;
-            } 
-            // Điều kiện loại trừ NPC QUOC_VUONG nếu sức mạnh của người chơi nhỏ hơn 17 tỷ
-            else if (npc.tempId == ConstNpc.QUOC_VUONG && player.nPoint.power < 17000000000L) {
-                continue;
             }
             list.add(npc);
         }

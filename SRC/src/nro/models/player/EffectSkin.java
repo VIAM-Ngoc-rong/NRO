@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.Setter;
 import nro.models.services.EffectSkillService;
+import nro.models.services.ItemTimeService;
 import nro.models.skill.Skill;
 
 /**
@@ -79,6 +80,9 @@ public class EffectSkin {
     public boolean isXChuong;
     public boolean isXDame;
     private long lastTimeTokuda;
+    private long lastTimeSocolaXQ;
+    private long lastTimeMpHoiCute;
+    private long lastTimeLanhXQ;
 
     public void update() {
         updateVoHinh();
@@ -92,6 +96,9 @@ public class EffectSkin {
             updateHoaDa();
             updateLamCham();
             updateXChuong();
+            updateSocolaXQ();
+            updateMpHoiCute();
+            updateLanhXungQuanh();
 //            updateHalloween();
         }
         if (!this.player.isBoss && !this.player.isPet && !player.isNewPet) {
@@ -153,30 +160,34 @@ public class EffectSkin {
 
     private void updateXenHutXungQuanh() {
         try {
-            if (this.player.nPoint != null && (player.nPoint.hp < player.nPoint.hpMax || player.nPoint.mp < player.nPoint.mpMax)) {
+            if (this.player.nPoint != null) {
                 int param = this.player.nPoint.tlHutHpMpXQ;
                 if (param > 0) {
                     if (!this.player.isDie() && Util.canDoWithTime(lastTimeXenHutHpKi, 5000)) {
-                        int hpHut = 0;
-                        int mpHut = 0;
+                        long hpHut = 0;
+                        long mpHut = 0;
                         List<Player> players = new ArrayList<>();
                         List<Player> playersMap = this.player.zone.getNotBosses();
-                        for (Player pl : playersMap) {
-                            if (!this.player.equals(pl) && !pl.isBoss && !pl.isDie()
+                        for (int i = playersMap.size() - 1; i >= 0; i--) {
+                            Player pl = playersMap.get(i);
+                            if (pl != null && pl.nPoint != null && !this.player.equals(pl) && !pl.isBoss && !pl.isDie()
+                                    && (!this.player.isPet || !((Pet) this.player).master.equals(pl))
+                                    && (!pl.isPet || !((Pet) pl).master.equals(this.player))
                                     && Util.getDistance(this.player, pl) <= 200) {
                                 players.add(pl);
                             }
-
                         }
                         for (Mob mob : this.player.zone.mobs) {
-                            if (mob.point.gethp() > 1) {
+                            if (mob != null && mob.point.gethp() > 1) {
                                 if (Util.getDistance(this.player, mob) <= 200) {
-                                    int subHp = mob.point.getHpFull() * param / 100;
+                                    int subHp = (int) ((long) mob.point.getHpFull() * param / 100);
                                     if (subHp >= mob.point.gethp()) {
                                         subHp = mob.point.gethp() - 1;
                                     }
-                                    hpHut += subHp;
-                                    mob.injured(null, subHp, false);
+                                    if (subHp > 0) {
+                                        hpHut += subHp;
+                                        mob.injured(null, subHp, false);
+                                    }
                                 }
                             }
                         }
@@ -189,16 +200,23 @@ public class EffectSkin {
                             if (subMp >= pl.nPoint.mp) {
                                 subMp = pl.nPoint.mp - 1;
                             }
-                            hpHut += subHp;
-                            mpHut += subMp;
+                            if (subHp > 0) {
+                                hpHut += subHp;
+                                pl.injured(null, subHp, true, false);
+                            }
+                            if (subMp > 0) {
+                                mpHut += subMp;
+                                pl.nPoint.subMP(subMp);
+                            }
                             PlayerService.gI().sendInfoHpMpMoney(pl);
                             Service.gI().Send_Info_NV(pl);
-                            pl.injured(null, subHp, true, false);
                         }
-                        this.player.nPoint.addHp(hpHut);
-                        this.player.nPoint.addMp(mpHut);
-                        PlayerService.gI().sendInfoHpMpMoney(this.player);
-                        Service.gI().Send_Info_NV(this.player);
+                        if (hpHut > 0 || mpHut > 0) {
+                            this.player.nPoint.addHp((int) Math.min(Integer.MAX_VALUE, hpHut));
+                            this.player.nPoint.addMp((int) Math.min(Integer.MAX_VALUE, mpHut));
+                            PlayerService.gI().sendInfoHpMpMoney(this.player);
+                            Service.gI().Send_Info_NV(this.player);
+                        }
                         this.lastTimeXenHutHpKi = System.currentTimeMillis();
                     }
                 }
@@ -223,10 +241,12 @@ public class EffectSkin {
                                 if (subHp >= pl.nPoint.hp) {
                                     subHp = pl.nPoint.hp - 1;
                                 }
+                                if (subHp > 0) {
+                                    pl.injured(null, subHp, true, false);
+                                }
                                 Service.gI().chat(pl, textOdo[Util.nextInt(0, textOdo.length - 1)]);
                                 PlayerService.gI().sendInfoHpMpMoney(pl);
                                 Service.gI().Send_Info_NV(pl);
-                                pl.injured(null, subHp, true, false);
                             }
 
                         }
@@ -241,26 +261,7 @@ public class EffectSkin {
 
     private void updateXinbato() {
         try {
-            if (this.player.nPoint == null) {
-                return;
-            }
-
-            boolean hasXinbato = false;
-            for (Item item : player.inventory.itemsBody) {
-                if (item != null && item.itemOptions != null) {
-                    for (ItemOption io : item.itemOptions) {
-                        if (io.optionTemplate.id == 111) {
-                            hasXinbato = true;
-                            break;
-                        }
-                    }
-                }
-                if (hasXinbato) {
-                    break;
-                }
-            }
-
-            if (!hasXinbato) {
+            if (this.player.nPoint == null || !this.player.nPoint.isXinbato) {
                 return;
             }
 
@@ -270,9 +271,10 @@ public class EffectSkin {
 
             int addNeDon = 50;
 
-            List<Player> playersMap = this.player.zone.getPlayers();
-            for (Player pl : playersMap) {
-                if (pl != null && pl.nPoint != null && !pl.isDie()
+            List<Player> playersMap = this.player.zone.getNotBosses();
+            for (int i = playersMap.size() - 1; i >= 0; i--) {
+                Player pl = playersMap.get(i);
+                if (pl != null && pl.nPoint != null && !this.player.equals(pl) && !pl.isDie()
                         && Util.getDistance(this.player, pl) <= 200) {
 
                     int baseNeDon = pl.nPoint.tlNeDon;
@@ -285,18 +287,6 @@ public class EffectSkin {
                         PlayerService.gI().sendInfoHpMpMoney(pl);
                         Service.gI().Send_Info_NV(pl);
                     }
-                }
-            }
-
-            if (!this.player.isDie()) {
-                int baseNeDon = this.player.nPoint.tlNeDon;
-                int buffNeDon = Math.min(addNeDon, 90 - baseNeDon);
-                if (buffNeDon > 0) {
-                    this.player.nPoint.tlNeDonBuffXinbato = buffNeDon;
-                    this.player.nPoint.timeXinbatoBuff = System.currentTimeMillis();
-                    Service.gI().chat(this.player, textXinbato[Util.nextInt(0, textXinbato.length - 1)]);
-                    PlayerService.gI().sendInfoHpMpMoney(this.player);
-                    Service.gI().Send_Info_NV(this.player);
                 }
             }
 
@@ -316,16 +306,99 @@ public class EffectSkin {
                     for (int i = playersMap.size() - 1; i >= 0; i--) {
                         Player pl = playersMap.get(i);
                         if (pl != null && pl.nPoint != null && !this.player.equals(pl) && !pl.isBoss && !pl.isDie()
-                                && Util.getDistance(this.player, pl) <= 120) {
+                                && Util.getDistance(this.player, pl) <= 200) {
                             if (player.nPoint.isThoBulma) {
                                 Service.gI().chat(pl, textThoBulma[Util.nextInt(0, textThoBulma.length - 1)]);
                             } else {
                                 Service.gI().chat(pl, textBuffSD[Util.nextInt(0, textBuffSD.length - 1)]);
                             }
-                            EffectSkillService.gI().setDameBuff(player, 11000, player.nPoint.tlSexyDame);
+                            EffectSkillService.gI().setDameBuff(pl, 11000, player.nPoint.tlSexyDame);
                         }
                     }
                     this.lastTimeThoBulma = System.currentTimeMillis();
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void updateSocolaXQ() {
+        try {
+            if (this.player.nPoint != null && this.player.nPoint.isSocolaXQ) {
+                if (Util.canDoWithTime(lastTimeSocolaXQ, 30000)) {
+                    List<Player> playersMap = this.player.zone.getNotBosses();
+                    for (int i = playersMap.size() - 1; i >= 0; i--) {
+                        Player pl = playersMap.get(i);
+                        if (pl != null && pl.nPoint != null && !this.player.equals(pl) && !pl.isBoss && !pl.isDie()
+                                && (!this.player.isPet || !((Pet) this.player).master.equals(pl))
+                                && (!pl.isPet || !((Pet) pl).master.equals(this.player))
+                                && Util.getDistance(this.player, pl) <= 200) {
+                            EffectSkillService.gI().setSocola(pl, System.currentTimeMillis(), 10000);
+                            Service.gI().Send_Caitrang(pl);
+                            ItemTimeService.gI().sendItemTime(pl, 4133, 10);
+                            Service.gI().chat(pl, "Biến thành Sôcôla rồi!");
+                        }
+                    }
+                    this.lastTimeSocolaXQ = System.currentTimeMillis();
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void updateMpHoiCute() {
+        try {
+            if (this.player.nPoint != null && this.player.nPoint.mpHoiCute > 0) {
+                if (Util.canDoWithTime(lastTimeMpHoiCute, 3000)) {
+                    int mpAdd = this.player.nPoint.mpHoiCute;
+                    List<Player> playersMap = this.player.zone.getNotBosses();
+                    for (int i = playersMap.size() - 1; i >= 0; i--) {
+                        Player pl = playersMap.get(i);
+                        if (pl != null && pl.nPoint != null && !pl.isBoss && !pl.isDie()
+                                && Util.getDistance(this.player, pl) <= 200) {
+                            if (pl.nPoint.mp < pl.nPoint.mpMax) {
+                                pl.nPoint.addMp(mpAdd);
+                                PlayerService.gI().sendInfoHpMpMoney(pl);
+                                Service.gI().Send_Info_NV(pl);
+                            }
+                        }
+                    }
+                    this.lastTimeMpHoiCute = System.currentTimeMillis();
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void updateLanhXungQuanh() {
+        try {
+            if (this.player.nPoint != null && this.player.nPoint.tlLanhXQ > 0) {
+                if (Util.canDoWithTime(lastTimeLanhXQ, 10000)) {
+                    int param = this.player.nPoint.tlLanhXQ;
+                    List<Player> playersMap = this.player.zone.getNotBosses();
+                    for (int i = playersMap.size() - 1; i >= 0; i--) {
+                        Player pl = playersMap.get(i);
+                        if (pl != null && pl.nPoint != null && !this.player.equals(pl) && !pl.isBoss && !pl.isDie()
+                                && (!this.player.isPet || !((Pet) this.player).master.equals(pl))
+                                && (!pl.isPet || !((Pet) pl).master.equals(this.player))
+                                && Util.getDistance(this.player, pl) <= 200) {
+                            int subHp = (int) ((long) pl.nPoint.hpMax * param / 100);
+                            if (subHp >= pl.nPoint.hp) {
+                                subHp = pl.nPoint.hp - 1;
+                            }
+                            if (subHp > 0) {
+                                pl.injured(null, subHp, true, false);
+                            }
+                            Service.gI().chat(pl, "Lạnh quá!");
+                            EffectSkillService.gI().setIsLamCham(pl, 5000);
+                            PlayerService.gI().sendInfoHpMpMoney(pl);
+                            Service.gI().Send_Info_NV(pl);
+                        }
+                    }
+                    this.lastTimeLanhXQ = System.currentTimeMillis();
                 }
             }
         } catch (Exception e) {

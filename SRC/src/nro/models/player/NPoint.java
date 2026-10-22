@@ -179,6 +179,7 @@ public class NPoint {
     public short tlSubSD;
 
     public int voHieuChuong;
+    public int tlHoiMpKhiBiDanh;
 
     /*------------------------Effect skin-------------------------------------*/
     public Item trainArmor;
@@ -193,8 +194,11 @@ public class NPoint {
     public boolean isTanHinh;
     public boolean isHoaDa;
     public boolean isLamCham;
+    public boolean isSocolaXQ;
+    public int tlLanhXQ;
     public boolean isDoSPL;
     public boolean isThoBulma;
+    public boolean isXinbato;
 
     public short tlHpGiamODo;
 
@@ -242,6 +246,27 @@ public class NPoint {
         }
         if (this.player.rewardBlackBall.timeOutOfDateReward[6] > System.currentTimeMillis()) {
             tlNeDon += RewardBlackBall.R7S_1;
+        }
+        // Chỉ số Hào Quang săn Boss (3 cấp: 1.000 / 10.000 / 100.000 điểm)
+        int lvHQ = this.player.isPet && ((Pet) this.player).master != null
+                ? ((Pet) this.player).master.levelHaoQuang
+                : this.player.levelHaoQuang;
+        if (lvHQ == 1) {
+            this.tlDame.add(3);
+            this.tlHp.add(3);
+            this.tlMp.add(3);
+        } else if (lvHQ == 2) {
+            this.tlDame.add(5);
+            this.tlHp.add(5);
+            this.tlMp.add(5);
+            this.tlHutHp += 5;
+            this.tlHutMp += 5;
+        } else if (lvHQ >= 3) {
+            this.tlDame.add(10);
+            this.tlHp.add(10);
+            this.tlMp.add(10);
+            this.tlHutHp += 10;
+            this.tlHutMp += 10;
         }
         // Lấy tất cả option danh hiệu
         List<Item.ItemOption> options = BagesTemplate.sendListItemOption(player);
@@ -457,6 +482,61 @@ public class NPoint {
                     case 883:
                     case 904:
                         player.setClothes.worldcup++;
+                        break;
+                    case 526: // CT Xên Bọ Hung 1
+                        if (this.tlHutHpMpXQ < 1) {
+                            this.tlHutHpMpXQ = 1;
+                        }
+                        break;
+                    case 527: // CT Xên Bọ Hung 2
+                        if (this.tlHutHpMpXQ < 2) {
+                            this.tlHutHpMpXQ = 2;
+                        }
+                        break;
+                    case 528: // CT Xên Bọ Hung 3
+                        if (this.tlHutHpMpXQ < 3) {
+                            this.tlHutHpMpXQ = 3;
+                        }
+                        break;
+                    case 549: // CT Xên Bọ Hung con
+                        if (this.tlHutHpMpXQ < 4) {
+                            this.tlHutHpMpXQ = 4;
+                        }
+                        break;
+                    case 455: // CT Ở dơ
+                        if (this.tlHpGiamODo < 10) {
+                            this.tlHpGiamODo = 10;
+                        }
+                        break;
+                    case 458: // CT Xinbato
+                        this.isXinbato = true;
+                        break;
+                    case 464:
+                    case 584: // CT Thỏ Bunma
+                        if (this.tlSexyDame < 10) {
+                            this.tlSexyDame = 10;
+                        }
+                        break;
+                    case 575: // CT Bui Bui
+                        this.isLamCham = true;
+                        break;
+                    case 576: // CT Yacôn
+                        this.isTanHinh = true;
+                        break;
+                    case 577: // CT Drabura
+                        this.isHoaDa = true;
+                        break;
+                    case 578: // CT Mabư mập
+                        this.isSocolaXQ = true;
+                        break;
+                    case 630:
+                    case 631:
+                    case 632:
+                    case 1205: // CT Frost / Drabura Frost
+                        if (this.tlLanhXQ < 5) {
+                            this.tlLanhXQ = 5;
+                        }
+                        break;
                 }
                 if (item.template.id >= 592 && item.template.id <= 594) {
                     teleport = true;
@@ -464,6 +544,45 @@ public class NPoint {
                 for (ItemOption io : item.itemOptions) {
                     addOption(io);
                 }
+            }
+        }
+        // Kế thừa nội tại cải trang của đệ tử khi hợp thể
+        if (!this.player.isPet && this.player.fusion != null && this.player.fusion.typeFusion != ConstPlayer.NON_FUSION
+                && this.player.pet != null && this.player.pet.nPoint != null) {
+            NPoint petPoint = this.player.pet.nPoint;
+            this.tlHutHpMpXQ += petPoint.tlHutHpMpXQ;
+            this.tlHpGiamODo += petPoint.tlHpGiamODo;
+            if (petPoint.tlSexyDame > this.tlSexyDame) {
+                this.tlSexyDame = petPoint.tlSexyDame;
+            }
+            if (petPoint.isLamCham) {
+                this.isLamCham = true;
+            }
+            if (petPoint.isTanHinh) {
+                this.isTanHinh = true;
+            }
+            if (petPoint.isHoaDa) {
+                this.isHoaDa = true;
+            }
+            if (petPoint.isSocolaXQ) {
+                this.isSocolaXQ = true;
+            }
+            if (petPoint.tlLanhXQ > this.tlLanhXQ) {
+                this.tlLanhXQ = petPoint.tlLanhXQ;
+            }
+            this.voHieuChuong += petPoint.voHieuChuong;
+            this.tlHoiMpKhiBiDanh += petPoint.tlHoiMpKhiBiDanh;
+            this.mpHoiCute += petPoint.mpHoiCute;
+            this.tlHpHoiBanThanVaDongDoi += petPoint.tlHpHoiBanThanVaDongDoi;
+            this.tlMpHoiBanThanVaDongDoi += petPoint.tlMpHoiBanThanVaDongDoi;
+            if (petPoint.isKhongLanh) {
+                this.isKhongLanh = true;
+            }
+            if (petPoint.wearingVoHinh) {
+                this.wearingVoHinh = true;
+            }
+            if (petPoint.isXinbato) {
+                this.isXinbato = true;
             }
         }
         setDameTrainArmor();
@@ -483,6 +602,9 @@ public class NPoint {
                 break;
             case 3:// vô hiệu chưởng
                 this.voHieuChuong += io.param;
+                break;
+            case 4: // Hồi phục #% KI khi bị đánh
+                this.tlHoiMpKhiBiDanh += io.param;
                 break;
             case 5: //+#% sức đánh chí mạng
                 this.tlDameCrit.add(io.param);
@@ -525,6 +647,11 @@ public class NPoint {
                 break;
             case 26: //Hóa đá
                 this.isHoaDa = true;
+                break;
+            case 29: //Biến Sôcôla mọi người xung quanh
+            case 126:
+            case 186:
+                this.isSocolaXQ = true;
                 break;
             case 27: //+# HP/30s
                 this.hpHoiAdd += io.param;
@@ -604,6 +731,9 @@ public class NPoint {
                 this.isKhongLanh = true;
                 break;
             case 111:
+                this.isXinbato = true;
+                this.tlNeDon += io.param;
+                break;
             case 108: //#% Né đòn
                 this.tlNeDon += io.param;
                 break;
@@ -640,8 +770,13 @@ public class NPoint {
                 this.tlTNSMPet += io.param;
                 break;
             case 173: //Phục hồi #% HP và KI cho đồng đội
+            case 221:
                 this.tlHpHoiBanThanVaDongDoi += io.param;
                 this.tlMpHoiBanThanVaDongDoi += io.param;
+                break;
+            case 167:
+            case 229: //Lạnh gây giảm #% HP, KI mỗi 30s cho những người xung quanh
+                this.tlLanhXQ += Math.max(1, io.param);
                 break;
             case 211:
                 this.setltdb += 1;
@@ -1220,17 +1355,18 @@ public class NPoint {
                 dame += (dame * percent / 100L);
             }
         }
-        int totalPercent = 0;
         for (Item.ItemOption opt : options) {
             if (opt.optionTemplate.id == 117) {
                 tlSexyDame += opt.param;
             }
         }
 
-        dame += (dame * tlSexyDame / 100L);
-
-        //Sức đánh đẹp
-        dame += (dame * tlSexyDame / 100L);
+        // Sức đánh đẹp (bản thân hoặc được buff từ người xung quanh)
+        if (tlSexyDame > 0) {
+            dame += (dame * tlSexyDame / 100L);
+        } else if (this.player.effectSkill != null && this.player.effectSkill.isDameBuff && this.player.effectSkill.tileDameBuff > 0) {
+            dame += (dame * this.player.effectSkill.tileDameBuff / 100L);
+        }
 
         // Xử lý giảm dame
         dame -= (dame * tlSubSD / 100L);
@@ -1300,6 +1436,7 @@ public class NPoint {
 
     private void resetPoint() {
         this.voHieuChuong = 0;
+        this.tlHoiMpKhiBiDanh = 0;
         this.hpAdd = 0;
         this.mpAdd = 0;
         this.dameAdd = 0;
@@ -1351,8 +1488,11 @@ public class NPoint {
         this.isTanHinh = false;
         this.isHoaDa = false;
         this.isLamCham = false;
+        this.isSocolaXQ = false;
+        this.tlLanhXQ = 0;
         this.isDoSPL = false;
         this.isThoBulma = false;
+        this.isXinbato = false;
     }
 
     public void addHp(long hp) {
@@ -1551,11 +1691,6 @@ public class NPoint {
 
         dameAttack += (dameAttack * percentDameIntrinsic / 100);
         dameAttack += (dameAttack * dameAfter / 100);
-        if (this.player.effectSkill != null && this.player.effectSkill.isDameBuff && tlSexyDame
-                == 0) {
-            int tiLeDame = this.player.effectSkill.tileDameBuff;
-            dameAttack += (dameAttack * tiLeDame / 100L);
-        }
         if (isAttackMob) {
             for (Integer tl : this.tlDameAttMob) {
                 dameAttack += (dameAttack * tl / 100);
@@ -1700,7 +1835,7 @@ public class NPoint {
                 }
             }
             if (MapService.gI().isMapNguHanhSon(this.player.zone.map.mapId)) {
-                tiemNang *= 5;
+                tiemNang *= 2;
             }
             if (MapService.gI().AllMap(this.player.zone.map.mapId)) {
                 //  tiemNang *= 10; //x x3 tiềm năng toàn server

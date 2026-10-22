@@ -312,6 +312,8 @@ public class Player implements Runnable {
     public int eventPointType4;
     public int eventPointType5;
     public int eventPointType6;
+    public int pointSanBoss = 0;
+    public int levelHaoQuang = 0;
     public boolean checkDailyReward;
     public boolean checkTopReward1;
     public boolean checkTopReward2;
@@ -839,7 +841,17 @@ public class Player implements Runnable {
     }
 
     public byte getAura() {
-        if (!isPl() || this.Cards.isEmpty()) {
+        if (!isPl()) {
+            return -1;
+        }
+        if (this.levelHaoQuang > 0) {
+            return switch (this.levelHaoQuang) {
+                case 1 -> 2;
+                case 2 -> 3;
+                default -> 4;
+            };
+        }
+        if (this.Cards == null || this.Cards.isEmpty()) {
             return -1;
         }
         for (Card card : this.Cards) {
@@ -1192,10 +1204,16 @@ public class Player implements Runnable {
                 switch (plAtt.playerSkill.skillSelect.template.id) {
                     case Skill.KAMEJOKO, Skill.MASENKO, Skill.ANTOMIC -> {
                         if (this.nPoint.voHieuChuong > 0) {
-                            PlayerService.gI().hoiPhuc(this, 0, (int) (damage * this.nPoint.voHieuChuong / 100));
+                            PlayerService.gI().hoiPhuc(this, 0, damage * this.nPoint.voHieuChuong / 100L);
                             return 0;
                         }
                     }
+                }
+            }
+            if (this.nPoint.tlHoiMpKhiBiDanh > 0 && damage > 0) {
+                long mpHoi = (long) this.nPoint.mpMax * this.nPoint.tlHoiMpKhiBiDanh / 100L;
+                if (mpHoi > 0) {
+                    PlayerService.gI().hoiPhuc(this, 0, mpHoi);
                 }
             }
 
