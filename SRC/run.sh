@@ -11,6 +11,7 @@ exec nice -n 15 ionice -c 2 -n 7 java -server \
   -Xss256k \
   -XX:+UseSerialGC \
   -XX:ActiveProcessorCount=1 \
+  -Djava.awt.headless=true \
   -Dfile.encoding=UTF-8 \
   -cp "lib/mysql-connector-java-5.1.49.jar:lib/*:20.jar" \
   nro.models.server.ServerManager
