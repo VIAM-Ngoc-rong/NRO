@@ -155,7 +155,7 @@ public class BossManager implements Runnable {
         this.createBoss(BossID.ANDROID_14);
         this.createBoss(BossID.DR_KORE);
         this.createBoss(BossID.CUMBER);
-        this.createBoss(BossID.COOLER, 1);
+        this.createBoss(BossID.COOLER, 2);
         this.createBoss(BossID.BLACK_GOKU, 2);
         this.createBoss(BossID.GOLDEN_FRIEZA, 1);
         this.createBoss(BossID.SOI_HEC_QUYN1, 6);
@@ -422,15 +422,16 @@ public class BossManager implements Runnable {
                     break;
                 }
                 Boss boss = this.bosses.get(i);
+                int lv = (boss.currentLevel >= 0 && boss.currentLevel < boss.data.length) ? boss.currentLevel : 0;
                 msg.writer().writeInt(i);
                 msg.writer().writeInt(i);
-                msg.writer().writeShort(boss.data[0].getOutfit()[0]);
+                msg.writer().writeShort(boss.data[lv].getOutfit()[0]);
                 if (player.getSession().version >= 214) {
                     msg.writer().writeShort(-1);
                 }
-                msg.writer().writeShort(boss.data[0].getOutfit()[1]);
-                msg.writer().writeShort(boss.data[0].getOutfit()[2]);
-                msg.writer().writeUTF(boss.data[0].getName());
+                msg.writer().writeShort(boss.data[lv].getOutfit()[1]);
+                msg.writer().writeShort(boss.data[lv].getOutfit()[2]);
+                msg.writer().writeUTF(boss.data[lv].getName());
                 if (boss.zone != null && !boss.isDie()) {
                     msg.writer().writeUTF("Đang sống - Bấm để đến");
                     msg.writer().writeUTF(boss.zone.map.mapName + " (" + boss.zone.map.mapId + ") khu " + boss.zone.zoneId);

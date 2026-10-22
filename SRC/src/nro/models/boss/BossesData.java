@@ -2225,7 +2225,7 @@ public class BossesData {
             new short[]{317, 318, 319, -1, -1, -1}, //outfit {head, body, leg, bag, aura, eff}
             32000, //dame
             new int[]{200000000}, //hp
-            new int[]{110}, //map join
+            new int[]{107, 108, 110}, //map join (Núi tuyết, Dòng sông băng, Hang băng)
             new int[][]{
                 {Skill.GALICK, 1, 2000},
                 {Skill.ANTOMIC, 1, 6000},},
@@ -2244,7 +2244,7 @@ public class BossesData {
             }, //text chat 2
             new String[]{"|-1|Nãy giờ ta chưa thèm tung hết sức đâu",
                 "|-1|Biến hình, hây aaaa..."}, //text chat 3
-            REST_30_M //second rest
+            REST_10_M //second rest
     );
 
     public static final BossData COOLER_2 = new BossData(
@@ -2253,7 +2253,7 @@ public class BossesData {
             new short[]{320, 321, 322, -1, -1, -1}, //outfit {head, body, leg, bag, aura, eff}
             50000, //dame
             new int[]{500000000}, //hp
-            new int[]{110}, //map join
+            new int[]{107, 108, 110}, //map join (Núi tuyết, Dòng sông băng, Hang băng)
             new int[][]{
                 {Skill.GALICK, 1, 2000},
                 {Skill.ANTOMIC, 1, 6000},},

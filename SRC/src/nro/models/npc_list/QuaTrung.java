@@ -21,7 +21,7 @@ public class QuaTrung extends Npc {
             if (this.mapId == (21 + player.gender) && player.mabuEgg != null) {
                 player.mabuEgg.sendMabuEgg();
                 String eggTitle = player.mabuEgg.typeEgg == 1
-                        ? "|7|TRỨNG ĐỆ TỬ BROLY (Hợp thể +50% chỉ số)\n|2|Yêu cầu: Đang sở hữu Đệ tử Mabư"
+                        ? "|7|TRỨNG ĐỆ TỬ BROLY (Hợp thể +30% chỉ số)\n|2|Yêu cầu: Đang sở hữu Đệ tử Mabư"
                         : "|7|TRỨNG ĐỆ TỬ MABƯ\n|2|Yêu cầu: Đang sở hữu Đệ tử";
                 if (player.mabuEgg.getSecondDone() != 0) {
                     this.createOtherMenu(player, ConstNpc.CAN_NOT_OPEN_EGG, eggTitle,
@@ -80,7 +80,7 @@ public class QuaTrung extends Npc {
                                         return;
                                     }
                                     this.createOtherMenu(player, ConstNpc.CONFIRM_OPEN_EGG,
-                                            "Bạn có chắc chắn cho Trứng Broly nở?\nĐệ tử Mabư của bạn sẽ được nâng cấp thành Đệ tử Broly (1tr5 SM, Hợp thể +50% chỉ số)",
+                                            "Bạn có chắc chắn cho Trứng Broly nở?\nĐệ tử Mabư của bạn sẽ được nâng cấp thành Đệ tử Broly (1tr5 SM, Hợp thể +30% chỉ số)",
                                             "Đệ Broly\nTrái Đất", "Đệ Broly\nNamếc", "Đệ Broly\nXayda", "Từ chối");
                                 } else {
                                     if (player.pet == null) {

@@ -34,7 +34,7 @@ public class BotSanBoss {
     public boolean isMap(int mapId) {
         return (MapService.gI().isMapDoanhTrai(mapId) || MapService.gI().isMapBlackBallWar(mapId)
                 || MapService.gI().isMapBanDoKhoBau(mapId) || MapService.gI().isMapMaBu(mapId)
-                || MapService.gI().isMapMaBu(mapId)
+                || MapService.gI().isMapCold(mapId)
                 || MapService.gI().isMapConDuongRanDoc(mapId));
     }
 

@@ -967,9 +967,9 @@ public class NPoint {
         if (this.player.isPet && ((Pet) this.player).typePet == 4 && ((Pet) this.player).master.fusion.typeFusion != ConstPlayer.NON_FUSION) {
             hpMax += (hpMax * 20 / 100L);
         }
-        // Xử lý pet broly (+50% chỉ số khi hợp thể)
+        // Xử lý pet broly (+30% chỉ số khi hợp thể)
         if (this.player.isPet && ((Pet) this.player).typePet == 5 && ((Pet) this.player).master.fusion.typeFusion != ConstPlayer.NON_FUSION) {
-            hpMax += (hpMax * 50 / 100L);
+            hpMax += (hpMax * 30 / 100L);
         }
 
         // Xử lý phù
@@ -1032,7 +1032,7 @@ public class NPoint {
         }
 
         // Xử lý map lạnh
-        if (this.player.zone != null && MapService.gI().isMapCold(this.player.zone.map) && !this.isKhongLanh) {
+        if (!this.player.isBoss && this.player.zone != null && MapService.gI().isMapCold(this.player.zone.map) && !this.isKhongLanh) {
             hpMax /= 2;
         }
 
@@ -1101,10 +1101,10 @@ public class NPoint {
                 && ((Pet) this.player).master.fusion.typeFusion != ConstPlayer.NON_FUSION) {
             mpMax += (mpMax * 20 / 100L);
         }
-        // Xử lý pet broly (+50% chỉ số khi hợp thể)
+        // Xử lý pet broly (+30% chỉ số khi hợp thể)
         if (this.player.isPet && ((Pet) this.player).typePet == 5
                 && ((Pet) this.player).master.fusion.typeFusion != ConstPlayer.NON_FUSION) {
-            mpMax += (mpMax * 50 / 100L);
+            mpMax += (mpMax * 30 / 100L);
         }
 
         // Xử lý phù
@@ -1217,9 +1217,9 @@ public class NPoint {
         if (this.player.isPet && ((Pet) this.player).typePet == 4 && ((Pet) this.player).master.fusion.typeFusion != ConstPlayer.NON_FUSION) {
             dame += (dame * 20 / 100L);
         }
-        // Xử lý pet broly (+50% chỉ số khi hợp thể)
+        // Xử lý pet broly (+30% chỉ số khi hợp thể)
         if (this.player.isPet && ((Pet) this.player).typePet == 5 && ((Pet) this.player).master.fusion.typeFusion != ConstPlayer.NON_FUSION) {
-            dame += (dame * 50 / 100L);
+            dame += (dame * 30 / 100L);
         }
 
         // Xử lý set tinh ấn
@@ -1350,7 +1350,7 @@ public class NPoint {
         dame -= (dame * tlSubSD / 100L);
 
         // Xử lý map cold
-        if (this.player.zone != null && MapService.gI().isMapCold(this.player.zone.map) && !this.isKhongLanh) {
+        if (!this.player.isBoss && this.player.zone != null && MapService.gI().isMapCold(this.player.zone.map) && !this.isKhongLanh) {
             dame /= 2;
         }
 

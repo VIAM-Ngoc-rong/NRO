@@ -23,7 +23,7 @@ public class Cooler extends Boss {
     private long st;
 
     public Cooler() throws Exception {
-        super(BossID.COOLER, BossesData.COOLER, BossesData.COOLER_2);
+        super(BossID.COOLER, false, true, BossesData.COOLER, BossesData.COOLER_2);
     }
 
     @Override
@@ -38,11 +38,26 @@ public class Cooler extends Boss {
     @Override
     public synchronized int injured(Player plAtt, long damage, boolean piercing, boolean isMobAttack) {
         if (!this.isDie()) {
-            if (Util.isTrue(10, 1000)) {
+            if (!piercing && Util.isTrue(this.nPoint.tlNeDon, 1000)) {
                 this.chat("Xí hụt");
                 return 0;
             }
+            if (plAtt != null && plAtt.idNRNM != -1) {
+                return 1;
+            }
+            if (this.currentLevel != 0) {
+                damage /= 2;
+            }
             damage = this.nPoint.subDameInjureWithDeff(damage);
+            if (this.bossDamageReductionFactor > 1) {
+                damage = Math.max(1L, damage / this.bossDamageReductionFactor);
+            }
+            if (!piercing && effectSkill.isShielding) {
+                if (damage > nPoint.hpMax) {
+                    EffectSkillService.gI().breakShield(this);
+                }
+                damage = 1;
+            }
             this.nPoint.subHP(damage);
             if (isDie()) {
                 this.setDie(plAtt);
@@ -56,9 +71,9 @@ public class Cooler extends Boss {
 
     @Override
     public void joinMap() {
+        this.name = this.data[this.currentLevel].getName();
         super.joinMap();
         st = System.currentTimeMillis();
-//        System.out.println("Cooler join map" + this.zone.map.mapId + " Zone: " + this.zone.zoneId);
     }
 
     @Override

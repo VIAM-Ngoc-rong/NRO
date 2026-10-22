@@ -628,7 +628,7 @@ public final class Manager {
 
             try (PreparedStatement psUpdateEgg = ConnectionDatabase.prepareStatement(
                     "UPDATE item_template SET TYPE = 27, gender = 3, NAME = 'Quả Trứng Broly', "
-                    + "description = 'Sử dụng để ấp Đệ tử Broly tại nhà (Hợp thể +50% chỉ số)', "
+                    + "description = 'Sử dụng để ấp Đệ tử Broly tại nhà (Hợp thể +30% chỉ số)', "
                     + "level = 1, icon_id = 15128, part = -1, is_up_to_up = 0 WHERE id = 1826")) {
                 psUpdateEgg.executeUpdate();
             } catch (Exception ignored) {
