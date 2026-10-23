@@ -200,4 +200,11 @@ public class BossID {
     public static final int CADIC_M = -924;
     public static final int BABY = -925;
     public static final int GAU_TUONG_CUOP = -926;
+
+    //========================3 SOI BADI, ZAMASU, MABU 2H========================
+    public static final int BASIL = -927;
+    public static final int LAVENDER = -928;
+    public static final int BERGAMO = -929;
+    public static final int ZAMASU = -930;
+    public static final int MABU_14H = -931;
 }

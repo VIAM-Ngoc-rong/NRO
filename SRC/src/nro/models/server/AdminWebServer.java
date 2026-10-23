@@ -247,6 +247,14 @@ public class AdminWebServer {
             if (b == null || b.data == null || b.data.length == 0) {
                 continue;
             }
+            if (b.id == nro.models.boss.BossID.DEATH_BEAM_1 || b.id == nro.models.boss.BossID.DEATH_BEAM_2
+                    || b.id == nro.models.boss.BossID.DEATH_BEAM_3 || b.id == nro.models.boss.BossID.DEATH_BEAM_4
+                    || b.id == nro.models.boss.BossID.DEATH_BEAM_5 || "$".equals(b.data[0].getName())) {
+                continue;
+            }
+            if ((b.id >= nro.models.boss.BossID.XEN_CON_7 && b.id <= nro.models.boss.BossID.XEN_CON_1) && (b.zone == null || b.isDie())) {
+                continue;
+            }
             if (!firstBoss) {
                 sb.append(",");
             }

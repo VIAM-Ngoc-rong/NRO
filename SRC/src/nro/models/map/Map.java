@@ -338,8 +338,12 @@ public class Map implements Runnable {
             }
             if (bossId != -1) {
                 Boss boss = BossManager.gI().createBoss(bossId);
-                boss.zoneFinal = zone;
-                boss.joinMapByZone(zone);
+                if (boss != null) {
+                    boss.zoneFinal = zone;
+                    boss.respawn();
+                    boss.joinMapByZone(zone);
+                    boss.changeStatus(nro.models.consts.BossStatus.ACTIVE);
+                }
             }
         }
     }

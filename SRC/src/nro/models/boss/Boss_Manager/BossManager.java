@@ -8,7 +8,11 @@ import nro.models.boss.Android.DrKore;
 import nro.models.boss.Android.KingKong;
 import nro.models.boss.Android.Pic;
 import nro.models.boss.Android.Poc;
+import nro.models.boss.BadiWolves.Basil;
+import nro.models.boss.BadiWolves.Bergamo;
+import nro.models.boss.BadiWolves.Lavender;
 import nro.models.boss.Black_Goku.BlackGoku;
+import nro.models.boss.Black_Goku.Zamasu;
 import nro.models.boss.Boss;
 import nro.models.boss.BossID;
 import nro.models.boss.Boss_mini.AnTrom;
@@ -51,6 +55,7 @@ import nro.models.boss.MajinBuu_12h.Drabura3;
 import nro.models.boss.MajinBuu_12h.Goku;
 import nro.models.boss.MajinBuu_12h.Mabu;
 import nro.models.boss.MajinBuu_12h.Yacon;
+import nro.models.boss.MajinBuu_14h.Mabu14h;
 import nro.models.boss.MajinBuu_14h.Mabu2H;
 import nro.models.boss.MajinBuu_14h.SuperBu;
 import nro.models.boss.tieu_doi_sat_thu_namek.SO1_NM;
@@ -148,22 +153,25 @@ public class BossManager implements Runnable {
         this.createBoss(BossID.KING_KONG, 2);
         this.createBoss(BossID.XEN_BO_HUNG, 2);
         this.createBoss(BossID.SIEU_BO_HUNG, 2);
-        this.createBoss(BossID.KUKU, 5);
-        this.createBoss(BossID.MAP_DAU_DINH, 5);
-        this.createBoss(BossID.RAMBO, 5);
+        this.createBoss(BossID.KUKU, 3);
+        this.createBoss(BossID.MAP_DAU_DINH, 3);
+        this.createBoss(BossID.RAMBO, 3);
         this.createBoss(BossID.FIDE, 3);
         this.createBoss(BossID.ANDROID_14, 2);
         this.createBoss(BossID.DR_KORE, 2);
         this.createBoss(BossID.CUMBER, 2);
         this.createBoss(BossID.COOLER, 3);
-        this.createBoss(BossID.BLACK_GOKU, 3);
+        this.createBoss(BossID.BLACK_GOKU, 2);
+        this.createBoss(BossID.ZAMASU, 2);
+        this.createBoss(BossID.BERGAMO, 2);
+        this.createBoss(BossID.MABU_14H, 2);
         this.createBoss(BossID.GOLDEN_FRIEZA, 2);
-        this.createBoss(BossID.SOI_HEC_QUYN1, 6);
-        this.createBoss(BossID.AN_TROM, 3);
-        this.createBoss(BossID.O_DO1, 3);
+        this.createBoss(BossID.SOI_HEC_QUYN1, 3);
+        this.createBoss(BossID.AN_TROM, 2);
+        this.createBoss(BossID.O_DO1, 2);
         this.createBoss(BossID.BABY, 2);
-        this.createBoss(BossID.BROLY_18H, 5);
-        this.createBoss(BossID.KID_BU_MAP, 5);
+        this.createBoss(BossID.BROLY_18H, 3);
+        this.createBoss(BossID.KID_BU_MAP, 3);
         // this.createBoss(BossID.MAT_TROI, 20); // Tắt boss sự kiện mùa hè Mặt Trời
     }
 
@@ -360,6 +368,16 @@ public class BossManager implements Runnable {
                     new MatTroi();
                 case BossID.BLACK_GOKU ->
                     new BlackGoku();
+                case BossID.ZAMASU ->
+                    new Zamasu();
+                case BossID.BASIL ->
+                    new Basil();
+                case BossID.LAVENDER ->
+                    new Lavender();
+                case BossID.BERGAMO ->
+                    new Bergamo();
+                case BossID.MABU_14H ->
+                    new Mabu14h();
                 case BossID.CUMBER ->
                     new Cumber();
                 case BossID.AN_TROM ->
@@ -396,6 +414,13 @@ public class BossManager implements Runnable {
             for (int i = 0; i < bosses.size(); i++) {
                 Boss boss = this.bosses.get(i);
                 if (boss == null || boss.data == null || boss.data.length == 0 || boss.data[0].getMapJoin() == null || boss.data[0].getMapJoin().length == 0) {
+                    continue;
+                }
+                if (boss.id == BossID.DEATH_BEAM_1 || boss.id == BossID.DEATH_BEAM_2 || boss.id == BossID.DEATH_BEAM_3
+                        || boss.id == BossID.DEATH_BEAM_4 || boss.id == BossID.DEATH_BEAM_5 || "$".equals(boss.data[0].getName())) {
+                    continue;
+                }
+                if ((boss.id >= BossID.XEN_CON_7 && boss.id <= BossID.XEN_CON_1) && (boss.zone == null || boss.isDie())) {
                     continue;
                 }
                 int mapId = boss.data[0].getMapJoin()[0];

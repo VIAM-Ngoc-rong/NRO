@@ -137,6 +137,7 @@ public class Boss extends Player implements IBoss {
             throw new Exception("Dữ liệu boss không hợp lệ");
         }
         this.data = data;
+        this.name = this.data[0].getName();
         this.secondsRest = this.data[0].getSecondsRest();
         this.bossStatus = BossStatus.REST;
         BossManager.gI().addBoss(this);
@@ -164,6 +165,7 @@ public class Boss extends Player implements IBoss {
             throw new Exception("Dữ liệu boss không hợp lệ");
         }
         this.data = data;
+        this.name = this.data[0].getName();
         this.secondsRest = this.data[0].getSecondsRest();
         this.bossStatus = BossStatus.REST;
         switch (bossType) {
@@ -837,7 +839,8 @@ public class Boss extends Player implements IBoss {
                  BossID.PIC, BossID.POC, BossID.KING_KONG,
                  BossID.XEN_BO_HUNG, BossID.SIEU_BO_HUNG,
                  BossID.XEN_CON_1, BossID.XEN_CON_2, BossID.XEN_CON_3, BossID.XEN_CON_4, BossID.XEN_CON_5, BossID.XEN_CON_6, BossID.XEN_CON_7,
-                 BossID.BLACK_GOKU, BossID.CUMBER, BossID.GOLDEN_FRIEZA,
+                 BossID.BLACK_GOKU, BossID.ZAMASU, BossID.CUMBER, BossID.GOLDEN_FRIEZA,
+                 BossID.BASIL, BossID.LAVENDER, BossID.BERGAMO, BossID.MABU_14H,
                  BossID.DEATH_BEAM_1, BossID.DEATH_BEAM_2, BossID.DEATH_BEAM_3, BossID.DEATH_BEAM_4, BossID.DEATH_BEAM_5,
                  BossID.HIT, BossID.CHILL_1, BossID.CHILL_2, BossID.HATCHIYACK, BossID.DR_LYCHEE,
                  BossID.DRABURA, BossID.BUI_BUI, BossID.YA_CON, BossID.MABU_12H, BossID.DRABURA_2, BossID.BUI_BUI_2, BossID.GOKU, BossID.CADIC, BossID.DRABURA_3,
@@ -859,7 +862,8 @@ public class Boss extends Player implements IBoss {
 
     public boolean isBossFromFutureOnwards() {
         switch ((int) this.id) {
-            case BossID.BLACK_GOKU, BossID.CUMBER, BossID.COOLER,
+            case BossID.BLACK_GOKU, BossID.ZAMASU, BossID.CUMBER, BossID.COOLER,
+                 BossID.BASIL, BossID.LAVENDER, BossID.BERGAMO, BossID.MABU_14H,
                  BossID.XEN_BO_HUNG, BossID.SIEU_BO_HUNG,
                  BossID.XEN_CON_1, BossID.XEN_CON_2, BossID.XEN_CON_3, BossID.XEN_CON_4, BossID.XEN_CON_5, BossID.XEN_CON_6, BossID.XEN_CON_7,
                  BossID.ANDROID_19, BossID.DR_KORE, BossID.ANDROID_13, BossID.ANDROID_14, BossID.ANDROID_15,

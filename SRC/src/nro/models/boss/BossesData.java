@@ -714,7 +714,7 @@ public class BossesData {
     );
 
     public static final BossData SIEU_BO_HUNG_1 = new BossData(
-            "Xên Hoàn Thiện",
+            "Siêu Bọ Hung",
             ConstPlayer.XAYDA,
             new short[]{234, 235, 236, -1, -1, -1},
             35000,
@@ -726,15 +726,16 @@ public class BossesData {
                 {Skill.GALICK, 7, 1000},
                 {Skill.THAI_DUONG_HA_SAN, 7, 50000}
             },
-            new String[]{}, //text chat 1
-            new String[]{}, //text chat 2
-            new String[]{}, //text chat 3
-            REST_30_M,
+            new String[]{"|-1|Hôm nay ta mở Đại Hội Xên Bọ Hung, kẻ nào dám bước lên võ đài?!"}, //text chat 1
+            new String[]{"|-1|Hahaha! Sức mạnh hoàn mỹ của ta là vô địch!",
+                "|-1|Các ngươi chỉ có vậy thôi sao?!"}, //text chat 2
+            new String[]{"|-1|Ta đã hấp thụ thêm sức mạnh và tiến hóa thành Siêu Bọ Hung Hoàn Thiện!"}, //text chat 3
+            REST_15_M,
             new int[]{BossID.XEN_CON_1, BossID.XEN_CON_2, BossID.XEN_CON_3, BossID.XEN_CON_4, BossID.XEN_CON_5, BossID.XEN_CON_6, BossID.XEN_CON_7}
     );
 
     public static final BossData SIEU_BO_HUNG_2 = new BossData(
-            "Siêu Bọ Hung",
+            "Siêu Bọ Hung Hoàn Thiện",
             ConstPlayer.XAYDA,
             new short[]{234, 235, 236, -1, -1, -1},
             40000,
@@ -746,10 +747,10 @@ public class BossesData {
                 {Skill.GALICK, 7, 1000},
                 {Skill.THOI_MIEN, 7, 30000}},
             //skill
-            new String[]{}, //text chat 1
-            new String[]{}, //text chat 2
-            new String[]{}, //text chat 3
-            REST_30_M
+            new String[]{"|-1|Toàn bộ năng lượng đã bùng nổ! Xem chiêu Kamejoko hủy diệt Hệ Mặt Trời đây!"}, //text chat 1
+            new String[]{"|-1|Không ai có thể ngăn cản Siêu Bọ Hung!"}, //text chat 2
+            new String[]{"|-1|Không thể nào... Cơ thể hoàn hảo của ta...!"}, //text chat 3
+            AppearType.ANOTHER_LEVEL
     );
 
     public static final BossData XEN_CON_1 = new BossData(
@@ -1017,7 +1018,7 @@ public class BossesData {
             new String[]{}, //text chat 1
             new String[]{"|-1|Khí công pháo"}, //text chat 2
             new String[]{"|-1|Biến hình"}, //text chat 3
-            REST_10_M
+            AppearType.ANOTHER_LEVEL
     );
 
     public static final BossData BU_TENK = new BossData(
@@ -1034,7 +1035,7 @@ public class BossesData {
             new String[]{"|-1|Khí công pháo",
                 "|-1|Ui da đau bụng quá"}, //text chat 2
             new String[]{"|-1|Biến hình"}, //text chat 3
-            REST_10_M
+            AppearType.ANOTHER_LEVEL
     );
 
     public static final BossData BU_HAN = new BossData(
@@ -1050,7 +1051,7 @@ public class BossesData {
             new String[]{}, //text chat 1
             new String[]{"|-1|Khí công pháo"}, //text chat 2
             new String[]{"|-1|Biến hình"}, //text chat 3
-            REST_10_M
+            AppearType.ANOTHER_LEVEL
     );
 
     public static final BossData KID_BU = new BossData(
@@ -1066,7 +1067,7 @@ public class BossesData {
             new String[]{}, //text chat 1
             new String[]{"|-1|Khí công pháo"}, //text chat 2
             new String[]{"|-1|Biến hình"}, //text chat 3
-            REST_10_M
+            AppearType.ANOTHER_LEVEL
     );
 
     public static final BossData SUPER_BU_BUNG = new BossData(
@@ -2212,12 +2213,13 @@ public class BossesData {
             "Cooler", //name
             ConstPlayer.XAYDA, //gender
             new short[]{317, 318, 319, -1, -1, -1}, //outfit {head, body, leg, bag, aura, eff}
-            32000, //dame
-            new int[]{200000000}, //hp
-            new int[]{107, 108, 110}, //map join (Núi tuyết, Dòng sông băng, Hang băng)
+            35000, //dame
+            new int[]{250000000}, //hp
+            new int[]{105, 106, 107, 108, 109, 110}, //map join (Cánh đồng tuyết, Rừng tuyết, Núi tuyết, Dòng sông băng, Rừng băng, Hang băng)
             new int[][]{
-                {Skill.GALICK, 1, 2000},
-                {Skill.ANTOMIC, 1, 6000},},
+                {Skill.GALICK, 7, 1000},
+                {Skill.ANTOMIC, 7, 3000},
+                {Skill.KHIEN_NANG_LUONG, 7, 180000}},
             new String[]{"|-1|Ta sẽ cho chúng bây biết sức mạnh thực sự của dân tộc Frost Demons"
             }, //text chat 1
             new String[]{"|-1|Tụi mày có giỏi thì xông vào cứu hắn đi",
@@ -2240,12 +2242,13 @@ public class BossesData {
             "Cooler 2", //name
             ConstPlayer.XAYDA, //gender
             new short[]{320, 321, 322, -1, -1, -1}, //outfit {head, body, leg, bag, aura, eff}
-            50000, //dame
+            55000, //dame
             new int[]{500000000}, //hp
-            new int[]{107, 108, 110}, //map join (Núi tuyết, Dòng sông băng, Hang băng)
+            new int[]{105, 106, 107, 108, 109, 110}, //map join
             new int[][]{
-                {Skill.GALICK, 1, 2000},
-                {Skill.ANTOMIC, 1, 6000},},
+                {Skill.GALICK, 7, 1000},
+                {Skill.ANTOMIC, 7, 3000},
+                {Skill.TAI_TAO_NANG_LUONG, 7, 300000}},
             new String[]{"|-1|Ta sẽ cho chúng bây biết sức mạnh thực sự của dân tộc Frost Demons"
             }, //text chat 1
             new String[]{"|-1|Tụi mày có giỏi thì xông vào cứu hắn đi",
@@ -2692,6 +2695,216 @@ public class BossesData {
                 "|-1|Ta không tin chuyện này sẽ xảy ra!!",
                 "|-1|Đồ khốn kiếp!! Rồi ngươi sẽ phải trả giá"
             }, //text chat 3
+            AppearType.ANOTHER_LEVEL
+    );
+
+    //========================3 CON SÓI BADI (TRIO DE DANGERS)========================
+    public static final BossData SOI_BASIL = new BossData(
+            "Sói Basil (Badi)",
+            ConstPlayer.XAYDA,
+            new short[]{745, 746, 747, -1, -1, -1},
+            35000,
+            new int[]{300_000_000},
+            new int[]{92, 93, 94, 96, 97, 98, 99, 100, 103},
+            new int[][]{
+                {Skill.GALICK, 7, 1000},
+                {Skill.LIEN_HOAN, 7, 1000},
+                {Skill.MASENKO, 7, 3000},
+                {Skill.TAI_TAO_NANG_LUONG, 7, 300000}},
+            new String[]{"|-1|Ta là Sói Đỏ Basil của Bộ 3 Tam Giác Nguy Hiểm!"},
+            new String[]{
+                "|-1|Cú đá liên hoàn Shining Blaster!",
+                "|-1|Đừng hòng thoát khỏi hàm răng của 3 anh em Sói Badi!",
+                "|-1|Hahaha! Tốc độ đôi chân của ta là vô địch!"
+            },
+            new String[]{"|-1|Đại ca Bergamo, Lavender, trả thù cho đệ!"},
+            AppearType.APPEAR_WITH_ANOTHER
+    );
+
+    public static final BossData SOI_LAVENDER = new BossData(
+            "Sói Lavender (Badi)",
+            ConstPlayer.XAYDA,
+            new short[]{748, 749, 750, -1, -1, -1},
+            38000,
+            new int[]{350_000_000},
+            new int[]{92, 93, 94, 96, 97, 98, 99, 100, 103},
+            new int[][]{
+                {Skill.DRAGON, 7, 1000},
+                {Skill.ANTOMIC, 7, 3000},
+                {Skill.THOI_MIEN, 5, 60000},
+                {Skill.TAI_TAO_NANG_LUONG, 7, 300000}},
+            new String[]{"|-1|Khà khà! Hơi độc Poison Blow của Lavender sẽ làm mù mắt ngươi!"},
+            new String[]{
+                "|-1|Ngấm độc rồi hả nhóc con?!",
+                "|-1|3 anh em Sói Badi bọn ta sẽ xé xác ngươi!",
+                "|-1|Khà khà khà!"
+            },
+            new String[]{"|-1|Đại ca Bergamo, cẩn thận tên này!"},
+            AppearType.APPEAR_WITH_ANOTHER
+    );
+
+    public static final BossData SOI_BERGAMO = new BossData(
+            "Sói Bergamo (Badi)",
+            ConstPlayer.XAYDA,
+            new short[]{751, 752, 753, -1, -1, -1},
+            45000,
+            new int[]{500_000_000},
+            new int[]{92, 93, 94, 96, 97, 98, 99, 100, 103},
+            new int[][]{
+                {Skill.DRAGON, 7, 1000},
+                {Skill.KAMEJOKO, 7, 2000},
+                {Skill.KHIEN_NANG_LUONG, 7, 180000},
+                {Skill.TAI_TAO_NANG_LUONG, 7, 300000}},
+            new String[]{
+                "|-1|Bộ 3 Sói Badi (Bergamo - Basil - Lavender) xuất trận!",
+                "|-1|Mọi đòn tấn công của ngươi chỉ làm ta khổng lồ và mạnh hơn thôi!"
+            },
+            new String[]{
+                "|-1|Wolfgang Penetrator!",
+                "|-1|Các em Basil, Lavender! Bao vây lấy hắn!",
+                "|-1|Đội hình Tam Giác Nguy Hiểm Bất Bại!"
+            },
+            new String[]{"|-1|Không thể tin được... Bộ 3 Sói Badi lại thất bại sao?!"},
+            REST_10_M,
+            new int[]{BossID.BASIL, BossID.LAVENDER}
+    );
+
+    //========================ZAMASU & ZAMASU HỢP THỂ========================
+    public static final BossData ZAMASU = new BossData(
+            "Zamasu",
+            ConstPlayer.TRAI_DAT,
+            new short[]{903, 904, 905, -1, -1, -1},
+            55000,
+            new int[]{600_000_000},
+            new int[]{102, 92, 93, 94, 96, 97, 98, 99, 100},
+            new int[][]{
+                {Skill.KAMEJOKO, 7, 500},
+                {Skill.GALICK, 7, 500},
+                {Skill.TAI_TAO_NANG_LUONG, 7, 300000},
+                {Skill.KHIEN_NANG_LUONG, 7, 240000}},
+            new String[]{
+                "|-1|Ta là thần Kaioshin Zamasu!",
+                "|-1|Kế hoạch Không Người Trần sẽ thanh tẩy toàn bộ vũ trụ này!"
+            },
+            new String[]{
+                "|-1|Lũ phàm nhân tội lỗi, hãy đón nhận sự phán xét của Thần!",
+                "|-1|Cơ thể bất tử của ta không bao giờ gục ngã!",
+                "|-1|Lưỡi kiếm Thần Công Lý!"
+            },
+            new String[]{"|-1|Bông tai Potara! Hãy hợp thể thành vị Thần Tối Thượng!"},
+            REST_10_M
+    );
+
+    public static final BossData ZAMASU_HOP_THE = new BossData(
+            "Zamasu Hợp Thể",
+            ConstPlayer.TRAI_DAT,
+            new short[]{1578, 1581, 1582, -1, -1, -1},
+            100000,
+            new int[]{2_000_000_000},
+            new int[]{102, 92, 93, 94, 96, 97, 98, 99, 100},
+            new int[][]{
+                {Skill.THAI_DUONG_HA_SAN, 7, 30000},
+                {Skill.TAI_TAO_NANG_LUONG, 7, 300000},
+                {Skill.KHIEN_NANG_LUONG, 7, 240000},
+                {Skill.KAMEJOKO, 7, 200},
+                {Skill.GALICK, 7, 200}},
+            new String[]{
+                "|-1|Hãy chiêm ngưỡng vẻ đẹp và quyền năng tối thượng của Zamasu Hợp Thể!",
+                "|-1|Ánh Sáng Phán Xét Tuyệt Đối!"
+            },
+            new String[]{
+                "|-1|Ta là Công Lý! Ta là Thế Giới! Ta là Vũ Trụ!",
+                "|-1|Lũ sâu bọ phàm trần hãy tan biến đi!",
+                "|-1|Lưỡi Hái Thần Hủy Diệt!"
+            },
+            new String[]{"|-1|Ánh sáng của Thần... không bao giờ tắt...!"},
+            AppearType.ANOTHER_LEVEL
+    );
+
+    //========================BOSS MABƯ 2H CHIỀU (14H)========================
+    public static final BossData MABU_14H_1 = new BossData(
+            "Mabư 2h Chiều",
+            ConstPlayer.XAYDA,
+            new short[]{297, 298, 299, -1, -1, -1},
+            45000,
+            new int[]{200_000_000},
+            new int[]{5, 13, 20, 27, 28, 29, 30, 127},
+            new int[][]{
+                {Skill.KAMEJOKO, 7, 2000},
+                {Skill.DRAGON, 7, 1000},
+                {Skill.TAI_TAO_NANG_LUONG, 7, 300000}},
+            new String[]{"|-1|Mabư đã thức tỉnh lúc 2h chiều! Hô biến thành Kẹo Socola!"},
+            new String[]{"|-1|Khí công pháo!", "|-1|Úm ba la xì bùa thành Socola!"},
+            new String[]{"|-1|Grrr! Ta sẽ biến hình thành Super Bư!"},
+            REST_10_M
+    );
+
+    public static final BossData MABU_14H_2 = new BossData(
+            "Super Bư (2h Chiều)",
+            ConstPlayer.XAYDA,
+            new short[]{421, 422, 423, -1, -1, -1},
+            60000,
+            new int[]{350_000_000},
+            new int[]{5, 13, 20, 27, 28, 29, 30, 127},
+            new int[][]{
+                {Skill.KAMEJOKO, 7, 1500},
+                {Skill.DRAGON, 7, 1000},
+                {Skill.GALICK, 7, 1000}},
+            new String[]{"|-1|Super Bư xuất hiện! Ai là kẻ mạnh nhất ở đây?!"},
+            new String[]{"|-1|Khí công pháo hủy diệt!"},
+            new String[]{"|-1|Hấp thụ Gotenks! Biến hình Bư Tênk!"},
+            AppearType.ANOTHER_LEVEL
+    );
+
+    public static final BossData MABU_14H_3 = new BossData(
+            "Bư Tênk (2h Chiều)",
+            ConstPlayer.XAYDA,
+            new short[]{424, 425, 426, -1, -1, -1},
+            75000,
+            new int[]{500_000_000},
+            new int[]{5, 13, 20, 27, 28, 29, 30, 127},
+            new int[][]{
+                {Skill.KAMEJOKO, 7, 1500},
+                {Skill.DRAGON, 7, 1000},
+                {Skill.MASENKO, 7, 2000}},
+            new String[]{"|-1|Hahaha! Sức mạnh của Gotenks và trí tuệ của Piccolo đều thuộc về ta!"},
+            new String[]{"|-1|Ma Kết Pháo!", "|-1|Kamikaze Ghost!"},
+            new String[]{"|-1|Đến lượt ngươi rồi Gohan! Biến hình Bư Han!"},
+            AppearType.ANOTHER_LEVEL
+    );
+
+    public static final BossData MABU_14H_4 = new BossData(
+            "Bư Han (2h Chiều)",
+            ConstPlayer.XAYDA,
+            new short[]{427, 428, 429, -1, -1, -1},
+            90000,
+            new int[]{800_000_000},
+            new int[]{5, 13, 20, 27, 28, 29, 30, 127},
+            new int[][]{
+                {Skill.KAMEJOKO, 7, 1000},
+                {Skill.DRAGON, 7, 1000},
+                {Skill.KHIEN_NANG_LUONG, 7, 240000}},
+            new String[]{"|-1|Ta là Bư Han — Ma Nhân mạnh nhất mọi thời đại!"},
+            new String[]{"|-1|Super Kamejoko!", "|-1|Không ai là đối thủ của ta!"},
+            new String[]{"|-1|Grrr... Đầu ta đau quá... Trở về bản thể nguyên thủy Kid Bư!"},
+            AppearType.ANOTHER_LEVEL
+    );
+
+    public static final BossData MABU_14H_5 = new BossData(
+            "Kid Bư (2h Chiều)",
+            ConstPlayer.XAYDA,
+            new short[]{439, 440, 441, -1, -1, -1},
+            110000,
+            new int[]{1_200_000_000},
+            new int[]{5, 13, 20, 27, 28, 29, 30, 127},
+            new int[][]{
+                {Skill.KAMEJOKO, 7, 800},
+                {Skill.DRAGON, 7, 800},
+                {Skill.GALICK, 7, 800},
+                {Skill.TAI_TAO_NANG_LUONG, 7, 300000}},
+            new String[]{"|-1|Ugaaa! Hahahaha! Hủy diệt cả hành tinh!"},
+            new String[]{"|-1|Quả Cầu Hủy Diệt Hành Tinh!", "|-1|Ugaaa! Hahahaha!"},
+            new String[]{"|-1|Ugaaa...!"},
             AppearType.ANOTHER_LEVEL
     );
 }
