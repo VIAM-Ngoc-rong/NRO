@@ -375,15 +375,7 @@ public class InventoryService {
                 index = player.isPet ? 8 : 10;
                 break;
         }
-        if (player.isPet && (item.template.type == 11 || item.template.type == 25)) {
-            Pet pet = (Pet) player;
-            if (pet.type != 2 && pet.type != 3 && pet.type != 4) {
-                Player recipient = pet.master != null ? pet.master : player;
-                Service.gI().sendThongBaoOK(recipient, "Chỉ đệ tử vip mới sử dụng được vật phẩm này!");
-                return sItem;
-            }
-        }
-
+        // Cho phép mọi loại Đệ tử (Thường, Mabư, Broly, Uub, Kid Beer, Jiren) mặc Đeo lưng (type 11) & Sách Tuyệt Kỹ (type 25)
         if (player.isPet && (item.template.type == 23 || item.template.type == 24 || item.template.type == 27)) {
             Player recipient = ((Pet) player).master;
             if (recipient == null) {
@@ -799,23 +791,35 @@ public class InventoryService {
         //mở rộng hành trang - rương đồ
         if (item.template.id == 517) {
             if (player.inventory.itemsBag.size() < Inventory.MAX_ITEMS_BAG) {
-                int savedTab = player.inventory.currentBagTab;
+                int addSlots = Math.min(10, Inventory.MAX_ITEMS_BAG - player.inventory.itemsBag.size());
                 player.inventory.restoreBagLogicalOrder();
-                player.inventory.itemsBag.add(ItemService.gI().createItemNull());
-                player.inventory.switchBagTab(savedTab);
-                Service.gI().sendThongBaoOK(player, "Hành trang của bạn đã được mở rộng thêm 1 ô (" + player.inventory.itemsBag.size() + "/" + Inventory.MAX_ITEMS_BAG + ")");
+                for (int i = 0; i < addSlots; i++) {
+                    player.inventory.itemsBag.add(ItemService.gI().createItemNull());
+                }
+                int targetTab = Math.max(0, player.inventory.getTotalBagTabs() - 1);
+                player.inventory.switchBagTab(targetTab);
+                sendItemBags(player);
+                Service.gI().sendThongBaoOK(player, "Hành trang của bạn đã được mở rộng thêm " + addSlots + " ô!\nTổng: "
+                        + player.inventory.itemsBag.size() + "/" + Inventory.MAX_ITEMS_BAG + " ô (Đang mở Tab "
+                        + (player.inventory.currentBagTab + 1) + "/" + player.inventory.getTotalBagTabs()
+                        + " - Gõ 'tab 1'..'tab " + player.inventory.getTotalBagTabs() + "' để chuyển Tab)");
                 return true;
             } else {
-                Service.gI().sendThongBaoOK(player, "Hành trang của bạn đã đạt tối đa (" + Inventory.MAX_ITEMS_BAG + " ô)");
+                Service.gI().sendThongBaoOK(player, "Hành trang của bạn đã đạt tối đa (" + Inventory.MAX_ITEMS_BAG + " ô / 5 Tab)");
                 return false;
             }
         } else if (item.template.id == 518) {
             if (player.inventory.itemsBox.size() < Inventory.MAX_ITEMS_BOX) {
-                player.inventory.itemsBox.add(ItemService.gI().createItemNull());
-                Service.gI().sendThongBaoOK(player, "Rương đồ của bạn đã được mở rộng thêm 1 ô");
+                int addSlots = Math.min(10, Inventory.MAX_ITEMS_BOX - player.inventory.itemsBox.size());
+                for (int i = 0; i < addSlots; i++) {
+                    player.inventory.itemsBox.add(ItemService.gI().createItemNull());
+                }
+                sendItemBox(player);
+                Service.gI().sendThongBaoOK(player, "Rương đồ của bạn đã được mở rộng thêm " + addSlots + " ô!\nTổng: "
+                        + player.inventory.itemsBox.size() + "/" + Inventory.MAX_ITEMS_BOX + " ô");
                 return true;
             } else {
-                Service.gI().sendThongBaoOK(player, "Rương đồ của bạn đã đạt tối đa");
+                Service.gI().sendThongBaoOK(player, "Rương đồ của bạn đã đạt tối đa (" + Inventory.MAX_ITEMS_BOX + " ô)");
                 return false;
             }
         }

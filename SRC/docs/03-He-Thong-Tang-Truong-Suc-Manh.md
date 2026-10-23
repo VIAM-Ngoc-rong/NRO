@@ -1,4 +1,4 @@
-﻿# 📂 03. HỆ THỐNG TĂNG TRƯỞNG SỨC MẠNH ĐA TẦNG
+# 📂 03. HỆ THỐNG TĂNG TRƯỞNG SỨC MẠNH ĐA TẦNG
 
 ## 🚀 3.1. Lộ Trình Tăng Trưởng & Mở Giới Hạn Sức Mạnh (Sư Phụ & Đệ Tử)
 
@@ -26,21 +26,21 @@ flowchart LR
 
 | Cấp Độ Đệ Tử | Biểu Tượng | Chỉ Số Cộng Khi Hợp Thể | Cách Săn Trứng & Điều Kiện Ấp Nở |
 | :--- | :---: | :---: | :--- |
-| **1. Đệ Tử Thường** | <img src="../assets/readme/icons/3896.png" width="30"/> | **+20% HP / KI / Sức Đánh** | Nhận miễn phí tại **Menu Tiện Ích (`auto`) -> Quản lý Đệ tử -> Nhận Đệ tử Miễn phí** hoặc săn Boss **Super Broly**. |
-| **2. Đệ Tử Mabư** | <img src="../assets/readme/icons/4956.png" width="30"/> | **+25% HP / KI / Sức Đánh**<br>*(Có kỹ năng Biến Sôcôla)* | • **Cách săn**: Tiêu diệt Boss **Kid Bư** (xuất hiện 5 con ở 3 hành tinh) $\rightarrow$ Boss **Mabư Mập** xuất hiện ngay tại khu đó. Hạ **Mabư Mập** có **50% rơi Quả Trứng Mabư**.<br>• **Điều kiện ấp**: Đang sở hữu **Đệ Tử Thường**. Bấm dùng Quả Trứng Mabư $\rightarrow$ Về **Nhà** bấm vào Quả Trứng chọn **Nở ngay (1 Tỷ Vàng)** hoặc chờ 24h. |
-| **3. Đệ Tử Broly**<br>*(Cấp Mạnh Nhất)* | <img src="../assets/readme/icons/5852.png" width="30"/> | **+30% HP / KI / Sức Đánh**<br>*(Đỉnh cao hợp thể)* | • **Cách săn**: Tiêu diệt Boss **Broly** (xuất hiện 5 con ở 3 hành tinh) có `10%` rơi **Quả Trứng Đệ Tử Broly**.<br>• **Điều kiện ấp**: **Bắt buộc đang sở hữu Đệ Tử Mabư**. Bấm dùng Quả Trứng Broly $\rightarrow$ Về **Nhà** bấm vào Quả Trứng chọn hành tinh để nở thành **Đệ Tử Broly** (khởi đầu 1.5 Triệu SM, mặc được đồ ngay)! |
+| **1. Đệ Tử Thường** | <img src="../assets/readme/icons/3896.png" width="30"/> | **+20% HP / KI / Sức Đánh** | Nhận miễn phí tại **Menu Tiện Ích (`auto`) -> Quản lý Đệ tử -> Nhận Đệ tử Miễn phí** hoặc săn Boss **Super SSJ Broly**. |
+| **2. Đệ Tử Mabư** | <img src="../assets/readme/icons/4956.png" width="30"/> | **+25% HP / KI / Sức Đánh**<br>*(Có kỹ năng Biến Sôcôla)* | • **Cách săn**: Tiêu diệt Boss **Kid Bư** (xuất hiện 5 con ở 3 hành tinh) $\rightarrow$ Boss **Mabư Mập** xuất hiện ngay tại khu đó. Hạ **Mabư Mập** có **50% rơi Quả Trứng Mabư** (hoặc săn Boss Vegeta trong phó bản **Con Đường Rắn Độc**).<br>• **Điều kiện ấp**: Đang sở hữu **Đệ Tử Thường**. Bấm dùng Quả Trứng Mabư $\rightarrow$ Về **Nhà** bấm vào Quả Trứng chọn **Nở ngay (1 Tỷ Vàng)** hoặc chờ 24h. |
+| **3. Đệ Tử Broly**<br>*(Cấp Mạnh Nhất)* | <img src="../assets/readme/icons/5852.png" width="30"/> | **+30% HP / KI / Sức Đánh**<br>*(Đỉnh cao hợp thể)* | • **Cách săn**: Tiêu diệt Boss **SSJ Broly** (xuất hiện 5 con ở 3 hành tinh) hoặc **Super SSJ Broly** có `10%` rơi **Quả Trứng Đệ Tử Broly**.<br>• **Điều kiện ấp**: **Bắt buộc đang sở hữu Đệ Tử Mabư**. Bấm dùng Quả Trứng Broly $\rightarrow$ Về **Nhà** bấm vào Quả Trứng chọn hành tinh để nở thành **Đệ Tử Broly** (khởi đầu 1.5 Triệu SM, mặc được đồ ngay)! |
 
-### ⚡ Cách Up Đệ Tử Nhanh Nhất & Mốc Mở Kỹ Năng
+### ⚡ Cách Up Đệ Tử Nhanh Nhất & Mốc Mở 5 Kỹ Năng Cho Mọi Đệ Tử
 1. **Cách Up Đệ Tử Thần Tốc**:
    - Mua **Bùa Đệ Tử 1 Tháng** tại Bà Hạt Mít + Bật **Auto Buff Đậu (`autodau`)**.
    - Mua **Cải trang Tôn Ngộ Không / Bát Giới / Sa Tăng Đệ Tử (`+30% TNSM Đệ`)** hoặc **Cải trang Thầy Giáo (`+40% TNSM, +30% TNSM Đệ`)** tại **Santa (giá 50 Ngọc Xanh)**.
    - Đưa Đệ tử lên **Ngũ Hành Sơn (Map 122–124, x5 TNSM)** và gõ `tan cong`.
-2. **Các Mốc Sức Mạnh Mở Kỹ Năng Đệ Tử**:
-   - **1.5 Triệu SM**: Mặc được toàn bộ Trang bị & Cải trang.
+2. **Các Mốc Sức Mạnh Mở Đủ 5 Kỹ Năng (Áp Dụng Cho Mọi Loại Đệ Tử: Thường, Mabư, Broly...)**:
+   - **1.5 Triệu SM**: Mặc được toàn bộ 9 ô Trang bị, Cải trang, **Đeo Lưng** & **Sách Tuyệt Kỹ** (bấm `auto -> Quản lý Đệ tử -> Mặc Sách Tuyệt Kỹ` hoặc gõ `sach tuyet ky`).
    - **150 Triệu SM**: Mở **Chiêu 2** (*Kamejoko / Masenko / Antomic*).
-   - **1.5 Tỷ SM**: Mở **Chiêu 3** (*Thái Dương Hạ San / Khiên Năng Lượng / Tái Tạo Năng Lượng*).
+   - **1.5 Tỷ SM**: Mở **Chiêu 3** (*Thái Dương Hạ San / Kaioken / Tái Tạo Năng Lượng*).
    - **20 Tỷ SM**: Mở **Chiêu 4** (*Biến Khỉ / Đẻ Trứng / Khiên Năng Lượng*).
-   - **40 Tỷ SM**: Mở **Chiêu 5** (*Super Kame / Ma Phong Ba / Liên Hoàn Chưởng*).
+   - **40 Tỷ SM**: Mở **Chiêu 5** (*Super Kame / Ma Phong Ba / Liên Hoàn Chưởng* theo hệ của Đệ tử — mở khóa cho tất cả các loại Đệ tử!).
 
 ---
 

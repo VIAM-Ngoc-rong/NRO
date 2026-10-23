@@ -20,7 +20,7 @@
     <text x="155" y="26" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="16" font-weight="800" fill="#ffffff">CẤP 1: ĐỆ TỬ THƯỜNG</text>
     <text x="155" y="72" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="22" font-weight="900" fill="#38bdf8">+20% Chỉ Số Hợp Thể</text>
     <text x="25" y="108" font-family="Segoe UI, sans-serif" font-size="13.5" fill="#e2e8f0">• Nguồn: Nhận miễn phí tại Menu "auto"</text>
-    <text x="25" y="134" font-family="Segoe UI, sans-serif" font-size="13.5" fill="#e2e8f0">  hoặc tiêu diệt Boss Super Broly.</text>
+    <text x="25" y="134" font-family="Segoe UI, sans-serif" font-size="13.5" fill="#e2e8f0">  hoặc tiêu diệt Boss Super SSJ Broly.</text>
     <text x="25" y="164" font-family="Segoe UI, sans-serif" font-size="13" font-weight="700" fill="#93c5fd">• Điều kiện ấp lên Đệ Mabư: Đang có Đệ Thường</text>
   </g>
 
@@ -43,7 +43,7 @@
   <!-- Arrow 2 -> 3 -->
   <line x1="760" y1="190" x2="835" y2="190" stroke="#f472b6" stroke-width="3" marker-end="url(#arrPink)"/>
   <text x="798" y="168" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="12" font-weight="700" fill="#fde047">Trứng Broly</text>
-  <text x="798" y="214" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="11" fill="#fde047">(Rớt từ Boss Broly)</text>
+  <text x="798" y="214" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="11" fill="#fde047">(Từ SSJ / Super SSJ Broly)</text>
 
   <!-- Tier 3: Broly Pet -->
   <g transform="translate(845, 95)">
@@ -51,7 +51,7 @@
     <rect width="310" height="40" rx="14" fill="#d97706"/>
     <text x="155" y="26" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="16" font-weight="800" fill="#ffffff">CẤP 3: ĐỆ TỬ BROLY (MAX)</text>
     <text x="155" y="72" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="22" font-weight="900" fill="#fde047">+30% Chỉ Số Hợp Thể</text>
-    <text x="25" y="108" font-family="Segoe UI, sans-serif" font-size="13.5" fill="#e2e8f0">• Nguồn: Săn 5 Boss Broly ở 3 hành tinh</text>
+    <text x="25" y="108" font-family="Segoe UI, sans-serif" font-size="13.5" fill="#e2e8f0">• Nguồn: Săn 5 Boss SSJ Broly &amp; Super SSJ Broly</text>
     <text x="25" y="134" font-family="Segoe UI, sans-serif" font-size="13.5" fill="#e2e8f0">  → Dùng Quả Trứng Broly ấp từ Đệ Mabư.</text>
     <text x="25" y="164" font-family="Segoe UI, sans-serif" font-size="13" font-weight="700" fill="#fde047">• Đỉnh cao hợp thể cùng Bông Tai Porata Cấp 3!</text>
   </g>

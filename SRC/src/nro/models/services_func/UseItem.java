@@ -1925,6 +1925,10 @@ public class UseItem {
                     && !MapService.gI().isMapOffline(pl.zone.map.mapId)) {
                 pl.mapBeforeCapsule = pl.zone;
             }
+            String bossNames = nro.models.boss.Boss_Manager.BossManager.gI().getAliveWorldBossNamesInMap(zoneChose.map.mapId);
+            if (!bossNames.isEmpty()) {
+                zoneId = 0;
+            }
         }
         pl.changeMapVIP = true;
         ChangeMapService.gI().changeMapBySpaceShip(pl, zoneChose.map.mapId, zoneId, -1);

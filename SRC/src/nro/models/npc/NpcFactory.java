@@ -809,7 +809,7 @@ public class NpcFactory {
                             Service.gI().sendThongBao(player, "Đã chuyển sang Hành trang Tab " + (select + 1) + " (Ô " + startSlot + " - " + endSlot + ")!");
                         } else if (canExpand && select == totalTabs) {
                             if (player.inventory.gem < 50_000) {
-                                Service.gI().sendThongBao(player, "Cần 50.000 Ngọc xanh để mở thêm 1 Tab Hành trang (+50 ô)!");
+                                Service.gI().sendThongBao(player, "Cần 50.000 Ngọc xanh để mở thêm 1 Tab Hành trang (+" + nro.models.player.Inventory.BAG_TAB_SIZE + " ô)!");
                                 openMenuBagTab(player);
                                 return;
                             }
@@ -817,16 +817,16 @@ public class NpcFactory {
                                     nro.models.player.Inventory.MAX_ITEMS_BAG - player.inventory.itemsBag.size());
                             player.inventory.gem -= 50_000;
                             Service.gI().sendMoney(player);
-                            int savedTab = player.inventory.currentBagTab;
                             player.inventory.restoreBagLogicalOrder();
                             for (int k = 0; k < canAdd; k++) {
                                 player.inventory.itemsBag.add(ItemService.gI().createItemNull());
                             }
-                            player.inventory.switchBagTab(savedTab);
+                            int newTab = Math.max(0, player.inventory.getTotalBagTabs() - 1);
+                            player.inventory.switchBagTab(newTab);
                             InventoryService.gI().sendItemBags(player);
                             Service.gI().sendThongBao(player, "Đã mở rộng thêm " + canAdd + " ô! Tổng: "
                                     + player.inventory.itemsBag.size() + "/" + nro.models.player.Inventory.MAX_ITEMS_BAG
-                                    + " ô (" + player.inventory.getTotalBagTabs() + " Tab).");
+                                    + " ô (Đang mở Tab " + (newTab + 1) + "/" + player.inventory.getTotalBagTabs() + ").");
                             openMenuBagTab(player);
                         } else {
                             openMenuTienIch(player);
@@ -885,32 +885,28 @@ public class NpcFactory {
                             case 4 ->
                                 player.pet.transform();
                             case 5 -> {
-                                int typePet = player.pet.typePet;
-                                if (typePet == 2 || typePet == 3 || typePet == 4) {
-                                    boolean found = false;
-                                    for (int i = 0; i < player.inventory.itemsBag.size(); i++) {
-                                        Item item = player.inventory.itemsBag.get(i);
-                                        if (item != null && item.isNotNullItem() && item.template.type == 25) {
-                                            found = true;
-                                            if (player.pet.nPoint != null && player.pet.nPoint.power >= 1500000) {
-                                                Item old = InventoryService.gI().putItemBody(player.pet, item);
-                                                player.inventory.itemsBag.set(i, old);
-                                                InventoryService.gI().sendItemBags(player);
-                                                InventoryService.gI().sendItemBody(player);
-                                                Service.gI().Send_Caitrang(player.pet);
-                                                Service.gI().Send_Caitrang(player);
-                                                Service.gI().sendThongBao(player, "Đã trang bị " + item.template.name + " cho đệ tử!");
-                                            } else {
-                                                Service.gI().sendThongBaoOK(player, "Đệ tử cần đạt 1tr5 sức mạnh để trang bị.");
-                                            }
-                                            break;
+                                boolean found = false;
+                                for (int i = 0; i < player.inventory.itemsBag.size(); i++) {
+                                    Item item = player.inventory.itemsBag.get(i);
+                                    if (item != null && item.isNotNullItem() && item.template.type == 25) {
+                                        found = true;
+                                        if (player.pet.nPoint != null && player.pet.nPoint.power >= 1500000) {
+                                            Item old = InventoryService.gI().putItemBody(player.pet, item);
+                                            player.inventory.itemsBag.set(i, old);
+                                            InventoryService.gI().sendItemBags(player);
+                                            InventoryService.gI().sendItemBody(player);
+                                            Service.gI().Send_Caitrang(player.pet);
+                                            Service.gI().Send_Caitrang(player);
+                                            Service.gI().showInfoPet(player);
+                                            Service.gI().sendThongBao(player, "Đã trang bị " + item.template.name + " cho đệ tử!");
+                                        } else {
+                                            Service.gI().sendThongBaoOK(player, "Đệ tử cần đạt 1tr5 sức mạnh để trang bị.");
                                         }
+                                        break;
                                     }
-                                    if (!found) {
-                                        Service.gI().sendThongBao(player, "Không tìm thấy Sách Tuyệt Kỹ trong hành trang!");
-                                    }
-                                } else {
-                                    Service.gI().sendThongBaoOK(player, "Chỉ đệ tử (Uub, Kid Beerus, Jiren) mới có thể dùng Sách Tuyệt Kỹ.");
+                                }
+                                if (!found) {
+                                    Service.gI().sendThongBao(player, "Không tìm thấy Sách Tuyệt Kỹ trong hành trang!");
                                 }
                             }
                             case 6 ->
@@ -928,9 +924,9 @@ public class NpcFactory {
         String npcSay = "|7|=== BẢNG ĐIỀU KHIỂN TIỆN ÍCH ===\n"
                 + "|2|Auto Buff Đậu (Sư phụ & Đệ): " + (player.isAutoBuffPea ? "|1|[Đang Bật]" : "|7|[Đang Tắt]") + "\n"
                 + "|2|Auto Treo Quái (Chống đầy túi): " + (player.isAutoCleanBag ? "|1|[Đang Bật]" : "|7|[Đang Tắt]") + "\n"
-                + "|2|Hành trang: |1|Tab " + curTab + "/" + totalTabs + " (" + player.inventory.itemsBag.size() + "/" + nro.models.player.Inventory.MAX_ITEMS_BAG + " ô - 50 ô/Tab)\n"
+                + "|2|Hành trang: |1|Tab " + curTab + "/" + totalTabs + " (" + player.inventory.itemsBag.size() + "/" + nro.models.player.Inventory.MAX_ITEMS_BAG + " ô - 100 ô/Tab)\n"
                 + "|2|Điểm Săn Boss hiện có: |1|" + player.pointSanBoss + " điểm\n"
-                + "|0|(Mẹo: Bấm nút Lá Cờ hoặc gõ 'tab 1'..'tab 10' để đổi Tab Hành trang nhanh)";
+                + "|0|(Mẹo: Bấm nút Lá Cờ hoặc gõ 'tab 1'..'tab 5' để đổi Tab Hành trang nhanh)";
         NpcService.gI().createMenuConMeo(player, 9900, -1, npcSay,
                 "Auto Đậu\n" + (player.isAutoBuffPea ? "[Tắt]" : "[Bật]"),
                 "Treo Quái\n" + (player.isAutoCleanBag ? "[Tắt]" : "[Bật]"),
@@ -946,7 +942,7 @@ public class NpcFactory {
         int totalTabs = player.inventory.getTotalBagTabs();
         int curTab = player.inventory.currentBagTab + 1;
         StringBuilder sb = new StringBuilder();
-        sb.append("|7|=== QUẢN LÝ TAB HÀNH TRANG (50 Ô / TAB) ===\n");
+        sb.append("|7|=== QUẢN LÝ TAB HÀNH TRANG (100 Ô / TAB) ===\n");
         sb.append("|2|Đang mở: |1|Tab ").append(curTab).append("/").append(totalTabs)
                 .append(" (Tổng: ").append(player.inventory.itemsBag.size()).append("/")
                 .append(nro.models.player.Inventory.MAX_ITEMS_BAG).append(" ô)\n");
@@ -972,7 +968,7 @@ public class NpcFactory {
                     + "Tab " + (t + 1) + "\n(" + used + "/" + cap + ")";
         }
         if (canExpand) {
-            options[totalTabs] = "Mở thêm Tab\n(+50 ô / 50k Ngọc)";
+            options[totalTabs] = "Mở thêm Tab\n(+100 ô / 50k Ngọc)";
             options[totalTabs + 1] = "Quay lại";
         } else {
             options[totalTabs] = "Quay lại";

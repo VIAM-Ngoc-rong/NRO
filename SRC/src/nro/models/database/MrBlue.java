@@ -395,10 +395,10 @@ public class MrBlue {
                 }
                 player.inventory.itemsBag.add(item);
             }
-            while (player.inventory.itemsBag.size() < Inventory.DEFAULT_ITEMS_BAG) {
+            while (player.inventory.itemsBag.size() < nro.models.player.Inventory.DEFAULT_ITEMS_BAG) {
                 player.inventory.itemsBag.add(ItemService.gI().createItemNull());
             }
-            while (player.inventory.itemsBag.size() > Inventory.MAX_ITEMS_BAG) {
+            while (player.inventory.itemsBag.size() > nro.models.player.Inventory.MAX_ITEMS_BAG) {
                 player.inventory.itemsBag.remove(player.inventory.itemsBag.size() - 1);
             }
             dataArray.clear();
@@ -879,17 +879,7 @@ public class MrBlue {
                     }
                     pet.inventory.itemsBody.add(item);
                 }
-                int requiredSize;
-                switch (pet.typePet) {
-                    case 2: // Uub
-                    case 3: // kid beer
-                    case 4: // kid jiren
-                        requiredSize = 9;
-                        break;
-                    default:
-                        requiredSize = 7;
-                        break;
-                }
+                int requiredSize = 9;
                 while (pet.inventory.itemsBody.size() < requiredSize) {
                     pet.inventory.itemsBody.add(ItemService.gI().createItemNull());
                 }
@@ -918,13 +908,15 @@ public class MrBlue {
                     pet.playerSkill.skills.add(skill);
                 }
 
-                int maxSkillCount = 4;
-                if (pet.typePet == 3 || pet.typePet == 4) {
-                    maxSkillCount = 5;
+                int maxSkillCount = 5;
+                while (pet.playerSkill.skills.size() > maxSkillCount
+                        && pet.playerSkill.skills.get(pet.playerSkill.skills.size() - 1).skillId == -1) {
+                    pet.playerSkill.skills.remove(pet.playerSkill.skills.size() - 1);
                 }
                 while (pet.playerSkill.skills.size() < maxSkillCount) {
                     pet.playerSkill.skills.add(SkillUtil.createSkillLevel0(-1));
                 }
+                pet.updatePower();
 
                 pet.nPoint.hp = hp;
                 pet.nPoint.mp = mp;

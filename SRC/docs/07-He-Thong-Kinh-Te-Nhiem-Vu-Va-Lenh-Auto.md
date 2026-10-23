@@ -1,4 +1,4 @@
-﻿# 📂 07. HỆ THỐNG KINH TẾ, NHIỆM VỤ HÀNG NGÀY & BẢNG LỆNH AUTO
+# 📂 07. HỆ THỐNG KINH TẾ, NHIỆM VỤ HÀNG NGÀY & BẢNG LỆNH AUTO
 
 ## 💰 7.1. Hệ Thống Kinh Tế Vàng & Nhiệm Vụ Bò Mộng Hàng Ngày
 Để đảm bảo nền kinh tế Vàng ổn định (tỷ giá chuẩn **`1 Thỏi Vàng = 500.000.000 Vàng`** bán và mua tại **Santa**):
@@ -34,12 +34,13 @@ Bạn có thể bấm trực tiếp vào **Nút Lá Cờ (Đổi Cờ)** ở gó
 | Lệnh Chat Nhanh | Chức Năng Thực Thi |
 | :--- | :--- |
 | `auto` hoặc `menu` | Mở **Bảng Điều Khiển Tiện Ích Tổng Hợp** (Hành trang đa Tab, Auto Đậu, Auto Treo Quái, Đệ Tử, Danh Sách Boss). |
-| `tab` hoặc `tui` hoặc `hanhtrang` | Mở bảng **Quản Lý 10 Tab Hành Trang (50 ô / Tab)** & Mở rộng thêm Tab mới (`+50 ô`). |
-| `t1` .. `t10` *(hoặc `tab 1` .. `tab 10`)* | Chuyển nhanh lập tức sang **Tab Hành Trang số 1 $\rightarrow$ số 10** (rất tiện để swap Set Cadic / Set Kakarot / Set Nappa). |
+| `tab` hoặc `tui` hoặc `hanhtrang` | Mở bảng **Quản Lý 5 Tab Hành Trang (100 ô / Tab, tối đa 500 ô)** & Mở rộng thêm Tab mới (`+100 ô`). |
+| `t1` .. `t5` *(hoặc `tab 1` .. `tab 5`)* | Chuyển nhanh lập tức sang **Tab Hành Trang số 1 $\rightarrow$ số 5** (rất tiện để swap Set Cadic / Set Kakarot / Set Nappa). |
 | `autodau` hoặc `ad` | Bật / Tắt **Auto Buff Đậu Thần** tự động hồi HP/KI cho cả Sư Phụ và Đệ Tử. |
 | `treoquai` hoặc `tq` | Bật / Tắt **Auto Treo Quái & Tự Động Lọc Bán Đồ Rác** (giữ lại 100% Đồ SKH, Đồ Thần Linh, Đồ Sao). |
 | `boss` hoặc `sanboss` | Mở **Danh Sách Boss Đang Sống** và bấm dịch chuyển nhanh tới **Khu 0** của bản đồ Boss. |
 | `di theo` / `tan cong` / `bao ve` / `ve nha` | Điều khiển trạng thái chiến đấu của Đệ Tử nhanh không cần mở bảng. |
+| `sach tuyet ky` | Tự động tìm và mặc **Sách Tuyệt Kỹ** trong hành trang cho Đệ Tử (mọi loại Đệ tử từ 1.5tr SM). |
 | `bien hinh` | Cho Đệ Tử biến hình gia tăng chỉ số. |
 
 ---

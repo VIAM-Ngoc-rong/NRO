@@ -704,7 +704,10 @@ public class Pet extends Player {
 
     private boolean useSkill5() {
         try {
-            Skill skill = this.playerSkill.skillSelect = getSkill(5);
+            if (!canAttack()) {
+                return false;
+            }
+            Skill skill = getSkill(5);
             if (skill == null || skill.skillId == -1) {
                 return false;
             }
@@ -728,8 +731,8 @@ public class Pet extends Player {
                     short y = dy;
                     byte dir = 1;
 
-                    Player target = this.zone.findNearestPlayer(this);
-                    Mob mobTarget = this.zone.findNearestMob(this);
+                    Player target = this.findPlayerAttack();
+                    Mob mobTarget = this.findMobAttack();
 
                     if (target != null) {
                         x = (short) target.location.x;
@@ -754,7 +757,6 @@ public class Pet extends Player {
 
             return false;
         } catch (Exception e) {
-            e.printStackTrace();
             return false;
         }
     }
@@ -981,29 +983,22 @@ public class Pet extends Player {
         return mobAtt;
     }
 
-    private void updatePower() {
-        if (this.playerSkill != null) {
-            switch (this.playerSkill.getSizeSkill()) {
-                case 1:
-                    if (this.nPoint.power >= 150000000) {
-                        openSkill2();
-                    }
-                    break;
-                case 2:
-                    if (this.nPoint.power >= 1500000000) {
-                        openSkill3();
-                    }
-                    break;
-                case 3:
-                    if (this.nPoint.power >= 20000000000L) {
-                        openSkill4();
-                    }
-                    break;
-                case 4:
-                    if ((this.typePet == 2 || this.typePet == 3 || this.typePet == 4) && this.nPoint.power >= 40000000000L) {
-                        openSkill5();
-                    }
-                    break;
+    public void updatePower() {
+        if (this.playerSkill != null && this.playerSkill.skills != null) {
+            while (this.playerSkill.skills.size() < 5) {
+                this.playerSkill.skills.add(SkillUtil.createEmptySkill());
+            }
+            if (this.playerSkill.skills.get(1).skillId == -1 && this.nPoint.power >= 150_000_000L) {
+                openSkill2();
+            }
+            if (this.playerSkill.skills.get(2).skillId == -1 && this.nPoint.power >= 1_500_000_000L) {
+                openSkill3();
+            }
+            if (this.playerSkill.skills.get(3).skillId == -1 && this.nPoint.power >= 20_000_000_000L) {
+                openSkill4();
+            }
+            if (this.playerSkill.skills.get(4).skillId == -1 && this.nPoint.power >= 40_000_000_000L) {
+                openSkill5();
             }
         }
     }
@@ -1109,6 +1104,10 @@ public class Pet extends Player {
     }
 
     private Skill getSkill(int indexSkill) {
+        if (this.playerSkill == null || this.playerSkill.skills == null
+                || indexSkill - 1 < 0 || indexSkill - 1 >= this.playerSkill.skills.size()) {
+            return null;
+        }
         return this.playerSkill.skills.get(indexSkill - 1);
     }
 

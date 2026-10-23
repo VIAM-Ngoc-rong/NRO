@@ -21,8 +21,8 @@ public class Inventory {
     public static final long LIMIT_GOLD = 100_000_000_000L;
     public static final int DEFAULT_ITEMS_BAG = 200;
     public static final int MAX_ITEMS_BAG = 500;
-    public static final int BAG_TAB_SIZE = 50;
-    public static final int MAX_ITEMS_BOX = 100;
+    public static final int BAG_TAB_SIZE = 100;
+    public static final int MAX_ITEMS_BOX = 120;
 
     public static class BagList extends ArrayList<Item> {
         private final Inventory owner;

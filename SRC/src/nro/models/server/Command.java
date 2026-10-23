@@ -404,27 +404,23 @@ parameterizedCommands.put("henbaotri", (player, text) -> {
                 case "bien hinh" ->
                     player.pet.transform();
                 case "sach tuyet ky" -> {
-                    int typePet = player.pet.typePet;
-                    if (typePet == 2 || typePet == 3 || typePet == 4) {
-                        for (int i = 0; i < player.inventory.itemsBag.size(); i++) {
-                            Item item = player.inventory.itemsBag.get(i);
-                            if (item != null && item.isNotNullItem() && item.template.type == 25) {
-                                if (player.pet.nPoint != null && player.pet.nPoint.power >= 1500000) {
-                                    Item old = InventoryService.gI().putItemBody(player.pet, item);
-                                    player.inventory.itemsBag.set(i, old);
-                                    InventoryService.gI().sendItemBags(player);
-                                    InventoryService.gI().sendItemBody(player);
-                                    Service.gI().Send_Caitrang(player.pet);
-                                    Service.gI().Send_Caitrang(player);
-                                    Service.gI().sendThongBao(player, "Đã dùng " + item.template.name + " cho đệ tử");
-                                } else {
-                                    Service.gI().sendThongBaoOK(player, "Đệ tử cần đạt 1tr5 sức mạnh để trang bị.");
-                                }
-                                break;
+                    for (int i = 0; i < player.inventory.itemsBag.size(); i++) {
+                        Item item = player.inventory.itemsBag.get(i);
+                        if (item != null && item.isNotNullItem() && item.template.type == 25) {
+                            if (player.pet.nPoint != null && player.pet.nPoint.power >= 1500000) {
+                                Item old = InventoryService.gI().putItemBody(player.pet, item);
+                                player.inventory.itemsBag.set(i, old);
+                                InventoryService.gI().sendItemBags(player);
+                                InventoryService.gI().sendItemBody(player);
+                                Service.gI().Send_Caitrang(player.pet);
+                                Service.gI().Send_Caitrang(player);
+                                Service.gI().showInfoPet(player);
+                                Service.gI().sendThongBao(player, "Đã dùng " + item.template.name + " cho đệ tử");
+                            } else {
+                                Service.gI().sendThongBaoOK(player, "Đệ tử cần đạt 1tr5 sức mạnh để trang bị.");
                             }
+                            break;
                         }
-                    } else {
-                        Service.gI().sendThongBaoOK(player, "Chỉ đệ tử (Goku vô cực, Kid Beerus, Jiren) mới có thể dùng sách tuyệt kỹ.");
                     }
                 }
             }

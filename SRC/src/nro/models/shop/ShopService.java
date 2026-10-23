@@ -748,8 +748,19 @@ public class ShopService {
             return;
         }
 
-        // Hành trang đầy
-        if (InventoryService.gI().getCountEmptyBag(player) == 0) {
+        // Kiểm tra giới hạn mở rộng hành trang / rương đồ trước khi trừ tiền
+        if (itemTempId == 517) {
+            if (player.inventory.itemsBag.size() >= Inventory.MAX_ITEMS_BAG) {
+                Service.gI().sendThongBaoOK(player, "Hành trang của bạn đã đạt tối đa (" + Inventory.MAX_ITEMS_BAG + " ô / 5 Tab)!");
+                return;
+            }
+        } else if (itemTempId == 518) {
+            if (player.inventory.itemsBox.size() >= Inventory.MAX_ITEMS_BOX) {
+                Service.gI().sendThongBaoOK(player, "Rương đồ của bạn đã đạt tối đa (" + Inventory.MAX_ITEMS_BOX + " ô)!");
+                return;
+            }
+        } else if (InventoryService.gI().getCountEmptyBag(player) == 0) {
+            // Hành trang đầy (bỏ qua nếu mua mở rộng hành trang 517 hoặc rương đồ 518)
             Service.gI().sendThongBao(player, "Hành trang đã đầy");
             return;
         }

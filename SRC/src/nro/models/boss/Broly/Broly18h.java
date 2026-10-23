@@ -29,7 +29,7 @@ public class Broly18h extends Boss {
 
     public Broly18h() throws Exception {
         super(BossID.BROLY_18H - Util.nextInt(1, 100000), false, true, new BossData(
-                "Broly",
+                "SSJ Broly",
                 ConstPlayer.XAYDA,
                 new short[]{1080, 1081, 1082, -1, -1, -1},
                 15_000,

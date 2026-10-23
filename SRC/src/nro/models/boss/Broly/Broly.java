@@ -20,7 +20,7 @@ public class Broly extends Boss {
     public Broly() throws Exception {
 
         super(BROLY, BossID.BROLY, new BossData(
-                "Broly", //name
+                "SSJ Broly", //name
                 ConstPlayer.XAYDA, //gender
                 new short[]{291, 292, 293, -1, -1, -1}, //outfit {head, body, leg, bag, aura, eff}
                 100, //dame
@@ -53,7 +53,7 @@ public class Broly extends Boss {
 
     @Override
     public void joinMap() {
-        this.name = "Broly " + Util.nextInt(10, 100);
+        this.name = "SSJ Broly " + Util.nextInt(10, 100);
         this.nPoint.hpMax = Util.nextInt(500, 100000);
         this.nPoint.hp = this.nPoint.hpMax;
         this.nPoint.dame = this.nPoint.hpMax / 100;

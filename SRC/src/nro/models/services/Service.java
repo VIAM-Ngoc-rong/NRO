@@ -1623,10 +1623,11 @@ public class Service {
                 msg.writer().writeShort(pl.pet.nPoint.maxStamina); //stamina full
                 msg.writer().writeByte(pl.pet.nPoint.crit); //crit
                 msg.writer().writeShort(pl.pet.nPoint.def); //def
-                int sizeSkill = pl.pet.playerSkill.skills.size();
+                pl.pet.updatePower();
+                int sizeSkill = Math.min(5, pl.pet.playerSkill.skills.size());
                 msg.writer().writeByte(5); //count pet skill
-                for (int i = 0; i < sizeSkill; i++) {
-                    if (pl.pet.playerSkill.skills.get(i).skillId != -1) {
+                for (int i = 0; i < 5; i++) {
+                    if (i < sizeSkill && pl.pet.playerSkill.skills.get(i).skillId != -1) {
                         msg.writer().writeShort(pl.pet.playerSkill.skills.get(i).skillId);
                     } else {
                         switch (i) {
@@ -1644,11 +1645,7 @@ public class Service {
                                 break;
                             case 4:
                                 msg.writer().writeShort(-1);
-                                if (pl.pet.typePet == 2 || pl.pet.typePet == 3 || pl.pet.typePet == 4) {
-                                    msg.writer().writeUTF("Cần đạt sức mạnh 40tỷ để mở");
-                                } else {
-                                    msg.writer().writeUTF("Không thể mở kỹ năng này");
-                                }
+                                msg.writer().writeUTF("Cần đạt sức mạnh 40tỷ để mở");
                                 break;
                             default:
                                 msg.writer().writeShort(-1);

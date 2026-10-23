@@ -436,7 +436,7 @@ public class BossManager implements Runnable {
             });
 
             msg = new Message(-96);
-            msg.writer().writeByte(0);
+            msg.writer().writeByte(1);
             msg.writer().writeUTF("Danh Sách Boss");
             msg.writer().writeByte(Math.min(validIndices.size(), 120));
             int count = 0;
@@ -456,11 +456,11 @@ public class BossManager implements Runnable {
                 msg.writer().writeShort(boss.data[lv].getOutfit()[2]);
                 msg.writer().writeUTF(boss.data[lv].getName());
                 if (boss.zone != null && !boss.isDie()) {
-                    msg.writer().writeUTF("Đang sống");
+                    msg.writer().writeUTF("Đang sống (Bấm đến Khu 0)");
                     if (player.isAdmin()) {
                         msg.writer().writeUTF(boss.zone.map.mapName + " (" + boss.zone.map.mapId + ") khu " + boss.zone.zoneId);
                     } else {
-                        msg.writer().writeUTF(boss.zone.map.mapName + " (" + boss.zone.map.mapId + ") - Khu ?");
+                        msg.writer().writeUTF(boss.zone.map.mapName + " (" + boss.zone.map.mapId + ") - Bấm để đến Khu 0");
                     }
                 } else {
                     msg.writer().writeUTF("Đang chờ hồi sinh");
@@ -471,6 +471,62 @@ public class BossManager implements Runnable {
             msg.cleanup();
         } catch (Exception e) {
         }
+    }
+
+    public String getAliveWorldBossNamesInMap(int mapId) {
+        StringBuilder sb = new StringBuilder();
+        try {
+            for (int i = 0; i < this.bosses.size(); i++) {
+                Boss boss = this.bosses.get(i);
+                if (boss == null || boss.zone == null || boss.isDie() || boss.zone.map.mapId != mapId) {
+                    continue;
+                }
+                if (boss.id == BossID.DEATH_BEAM_1 || boss.id == BossID.DEATH_BEAM_2 || boss.id == BossID.DEATH_BEAM_3
+                        || boss.id == BossID.DEATH_BEAM_4 || boss.id == BossID.DEATH_BEAM_5) {
+                    continue;
+                }
+                String bName = boss.name != null ? boss.name : "";
+                if (bName.isEmpty() || "$".equals(bName)) {
+                    continue;
+                }
+                if (sb.length() > 0) {
+                    sb.append(", ");
+                }
+                sb.append(bName);
+                if (sb.length() >= 45) {
+                    break;
+                }
+            }
+        } catch (Exception ignored) {
+        }
+        return sb.toString();
+    }
+
+    public List<Integer> getMapIdsWithAliveWorldBosses() {
+        List<Integer> mapIds = new ArrayList<>();
+        try {
+            for (int i = 0; i < this.bosses.size(); i++) {
+                Boss boss = this.bosses.get(i);
+                if (boss == null || boss.zone == null || boss.isDie() || boss.zone.map == null) {
+                    continue;
+                }
+                if (boss.id == BossID.DEATH_BEAM_1 || boss.id == BossID.DEATH_BEAM_2 || boss.id == BossID.DEATH_BEAM_3
+                        || boss.id == BossID.DEATH_BEAM_4 || boss.id == BossID.DEATH_BEAM_5) {
+                    continue;
+                }
+                int mapId = boss.zone.map.mapId;
+                if (MapService.gI().isMapOffline(mapId) || MapService.gI().isMapPhoBan(mapId)
+                        || MapService.gI().isMapMaBu(mapId) || MapService.gI().isMapMabu2H(mapId)
+                        || MapService.gI().isMapBlackBallWar(mapId) || MapService.gI().isMapBossFinal(mapId)) {
+                    continue;
+                }
+                if (!mapIds.contains(mapId)) {
+                    mapIds.add(mapId);
+                }
+            }
+        } catch (Exception ignored) {
+        }
+        return mapIds;
     }
 
     public Boss getBossById(int bossId) {

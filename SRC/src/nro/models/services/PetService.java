@@ -216,13 +216,14 @@ public class PetService {
                 pet.nPoint.dameg = data[2];
                 pet.nPoint.defg = data[3];
                 pet.nPoint.critg = data[4];
-                for (int i = 0; i < 7; i++) {
+                for (int i = 0; i < 9; i++) {
                     pet.inventory.itemsBody.add(ItemService.gI().createItemNull());
                 }
                 pet.playerSkill.skills.add(SkillUtil.createSkill(Util.nextInt(0, 2) * 2, 1));
-                for (int i = 0; i < 6; i++) {
+                for (int i = 0; i < 4; i++) {
                     pet.playerSkill.skills.add(SkillUtil.createEmptySkill());
                 }
+                pet.updatePower();
                 pet.nPoint.setFullHpMp();
                 player.pet = pet;
                 if (limitPower != null && limitPower.length == 1) {
@@ -373,18 +374,16 @@ public class PetService {
         pet.nPoint.defg = data[3];
         pet.nPoint.critg = data[4];
 
-        int itemBodySize = 7;
-        if (pet.typePet == 2 || pet.typePet == 3 || pet.typePet == 4) {
-            itemBodySize = 9;
-        }
+        int itemBodySize = 9;
         for (int i = 0; i < itemBodySize; i++) {
             pet.inventory.itemsBody.add(ItemService.gI().createItemNull());
         }
 
         pet.playerSkill.skills.add(SkillUtil.createSkill(Util.nextInt(0, 2) * 2, 1));
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i < 4; i++) {
             pet.playerSkill.skills.add(SkillUtil.createEmptySkill());
         }
+        pet.updatePower();
 
         pet.nPoint.setFullHpMp();
         player.pet = pet;

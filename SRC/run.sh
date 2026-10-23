@@ -28,16 +28,43 @@ if [ -f "dist/NgocRongOnline.jar" ]; then
     cp -f "dist/NgocRongOnline.jar" "20.jar"
 fi
 
-if command -v javac >/dev/null 2>&1; then
-    mkdir -p build/classes
-    if [ -f "build/classes/.compiled_stamp" ]; then
-        CHANGED_JAVA=$(find src -name "*.java" -newer build/classes/.compiled_stamp 2>/dev/null)
+# Tự động tìm hoặc cài đặt javac trên VPS nếu chưa có để luôn biên dịch được code mới nhất
+JAVAC_BIN=$(command -v javac 2>/dev/null || true)
+if [ -z "$JAVAC_BIN" ]; then
+    for candidate in /usr/lib/jvm/*/bin/javac; do
+        if [ -x "$candidate" ]; then
+            JAVAC_BIN="$candidate"
+            break
+        fi
+    done
+fi
+if [ -z "$JAVAC_BIN" ] && command -v apt-get >/dev/null 2>&1; then
+    echo "Đang cài đặt trình biên dịch javac (JDK Headless) cho VPS..."
+    JAVA_VER=$(java -version 2>&1 | awk -F '"' '/version/ {print $2}' | cut -d'.' -f1)
+    apt-get update -qq >/dev/null 2>&1 || true
+    if [ -n "$JAVA_VER" ] && [ "$JAVA_VER" -ge 8 ] 2>/dev/null; then
+        DEBIAN_FRONTEND=noninteractive apt-get install -y -qq "openjdk-${JAVA_VER}-jdk-headless" >/dev/null 2>&1 || \
+        DEBIAN_FRONTEND=noninteractive apt-get install -y -qq default-jdk-headless >/dev/null 2>&1 || true
     else
-        CHANGED_JAVA=$(find src -name "*.java" 2>/dev/null)
+        DEBIAN_FRONTEND=noninteractive apt-get install -y -qq default-jdk-headless >/dev/null 2>&1 || true
     fi
-    if [ -n "$CHANGED_JAVA" ]; then
-        echo "Đang biên dịch mã nguồn mới cập nhật..."
-        javac -encoding UTF-8 -cp "build/classes:lib/*:20.jar" -d build/classes $CHANGED_JAVA && touch build/classes/.compiled_stamp
+    JAVAC_BIN=$(command -v javac 2>/dev/null || true)
+fi
+
+if [ -n "$JAVAC_BIN" ]; then
+    mkdir -p build/classes
+    OUTDATED_JAVA=""
+    while IFS= read -r -d '' jfile; do
+        rel="${jfile#src/}"
+        cfile="build/classes/${rel%.java}.class"
+        if [ ! -f "$cfile" ] || [ "$jfile" -nt "$cfile" ]; then
+            OUTDATED_JAVA="$OUTDATED_JAVA $jfile"
+        fi
+    done < <(find src -name "*.java" -print0 2>/dev/null)
+
+    if [ -n "$OUTDATED_JAVA" ]; then
+        echo "Đang biên dịch toàn bộ mã nguồn mới cập nhật sang .class..."
+        $JAVAC_BIN -encoding UTF-8 -cp "src:build/classes:lib/*:20.jar" -d build/classes $OUTDATED_JAVA && touch build/classes/.compiled_stamp
     fi
 fi
 
@@ -59,16 +86,32 @@ if [ -n "$OLD_PIDS" ]; then
     fi
 fi
 
+# Tối ưu Kernel Linux cho phép JVM lấy tối đa cả RAM vật lý lẫn toàn bộ Swap (3GB Swap + 1.5GB RAM)
+sysctl -w vm.swappiness=100 >/dev/null 2>&1 || true
+sysctl -w vm.overcommit_memory=1 >/dev/null 2>&1 || true
+sysctl -w vm.overcommit_ratio=100 >/dev/null 2>&1 || true
+
+# Tự động tính tổng bộ nhớ (RAM vật lý + Swap) để cấp tối đa Heap cho NRO
+TOTAL_RAM_MB=$(awk '/MemTotal/ {printf "%d", $2/1024}' /proc/meminfo 2>/dev/null || echo 1536)
+TOTAL_SWAP_MB=$(awk '/SwapTotal/ {printf "%d", $2/1024}' /proc/meminfo 2>/dev/null || echo 3072)
+TOTAL_COMBINED_MB=$((TOTAL_RAM_MB + TOTAL_SWAP_MB))
+# Chừa ~650MB cho OS + MySQL + JVM Metaspace, toàn bộ phần còn lại (RAM + Swap, khoảng ~3800MB-3900MB) cấp hết cho NRO Heap
+MAX_HEAP_MB=$((TOTAL_COMBINED_MB - 650))
+if [ "$MAX_HEAP_MB" -lt 2048 ]; then
+    MAX_HEAP_MB=3072
+fi
+
 if [ "$1" = "--fg" ]; then
-    exec nice -n 5 java -server \
+    exec java -server \
       -XX:ActiveProcessorCount=2 \
       -XX:ParallelGCThreads=2 \
       -XX:ConcGCThreads=1 \
-      -Xms256M -Xmx896M \
-      -XX:MinHeapFreeRatio=15 \
-      -XX:MaxHeapFreeRatio=35 \
+      -Xms512M -Xmx${MAX_HEAP_MB}M \
+      -XX:-UseGCOverheadLimit \
+      -XX:MinHeapFreeRatio=10 \
+      -XX:MaxHeapFreeRatio=30 \
       -XX:+UseG1GC \
-      -XX:MaxGCPauseMillis=40 \
+      -XX:MaxGCPauseMillis=100 \
       -XX:+UseStringDeduplication \
       -Djava.awt.headless=true \
       -Dfile.encoding=UTF-8 \
@@ -76,16 +119,17 @@ if [ "$1" = "--fg" ]; then
       nro.models.server.ServerManager
 fi
 
-echo "Đang khởi động Ngọc Rồng VIAM (2 Cores CPU + Heap linh hoạt 256MB~896MB cho VPS 1.5GB RAM vật lý)..."
-nohup nice -n 5 java -server \
+echo "Đang khởi động Ngọc Rồng VIAM (Bung tối đa RAM + Swap: Heap 512MB ~ ${MAX_HEAP_MB}MB trên tổng ${TOTAL_RAM_MB}MB RAM + ${TOTAL_SWAP_MB}MB Swap)..."
+nohup java -server \
   -XX:ActiveProcessorCount=2 \
   -XX:ParallelGCThreads=2 \
   -XX:ConcGCThreads=1 \
-  -Xms256M -Xmx896M \
-  -XX:MinHeapFreeRatio=15 \
-  -XX:MaxHeapFreeRatio=35 \
+  -Xms512M -Xmx${MAX_HEAP_MB}M \
+  -XX:-UseGCOverheadLimit \
+  -XX:MinHeapFreeRatio=10 \
+  -XX:MaxHeapFreeRatio=30 \
   -XX:+UseG1GC \
-  -XX:MaxGCPauseMillis=40 \
+  -XX:MaxGCPauseMillis=100 \
   -XX:+UseStringDeduplication \
   -Djava.awt.headless=true \
   -Dfile.encoding=UTF-8 \

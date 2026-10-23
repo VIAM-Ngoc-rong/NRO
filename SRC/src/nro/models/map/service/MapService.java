@@ -416,6 +416,13 @@ public class MapService {
         addListMapCapsule(pl, list, getMapCanJoin(pl, 154, 0));
         addListMapCapsule(pl, list, getMapCanJoin(pl, 52, 0));
         addListMapCapsule(pl, list, getMapCanJoin(pl, 122, 0));
+        // Tự động thêm các map đang có Boss xuất hiện vào danh sách Capsule (đưa tới Khu 0)
+        for (int bossMapId : nro.models.boss.Boss_Manager.BossManager.gI().getMapIdsWithAliveWorldBosses()) {
+            Zone z0 = getZoneByMapIDAndZoneID(bossMapId, 0);
+            if (z0 != null) {
+                addListMapCapsule(pl, list, z0);
+            }
+        }
         return list;
     }
 

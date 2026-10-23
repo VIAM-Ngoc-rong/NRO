@@ -68,15 +68,21 @@ public class ChangeMapService {
                     msg.writer().writeByte(list.size());
                     for (int i = 0; i < pl.mapCapsule.size(); i++) {
                         Zone zone = pl.mapCapsule.get(i);
+                        String bossNames = nro.models.boss.Boss_Manager.BossManager.gI().getAliveWorldBossNamesInMap(zone.map.mapId);
                         if (i == 0 && pl.mapBeforeCapsule != null && zone.map.mapId == pl.mapBeforeCapsule.map.mapId) {
                             msg.writer().writeUTF("Về chỗ cũ: " + zone.map.mapName + " (Khu " + pl.mapBeforeCapsule.zoneId + ")");
+                            msg.writer().writeUTF(zone.map.planetName);
                         } else if (zone.map.mapName.equals("Nhà Broly") || zone.map.mapName.equals("Nhà Gôhan")
                                 || zone.map.mapName.equals("Nhà Moori")) {
                             msg.writer().writeUTF("Về nhà");
+                            msg.writer().writeUTF(zone.map.planetName);
+                        } else if (!bossNames.isEmpty()) {
+                            msg.writer().writeUTF(zone.map.mapName + " (Khu 0)");
+                            msg.writer().writeUTF("Boss: " + bossNames);
                         } else {
                             msg.writer().writeUTF(zone.map.mapName);
+                            msg.writer().writeUTF(zone.map.planetName);
                         }
-                        msg.writer().writeUTF(zone.map.planetName);
                     }
                     break;
                 case ConstMap.CHANGE_BLACK_BALL:
@@ -886,7 +892,8 @@ public class ChangeMapService {
         if (zoneJoin.map.mapId == -1 || zoneJoin.map.mapId == -1) {
             return null;
         }
-        if (player.isPet || player.isBoss || player.getSession() != null && player.isAdmin()) {
+        if (player.isPet || player.isBoss || player.changeMapVIP || (player.getSession() != null && player.isAdmin())) {
+            player.changeMapVIP = false;
             return zoneJoin;
         }
 

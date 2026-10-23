@@ -1,4 +1,4 @@
-﻿# 📂 04. HỆ THỐNG BẢN ĐỒ (MAP), PHÓ BẢN & CƠ CHẾ DỊCH CHUYỂN
+# 📂 04. HỆ THỐNG BẢN ĐỒ (MAP), PHÓ BẢN & CƠ CHẾ DỊCH CHUYỂN
 
 ## 🗺️ 4.1. Phân Khu Hệ Thống Bản Đồ Theo Chức Năng
 
@@ -17,9 +17,10 @@
 
 | Tên Phó Bản / Hoạt Động | NPC Đăng Ký / Vị Trí | Phần Thưởng & Mục Đích Cày Cuốc |
 | :--- | :--- | :--- |
-| **Doanh Trại Độc Nhãn** | Lính Nhãn Cầu *(Rừng Bamboo - Trái Đất)* | Săn Boss Trung Úy Trắng, Trung Úy Xanh Lam, Ninja Áo Tím, Robot Vệ Sĩ. Thu thập **Cuốn chả giò, Chai Cuke 2 lít** làm nhiệm vụ **KOL**, rơi Ngọc Rồng & Mảnh vỡ bông tai. |
-| **Bản Đồ Kho Báu Dưới Biển** | Quy Lão Kame *(Đảo Kame)* | Đi theo Bang hội (chọn cấp độ 1–110). Cày Tiềm năng, Vàng và nguyên liệu nâng cấp Bông Tai Porata. |
-| **Khí Gas Hủy Diệt (Destron Gas)** | Mr. Pôpô *(Thần Điện)* | Chọn cấp độ (Cấp 70+ dùng để hoàn thành **Nhiệm vụ KOL số 3** nhận Đeo Lưng VIP) và săn Boss **Hatchiyack / Dr. Lychee**. |
+| **Doanh Trại Độc Nhãn** | Lính Nhãn Cầu *(Rừng Bamboo - Map 27)* | Đi theo Bang hội: Vượt 10 map doanh trại, hạ Boss **Trung Úy Trắng** *(phải dụ vào gần Tấm Gương mới gây sát thương được)*, **Trung Úy Xanh Lam, Trung Úy Thép, Ninja Áo Tím, Robot Vệ Sĩ**. Thu thập **Cuốn chả giò, Chai Cuke 2 lít** làm nhiệm vụ **KOL**, rơi Ngọc Rồng & Mảnh vỡ bông tai. |
+| **Bản Đồ Kho Báu Dưới Biển** | Quy Lão Kame *(Đảo Kame - Map 5)* | Đi theo Bang hội (cần *Bản đồ kho báu ID 611*, chọn cấp độ **1–110**). Hạ **Trung Úy Xanh Lơ** để mở Rương Báu nhận Rương Gỗ (mở tại Nhà). |
+| **Con Đường Rắn Độc** | Thần Vũ Trụ *(Thần Điện Vũ Trụ - Map 48)* | Đi theo Bang hội (chọn cấp độ **1–110** tại Map 141–144). Hạ chuỗi Boss **Saibamen (Số 1–6) $\rightarrow$ Nappa $\rightarrow$ Vegeta**, có tỉ lệ rơi **Quả Trứng Đệ Tử Mabư**, Vàng & Sao Pha Lê. |
+| **Khí Gas Hủy Diệt (Destron Gas)** | Mr. Pôpô *(Thần Điện)* | Chọn cấp độ (Cấp 70+ dùng để hoàn thành **Nhiệm vụ KOL số 3** nhận Đeo Lưng VIP) và săn Boss **Dr. Lychee $\rightarrow$ Hatchiyack**. |
 | **Tầng Địa Ngục Majin Buu (12h)** | Osin *(Đảo Kame / Đại Hội Võ Thuật)* | Vượt qua các tầng **Pui Pui, Yacon, Drabura, Babidi, Mabư** để săn Ngọc Rồng 1–4 Sao, Đồ SKH và Trứng Mabư. |
 | **Chiến Trường Ngọc Rồng Sao Đen** | Ốc Sên *(Trạm Tàu Vũ Trụ — 20h tối)* | Chiếm giữ Ngọc Rồng Sao Đen (1–7 Sao) mang lại phúc lợi tăng **+% Sức Đánh, +% HP, +% KI** cho toàn bộ thành viên Bang hội! |
 
@@ -35,8 +36,9 @@
 
 1. **Cơ Chế Tự Động Chọn Khu Khi Qua Map Mới**:
    - Khi bạn chạy bộ hoặc bay qua một bản đồ mới, hệ thống tự động đưa bạn vào **Khu 0**; nếu **Khu 0 đã có trên 7 người chơi**, hệ thống tự động chuyển bạn sang **Khu 1** để chống giật lag!
-2. **Dịch Chuyển Tới Boss (Mặc Định Đáp Xuống `Khu 0`)**:
-   - Khi mở **Danh Sách Boss (`boss`)** và bấm chọn một con Boss đang xuất hiện, hệ thống sẽ dịch chuyển bạn tới **Bản đồ của Boss đó nhưng mặc định hạ cánh tại `Khu 0`** (không bay thẳng vào khu Boss đứng).
+2. **Dịch Chuyển Tới Bản Đồ Có Boss (Mặc Định Đáp Xuống `Khu 0`)**:
+   - **Cách 1 (Từ Danh Sách Boss `boss`)**: Gõ `boss` (hoặc bấm `auto -> Danh sách Boss`), bấm chọn một con Boss đang sống $\rightarrow$ Hệ thống dịch chuyển bạn thẳng tới **`Khu 0` của bản đồ Boss đó** (vượt qua cả rào cản nhiệm vụ map).
+   - **Cách 2 (Từ Viên Capsule `193` / `194`)**: Khi mở **Viên Capsule**, toàn bộ các bản đồ đang có Boss xuất hiện sẽ tự động được liệt kê kèm dòng **`Boss: <Tên Boss>`** — bấm chọn bản đồ đó để bay thẳng tới **`Khu 0`**!
    - Vì Boss chỉ xuất hiện từ **Khu 1 trở đi**, sau khi đáp xuống `Khu 0`, bạn mở bảng Đổi Khu để tự dò tìm từ Khu 1..N một cách công bằng!
 3. **Capsule `"Về Chỗ Cũ"` — Lưu Chuẩn Map & Khu (Mở Khóa Cả Map Tương Lai)**:
    - Hệ thống tự động lưu lại chính xác **Bản Đồ + Số Khu (`Khu X`)** trước khi bạn dùng Capsule, dịch chuyển tới Boss, hoặc khi **bị hạ gục phải hồi sinh về Nhà**.

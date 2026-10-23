@@ -1,4 +1,4 @@
-﻿# 📂 02. HỆ THỐNG VẬT PHẨM, TRANG BỊ MẶC, SET KÍCH HOẠT & ĐẬP ĐỒ SAO TĂNG CẤP
+# 📂 02. HỆ THỐNG VẬT PHẨM, TRANG BỊ MẶC, SET KÍCH HOẠT & ĐẬP ĐỒ SAO TĂNG CẤP
 
 <div align="center">
 
@@ -79,6 +79,7 @@ Tại **Hành Tinh Bill**, gặp NPC **Whis** để mở khóa 2 hệ thống tr
 | **Quy Lão Kame**<br>*(Shop Đeo Lưng Hồng Ngọc)* | **Hồng Ngọc**<br>*(1.050 – 1.800 Hồng Ngọc)* | **VĨNH VIỄN** | • **Random ngẫu nhiên toàn bộ chỉ số** (`% SĐ, % HP, % KI` + `1–3 dòng phụ ngẫu nhiên`) giống hệt Đeo Lưng Sự Kiện nhưng sở hữu **Vĩnh Viễn**! |
 | **Santa (Đảo Kame)**<br>*(CT Hành Tinh Hồng Ngọc)* | **Hồng Ngọc**<br>*(1.250 – 2.600 Hồng Ngọc)* | **VĨNH VIỄN** | • Random `% Sức đánh`, `% HP`, `% KI` (`70% – 100%` mốc trần của từng Cải trang).<br>• Random toàn bộ các dòng phụ (`% Hút HP/KI`, `% SĐ Chí mạng`, `% Chí mạng`, `% Xuyên giáp`, `% Phản ST`).<br>• Random sát thương kỹ năng: **Chưởng Trái Đất (`50% – 150%`)**, **Nổ/Bom Xayda (`25% – 75%`)**, **Laze Namek (`25% – 75%`)**. |
 | **Santa (Đảo Kame)**<br>*(CT Hỗ Trợ Đệ/Cold/PK)* | **Ngọc Xanh**<br>*(50 Ngọc Xanh)* | **VĨNH VIỄN** | Các Cải trang tiện ích chuyên dụng: Up Đệ Tử (`+30% TNSM Đệ`), Kháng Lạnh đi Map Cold, Hóa Đá, Biến Sôcôla, Võ Phục Yardrat. |
+| **Phiếu Giảm Giá (ID 459)**<br>*(Dùng cho mọi Shop Hồng Ngọc)* | **Tự động kích hoạt khi mua đồ Hồng Ngọc** | **Giảm 50% Hồng Ngọc** | • Khi trong hành trang có **Phiếu Giảm Giá**, mua bất kỳ món đồ nào bán bằng **Hồng Ngọc** (Đeo Lưng Vĩnh Viễn tại Quy Lão Kame, Cải Trang Hồng Ngọc tại Santa...) sẽ tự động tiêu hao `1 Phiếu Giảm Giá` và **giảm ngay 50% giá Hồng Ngọc**! |
 
 ---
 
@@ -90,10 +91,13 @@ Tại **Hành Tinh Bill**, gặp NPC **Whis** để mở khóa 2 hệ thống tr
 
 </div>
 
-1. **Hành Trang Đa Tab (`200 Ô Mặc Định` $\rightarrow$ `Tối Đa 500 Ô`, `50 Ô / Tab`)**:
-   - Tạo nhân vật có sẵn **200 ô (4 Tab × 50 ô)**, mở rộng tối đa lên **500 ô (10 Tab × 50 ô)** với giá `50.000 Ngọc Xanh / Tab (+50 ô)`.
-   - **Cách chuyển Tab nhanh**: Gõ `t1`, `t2`, `t3` .. `t10` (hoặc `tab 1` .. `tab 10`) vào khung chat, hoặc bấm **Nút Lá Cờ (`auto`) -> Tab Túi Đồ**.
-   - **Tự động tràn Tab & Sắp xếp độc lập**: Khi Tab đang mở đầy `50/50 ô`, đồ nhặt mới sẽ tự động chảy sang các Tab còn trống tiếp theo; bấm *Sắp xếp* chỉ gom gọn trong từng Tab 50 ô để bạn thoải mái phân loại *Tab 1 (Đồ mặc/Đậu), Tab 2 (Bộ SKH phụ), Tab 3 (Ngọc Rồng & SPL), Tab 4+ (Đồ treo quái)*.
+1. **Hành Trang Đa Tab (`200 Ô Mặc Định` $\rightarrow$ `Tối Đa 500 Ô`, `100 Ô / Tab`)**:
+   - Tạo nhân vật có sẵn **200 ô (2 Tab × 100 ô)**, mở rộng tối đa lên **500 ô (5 Tab × 100 ô)** và **Rương đồ tối đa 120 ô**.
+   - **2 Cách mở rộng Hành trang & Rương đồ**:
+     - **Cách 1 (Tại NPC Santa — Đảo Kame)**: Mua vật phẩm **Mở rộng hành trang (ID 517)** hoặc **Mở rộng rương đồ (ID 518)** tại Cửa hàng Santa — mỗi lần mua mở rộng ngay **+10 ô** (mua được cả khi Tab hiện tại đang đầy).
+     - **Cách 2 (Tại Menu Tiện Ích `auto`)**: Bấm **Nút Lá Cờ (`auto`) -> Tab Túi Đồ -> Mở thêm Tab (+100 ô / 50.000 Ngọc Xanh)**.
+   - **Cách chuyển Tab nhanh**: Gõ `t1`, `t2`, `t3`, `t4`, `t5` (hoặc `tab 1` .. `tab 5`) vào khung chat, hoặc bấm **Nút Lá Cờ (`auto`) -> Tab Túi Đồ**.
+   - **Tự động tràn Tab & Sắp xếp độc lập**: Khi Tab đang mở đầy `100/100 ô`, đồ nhặt mới sẽ tự động chảy sang các Tab còn trống tiếp theo; bấm *Sắp xếp* chỉ gom gọn trong từng Tab 100 ô để bạn thoải mái phân loại *Tab 1 (Đồ mặc/Đậu), Tab 2 (Bộ SKH phụ & Ngọc Rồng), Tab 3–5 (Đồ săn Boss & Treo quái)*.
 2. **Auto Treo Quái & Tự Động Lọc Bán Đồ Rác (`treoquai` / `tq`)**:
    - Khi bật `treoquai`, nhân vật tự động lọc bán các trang bị thường lấy Vàng khi đầy túi, nhưng **khóa bảo vệ tuyệt đối 100%** đối với: *Đồ có dòng Set Kích Hoạt (SKH), Đồ Thần Linh, Đồ Hủy Diệt, Đồ Thiên Sứ, và mọi trang bị có lỗ Sao Pha Lê*.
 
