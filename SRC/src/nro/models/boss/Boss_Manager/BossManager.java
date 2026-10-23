@@ -146,33 +146,30 @@ public class BossManager implements Runnable {
     }
 
     public void loadBoss() {
-        this.createBoss(BossID.TIEU_DOI_TRUONG, 2);
-        this.createBoss(BossID.TIEU_DOI_TRUONG_NM, 2);
-        this.createBoss(BossID.BOJACK, 2);
-        this.createBoss(BossID.SUPER_BOJACK, 2);
-        this.createBoss(BossID.KING_KONG, 2);
-        this.createBoss(BossID.XEN_BO_HUNG, 2);
-        this.createBoss(BossID.SIEU_BO_HUNG, 2);
-        this.createBoss(BossID.KUKU, 3);
-        this.createBoss(BossID.MAP_DAU_DINH, 3);
-        this.createBoss(BossID.RAMBO, 3);
-        this.createBoss(BossID.FIDE, 3);
-        this.createBoss(BossID.ANDROID_14, 2);
-        this.createBoss(BossID.DR_KORE, 2);
-        this.createBoss(BossID.CUMBER, 2);
-        this.createBoss(BossID.COOLER, 3);
-        this.createBoss(BossID.BLACK_GOKU, 2);
-        this.createBoss(BossID.ZAMASU, 2);
-        this.createBoss(BossID.BERGAMO, 2);
-        this.createBoss(BossID.MABU_14H, 2);
-        this.createBoss(BossID.GOLDEN_FRIEZA, 2);
-        this.createBoss(BossID.SOI_HEC_QUYN1, 3);
-        this.createBoss(BossID.AN_TROM, 2);
-        this.createBoss(BossID.O_DO1, 2);
-        this.createBoss(BossID.BABY, 2);
-        this.createBoss(BossID.BROLY_18H, 3);
-        this.createBoss(BossID.KID_BU_MAP, 3);
-        // this.createBoss(BossID.MAT_TROI, 20); // Tắt boss sự kiện mùa hè Mặt Trời
+        this.createBoss(BossID.KUKU, 1);
+        this.createBoss(BossID.MAP_DAU_DINH, 1);
+        this.createBoss(BossID.RAMBO, 1);
+        this.createBoss(BossID.TIEU_DOI_TRUONG, 1);
+        this.createBoss(BossID.FIDE, 1);
+        this.createBoss(BossID.DR_KORE, 1);
+        this.createBoss(BossID.ANDROID_14, 1);
+        this.createBoss(BossID.KING_KONG, 1);
+        this.createBoss(BossID.XEN_BO_HUNG, 1);
+        this.createBoss(BossID.SIEU_BO_HUNG, 1);
+        this.createBoss(BossID.BOJACK, 1);
+        this.createBoss(BossID.COOLER, 1);
+        this.createBoss(BossID.GOLDEN_FRIEZA, 1);
+        this.createBoss(BossID.BLACK_GOKU, 1);
+        this.createBoss(BossID.ZAMASU, 1);
+        this.createBoss(BossID.BERGAMO, 1);
+        this.createBoss(BossID.MABU_14H, 1);
+        this.createBoss(BossID.CUMBER, 1);
+        this.createBoss(BossID.BABY, 1);
+        this.createBoss(BossID.BROLY_18H, 1);
+        this.createBoss(BossID.KID_BU_MAP, 1);
+        this.createBoss(BossID.SOI_HEC_QUYN1, 1);
+        this.createBoss(BossID.O_DO1, 1);
+        this.createBoss(BossID.AN_TROM, 1);
     }
 
     public void createBoss(int bossID, int total) {
@@ -424,7 +421,7 @@ public class BossManager implements Runnable {
                     continue;
                 }
                 int mapId = boss.data[0].getMapJoin()[0];
-                if (MapService.gI().isMapBossFinal(mapId) || MapService.gI().isMapCadic(mapId) || MapService.gI().isMapYardart(mapId) || MapService.gI().isMapHuyDiet(mapId) || MapService.gI().isMapMaBu(mapId) || MapService.gI().isMapBlackBallWar(mapId)) {
+                if (MapService.gI().isMapBossFinal(mapId) || MapService.gI().isMapCadic(mapId) || MapService.gI().isMapYardart(mapId) || MapService.gI().isMapHuyDiet(mapId) || MapService.gI().isMapMaBu(mapId) || MapService.gI().isMapMabu2H(mapId) || MapService.gI().isMapBlackBallWar(mapId)) {
                     continue;
                 }
                 validIndices.add(i);

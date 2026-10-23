@@ -256,6 +256,15 @@ public class AdminWebServer {
             if ((b.id >= nro.models.boss.BossID.XEN_CON_7 && b.id <= nro.models.boss.BossID.XEN_CON_1) && (b.zone == null || b.isDie())) {
                 continue;
             }
+            if (b.data[0].getMapJoin() != null && b.data[0].getMapJoin().length > 0) {
+                int firstMap = b.data[0].getMapJoin()[0];
+                if (nro.models.map.service.MapService.gI().isMapBossFinal(firstMap)
+                        || nro.models.map.service.MapService.gI().isMapYardart(firstMap)
+                        || nro.models.map.service.MapService.gI().isMapMaBu(firstMap)
+                        || nro.models.map.service.MapService.gI().isMapMabu2H(firstMap)) {
+                    continue;
+                }
+            }
             visibleBossCount++;
             if (!firstBoss) {
                 sb.append(",");
