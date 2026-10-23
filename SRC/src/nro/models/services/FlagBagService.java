@@ -97,7 +97,10 @@ public class FlagBagService {
                 69, 70, 71, 77, 78, 79
             };
             for (int i = 0; i < flagsId.length; i++) {
-                flagClan.add(getFlagBag(flagsId[i]));
+                FlagBag fb = getFlagBag(flagsId[i]);
+                if (fb != null) {
+                    flagClan.add(fb);
+                }
             }
         }
         return flagClan;

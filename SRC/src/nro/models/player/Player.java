@@ -31,6 +31,7 @@ import nro.models.task.TaskPlayer;
 import nro.models.network.Message;
 import nro.models.server.Client;
 import nro.models.services.EffectSkillService;
+import nro.models.services.FlagBagService;
 import nro.models.services.FriendAndEnemyService;
 import nro.models.map.service.MapService;
 import nro.models.services.PetService;
@@ -1121,15 +1122,21 @@ public class Player implements Runnable {
         }
         if (this.inventory.itemsBody.size() >= 11) {
             if (this.inventory.itemsBody.get(8).isNotNullItem()) {
-                return this.inventory.itemsBody.get(8).template.part;
+                short part = this.inventory.itemsBody.get(8).template.part;
+                if (part >= 0 && part <= 255 && FlagBagService.gI().getFlagBag(part) != null) {
+                    return part;
+                }
             }
         }
         if (this.isPet && this.inventory.itemsBody.size() >= 8) {
             if (this.inventory.itemsBody.get(7).isNotNullItem()) {
-                return this.inventory.itemsBody.get(7).template.part;
+                short part = this.inventory.itemsBody.get(7).template.part;
+                if (part >= 0 && part <= 255 && FlagBagService.gI().getFlagBag(part) != null) {
+                    return part;
+                }
             }
         }
-        if (this.clan != null) {
+        if (this.clan != null && this.clan.imgId >= 0) {
             return (short) this.clan.imgId;
         }
         return -1;

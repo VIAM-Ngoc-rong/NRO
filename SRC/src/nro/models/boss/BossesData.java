@@ -24,10 +24,10 @@ public class BossesData {
     private static final int REST_30_S = 30;
     private static final int REST_1_M = 60;
     private static final int REST_2_M = 120;
-    private static final int REST_5_M = 120;
-    private static final int REST_10_M = 180;
-    private static final int REST_15_M = 240;
-    private static final int REST_30_M = 300;
+    private static final int REST_5_M = 300;
+    private static final int REST_10_M = 600;
+    private static final int REST_15_M = 900;
+    private static final int REST_30_M = 900;
     private static final int REST_24_H = 86400000;
 
     //************************************************************************** Boss nappa
@@ -50,7 +50,7 @@ public class BossesData {
                 "|-1|Định chạy trốn hả, hử"
             }, //text chat 2
             new String[]{}, //text chat 3
-            REST_10_M //second rest
+            REST_5_M //second rest
     );
 
     public static final BossData MAP_DAU_DINH = new BossData(
@@ -71,7 +71,7 @@ public class BossesData {
                 "|-1|Ta sẽ tàn sát khu này trong vòng 5 phút nữa",
                 "|-1|Tao sẽ giết hết bọn mày"}, //text chat 2
             new String[]{}, //text chat 3
-            REST_10_M //second rest
+            REST_5_M //second rest
     );
 
     public static final BossData RAMBO = new BossData(
@@ -92,7 +92,7 @@ public class BossesData {
                 "|-1|Ta sẽ tàn sát khu này trong vòng 5 phút nữa",
                 "|-1|Tao sẽ giết hết bọn mày"}, //text chat 2
             new String[]{"|-1|Ôi bạn ơi..."}, //text chat 3
-            REST_10_M //second rest
+            REST_5_M //second rest
     );
 
     //========================TDST========================
@@ -215,7 +215,7 @@ public class BossesData {
                 "|-1|HAHAHA"
             }, //text chat 2
             new String[]{"|-1|Fide gọi ta về, ngươi có ngon thì chờ ở đây"}, //text chat 3
-            REST_5_M,
+            REST_10_M,
             new int[]{BossID.SO_2, BossID.SO_1, BossID.SO_3, BossID.SO_4} //type appear
     );
 
@@ -332,7 +332,7 @@ public class BossesData {
             }, //text chat 2
             new String[]{"|-1|Cay quá!"
             }, //text chat 3
-            REST_5_M,
+            REST_10_M,
             new int[]{BossID.SO_4_NM, BossID.SO_3_NM, BossID.SO_2_NM, BossID.SO_1_NM,} //type appear
     );
 
@@ -900,7 +900,7 @@ public class BossesData {
                 "|-1|Được thôi, nếu muốn chết đến vậy, ta rất vui lòng!!"
             }, //text chat 2
             new String[]{"|-1|Biến hình! Super Saiyan Rose"}, //text chat 3
-            REST_5_M //second rest
+            REST_15_M //second rest
     );
 
     public static final BossData SUPER_BLACK_GOKU = new BossData(
@@ -958,7 +958,7 @@ public class BossesData {
                 "|-1|Được thôi, nếu muốn chết đến vậy, ta rất vui lòng!!"
             }, //text chat 2
             new String[]{"|-1|Biến hình! Super Saiyan SSJ"}, //text chat 3
-            REST_5_M //second rest
+            REST_15_M //second rest
     );
 
     public static final BossData SUPER_CUMBER = new BossData(
@@ -2235,7 +2235,7 @@ public class BossesData {
             }, //text chat 2
             new String[]{"|-1|Nãy giờ ta chưa thèm tung hết sức đâu",
                 "|-1|Biến hình, hây aaaa..."}, //text chat 3
-            REST_10_M //second rest
+            REST_15_M //second rest
     );
 
     public static final BossData COOLER_2 = new BossData(
@@ -2502,7 +2502,7 @@ public class BossesData {
                 "|-1|Ta sẽ xé xác ngươi ra thành trăm mảnh",
                 "|-1|Xem các ngươi mạnh đến đâu"}, //text chat 2
             new String[]{}, //text chat 3
-            REST_5_M,
+            REST_15_M,
             new int[]{BossID.DEATH_BEAM_1, BossID.DEATH_BEAM_2, BossID.DEATH_BEAM_3, BossID.DEATH_BEAM_4, BossID.DEATH_BEAM_5}
     );
 
@@ -2765,7 +2765,7 @@ public class BossesData {
                 "|-1|Đội hình Tam Giác Nguy Hiểm Bất Bại!"
             },
             new String[]{"|-1|Không thể tin được... Bộ 3 Sói Badi lại thất bại sao?!"},
-            REST_10_M,
+            REST_15_M,
             new int[]{BossID.BASIL, BossID.LAVENDER}
     );
 
@@ -2792,7 +2792,7 @@ public class BossesData {
                 "|-1|Lưỡi kiếm Thần Công Lý!"
             },
             new String[]{"|-1|Bông tai Potara! Hãy hợp thể thành vị Thần Tối Thượng!"},
-            REST_10_M
+            REST_15_M
     );
 
     public static final BossData ZAMASU_HOP_THE = new BossData(

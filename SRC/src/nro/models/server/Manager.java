@@ -483,10 +483,28 @@ public final class Manager {
                 flagBag.gold = rs.getInt("gold");
                 flagBag.gem = rs.getInt("gem");
                 flagBag.iconId = rs.getShort("icon_id");
-                String[] iconData = rs.getString("icon_data").split(",");
-                flagBag.iconEffect = new short[iconData.length];
-                for (int j = 0; j < iconData.length; j++) {
-                    flagBag.iconEffect[j] = Short.parseShort(iconData[j].trim());
+                String rawIconData = rs.getString("icon_data");
+                String[] iconData = (rawIconData != null && !rawIconData.trim().isEmpty())
+                        ? rawIconData.split(",") : new String[0];
+                List<Short> validEffects = new ArrayList<>();
+                for (String s : iconData) {
+                    try {
+                        int val = Integer.parseInt(s.trim());
+                        if (val != -1 && val != 0) {
+                            validEffects.add((short) Math.abs(val));
+                        }
+                    } catch (NumberFormatException ignored) {
+                    }
+                }
+                if (flagBag.iconId <= 0 && !validEffects.isEmpty()) {
+                    flagBag.iconId = validEffects.get(0);
+                }
+                if (validEffects.isEmpty() && flagBag.iconId > 0) {
+                    validEffects.add(flagBag.iconId);
+                }
+                flagBag.iconEffect = new short[validEffects.size()];
+                for (int j = 0; j < validEffects.size(); j++) {
+                    flagBag.iconEffect[j] = validEffects.get(j);
                 }
                 FLAGS_BAGS.add(flagBag);
             }
@@ -669,6 +687,11 @@ public final class Manager {
                         itemTemp.level = rs.getByte("level");
                         itemTemp.iconID = rs.getShort("icon_id");
                         itemTemp.part = rs.getShort("part");
+                        if (itemTemp.id == 78 && itemTemp.part > 255) {
+                            itemTemp.part = 28;
+                        } else if (itemTemp.id == 1706 && itemTemp.part > 255) {
+                            itemTemp.part = 143;
+                        }
                         itemTemp.isUpToUp = rs.getBoolean("is_up_to_up");
                         itemTemp.strRequire = rs.getInt("power_require");
                         itemTemp.gold = rs.getInt("gold");
@@ -680,6 +703,34 @@ public final class Manager {
                         ITEM_TEMPLATES.add(itemTemp);
                     } while (rs.next());
                     offset += batchSize;
+                }
+
+                for (ItemTemplate itemTemp : ITEM_TEMPLATES) {
+                    if (itemTemp != null && itemTemp.type == 11 && itemTemp.part >= 0 && itemTemp.part <= 255 && itemTemp.iconID > 0) {
+                        boolean exists = false;
+                        for (FlagBag fb : FLAGS_BAGS) {
+                            if (fb.id == itemTemp.part) {
+                                exists = true;
+                                if (fb.iconId <= 0) {
+                                    fb.iconId = itemTemp.iconID;
+                                }
+                                if (fb.iconEffect == null || fb.iconEffect.length == 0) {
+                                    fb.iconEffect = new short[]{fb.iconId};
+                                }
+                                break;
+                            }
+                        }
+                        if (!exists) {
+                            FlagBag autoFb = new FlagBag();
+                            autoFb.id = itemTemp.part;
+                            autoFb.name = itemTemp.name != null ? itemTemp.name : ("Đeo lưng " + itemTemp.id);
+                            autoFb.gold = 0;
+                            autoFb.gem = 0;
+                            autoFb.iconId = itemTemp.iconID;
+                            autoFb.iconEffect = new short[]{itemTemp.iconID};
+                            FLAGS_BAGS.add(autoFb);
+                        }
+                    }
                 }
 
                 Logger.success(Logger.RED + "Successfully loaded map item template (" + ITEM_TEMPLATES.size() + " items)\n");

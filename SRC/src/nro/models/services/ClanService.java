@@ -131,17 +131,29 @@ public class ClanService {
                     FlagBagService.gI().sendListFlagClan(player);
                     break;
                 case ACCEPT_CREATE_CLAN:
-                    byte imgId = msg.reader().readByte();
-                    String name = msg.reader().readUTF();
-                    createClan(player, imgId, name);
+                    byte rawCreateImgId = msg.reader().readByte();
+                    int createImgId = rawCreateImgId & 0xFF;
+                    String name = "";
+                    if (msg.reader().available() > 0) {
+                        name = msg.reader().readUTF();
+                    }
+                    if (player.clan == null) {
+                        createClan(player, createImgId, name);
+                    } else if (rawCreateImgId != -1) {
+                        changeFlag(player, createImgId);
+                    }
                     break;
                 case REQUEST_FLAGS_CHOOSE_CHANGE_CLAN:
                     FlagBagService.gI().sendListFlagClan(player);
                     break;
                 case ACCEPT_CHANGE_INFO_CLAN:
-                    imgId = msg.reader().readByte();
-                    String slogan = msg.reader().readUTF();
-                    changeInfoClan(player, imgId, slogan);
+                    byte rawChangeImgId = msg.reader().readByte();
+                    int changeImgId = rawChangeImgId == -1 ? -1 : (rawChangeImgId & 0xFF);
+                    String slogan = "";
+                    if (msg.reader().available() > 0) {
+                        slogan = msg.reader().readUTF();
+                    }
+                    changeInfoClan(player, changeImgId, slogan);
                     break;
             }
         } catch (Exception e) {
@@ -523,10 +535,11 @@ public class ClanService {
     /**
      * Đổi thông tin clan (cờ, khẩu hiệu)
      */
-    private void changeInfoClan(Player player, byte imgId, String slogan) {
-        if (!slogan.equals("")) {
+    private void changeInfoClan(Player player, int imgId, String slogan) {
+        if (slogan != null && !slogan.isEmpty()) {
             changeSlogan(player, slogan);
-        } else {
+        }
+        if (imgId >= 0) {
             changeFlag(player, imgId);
         }
     }
@@ -534,7 +547,7 @@ public class ClanService {
     /**
      * Tạo clan mới
      */
-    private void createClan(Player player, byte imgId, String name) {
+    private void createClan(Player player, int imgId, String name) {
         if (player.clan == null) {
             if (name.length() > 30) {
                 Service.gI().sendThongBao(player, "Tên bang hội không được quá 30 ký tự");
@@ -564,7 +577,10 @@ public class ClanService {
                 clan.addMemberOnline(player);
                 clan.insert();
 
+                FlagBagService.gI().sendIconFlagChoose(player, imgId);
+                FlagBagService.gI().sendIconEffectFlag(player, imgId);
                 Service.gI().sendFlagBag(player);
+                sendClanId(player);
                 sendMyClan(player);
                 Service.gI().sendThongBao(player, "Chúc mừng bạn đã tạo bang thành công.");
             }
@@ -762,8 +778,20 @@ public class ClanService {
                 }
                 PlayerService.gI().sendInfoHpMpMoney(player);
                 player.clan.imgId = imgId;
+                for (Player member : clan.membersInGame) {
+                    if (member != null && member.isPl() && !member.isBot) {
+                        FlagBagService.gI().sendIconFlagChoose(member, imgId);
+                        FlagBagService.gI().sendIconEffectFlag(member, imgId);
+                    }
+                }
+                clan.sendMyClanForAllMember();
                 clan.sendFlagBagForAllMember();
                 clan.update();
+                if (player.inventory.itemsBody.size() > 8 && player.inventory.itemsBody.get(8).isNotNullItem()) {
+                    Service.gI().sendThongBao(player, "Đổi biểu tượng bang thành công! (Tháo vật phẩm Đeo lưng ra nếu bạn muốn thấy cờ bang trên lưng)");
+                } else {
+                    Service.gI().sendThongBao(player, "Đổi biểu tượng bang thành công!");
+                }
             }
         }
     }

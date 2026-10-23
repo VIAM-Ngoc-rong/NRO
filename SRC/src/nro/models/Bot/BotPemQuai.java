@@ -24,16 +24,16 @@ public class BotPemQuai {
     private long lastTimePickItem = 0;
     private long lastSpecialSkillTime;
     private long lastChatTime = 0;
-    private final long chatInterval = 3000;
+    private final long chatInterval = 20000;
 
     public BotPemQuai(Bot b) {
         this.bot = b;
     }
 
     private static final String[] chatMessages = {
-        "|1|Con chó tài tỏi súc vật cali",
-        "|2|bê ka tê địt mẹ tài tỏi tung lồn",
-        "|3|arriety địt nhau với mẹ tài tỏi"
+        "Up sức mạnh nhanh quá",
+        "Ai vào bang hội không?",
+        "Chúc anh em chơi game vui vẻ!"
     };
 
     private void autoChat() {
@@ -117,11 +117,10 @@ public class BotPemQuai {
         boolean miss = false;
         int skillId = bot.playerSkill.skillSelect.template.id;
         if (skillId == Skill.KAMEJOKO || skillId == Skill.MASENKO || skillId == Skill.ANTOMIC) {
-            if (mAttack != null) {
-                int dame = Util.nextInt(10000, 15000);
+            if (this.bot.UseLastTimeSkill()) {
+                SkillService.gI().useSkillAttack(bot, bot, mAttack);
+                SkillService.gI().useSkillAlone(bot);
             }
-            SkillService.gI().useSkillAttack(bot, bot, mAttack);
-            SkillService.gI().useSkillAlone(bot);
             return;
         }
 

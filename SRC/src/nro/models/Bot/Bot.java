@@ -230,40 +230,38 @@ public class Bot extends Player {
     }
 
     public void useSkill(int skillId) {
-        new Thread(() -> {
-            switch (skillId) {
-                case Skill.BIEN_KHI:
-                    EffectSkillService.gI().sendEffectMonkey(this);
-                    EffectSkillService.gI().setIsMonkey(this);
-                    EffectSkillService.gI().sendEffectMonkey(this);
+        switch (skillId) {
+            case Skill.BIEN_KHI:
+                EffectSkillService.gI().sendEffectMonkey(this);
+                EffectSkillService.gI().setIsMonkey(this);
+                EffectSkillService.gI().sendEffectMonkey(this);
 
-                    Service.gI().sendSpeedPlayer(this, 0);
-                    Service.gI().Send_Caitrang(this);
-                    Service.gI().sendSpeedPlayer(this, -1);
-                    PlayerService.gI().sendInfoHpMp(this);
-                    Service.gI().point(this);
-                    Service.gI().Send_Info_NV(this);
-                    Service.gI().sendInfoPlayerEatPea(this);
-                    break;
-                case Skill.QUA_CAU_KENH_KHI:
-                    this.playerSkill.prepareQCKK = !this.playerSkill.prepareQCKK;
-                    this.playerSkill.lastTimePrepareQCKK = System.currentTimeMillis();
-                    SkillService.gI().sendPlayerPrepareSkill(this, 1000);
-                    break;
-                case Skill.MAKANKOSAPPO:
-                    this.playerSkill.prepareLaze = !this.playerSkill.prepareLaze;
-                    this.playerSkill.lastTimePrepareLaze = System.currentTimeMillis();
-                    SkillService.gI().sendPlayerPrepareSkill(this, 3000);
-                    break;
-            }
-        }).start();
+                Service.gI().sendSpeedPlayer(this, 0);
+                Service.gI().Send_Caitrang(this);
+                Service.gI().sendSpeedPlayer(this, -1);
+                PlayerService.gI().sendInfoHpMp(this);
+                Service.gI().point(this);
+                Service.gI().Send_Info_NV(this);
+                Service.gI().sendInfoPlayerEatPea(this);
+                break;
+            case Skill.QUA_CAU_KENH_KHI:
+                this.playerSkill.prepareQCKK = !this.playerSkill.prepareQCKK;
+                this.playerSkill.lastTimePrepareQCKK = System.currentTimeMillis();
+                SkillService.gI().sendPlayerPrepareSkill(this, 1000);
+                break;
+            case Skill.MAKANKOSAPPO:
+                this.playerSkill.prepareLaze = !this.playerSkill.prepareLaze;
+                this.playerSkill.lastTimePrepareLaze = System.currentTimeMillis();
+                SkillService.gI().sendPlayerPrepareSkill(this, 3000);
+                break;
+        }
     }
 
     public String getChat() {
         String[] messages = {
-            "|1|Con chó tài tỏi súc vật cali",
-            "|2|bê ka tê địt mẹ tài tỏi tung lồn",
-            "|3|arriety địt nhau với mẹ tài tỏi"
+            "Up đệ tử mỏi tay quá",
+            "Ai săn boss cùng không?",
+            "Server đông vui quá anh em ơi"
         };
         return messages[new Random().nextInt(messages.length)];
     }

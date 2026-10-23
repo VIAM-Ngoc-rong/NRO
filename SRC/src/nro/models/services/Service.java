@@ -1227,9 +1227,19 @@ public class Service {
     public void sendFlagBag(Player pl) {
         Message msg;
         try {
+            short flagBag = pl.getFlagBag();
+            if (flagBag >= 0 && pl.zone != null) {
+                int flagBagId = flagBag & 0xFF;
+                for (Player p : pl.zone.getPlayers()) {
+                    if (p != null && p.isPl() && !p.isBot) {
+                        FlagBagService.gI().sendIconFlagChoose(p, flagBagId);
+                        FlagBagService.gI().sendIconEffectFlag(p, flagBagId);
+                    }
+                }
+            }
             msg = new Message(-64);
             msg.writer().writeInt((int) pl.id);
-            msg.writer().writeByte(pl.getFlagBag());
+            msg.writer().writeByte(flagBag);
             sendMessAllPlayerInMap(pl, msg);
             msg.cleanup();
         } catch (Exception e) {
@@ -2567,12 +2577,6 @@ public class Service {
             msg.writer().writeShort(plBody);
             msg.writer().writeShort(plLeg);
             int flagbag = pl.getFlagBag();
-            if (pl.isPl() && plR.getSession().version >= 220) {
-                switch (flagbag) {
-                    case 83 ->
-                        flagbag = 205;
-                }
-            }
             msg.writer().writeByte(flagbag); //bag
             msg.writer().writeByte(-1);
             msg.writer().writeShort(pl.location.x);

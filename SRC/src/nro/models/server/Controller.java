@@ -440,7 +440,8 @@ public class Controller implements IMessageHandler {
                     break;
                 case -62:
                     if (player != null) {
-                        FlagBagService.gI().sendIconFlagChoose(player, _msg.reader().readByte());
+                        int fbid = _msg.reader().readByte() & 0xFF;
+                        FlagBagService.gI().sendIconFlagChoose(player, fbid);
                     }
                     break;
                 case -63:

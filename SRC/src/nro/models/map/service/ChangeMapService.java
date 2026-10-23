@@ -528,6 +528,7 @@ public class ChangeMapService {
             player.zone.load_Another_To_Me(player);
         } catch (Exception e) {
         }
+        Service.gI().sendFlagBag(player);
         Service.gI().sendEffAllPlayerMapToMe(player);
         Service.gI().sendEffPlayer(player);
         sendEffectMapToMe(player);

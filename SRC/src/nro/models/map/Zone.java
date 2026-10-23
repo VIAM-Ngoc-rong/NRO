@@ -586,13 +586,6 @@ public class Zone {
             msg.writer().writeShort(plInfo.getBody());
             msg.writer().writeShort(plInfo.getLeg());
             int flagbag = plInfo.getFlagBag();
-            if (plReceive.isPl() && plReceive.getSession() != null && plReceive.getSession().version >= 220) {
-                switch (flagbag) {
-                    case 83:
-                        flagbag = 205;
-                        break;
-                }
-            }
             msg.writer().writeByte(flagbag); //bag
             msg.writer().writeByte(-1);
             msg.writer().writeShort(plInfo.location.x);

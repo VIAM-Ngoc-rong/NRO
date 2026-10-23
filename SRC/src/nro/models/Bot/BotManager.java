@@ -29,7 +29,7 @@ public class BotManager implements Runnable {
                     }
                 }
 
-                long timeLeft = 150 - (System.currentTimeMillis() - st);
+                long timeLeft = 500 - (System.currentTimeMillis() - st);
                 if (timeLeft > 0) {
                     Thread.sleep(timeLeft);
                 }

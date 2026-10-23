@@ -96,7 +96,8 @@ public class ShopDAO {
 
         List<ItemTemplate> backTemplates = new ArrayList<>();
         for (ItemTemplate temp : Manager.ITEM_TEMPLATES) {
-            if (temp != null && temp.type == 11 && temp.part != -1 && temp.iconID > 0
+            if (temp != null && temp.type == 11 && temp.part >= 0 && temp.part <= 255 && temp.iconID > 0
+                    && temp.id != 78 && (temp.id < 353 || temp.id > 378) && (temp.id < 766 || temp.id > 794)
                     && temp.name != null && !temp.name.trim().isEmpty()) {
                 backTemplates.add(temp);
             }
