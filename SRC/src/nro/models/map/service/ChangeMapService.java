@@ -1097,24 +1097,23 @@ public class ChangeMapService {
         }
 
         Map map = getMapById(mapId);
-        if (map == null) {
+        if (map == null || map.zones == null || map.zones.isEmpty()) {
             return null;
         }
 
-        if (map.zones.size() > 0) {
-            Zone zone0 = map.zones.get(0);
-            if (zone0 != null && zone0.getNumOfPlayers() < Zone.PLAYERS_TIEU_CHUAN_TRONG_MAP) {
-                return zone0;
-            }
-        }
-
         for (Zone zone : map.zones) {
-            if (zone != null && zone.getNumOfPlayers() < Zone.PLAYERS_TIEU_CHUAN_TRONG_MAP) {
+            if (zone != null && zone.getNumOfPlayers() <= 7 && zone.getNumOfPlayers() < zone.maxPlayer) {
                 return zone;
             }
         }
 
-        return null;
+        for (Zone zone : map.zones) {
+            if (zone != null && zone.getNumOfPlayers() < zone.maxPlayer) {
+                return zone;
+            }
+        }
+
+        return map.zones.get(0);
     }
 
     public Zone getZoneJoinByMapIdAndZoneId(Player player, int mapId, int zoneId) {

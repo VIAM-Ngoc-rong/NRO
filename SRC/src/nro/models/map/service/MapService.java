@@ -294,17 +294,27 @@ public class MapService {
 
     public Zone getZone(int mapId) {
         Map map = getMapById(mapId);
-        if (map == null) {
+        if (map == null || map.zones == null || map.zones.isEmpty()) {
             return null;
         }
 
-        int z = Util.nextInt(0, map.zones.size() - 1);
-        //  int z = 0;
-        while (map.zones.get(z).getNumOfPlayers() >= map.zones.get(z).maxPlayer) {
-            z = Util.nextInt(0, map.zones.size() - 1);
-            //    z++;
+        // Ưu tiên vào Khu 0; nếu Khu 0 có số người chơi > 7 thì sang Khu 1 (và các khu tiếp theo)
+        for (int z = 0; z < map.zones.size(); z++) {
+            Zone zone = map.zones.get(z);
+            if (zone != null && zone.getNumOfPlayers() <= 7 && zone.getNumOfPlayers() < zone.maxPlayer) {
+                return zone;
+            }
         }
-        return map.zones.get(z);
+
+        // Dự phòng nếu tất cả các khu đều > 7 người thì vào khu đầu tiên chưa đầy
+        for (int z = 0; z < map.zones.size(); z++) {
+            Zone zone = map.zones.get(z);
+            if (zone != null && zone.getNumOfPlayers() < zone.maxPlayer) {
+                return zone;
+            }
+        }
+
+        return map.zones.get(0);
     }
 
     public Zone getZoneByMapIDAndZoneID(int mapId, int zoneId) {
@@ -381,23 +391,23 @@ public class MapService {
                 && !isMapTuongLai(pl.mapBeforeCapsule.map.mapId)) {
             addListMapCapsule(pl, list, pl.mapBeforeCapsule);
         }
-        addListMapCapsule(pl, list, getMapCanJoin(pl, 21 + pl.gender, 0));
-        addListMapCapsule(pl, list, getMapCanJoin(pl, 47, 0));
-        addListMapCapsule(pl, list, getMapCanJoin(pl, 45, 0));
-        addListMapCapsule(pl, list, getMapCanJoin(pl, 0, 0));
-        addListMapCapsule(pl, list, getMapCanJoin(pl, 7, 0));
-        addListMapCapsule(pl, list, getMapCanJoin(pl, 14, 0));
-        addListMapCapsule(pl, list, getMapCanJoin(pl, 5, 0));
-        addListMapCapsule(pl, list, getMapCanJoin(pl, 20, 0));
-        addListMapCapsule(pl, list, getMapCanJoin(pl, 13, 0));
-        addListMapCapsule(pl, list, getMapCanJoin(pl, 24 + pl.gender, 0));
-        addListMapCapsule(pl, list, getMapCanJoin(pl, 27, 0));
-        addListMapCapsule(pl, list, getMapCanJoin(pl, 19, 0));
-        addListMapCapsule(pl, list, getMapCanJoin(pl, 79, 0));
-        addListMapCapsule(pl, list, getMapCanJoin(pl, 84, 0));
-        addListMapCapsule(pl, list, getMapCanJoin(pl, 154, 0));
-        addListMapCapsule(pl, list, getMapCanJoin(pl, 52, 0));
-        addListMapCapsule(pl, list, getMapCanJoin(pl, 122, 0));
+        addListMapCapsule(pl, list, getMapCanJoin(pl, 21 + pl.gender, -1));
+        addListMapCapsule(pl, list, getMapCanJoin(pl, 47, -1));
+        addListMapCapsule(pl, list, getMapCanJoin(pl, 45, -1));
+        addListMapCapsule(pl, list, getMapCanJoin(pl, 0, -1));
+        addListMapCapsule(pl, list, getMapCanJoin(pl, 7, -1));
+        addListMapCapsule(pl, list, getMapCanJoin(pl, 14, -1));
+        addListMapCapsule(pl, list, getMapCanJoin(pl, 5, -1));
+        addListMapCapsule(pl, list, getMapCanJoin(pl, 20, -1));
+        addListMapCapsule(pl, list, getMapCanJoin(pl, 13, -1));
+        addListMapCapsule(pl, list, getMapCanJoin(pl, 24 + pl.gender, -1));
+        addListMapCapsule(pl, list, getMapCanJoin(pl, 27, -1));
+        addListMapCapsule(pl, list, getMapCanJoin(pl, 19, -1));
+        addListMapCapsule(pl, list, getMapCanJoin(pl, 79, -1));
+        addListMapCapsule(pl, list, getMapCanJoin(pl, 84, -1));
+        addListMapCapsule(pl, list, getMapCanJoin(pl, 154, -1));
+        addListMapCapsule(pl, list, getMapCanJoin(pl, 52, -1));
+        addListMapCapsule(pl, list, getMapCanJoin(pl, 122, -1));
         return list;
     }
 
