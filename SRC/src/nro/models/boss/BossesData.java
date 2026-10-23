@@ -1525,10 +1525,9 @@ public class BossesData {
             new int[]{3, 4, 5, 6, 27, 28, 29, 30}, //map join
             new int[][]{
                 {Skill.DRAGON, 7, 1000},
-                {Skill.TROI, 4, 50000},
                 {Skill.ANTOMIC, 4, 1000},},//skill
             new String[]{}, //text chat 1
-            new String[]{"|-1|Trói"
+            new String[]{"|-1|Hahaha"
             }, //text chat 2
             new String[]{"|-1|Cứu"
             }, //text chat 3
@@ -1544,10 +1543,9 @@ public class BossesData {
             new int[]{3, 4, 5, 6, 27, 28, 29, 30}, //map join
             new int[][]{
                 {Skill.GALICK, 7, 1000},
-                {Skill.TROI, 5, 50000},
                 {Skill.ANTOMIC, 3, 3000},},//skill//skill
             new String[]{}, //text chat 1
-            new String[]{"|-1|Trói"
+            new String[]{"|-1|Hahaha"
             }, //text chat 2
             new String[]{"|-1|Cứu"
             }, //text chat 3
@@ -1583,7 +1581,6 @@ public class BossesData {
             new int[]{10000}, //hp
             new int[]{3, 4, 5, 6, 27, 28, 29, 30}, //map join
             new int[][]{
-                {Skill.TROI, 7, 120000},
                 {Skill.MASENKO, 7, 1000},
                 {Skill.GALICK, 7, 1000},},//skill
             new String[]{}, //text chat 1
@@ -1603,7 +1600,6 @@ public class BossesData {
             new int[]{10000}, //hp
             new int[]{3, 4, 5, 6, 27, 28, 29, 30}, //map join
             new int[][]{
-                {Skill.THOI_MIEN, 7, 100000},
                 {Skill.KHIEN_NANG_LUONG, 7, 100000},
                 {Skill.GALICK, 7, 1000},},//skill
             new String[]{}, //text chat 1
@@ -1623,7 +1619,6 @@ public class BossesData {
             new int[]{10000}, //hp
             new int[]{3, 4, 5, 6, 27, 28, 29, 30}, //map join
             new int[][]{
-                {Skill.TROI, 3, 60000},
                 {Skill.KAMEJOKO, 7, 1000},
                 {Skill.GALICK, 7, 1000},},//skill
             new String[]{}, //text chat 1

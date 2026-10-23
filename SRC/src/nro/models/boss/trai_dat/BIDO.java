@@ -71,6 +71,10 @@ public class BIDO extends Boss {
     @Override
     public synchronized int injured(Player plAtt, long damage, boolean piercing, boolean isMobAttack) {
         if (!this.isDie()) {
+            if (plAtt != null && !plAtt.equals(this)) {
+                setTemporaryEnemies(plAtt);
+                plAtt.setTemporaryEnemies(this);
+            }
             if (!piercing && Util.isTrue(this.nPoint.tlNeDon, 1000)) {
                 this.chat("Xí hụt");
                 return 0;

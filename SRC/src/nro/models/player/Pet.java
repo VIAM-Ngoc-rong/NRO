@@ -960,7 +960,7 @@ public class Pet extends Player {
 
     private boolean cantAttack(Player player) {
         return player == null || player.location == null || player.isDie() || Util.getDistance(this, player) > 500
-                || this.equals(player) || (player.equals(master) || this.typePet != 5 && this.typePet != 2 && this.typePet != 4)
+                || this.equals(player) || player.equals(master)
                 || (!temporaryEnemies.contains(player) && !master.temporaryEnemies.contains(player))
                 || (!SkillService.gI().canAttackPlayer(this, player));
     }

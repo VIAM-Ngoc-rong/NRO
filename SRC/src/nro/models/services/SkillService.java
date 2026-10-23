@@ -1228,6 +1228,13 @@ public class SkillService {
             return false;
         }
 
+        if (p1.isPet && ((nro.models.player.Pet) p1).master != null) {
+            Player m = ((nro.models.player.Pet) p1).master;
+            if (!p2.equals(m) && (p1.temporaryEnemies.contains(p2) || m.temporaryEnemies.contains(p2) || canAttackPlayer2(m, p2))) {
+                return true;
+            }
+        }
+
         if (p1.typePk == ConstPlayer.PK_ALL || p2.typePk == ConstPlayer.PK_ALL) {
             return true;
         }
