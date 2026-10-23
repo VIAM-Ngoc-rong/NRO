@@ -463,6 +463,19 @@ public class Boss extends Player implements IBoss {
         return maxHp > 100_000_000L ? 900_000L : 600_000L;
     }
 
+    private int getSafeLevelIndex() {
+        if (this.data == null || this.data.length == 0) {
+            return 0;
+        }
+        if (this.currentLevel < 0) {
+            return 0;
+        }
+        if (this.currentLevel >= this.data.length) {
+            return this.data.length - 1;
+        }
+        return this.currentLevel;
+    }
+
     //.outfit.
     @Override
     public short getHead() {
@@ -472,7 +485,7 @@ public class Boss extends Player implements IBoss {
         if (effectSkill != null && effectSkill.isMonkey) {
             return (short) ConstPlayer.HEADMONKEY[effectSkill.levelMonkey - 1];
         }
-        return this.data[this.currentLevel].getOutfit()[0];
+        return this.data[getSafeLevelIndex()].getOutfit()[0];
     }
 
     @Override
@@ -483,7 +496,7 @@ public class Boss extends Player implements IBoss {
         if (effectSkill != null && effectSkill.isMonkey) {
             return 193;
         }
-        return this.data[this.currentLevel].getOutfit()[1];
+        return this.data[getSafeLevelIndex()].getOutfit()[1];
     }
 
     @Override
@@ -494,13 +507,13 @@ public class Boss extends Player implements IBoss {
         if (effectSkill != null && effectSkill.isMonkey) {
             return 194;
         }
-        return this.data[this.currentLevel].getOutfit()[2];
+        return this.data[getSafeLevelIndex()].getOutfit()[2];
 
     }
 
     @Override
     public short getFlagBag() {
-        return this.data[this.currentLevel].getOutfit()[3];
+        return this.data[getSafeLevelIndex()].getOutfit()[3];
     }
 
     @Override

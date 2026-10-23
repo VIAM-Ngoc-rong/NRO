@@ -633,10 +633,25 @@ public class AdminWebServer {
         String srvLogTail = "";
         File srvLogFile = new File("server.log");
         if (srvLogFile.exists()) {
-            try {
-                List<String> lines = Files.readAllLines(srvLogFile.toPath(), StandardCharsets.UTF_8);
-                int from = Math.max(0, lines.size() - 30);
-                srvLogTail = String.join("\n", lines.subList(from, lines.size()));
+            try (java.io.RandomAccessFile raf = new java.io.RandomAccessFile(srvLogFile, "r")) {
+                long len = raf.length();
+                int readBytes = (int) Math.min(len, 16384L);
+                if (readBytes > 0) {
+                    raf.seek(len - readBytes);
+                    byte[] buf = new byte[readBytes];
+                    raf.readFully(buf);
+                    String raw = new String(buf, StandardCharsets.UTF_8).replace("\0", "");
+                    String[] lines = raw.split("\\r?\\n");
+                    int from = Math.max(0, lines.length - 30);
+                    StringBuilder logSb = new StringBuilder();
+                    for (int i = from; i < lines.length; i++) {
+                        if (i > from) {
+                            logSb.append("\n");
+                        }
+                        logSb.append(lines[i]);
+                    }
+                    srvLogTail = logSb.toString();
+                }
             } catch (Exception ignored) {
             }
         }
