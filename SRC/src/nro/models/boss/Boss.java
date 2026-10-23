@@ -118,6 +118,13 @@ public class Boss extends Player implements IBoss {
     public long lastTimeTickTTNL;
     public int ticksTTNL;
 
+    public long lastTimeAttacked;
+    public long lastRecordedHp;
+    public boolean pendingIdleDespawn;
+    public long timeTriggerIdleDespawn;
+    public boolean pendingNotifyJoinMap;
+    public long timeTriggerNotifyJoinMap;
+
     public Boss(int id, boolean isNotifyDisabled, boolean isZone01SpawnDisabled, BossData... data) throws Exception {
         this(id, data);
         this.isNotifyDisabled = isNotifyDisabled;
@@ -275,7 +282,14 @@ public class Boss extends Player implements IBoss {
         this.timeChatE = 0;
         this.indexChatS = 0;
         this.indexChatE = 0;
-        this.lastTimeSpawnOnMap = System.currentTimeMillis();
+        long now = System.currentTimeMillis();
+        this.lastTimeSpawnOnMap = now;
+        this.lastTimeAttacked = now;
+        this.lastRecordedHp = this.nPoint != null ? this.nPoint.hp : 0;
+        this.pendingIdleDespawn = false;
+        this.timeTriggerIdleDespawn = 0;
+        this.pendingNotifyJoinMap = false;
+        this.timeTriggerNotifyJoinMap = 0;
         this.droppedBelow50Hp = false;
         this.usedTTNL = false;
         this.isUsingTTNL = false;
@@ -318,9 +332,6 @@ public class Boss extends Player implements IBoss {
     }
 
     public boolean isExcludedFrom5MinReset() {
-        if (isBrolyBoss()) {
-            return true;
-        }
         if (this.zone != null && this.zone.map != null) {
             int mapId = this.zone.map.mapId;
             if (MapService.gI().isMapOffline(mapId) || MapService.gI().isMapPhoBan(mapId) || mapId == 113 || mapId == 112 || mapId == 129) {
@@ -328,6 +339,97 @@ public class Boss extends Player implements IBoss {
             }
         }
         return false;
+    }
+
+    public void recordBossAttacked() {
+        long now = System.currentTimeMillis();
+        this.lastTimeAttacked = now;
+        Boss root = this.parentBoss != null ? this.parentBoss : this;
+        root.lastTimeAttacked = now;
+        if (root.bossAppearTogether != null && root.currentLevel >= 0
+                && root.currentLevel < root.bossAppearTogether.length
+                && root.bossAppearTogether[root.currentLevel] != null) {
+            for (Boss sub : root.bossAppearTogether[root.currentLevel]) {
+                if (sub != null) {
+                    sub.lastTimeAttacked = now;
+                }
+            }
+        }
+    }
+
+    public long getGroupLastTimeAttacked() {
+        Boss root = this.parentBoss != null ? this.parentBoss : this;
+        long latest = Math.max(this.lastTimeAttacked, root.lastTimeAttacked);
+        if (latest <= 0) {
+            latest = Math.max(this.lastTimeSpawnOnMap, root.lastTimeSpawnOnMap);
+        }
+        if (root.bossAppearTogether != null && root.currentLevel >= 0
+                && root.currentLevel < root.bossAppearTogether.length
+                && root.bossAppearTogether[root.currentLevel] != null) {
+            for (Boss sub : root.bossAppearTogether[root.currentLevel]) {
+                if (sub != null && sub.bossStatus != BossStatus.REST) {
+                    latest = Math.max(latest, sub.lastTimeAttacked);
+                }
+            }
+        }
+        return latest;
+    }
+
+    public boolean isPendingIdleDespawn() {
+        Boss root = this.parentBoss != null ? this.parentBoss : this;
+        return this.pendingIdleDespawn || root.pendingIdleDespawn;
+    }
+
+    public boolean hasRealPlayerInZone() {
+        if (this.zone == null) {
+            return false;
+        }
+        List<Player> players = this.zone.getNotBosses();
+        if (players == null || players.isEmpty()) {
+            return false;
+        }
+        for (int i = players.size() - 1; i >= 0; i--) {
+            Player pl = players.get(i);
+            if (pl != null && !pl.isBot && (pl.isPl() || pl.isPet)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void despawnIdleBossGroup() {
+        Boss root = this.parentBoss != null ? this.parentBoss : this;
+        long now = System.currentTimeMillis();
+        root.pendingIdleDespawn = false;
+        root.pendingNotifyJoinMap = false;
+        if (root.bossAppearTogether != null && root.currentLevel >= 0
+                && root.currentLevel < root.bossAppearTogether.length
+                && root.bossAppearTogether[root.currentLevel] != null) {
+            for (Boss sub : root.bossAppearTogether[root.currentLevel]) {
+                if (sub != null) {
+                    sub.pendingIdleDespawn = false;
+                    sub.pendingNotifyJoinMap = false;
+                    if (sub.zone != null) {
+                        ChangeMapService.gI().exitMap(sub);
+                    }
+                    sub.lastZone = null;
+                    if (sub.data != null) {
+                        sub.currentLevel = sub.data.length;
+                    }
+                    sub.lastTimeRest = now;
+                    sub.changeStatus(BossStatus.REST);
+                }
+            }
+        }
+        if (root.zone != null) {
+            ChangeMapService.gI().exitMap(root);
+        }
+        root.lastZone = null;
+        if (root.data != null) {
+            root.currentLevel = root.data.length;
+        }
+        root.lastTimeRest = now;
+        root.changeStatus(BossStatus.REST);
     }
 
     public boolean hasGroupDroppedBelow50Hp() {
@@ -425,7 +527,10 @@ public class Boss extends Player implements IBoss {
     @Override
     public void changeStatus(BossStatus status) {
         if (status == BossStatus.ACTIVE && this.bossStatus != BossStatus.ACTIVE) {
-            this.lastTimeSpawnOnMap = System.currentTimeMillis();
+            long now = System.currentTimeMillis();
+            this.lastTimeSpawnOnMap = now;
+            this.lastTimeAttacked = now;
+            this.lastRecordedHp = this.nPoint != null ? this.nPoint.hp : 0;
         }
         this.bossStatus = status;
     }
@@ -470,8 +575,24 @@ public class Boss extends Player implements IBoss {
             return;
         }
         super.update();
+        if (this.pendingNotifyJoinMap) {
+            if (this.isDie() || this.zone == null || this.zone.map == null
+                    || this.bossStatus == BossStatus.REST || this.bossStatus == BossStatus.DIE
+                    || this.bossStatus == BossStatus.CHAT_E || this.bossStatus == BossStatus.LEAVE_MAP) {
+                this.pendingNotifyJoinMap = false;
+            } else if (Util.canDoWithTime(this.timeTriggerNotifyJoinMap, 60_000L)) {
+                this.pendingNotifyJoinMap = false;
+                if (canSendNotify()) {
+                    ServerNotify.gI().notify("BOSS " + this.name + " vừa xuất hiện tại " + this.zone.map.mapName);
+                }
+            }
+        }
         this.nPoint.mp = this.nPoint.mpg;
         if (!this.isDie() && this.nPoint != null && this.nPoint.hpMax > 0) {
+            if (this.lastRecordedHp > 0 && this.nPoint.hp < this.lastRecordedHp) {
+                this.recordBossAttacked();
+            }
+            this.lastRecordedHp = this.nPoint.hp;
             if (this.nPoint.hp < this.nPoint.hpMax / 2) {
                 this.droppedBelow50Hp = true;
             }
@@ -482,6 +603,32 @@ public class Boss extends Player implements IBoss {
             } else if (!this.isUsingTTNL && this.nPoint.hp > 0 && this.nPoint.hp < (this.nPoint.hpMax * 30L / 100L)
                     && (this.lastTimeStartTTNL == 0 || Util.canDoWithTime(this.lastTimeStartTTNL, 60000))) {
                 this.startBossTTNL();
+            }
+        }
+        if (!this.isDie() && this.zone != null && this.zone.map != null
+                && (this.bossStatus == BossStatus.ACTIVE || this.bossStatus == BossStatus.AFK || this.bossStatus == BossStatus.CHAT_S)
+                && !this.isExcludedFrom5MinReset() && !this.isMiniBoss()) {
+            Boss root = this.parentBoss != null ? this.parentBoss : this;
+            if (root.pendingIdleDespawn) {
+                if (Util.canDoWithTime(root.timeTriggerIdleDespawn, 2000L)) {
+                    this.despawnIdleBossGroup();
+                }
+                return;
+            } else if (Util.canDoWithTime(this.getGroupLastTimeAttacked(), 900_000L) && this.hasRealPlayerInZone()) {
+                root.pendingIdleDespawn = true;
+                root.timeTriggerIdleDespawn = System.currentTimeMillis();
+                this.pendingIdleDespawn = true;
+                this.chat("Đợi lâu quá không ai đánh, ta đi đây! Hẹn gặp lại sau!");
+                List<Player> playersInZone = this.zone.getNotBosses();
+                if (playersInZone != null) {
+                    for (int i = playersInZone.size() - 1; i >= 0; i--) {
+                        Player pl = playersInZone.get(i);
+                        if (pl != null && !pl.isBot && pl.isPl()) {
+                            Service.gI().sendThongBao(pl, "BOSS " + root.name + " đã rời đi vì quá 15 phút không ai đánh!");
+                        }
+                    }
+                }
+                return;
             }
         }
         if (this.isUsingTTNL) {
@@ -680,7 +827,8 @@ public class Boss extends Player implements IBoss {
 
     protected void notifyJoinMap() {
         if (canSendNotify()) {
-            ServerNotify.gI().notify("BOSS " + this.name + " vừa xuất hiện tại " + this.zone.map.mapName);
+            this.pendingNotifyJoinMap = true;
+            this.timeTriggerNotifyJoinMap = System.currentTimeMillis();
         }
     }
 
@@ -807,6 +955,8 @@ public class Boss extends Player implements IBoss {
 
     @Override
     public void die(Player plKill) {
+        this.pendingNotifyJoinMap = false;
+        this.recordBossAttacked();
         Player plOwner = plKill != null && plKill.isPet ? ((Pet) plKill).master : plKill;
         if (plOwner != null && !plOwner.isBot && plOwner.isPl()) {
             plOwner.pointSanBoss++;
@@ -1097,6 +1247,8 @@ public class Boss extends Player implements IBoss {
 
     @Override
     public void leaveMap() {
+        this.pendingNotifyJoinMap = false;
+        this.pendingIdleDespawn = false;
         if (this.currentLevel < this.data.length - 1) {
             this.lastZone = this.zone;
             this.changeStatus(BossStatus.RESPAWN);
@@ -1112,7 +1264,11 @@ public class Boss extends Player implements IBoss {
     @Override
     public synchronized int injured(Player plAtt, long damage, boolean piercing, boolean isMobAttack) {
         if (!this.isDie()) {
+            if (this.isPendingIdleDespawn()) {
+                return 0;
+            }
             if (plAtt != null && !plAtt.equals(this)) {
+                this.recordBossAttacked();
                 setTemporaryEnemies(plAtt);
                 plAtt.setTemporaryEnemies(this);
             }
