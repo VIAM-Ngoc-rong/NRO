@@ -421,15 +421,10 @@ public class Boss extends Player implements IBoss {
                 }
             }
         }
-        if (root.zone != null) {
-            ChangeMapService.gI().exitMap(root);
-        }
-        root.lastZone = null;
         if (root.data != null) {
             root.currentLevel = root.data.length;
         }
-        root.lastTimeRest = now;
-        root.changeStatus(BossStatus.REST);
+        root.leaveMap();
     }
 
     public boolean hasGroupDroppedBelow50Hp() {

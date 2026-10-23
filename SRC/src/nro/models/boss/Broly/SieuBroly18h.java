@@ -14,6 +14,7 @@ import nro.models.map.service.ChangeMapService;
 import nro.models.player.Pet;
 import nro.models.player.Player;
 import nro.models.services.ItemService;
+import nro.models.services.PetService;
 import nro.models.services.Service;
 import nro.models.services.SkillService;
 import nro.models.services.TaskService;
@@ -127,6 +128,9 @@ public class SieuBroly18h extends Boss {
         Player plOwner = plKill.isPet ? ((Pet) plKill).master : plKill;
         if (plOwner == null) {
             plOwner = plKill;
+        }
+        if (plOwner.pet == null) {
+            PetService.gI().createNormalPet(plOwner);
         }
         int x = this.location.x;
         int y = this.zone.map.yPhysicInTop(x, this.location.y - 24);

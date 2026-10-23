@@ -52,6 +52,9 @@ public class BlackGoku extends Boss {
                 damage /= 2;
             }
             damage = this.nPoint.subDameInjureWithDeff(damage - Util.nextInt(100000));
+            if (this.bossDamageReductionFactor > 1) {
+                damage = Math.max(1L, damage / this.bossDamageReductionFactor);
+            }
             if (!piercing && effectSkill.isShielding) {
                 if (damage > nPoint.hpMax) {
                     EffectSkillService.gI().breakShield(this);

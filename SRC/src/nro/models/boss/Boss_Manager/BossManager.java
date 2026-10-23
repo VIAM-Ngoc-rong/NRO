@@ -146,9 +146,9 @@ public class BossManager implements Runnable {
     }
 
     public void loadBoss() {
-        this.createBoss(BossID.KUKU, 1);
-        this.createBoss(BossID.MAP_DAU_DINH, 1);
-        this.createBoss(BossID.RAMBO, 1);
+        this.createBoss(BossID.KUKU, 3);
+        this.createBoss(BossID.MAP_DAU_DINH, 3);
+        this.createBoss(BossID.RAMBO, 3);
         this.createBoss(BossID.TIEU_DOI_TRUONG, 1);
         this.createBoss(BossID.TIEU_DOI_TRUONG_NM, 1);
         this.createBoss(BossID.FIDE, 1);
@@ -166,8 +166,8 @@ public class BossManager implements Runnable {
         this.createBoss(BossID.MABU_14H, 1);
         this.createBoss(BossID.CUMBER, 1);
         this.createBoss(BossID.BABY, 1);
-        this.createBoss(BossID.BROLY_18H, 1);
-        this.createBoss(BossID.KID_BU_MAP, 1);
+        this.createBoss(BossID.BROLY_18H, 5);
+        this.createBoss(BossID.KID_BU_MAP, 5);
         this.createBoss(BossID.SOI_HEC_QUYN1, 1);
         this.createBoss(BossID.O_DO1, 1);
         this.createBoss(BossID.AN_TROM, 1);

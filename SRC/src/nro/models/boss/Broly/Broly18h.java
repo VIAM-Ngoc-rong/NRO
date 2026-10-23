@@ -55,8 +55,7 @@ public class Broly18h extends Boss {
     }
 
     private boolean isSpawnTime18h() {
-        int hour = TimeUtil.getCurrHour();
-        return hour >= 18 && hour <= 23;
+        return true;
     }
 
     @Override

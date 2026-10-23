@@ -85,6 +85,30 @@ public class SieuBoHung extends Boss {
     }
 
     @Override
+    public void afk() {
+        if (this.currentLevel > 0) {
+            this.changeStatus(BossStatus.ACTIVE);
+            return;
+        }
+        if (this.callCellCon) {
+            boolean anyAlive = false;
+            if (this.bossAppearTogether != null && this.currentLevel >= 0
+                    && this.currentLevel < this.bossAppearTogether.length
+                    && this.bossAppearTogether[this.currentLevel] != null) {
+                for (Boss boss : this.bossAppearTogether[this.currentLevel]) {
+                    if (boss != null && !boss.isDie() && boss.bossStatus != BossStatus.REST) {
+                        anyAlive = true;
+                        break;
+                    }
+                }
+            }
+            if (!anyAlive) {
+                this.changeStatus(BossStatus.ACTIVE);
+            }
+        }
+    }
+
+    @Override
     public void active() {
         if (this.typePk == ConstPlayer.NON_PK) {
             this.changeToTypePK();
@@ -98,7 +122,7 @@ public class SieuBoHung extends Boss {
             return 0;
         }
 
-        if (!callCellCon && damage >= this.nPoint.hp) {
+        if (this.currentLevel == 0 && !callCellCon && damage >= this.nPoint.hp) {
             callCellCon();
             return 0;
         }
