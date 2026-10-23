@@ -355,7 +355,7 @@ public class Controller implements IMessageHandler {
                         byte act = _msg.reader().readByte();
                         switch (act) {
                             case 0 ->
-                                Service.gI().openFlagUI(player);
+                                nro.models.npc.NpcFactory.openMenuTienIch(player);
                             case 1 ->
                                 Service.gI().chooseFlag(player, _msg.reader().readByte());
                         }
@@ -662,15 +662,19 @@ public class Controller implements IMessageHandler {
                                 SuperRankService.gI().competing(player, _id);
                             }
                             default -> {
+                                Boss boss = BossManager.gI().getBoss(_id);
                                 if (player.isAdmin()) {
-                                    Boss boss = BossManager.gI().getBoss(_id);
                                     if (boss != null && boss.zone != null && !boss.isDie()) {
                                         ChangeMapService.gI().changeMapYardrat(player, boss.zone, boss.location.x, boss.location.y);
                                     } else {
                                         Service.gI().sendThongBao(player, "Boss này hiện chưa xuất hiện hoặc đã bị tiêu diệt!");
                                     }
                                 } else {
-                                    Service.gI().sendThongBao(player, "Tính năng dịch chuyển đến Boss đã tắt, hãy tự di chuyển đến map!");
+                                    if (boss != null && boss.zone != null && !boss.isDie()) {
+                                        Service.gI().sendThongBao(player, "Boss " + boss.name + " đang xuất hiện tại " + boss.zone.map.mapName + ", hãy tự chạy đến map và dò khu để tiêu diệt!");
+                                    } else {
+                                        Service.gI().sendThongBao(player, "Boss này hiện chưa xuất hiện, vui lòng chờ hồi sinh!");
+                                    }
                                 }
                             }
                         }

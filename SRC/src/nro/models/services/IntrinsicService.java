@@ -84,7 +84,7 @@ public class IntrinsicService {
     public void showMenu(Player player) {
         NpcService.gI().createMenuConMeo(player, ConstNpc.INTRINSIC, -1,
                 "Nội tại là một kỹ năng bị động hỗ trợ đặc biệt\nBạn có muốn mở hoặc thay đổi nội tại không?",
-                "Xem\ntất cả\nNội Tại", "Mở\nNội Tại", "Mở VIP", "Từ chối");
+                "Menu\nTiện Ích", "Xem\ntất cả\nNội Tại", "Mở\nNội Tại", "Mở VIP", "Từ chối");
     }
 
     public void showConfirmOpen(Player player) {

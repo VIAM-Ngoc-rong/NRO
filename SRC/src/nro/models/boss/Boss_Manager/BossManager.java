@@ -434,7 +434,11 @@ public class BossManager implements Runnable {
                 msg.writer().writeUTF(boss.data[lv].getName());
                 if (boss.zone != null && !boss.isDie()) {
                     msg.writer().writeUTF("Đang sống");
-                    msg.writer().writeUTF(boss.zone.map.mapName + " (" + boss.zone.map.mapId + ") khu " + boss.zone.zoneId);
+                    if (player.isAdmin()) {
+                        msg.writer().writeUTF(boss.zone.map.mapName + " (" + boss.zone.map.mapId + ") khu " + boss.zone.zoneId);
+                    } else {
+                        msg.writer().writeUTF(boss.zone.map.mapName + " (" + boss.zone.map.mapId + ") - Khu ?");
+                    }
                 } else {
                     msg.writer().writeUTF("Đang chờ hồi sinh");
                     msg.writer().writeUTF("Chưa xuất hiện");

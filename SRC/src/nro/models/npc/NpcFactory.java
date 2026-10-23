@@ -453,10 +453,12 @@ public class NpcFactory {
                     case ConstNpc.INTRINSIC -> {
                         switch (select) {
                             case 0 ->
-                                IntrinsicService.gI().showAllIntrinsic(player);
+                                openMenuTienIch(player);
                             case 1 ->
-                                IntrinsicService.gI().showConfirmOpen(player);
+                                IntrinsicService.gI().showAllIntrinsic(player);
                             case 2 ->
+                                IntrinsicService.gI().showConfirmOpen(player);
+                            case 3 ->
                                 IntrinsicService.gI().showConfirmOpenVip(player);
                             default -> {
                             }
@@ -788,6 +790,9 @@ public class NpcFactory {
                             case 4 -> {
                                 openMenuQuanLyDeTu(player);
                             }
+                            case 5 -> {
+                                Service.gI().openFlagUI(player);
+                            }
                         }
                     }
                     case 9901 -> {
@@ -885,13 +890,14 @@ public class NpcFactory {
                 + "|2|Auto Buff Đậu (Sư phụ & Đệ): " + (player.isAutoBuffPea ? "|1|[Đang Bật]" : "|7|[Đang Tắt]") + "\n"
                 + "|2|Auto Treo Quái (Chống đầy túi): " + (player.isAutoCleanBag ? "|1|[Đang Bật]" : "|7|[Đang Tắt]") + "\n"
                 + "|2|Điểm Săn Boss hiện có: |1|" + player.pointSanBoss + " điểm\n"
-                + "|0|(Mẹo: Gõ 'auto' hoặc 'menu' vào chat để mở nhanh ở mọi nơi)";
+                + "|0|(Mẹo: Bấm nút Lá Cờ trên góc màn hình để mở nhanh bảng này ở mọi nơi)";
         NpcService.gI().createMenuConMeo(player, 9900, -1, npcSay,
                 "Auto Đậu\n" + (player.isAutoBuffPea ? "[Tắt]" : "[Bật]"),
                 "Treo Quái\n" + (player.isAutoCleanBag ? "[Tắt]" : "[Bật]"),
-                "D.Sách Boss\n(Bay nhanh)",
+                "Danh sách\nBoss",
                 "Cộng nhanh\nChỉ số",
                 "Quản lý\nĐệ tử",
+                "Đổi Cờ\nPK",
                 "Đóng");
     }
 
