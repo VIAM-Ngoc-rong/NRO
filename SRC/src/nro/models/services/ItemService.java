@@ -85,6 +85,19 @@ public class ItemService {
                     item.itemOptions.add(new Item.ItemOption(bp[0], Util.nextInt(bp[1], bp[2])));
                 }
             }
+            boolean isRubyPermanent = (itemShop.tabShop != null && itemShop.tabShop.id == 590)
+                    || (itemShop.typeSell == 3 && (itemShop.tabShop == null || itemShop.tabShop.id != 59));
+            for (Item.ItemOption io : itemShop.options) {
+                if (io.optionTemplate != null && io.optionTemplate.id == 93) {
+                    isRubyPermanent = false;
+                    break;
+                }
+            }
+            if (isRubyPermanent) {
+                item.itemOptions.add(new Item.ItemOption(73, 0)); // Vĩnh viễn khi mua bằng Hồng Ngọc
+            } else {
+                item.itemOptions.add(new Item.ItemOption(93, 5)); // Hạn sử dụng 5 ngày
+            }
             item.itemOptions.add(new Item.ItemOption(30, 0));
             return item;
         }

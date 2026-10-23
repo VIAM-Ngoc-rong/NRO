@@ -105,16 +105,30 @@ public class ShopDAO {
             return;
         }
 
+        ItemTemplate rubyTemp = ItemService.gI().getTemplate((short) 861);
+        int iconRuby = rubyTemp != null ? rubyTemp.iconID : 7743;
+
         doiDiemShop.tabShops.clear();
         int pageSize = 50;
         int totalPages = (int) Math.ceil(backTemplates.size() / (double) pageSize);
         int autoId = 200000;
 
+        Shop rubyBackShop = new Shop();
+        rubyBackShop.id = 9998;
+        rubyBackShop.npcId = doiDiemShop.npcId;
+        rubyBackShop.tagName = "SHOP_DEO_LUNG_RUBY";
+        rubyBackShop.typeShop = 3; // SPEC_SHOP hiển thị icon Hồng Ngọc
+
         for (int p = 0; p < totalPages; p++) {
             TabShop tab = new TabShop();
             tab.shop = doiDiemShop;
             tab.id = 59;
-            tab.name = totalPages == 1 ? "Đeo Lưng\nSự Kiện" : ("Đeo Lưng\nTrang " + (p + 1));
+            tab.name = totalPages == 1 ? "Đeo Lưng\n(5 Ngày)" : ("Đeo Lưng " + (p + 1) + "\n(5 Ngày)");
+
+            TabShop rubyTab = new TabShop();
+            rubyTab.shop = rubyBackShop;
+            rubyTab.id = 590;
+            rubyTab.name = totalPages == 1 ? "Đeo Lưng\n(Vĩnh Viễn)" : ("Đeo Lưng " + (p + 1) + "\n(Vĩnh Viễn)");
 
             int start = p * pageSize;
             int end = Math.min(backTemplates.size(), start + pageSize);
@@ -128,44 +142,95 @@ public class ShopDAO {
                 is.typeSell = 3;
                 is.iconSpec = iconEventPoint;
 
-                // Phân bậc điểm sự kiện và khung chỉ số trần (khi mua sẽ roll ngẫu nhiên)
+                ItemShop rubyIs = new ItemShop();
+                rubyIs.id = autoId++;
+                rubyIs.tabShop = rubyTab;
+                rubyIs.temp = temp;
+                rubyIs.isNew = true;
+                rubyIs.typeSell = 3; // COST_RUBY
+                rubyIs.iconSpec = iconRuby;
+
+                // Phân bậc điểm sự kiện (HSD 5 ngày) và Hồng Ngọc (Vĩnh viễn)
                 if (idx < backTemplates.size() / 4) {
                     is.cost = 150;
                     is.options.add(new Item.ItemOption(50, 12));  // SĐ ngẫu nhiên 6-12%
                     is.options.add(new Item.ItemOption(77, 12));  // HP ngẫu nhiên 6-12%
                     is.options.add(new Item.ItemOption(103, 12)); // KI ngẫu nhiên 6-12%
                     is.options.add(new Item.ItemOption(14, 6));   // +1~2 dòng phụ ngẫu nhiên
+                    is.options.add(new Item.ItemOption(93, 5));   // Hạn sử dụng 5 ngày
                     is.options.add(new Item.ItemOption(30, 0));
+
+                    rubyIs.cost = 1050;
+                    rubyIs.options.add(new Item.ItemOption(50, 12));
+                    rubyIs.options.add(new Item.ItemOption(77, 12));
+                    rubyIs.options.add(new Item.ItemOption(103, 12));
+                    rubyIs.options.add(new Item.ItemOption(14, 6));
+                    rubyIs.options.add(new Item.ItemOption(73, 0)); // Vĩnh viễn
+                    rubyIs.options.add(new Item.ItemOption(30, 0));
                 } else if (idx < backTemplates.size() / 2) {
                     is.cost = 250;
-                    is.options.add(new Item.ItemOption(50, 16));  // SĐ ngẫu nhiên 9-16%
-                    is.options.add(new Item.ItemOption(77, 16));  // HP ngẫu nhiên 9-16%
-                    is.options.add(new Item.ItemOption(103, 16)); // KI ngẫu nhiên 9-16%
+                    is.options.add(new Item.ItemOption(50, 16));  // SĐ ngẫu nhiên 8-16%
+                    is.options.add(new Item.ItemOption(77, 16));  // HP ngẫu nhiên 8-16%
+                    is.options.add(new Item.ItemOption(103, 16)); // KI ngẫu nhiên 8-16%
                     is.options.add(new Item.ItemOption(14, 8));
                     is.options.add(new Item.ItemOption(5, 10));
+                    is.options.add(new Item.ItemOption(93, 5));   // Hạn sử dụng 5 ngày
                     is.options.add(new Item.ItemOption(30, 0));
+
+                    rubyIs.cost = 1250;
+                    rubyIs.options.add(new Item.ItemOption(50, 16));
+                    rubyIs.options.add(new Item.ItemOption(77, 16));
+                    rubyIs.options.add(new Item.ItemOption(103, 16));
+                    rubyIs.options.add(new Item.ItemOption(14, 8));
+                    rubyIs.options.add(new Item.ItemOption(5, 10));
+                    rubyIs.options.add(new Item.ItemOption(73, 0)); // Vĩnh viễn
+                    rubyIs.options.add(new Item.ItemOption(30, 0));
                 } else if (idx < (backTemplates.size() * 3) / 4) {
                     is.cost = 400;
-                    is.options.add(new Item.ItemOption(50, 20));  // SĐ ngẫu nhiên 12-20%
-                    is.options.add(new Item.ItemOption(77, 20));  // HP ngẫu nhiên 12-20%
-                    is.options.add(new Item.ItemOption(103, 20)); // KI ngẫu nhiên 12-20%
+                    is.options.add(new Item.ItemOption(50, 20));  // SĐ ngẫu nhiên 10-20%
+                    is.options.add(new Item.ItemOption(77, 20));  // HP ngẫu nhiên 10-20%
+                    is.options.add(new Item.ItemOption(103, 20)); // KI ngẫu nhiên 10-20%
                     is.options.add(new Item.ItemOption(5, 14));
                     is.options.add(new Item.ItemOption(95, 12));
+                    is.options.add(new Item.ItemOption(93, 5));   // Hạn sử dụng 5 ngày
                     is.options.add(new Item.ItemOption(30, 0));
+
+                    rubyIs.cost = 1500;
+                    rubyIs.options.add(new Item.ItemOption(50, 20));
+                    rubyIs.options.add(new Item.ItemOption(77, 20));
+                    rubyIs.options.add(new Item.ItemOption(103, 20));
+                    rubyIs.options.add(new Item.ItemOption(5, 14));
+                    rubyIs.options.add(new Item.ItemOption(95, 12));
+                    rubyIs.options.add(new Item.ItemOption(73, 0)); // Vĩnh viễn
+                    rubyIs.options.add(new Item.ItemOption(30, 0));
                 } else {
                     is.cost = 600;
-                    is.options.add(new Item.ItemOption(50, 25));  // SĐ ngẫu nhiên 15-25%
-                    is.options.add(new Item.ItemOption(77, 25));  // HP ngẫu nhiên 15-25%
-                    is.options.add(new Item.ItemOption(103, 25)); // KI ngẫu nhiên 15-25%
+                    is.options.add(new Item.ItemOption(50, 25));  // SĐ ngẫu nhiên 12-25%
+                    is.options.add(new Item.ItemOption(77, 25));  // HP ngẫu nhiên 12-25%
+                    is.options.add(new Item.ItemOption(103, 25)); // KI ngẫu nhiên 12-25%
                     is.options.add(new Item.ItemOption(5, 18));
                     is.options.add(new Item.ItemOption(95, 15));
                     is.options.add(new Item.ItemOption(14, 12));
+                    is.options.add(new Item.ItemOption(93, 5));   // Hạn sử dụng 5 ngày
                     is.options.add(new Item.ItemOption(30, 0));
+
+                    rubyIs.cost = 1800;
+                    rubyIs.options.add(new Item.ItemOption(50, 25));
+                    rubyIs.options.add(new Item.ItemOption(77, 25));
+                    rubyIs.options.add(new Item.ItemOption(103, 25));
+                    rubyIs.options.add(new Item.ItemOption(5, 18));
+                    rubyIs.options.add(new Item.ItemOption(95, 15));
+                    rubyIs.options.add(new Item.ItemOption(14, 12));
+                    rubyIs.options.add(new Item.ItemOption(73, 0)); // Vĩnh viễn
+                    rubyIs.options.add(new Item.ItemOption(30, 0));
                 }
                 tab.itemShops.add(is);
+                rubyTab.itemShops.add(rubyIs);
             }
             doiDiemShop.tabShops.add(tab);
+            rubyBackShop.tabShops.add(rubyTab);
         }
+        shops.add(rubyBackShop);
     }
 
     private static void populateAllCostumesIntoSanta(List<Shop> shops) {
@@ -760,6 +825,13 @@ public class ShopDAO {
                 itemShop.iconSpec = rs.getInt("icon_spec");
                 itemShop.typeSell = rs.getByte("type_sell");
                 loadItemShopOption(con, itemShop);
+                if (itemShop.temp != null && itemShop.temp.type == 11) {
+                    itemShop.options.removeIf(io -> io.optionTemplate != null && io.optionTemplate.id == 93);
+                    boolean isRubyPerm = (itemShop.typeSell == 3 && tabShop.id != 59);
+                    if (!isRubyPerm) {
+                        itemShop.options.add(new Item.ItemOption(93, 5));
+                    }
+                }
                 tabShop.itemShops.add(itemShop);
             }
             try {

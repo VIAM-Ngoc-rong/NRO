@@ -151,6 +151,13 @@ public class QuyLaoKame extends Npc {
             case ConstNpc.KOL_VIP_REWARD_MENU:
                 handleKOLQuestRewardConfirm(player, select, true);
                 break;
+            case 98:
+                if (select == 0) {
+                    ShopService.gI().opendShop(player, "SHOP_DOI_DIEM", false);
+                } else if (select == 1) {
+                    ShopService.gI().opendShop(player, "SHOP_DEO_LUNG_RUBY", false);
+                }
+                break;
             case 99:
                 handleConfirmDoiHaoQuang(player, select);
                 break;
@@ -163,7 +170,15 @@ public class QuyLaoKame extends Npc {
                 handleTalk(player);
                 break;
             case 1:
-                ShopService.gI().opendShop(player, "SHOP_DOI_DIEM", false);
+                String sayDeoLung = "|7|CỬA HÀNG ĐEO LƯNG (CHỈ SỐ NGẪU NHIÊN)\n"
+                        + "|2|Điểm sự kiện hiện có: " + Util.numberToMoney(player.event.getEventPoint()) + " điểm\n"
+                        + "Hồng ngọc hiện có: " + Util.numberToMoney(player.inventory.ruby) + " Hồng ngọc\n"
+                        + "|1|• Đổi bằng Điểm Sự Kiện: Hạn sử dụng 5 ngày\n"
+                        + "• Mua bằng Hồng Ngọc: Sử dụng Vĩnh Viễn";
+                this.createOtherMenu(player, 98, sayDeoLung,
+                        "Đổi Điểm SK\n(HSD 5 Ngày)",
+                        "Mua Hồng Ngọc\n(Vĩnh Viễn)",
+                        "Đóng");
                 break;
             case 2:
                 openDoiDiemSanBossMenu(player);

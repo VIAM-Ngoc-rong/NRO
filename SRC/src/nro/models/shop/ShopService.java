@@ -727,7 +727,7 @@ public class ShopService {
             }
         }
 
-        // Đổi bằng điểm sự kiện
+        // Đổi đeo lưng bằng điểm sự kiện (Hạn sử dụng 5 ngày)
         if (is.tabShop.id == 59 || "SHOP_DOI_DIEM".equals(shop.tagName)) {
             int eventPointPrice = is.cost > 0 ? is.cost : 200;
 
@@ -741,8 +741,20 @@ public class ShopService {
             Item item = ItemService.gI().createItemFromItemShop(is);
             InventoryService.gI().addItemBag(player, item);
             InventoryService.gI().sendItemBags(player);
-            Service.gI().sendThongBao(player, "Đã đổi " + is.temp.name + " (-" + eventPointPrice
+            Service.gI().sendThongBao(player, "Đã đổi " + is.temp.name + " (HSD 5 ngày, -" + eventPointPrice
                     + " điểm sự kiện) nhận chỉ số ngẫu nhiên!");
+            return;
+        }
+        // Mua đeo lưng Vĩnh Viễn bằng Hồng Ngọc
+        if (is.tabShop.id == 590 || "SHOP_DEO_LUNG_RUBY".equals(shop.tagName)) {
+            if (!subMoneyByItemShop(player, is)) {
+                return;
+            }
+            Item item = ItemService.gI().createItemFromItemShop(is);
+            InventoryService.gI().addItemBag(player, item);
+            InventoryService.gI().sendItemBags(player);
+            Service.gI().sendThongBao(player, "Đã mua " + is.temp.name + " Vĩnh Viễn (-" + is.cost
+                    + " Hồng ngọc) nhận chỉ số ngẫu nhiên!");
             return;
         }
         // Đổi bằng điểm Capsule Bang
