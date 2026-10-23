@@ -296,6 +296,17 @@ public class ServerManager {
         } catch (Exception e) {
             Logger.error("Lỗi save player!\n");
         }
+        try {
+            String os = System.getProperty("os.name").toLowerCase();
+            if (!os.contains("win") && new java.io.File("backup_db.sh").exists()) {
+                Process p = new ProcessBuilder("/bin/bash", "./backup_db.sh")
+                        .directory(new java.io.File("."))
+                        .start();
+                p.waitFor(15, TimeUnit.SECONDS);
+            }
+        } catch (Exception e) {
+            Logger.error("Lỗi backup database khi đóng server: " + e.getMessage() + "\n");
+        }
         Logger.success("SUCCESSFULLY SAVED ALL DATA!\n");
     }
 
