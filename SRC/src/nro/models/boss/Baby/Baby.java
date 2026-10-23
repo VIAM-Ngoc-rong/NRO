@@ -22,26 +22,8 @@ public class Baby extends Boss {
 
     @Override
     public void reward(Player plKill) {
-        int x = this.location.x;
-        int y = this.zone.map.yPhysicInTop(x, this.location.y - 24);
+        super.reward(plKill);
         plKill.bossBabyDefeatParticipationCount++;
-        if (Util.isTrue(1, 100)) {
-            int[] costumes = {1785, 1786, 1788};
-            int costumeId = costumes[Util.nextInt(costumes.length)];
-
-            ItemMap itemMap = new ItemMap(this.zone, costumeId, 1, x, y, plKill.id);
-
-            itemMap.options.add(new Item.ItemOption(50, Util.nextInt(30, 40)));
-            itemMap.options.add(new Item.ItemOption(77, Util.nextInt(30, 40)));
-            itemMap.options.add(new Item.ItemOption(103, Util.nextInt(30, 40)));
-            itemMap.options.add(new Item.ItemOption(94, Util.nextInt(10, 20)));
-            itemMap.options.add(new Item.ItemOption(5, Util.nextInt(10, 20)));
-            itemMap.options.add(new Item.ItemOption(204, Util.nextInt(10, 20)));
-            itemMap.options.add(new Item.ItemOption(30, 0));
-            itemMap.options.add(new Item.ItemOption(93, Util.nextInt(2, 5)));
-
-            Service.gI().dropItemMap(this.zone, itemMap);
-        }
     }
 
     @Override

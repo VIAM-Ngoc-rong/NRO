@@ -280,12 +280,19 @@ public class Boss extends Player implements IBoss {
         this.ticksTTNL = 0;
     }
 
+    public boolean isTieuDoiBojack() {
+        return this.id == BossID.BUJIN || this.id == BossID.KOGU || this.id == BossID.ZANGYA
+                || this.id == BossID.BIDO || this.id == BossID.BOJACK || this.id == BossID.SUPER_BOJACK;
+    }
+
     public void startBossTTNL() {
-        if (this.usedTTNL || this.isDie() || this.zone == null) {
+        if ((!this.isTieuDoiBojack() && this.usedTTNL) || this.isUsingTTNL || this.isDie() || this.zone == null) {
             return;
         }
         if (this.effectSkill != null && (this.effectSkill.anTroi || this.effectSkill.isHaveEffectSkill() || this.effectSkill.isBinh || this.effectSkill.isSocola)) {
-            this.usedTTNL = true;
+            if (!this.isTieuDoiBojack()) {
+                this.usedTTNL = true;
+            }
             return;
         }
         this.usedTTNL = true;
@@ -461,7 +468,11 @@ public class Boss extends Player implements IBoss {
             if (this.nPoint.hp < this.nPoint.hpMax / 2) {
                 this.droppedBelow50Hp = true;
             }
-            if (!this.usedTTNL && this.nPoint.hp > 0 && this.nPoint.hp < (this.nPoint.hpMax * 30L / 100L)) {
+            if (this.isTieuDoiBojack()) {
+                if (!this.isUsingTTNL && this.nPoint.hp > 0 && this.nPoint.hp < 2000) {
+                    this.startBossTTNL();
+                }
+            } else if (!this.usedTTNL && this.nPoint.hp > 0 && this.nPoint.hp < (this.nPoint.hpMax * 30L / 100L)) {
                 this.startBossTTNL();
             }
         }
@@ -473,7 +484,7 @@ public class Boss extends Player implements IBoss {
                     EffectSkillService.gI().sendEffectStopCharge(this);
                 }
             } else {
-                long targetHp = this.nPoint.hpMax / 2;
+                long targetHp = this.isTieuDoiBojack() ? Math.min(this.nPoint.hpMax, 5000L) : (this.nPoint.hpMax / 2);
                 if (Util.canDoWithTime(this.lastTimeTickTTNL, 1000)) {
                     this.lastTimeTickTTNL = System.currentTimeMillis();
                     this.ticksTTNL++;
@@ -889,8 +900,9 @@ public class Boss extends Player implements IBoss {
         int x = this.location.x;
         int y = this.zone.map.yPhysicInTop(x, this.location.y - 24);
 
-        if (isDailyBossDropNgocRongTim()) {
-            ItemMap nrTimMap = new ItemMap(this.zone, 1833, 1, x + Util.nextInt(-25, 25), y, plOwner.id);
+        if (isDailyBossDropNgocRongTim() || isBossFromTDSTNappaOnwards()) {
+            int nrTimId = Util.isTrue(50, 100) ? 1832 : 1833;
+            ItemMap nrTimMap = new ItemMap(this.zone, nrTimId, 1, x + Util.nextInt(-25, 25), y, plOwner.id);
             Service.gI().dropItemMap(this.zone, nrTimMap);
         }
 

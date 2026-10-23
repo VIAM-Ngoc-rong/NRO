@@ -34,16 +34,10 @@ public class DeathBeam1 extends Boss {
     }
     @Override
     public void reward(Player plKill) {
+        super.reward(plKill);
         int diem = 5;
         plKill.event.addEventPoint(diem);
         Service.gI().sendThongBao(plKill, "+5 Point");
-        ItemMap CaiTrangFideVang = new ItemMap(zone, 629,1, this.location.x + Util.nextInt(-50, 50), this.zone.map.yPhysicInTop(this.location.x, this.location.y - 24), plKill.id);
-        CaiTrangFideVang.options.add(new Item.ItemOption(30, 1));
-        CaiTrangFideVang.options.add(new Item.ItemOption(50, 20));
-        CaiTrangFideVang.options.add(new Item.ItemOption(77, 20));
-        CaiTrangFideVang.options.add(new Item.ItemOption(103, 20));
-        CaiTrangFideVang.options.add(new Item.ItemOption(93, 20));
-        Service.gI().dropItemMap(this.zone, CaiTrangFideVang);
     }
     @Override
     public void joinMap() {

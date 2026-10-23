@@ -33,13 +33,6 @@ public class BUJIN extends Boss {
     public void reward(Player plKill) {
         super.reward(plKill);
         Service.gI().dropItemMap(this.zone, new ItemMap(zone, 77, Util.nextInt(1, 3), this.location.x + Util.nextInt(-30, 30), this.zone.map.yPhysicInTop(this.location.x, this.location.y - 24), plKill.id));
-        short itTemp = 423;
-        ItemMap it = new ItemMap(zone, itTemp, 1, this.location.x + Util.nextInt(-50, 50), this.zone.map.yPhysicInTop(this.location.x, this.location.y - 24), plKill.id);
-        List<Item.ItemOption> ops = ItemService.gI().getListOptionItemShop(itTemp);
-        if (!ops.isEmpty()) {
-            it.options = ops;
-        }
-        Service.gI().dropItemMap(this.zone, it);
         int diem = 5;
         plKill.event.addEventPoint(diem);
         Service.gI().sendThongBao(plKill, "+5 Point");
