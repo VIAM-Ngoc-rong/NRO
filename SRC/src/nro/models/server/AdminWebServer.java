@@ -666,12 +666,7 @@ public class AdminWebServer {
                     sendJson(exchange, 200, "{\"ok\":true,\"message\":\"Đã gửi thông báo tới toàn bộ người chơi đang online!\"}");
                 }
                 case "give_item" -> {
-                    long playerId = Long.parseLong(params.getOrDefault("playerId", "-1"));
-                    Player pl = Client.gI().getPlayer(playerId);
-                    if (pl == null) {
-                        sendJson(exchange, 404, "{\"ok\":false,\"message\":\"Người chơi này hiện không online! (Nếu muốn cộng VNĐ/Mở TV khi Offline, hãy dùng tab Tài Khoản Database).\"}");
-                        return;
-                    }
+                    String target = params.getOrDefault("playerTarget", params.getOrDefault("playerId", "")).trim();
                     long gold = parseLongSafe(params.get("gold"), 0);
                     int gem = (int) parseLongSafe(params.get("gem"), 0);
                     int ruby = (int) parseLongSafe(params.get("ruby"), 0);
@@ -679,47 +674,92 @@ public class AdminWebServer {
                     int quantity = (int) Math.max(1, parseLongSafe(params.get("quantity"), 1));
                     String customOptions = params.getOrDefault("options", "").trim();
 
-                    StringBuilder given = new StringBuilder();
-                    if (gold > 0) {
-                        pl.inventory.gold = Math.min(Inventory.LIMIT_GOLD, pl.inventory.gold + gold);
-                        given.append(" +").append(gold).append(" Vàng");
-                    }
-                    if (gem > 0) {
-                        pl.inventory.gem = (int) Math.min(Integer.MAX_VALUE, (long) pl.inventory.gem + gem);
-                        given.append(" +").append(gem).append(" Ngọc Xanh");
-                    }
-                    if (ruby > 0) {
-                        pl.inventory.ruby = (int) Math.min(Integer.MAX_VALUE, (long) pl.inventory.ruby + ruby);
-                        given.append(" +").append(ruby).append(" Hồng Ngọc");
-                    }
-                    if (itemId > 0) {
-                        Item item = ItemService.gI().createNewItem((short) itemId, quantity);
-                        if (item != null && item.template != null) {
-                            if (!customOptions.isEmpty()) {
-                                for (String pair : customOptions.split("[,;]")) {
-                                    String[] kv = pair.trim().split("[:=]");
-                                    if (kv.length == 2) {
-                                        int optId = (int) parseLongSafe(kv[0], -1);
-                                        int optParam = (int) parseLongSafe(kv[1], 0);
-                                        if (optId >= 0) {
-                                            item.itemOptions.add(new Item.ItemOption(optId, optParam));
-                                        }
+                    List<Player> recipients = new ArrayList<>();
+                    if ("ALL".equalsIgnoreCase(target)) {
+                        for (Player p : new ArrayList<>(Client.gI().getPlayers())) {
+                            if (p != null && !p.isBot) {
+                                recipients.add(p);
+                            }
+                        }
+                        if (recipients.isEmpty()) {
+                            sendJson(exchange, 404, "{\"ok\":false,\"message\":\"Hiện không có người chơi nào đang Online để phát quà toàn Server!\"}");
+                            return;
+                        }
+                    } else {
+                        Player pl = null;
+                        long pid = parseLongSafe(target, -1);
+                        if (pid > 0) {
+                            pl = Client.gI().getPlayer(pid);
+                        }
+                        if (pl == null && !target.isEmpty()) {
+                            pl = Client.gI().getPlayer(target);
+                            if (pl == null) {
+                                for (Player p : new ArrayList<>(Client.gI().getPlayers())) {
+                                    if (p != null && p.name != null && p.name.equalsIgnoreCase(target)) {
+                                        pl = p;
+                                        break;
                                     }
                                 }
-                            } else {
-                                List<Item.ItemOption> shopOps = ItemService.gI().getListOptionItemShop((short) itemId);
-                                if (shopOps != null && !shopOps.isEmpty()) {
-                                    item.itemOptions.addAll(shopOps);
-                                }
                             }
-                            InventoryService.gI().addItemBag(pl, item);
-                            InventoryService.gI().sendItemBags(pl);
-                            given.append(" +x").append(quantity).append(" ").append(item.template.name);
+                        }
+                        if (pl == null) {
+                            sendJson(exchange, 404, "{\"ok\":false,\"message\":\"Không tìm thấy người chơi [" + target + "] đang Online! Hãy kiểm tra lại Tên nhân vật / ID hoặc chọn từ danh sách Online.\"}");
+                            return;
+                        }
+                        recipients.add(pl);
+                    }
+
+                    StringBuilder givenDesc = new StringBuilder();
+                    for (Player pl : recipients) {
+                        StringBuilder given = new StringBuilder();
+                        if (gold > 0) {
+                            pl.inventory.gold = Math.min(Inventory.LIMIT_GOLD, pl.inventory.gold + gold);
+                            given.append(" +").append(gold).append(" Vàng");
+                        }
+                        if (gem > 0) {
+                            pl.inventory.gem = (int) Math.min(Integer.MAX_VALUE, (long) pl.inventory.gem + gem);
+                            given.append(" +").append(gem).append(" Ngọc Xanh");
+                        }
+                        if (ruby > 0) {
+                            pl.inventory.ruby = (int) Math.min(Integer.MAX_VALUE, (long) pl.inventory.ruby + ruby);
+                            given.append(" +").append(ruby).append(" Hồng Ngọc");
+                        }
+                        if (itemId > 0) {
+                            Item item = ItemService.gI().createNewItem((short) itemId, quantity);
+                            if (item != null && item.template != null) {
+                                if (!customOptions.isEmpty()) {
+                                    for (String pair : customOptions.split("[,;]")) {
+                                        String[] kv = pair.trim().split("[:=]");
+                                        if (kv.length == 2) {
+                                            int optId = (int) parseLongSafe(kv[0], -1);
+                                            int optParam = (int) parseLongSafe(kv[1], 0);
+                                            if (optId >= 0) {
+                                                item.itemOptions.add(new Item.ItemOption(optId, optParam));
+                                            }
+                                        }
+                                    }
+                                } else {
+                                    List<Item.ItemOption> shopOps = ItemService.gI().getListOptionItemShop((short) itemId);
+                                    if (shopOps != null && !shopOps.isEmpty()) {
+                                        item.itemOptions.addAll(shopOps);
+                                    }
+                                }
+                                InventoryService.gI().addItemBag(pl, item);
+                                InventoryService.gI().sendItemBags(pl);
+                                given.append(" +x").append(quantity).append(" ").append(item.template.name);
+                            }
+                        }
+                        Service.gI().sendMoney(pl);
+                        Service.gI().sendThongBao(pl, "Admin vừa trao thưởng cho bạn:" + given);
+                        if (givenDesc.length() == 0) {
+                            givenDesc.append(given);
                         }
                     }
-                    Service.gI().sendMoney(pl);
-                    Service.gI().sendThongBao(pl, "Admin vừa trao thưởng cho bạn:" + given);
-                    sendJson(exchange, 200, "{\"ok\":true,\"message\":" + jsonStr("Đã trao cho " + pl.name + ":" + given) + "}");
+
+                    String targetLabel = recipients.size() > 1
+                            ? ("Tất cả " + recipients.size() + " người chơi Online")
+                            : recipients.get(0).name;
+                    sendJson(exchange, 200, "{\"ok\":true,\"message\":" + jsonStr("Đã trao cho [" + targetLabel + "]:" + givenDesc) + "}");
                 }
                 case "heal_player" -> {
                     long playerId = Long.parseLong(params.getOrDefault("playerId", "-1"));

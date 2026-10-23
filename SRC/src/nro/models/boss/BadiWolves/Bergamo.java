@@ -97,3 +97,4 @@ public class Bergamo extends Boss {
         return 0;
     }
 }
+

@@ -112,3 +112,4 @@ public class Lavender extends Boss {
         this.parentBoss.changeStatus(BossStatus.ACTIVE);
     }
 }
+

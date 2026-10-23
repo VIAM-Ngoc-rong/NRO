@@ -125,3 +125,4 @@ public class Mabu14h extends Boss {
         }
     }
 }
+

@@ -687,7 +687,18 @@
   <div id="giftModal" class="modal-backdrop">
     <div class="modal">
       <h3 id="giftModalTitle">Trao Thưởng Cho Người Chơi</h3>
-      <input type="hidden" id="giftPlayerId" />
+      <div class="grid-2" style="grid-template-columns: 1.2fr 1fr; gap: 10px; background: #f1f5f9; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--border); margin-bottom: 12px;">
+        <div class="form-group" style="margin-bottom: 0;">
+          <label style="color: var(--primary); font-weight: 700;">👤 Chọn Người Nhận Quà (Đang Online):</label>
+          <select id="giftPlayerSelect" onchange="onChangeGiftPlayerSelect()" style="width: 100%; border-color: #93c5fd;">
+            <option value="">-- Chọn người chơi đang Online --</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin-bottom: 0;">
+          <label style="color: var(--text); font-weight: 700;">✍️ Hoặc nhập Tên Nhân Vật / Mã ID:</label>
+          <input type="text" id="giftPlayerId" placeholder="Nhập Tên NV, ID hoặc ALL (Toàn Server)..." />
+        </div>
+      </div>
       <div class="grid-2" style="grid-template-columns: 1fr 1fr; gap: 10px;">
         <div class="form-group">
           <label>Cộng thêm Vàng:</label>
@@ -1243,11 +1254,41 @@
       `).join('') || `<tr><td colspan="5" style="text-align:center;color:var(--muted);">Không tìm thấy Vật phẩm.</td></tr>`;
     }
 
+    function populateGiftPlayerSelect(selectedVal) {
+      const sel = document.getElementById('giftPlayerSelect');
+      if (!sel) return;
+      let html = `<option value="">-- Chọn người chơi đang Online (${cachedPlayers.length}) --</option>`;
+      if (cachedPlayers.length > 0) {
+        html += `<option value="ALL">🎁 TẤT CẢ NGƯỜI CHƠI ONLINE (${cachedPlayers.length} người)</option>`;
+        for (const p of cachedPlayers) {
+          html += `<option value="${p.id}">👤 ${escapeHtml(p.name)} (#${p.id} - ${escapeHtml(p.mapName)})</option>`;
+        }
+      }
+      sel.innerHTML = html;
+      if (selectedVal !== undefined && selectedVal !== null && String(selectedVal) !== '') {
+        sel.value = String(selectedVal);
+      }
+    }
+
+    function onChangeGiftPlayerSelect() {
+      const sel = document.getElementById('giftPlayerSelect');
+      const val = sel.value;
+      if (val) {
+        document.getElementById('giftPlayerId').value = val;
+      }
+    }
+
     function selectItemForGift(itemId, itemName) {
       document.getElementById('giftItemId').value = itemId;
-      if (cachedPlayers.length > 0 && !document.getElementById('giftPlayerId').value) {
-        document.getElementById('giftPlayerId').value = cachedPlayers[0].id;
-        document.getElementById('giftModalTitle').textContent = `Trao [${itemName} #${itemId}] cho: ${cachedPlayers[0].name}`;
+      let curTarget = document.getElementById('giftPlayerId').value.trim();
+      if (!curTarget && cachedPlayers.length > 0) {
+        curTarget = String(cachedPlayers[0].id);
+        document.getElementById('giftPlayerId').value = curTarget;
+      }
+      populateGiftPlayerSelect(curTarget);
+      const found = cachedPlayers.find(p => String(p.id) === curTarget);
+      if (found) {
+        document.getElementById('giftModalTitle').textContent = `Trao [${itemName} #${itemId}] cho: ${found.name}`;
       } else {
         document.getElementById('giftModalTitle').textContent = `Đã chọn Vật Phẩm: ${itemName} (ID: ${itemId})`;
       }
@@ -1436,6 +1477,7 @@
 
     function openGiftModal(playerId, name) {
       document.getElementById('giftPlayerId').value = playerId;
+      populateGiftPlayerSelect(playerId);
       document.getElementById('giftModalTitle').textContent = `Trao Thưởng Cho: ${name} (#${playerId})`;
       document.getElementById('giftGold').value = 0;
       document.getElementById('giftGem').value = 0;
@@ -1451,20 +1493,62 @@
     }
 
     async function submitGift() {
-      const playerId = document.getElementById('giftPlayerId').value;
-      if (!playerId) {
-        showToast('Hãy chọn người chơi đang Online ở Tab 1 hoặc Tab 2 trước!', true);
+      let rawTarget = document.getElementById('giftPlayerId').value.trim();
+      const selVal = document.getElementById('giftPlayerSelect')?.value || '';
+      if (!rawTarget && selVal) {
+        rawTarget = selVal;
+      }
+      if (!rawTarget) {
+        showToast('Vui lòng chọn Người Nhận Quà ở mục thả xuống hoặc nhập Tên Nhân Vật / ID!', true);
         return;
       }
-      const res = await postAction({
-        action: 'give_item',
-        playerId,
+
+      const giftPayload = {
         gold: document.getElementById('giftGold').value,
         gem: document.getElementById('giftGem').value,
         ruby: document.getElementById('giftRuby').value,
         itemId: document.getElementById('giftItemId').value,
         quantity: document.getElementById('giftQuantity').value,
         options: document.getElementById('giftOptions').value.trim()
+      };
+
+      if (rawTarget.toUpperCase() === 'ALL') {
+        if (cachedPlayers.length === 0) {
+          showToast('Hiện không có người chơi nào đang Online để trao quà!', true);
+          return;
+        }
+        let okCount = 0;
+        for (const p of cachedPlayers) {
+          const r = await postAction({
+            action: 'give_item',
+            playerId: p.id,
+            playerTarget: p.id,
+            ...giftPayload
+          });
+          if (r.ok) okCount++;
+        }
+        showToast(`Đã trao quà thành công cho toàn bộ ${okCount}/${cachedPlayers.length} người chơi đang Online!`, okCount === 0);
+        if (okCount > 0) {
+          closeGiftModal();
+          fetchStatus();
+        }
+        return;
+      }
+
+      // Tự động dò ID nếu Admin gõ Tên Nhân Vật
+      let resolvedId = rawTarget;
+      const matchedPlayer = cachedPlayers.find(
+        p => String(p.id) === rawTarget || p.name.toLowerCase() === rawTarget.toLowerCase()
+      );
+      if (matchedPlayer) {
+        resolvedId = String(matchedPlayer.id);
+      }
+
+      const res = await postAction({
+        action: 'give_item',
+        playerId: resolvedId,
+        playerTarget: rawTarget,
+        ...giftPayload
       });
       showToast(res.message, !res.ok);
       if (res.ok) {
