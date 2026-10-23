@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ngọc Rồng VIAM — Bảng Giám Sát & Điều Khiển Server</title>
+  <style>
+    :root {
+      --bg: #0b1120;
+      --panel: #151f32;
+      --panel-hover: #1e293b;
+      --border: #283548;
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+      --primary: #3b82f6;
+      --primary-hover: #2563eb;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --purple: #8b5cf6;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      padding: 20px;
+    }
+    .container { max-width: 1380px; margin: 0 auto; }
+    header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin-bottom: 20px;
+    }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .status-dot {
+      width: 12px; height: 12px; border-radius: 50%;
+      background: var(--danger);
+      box-shadow: 0 0 10px var(--danger);
+      transition: all 0.3s;
+    }
+    .status-dot.online {
+      background: var(--success);
+      box-shadow: 0 0 12px var(--success);
+    }
+    .brand h1 { font-size: 20px; font-weight: 700; }
+    .brand span { font-size: 13px; color: var(--muted); }
+    .conn-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+    }
+    input, select {
+      background: #0f172a;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      outline: none;
+    }
+    input:focus, select:focus { border-color: var(--primary); }
+    button {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+    button:hover { background: var(--primary-hover); }
+    button:active { transform: scale(0.98); }
+    button.btn-success { background: var(--success); }
+    button.btn-success:hover { background: #059669; }
+    button.btn-warning { background: var(--warning); color: #000; }
+    button.btn-danger { background: var(--danger); }
+    button.btn-purple { background: var(--purple); }
+    button.btn-sm { padding: 5px 10px; font-size: 12px; border-radius: 6px; }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    .stat-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 20px;
+    }
+    .stat-label { font-size: 13px; color: var(--muted); margin-bottom: 6px; }
+    .stat-value { font-size: 26px; font-weight: 700; }
+    .stat-sub { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+    .actions-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 20px;
+      margin-bottom: 20px;
+    }
+    .announce-box {
+      display: flex;
+      flex: 1;
+      min-width: 280px;
+      gap: 8px;
+    }
+    .announce-box input { flex: 1; }
+    .quick-btns { display: flex; flex-wrap: wrap; gap: 8px; }
+
+    .tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .tab-btn {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .tab-btn.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin-bottom: 20px;
+    }
+    .card-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .table-wrap { overflow-x: auto; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    th, td {
+      text-align: left;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    th { color: var(--muted); font-weight: 600; background: #0f172a; }
+    tr:hover td { background: var(--panel-hover); }
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .badge-alive { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+    .badge-dead { background: rgba(148, 163, 184, 0.15); color: #94a3b8; }
+
+    .hp-bar-bg {
+      width: 120px;
+      height: 8px;
+      background: #0f172a;
+      border-radius: 999px;
+      overflow: hidden;
+      margin-top: 4px;
+    }
+    .hp-bar-fill {
+      height: 100%;
+      background: var(--success);
+      transition: width 0.3s;
+    }
+
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+    }
+    .modal-backdrop.show { display: flex; }
+    .modal {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      width: 100%;
+      max-width: 420px;
+    }
+    .modal h3 { margin-bottom: 14px; }
+    .form-group { margin-bottom: 12px; }
+    .form-group label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+    .form-group input { width: 100%; }
+    .modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
+
+    #toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #1e293b;
+      border-left: 4px solid var(--success);
+      color: #fff;
+      padding: 12px 18px;
+      border-radius: 8px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      display: none;
+      z-index: 1000;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <div id="statusDot" class="status-dot"></div>
+        <div>
+          <h1 id="serverTitle">Ngọc Rồng VIAM — Giám Sát Server</h1>
+          <span id="connStatusText">Đang kết nối tới máy chủ...</span>
+        </div>
+      </div>
+      <div class="conn-bar">
+        <select id="presetHost" onchange="applyPresetHost()">
+          <option value="http://103.179.190.242:14446">VPS (103.179.190.242:14446)</option>
+          <option value="http://127.0.0.1:14446">Máy Local (127.0.0.1:14446)</option>
+        </select>
+        <input type="text" id="apiHost" value="http://103.179.190.242:14446" style="width: 210px;" placeholder="http://IP:14446" />
+        <input type="password" id="adminKey" value="viam2026" style="width: 110px;" placeholder="Mã Admin" />
+        <button onclick="fetchStatus()">Làm mới ngay</button>
+      </div>
+    </header>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Người chơi đang Online</div>
+        <div class="stat-value" id="statOnline" style="color: #34d399;">0</div>
+        <div class="stat-sub" id="statStartTime">Khởi chạy: --</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Boss đang xuất hiện</div>
+        <div class="stat-value" id="statBoss" style="color: #fbbf24;">0 / 0</div>
+        <div class="stat-sub">Bấm tab Giám Sát Boss để xem khu & gọi Boss</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Bộ nhớ RAM Server (JVM)</div>
+        <div class="stat-value" id="statRam" style="color: #60a5fa;">0 / 0 MB</div>
+        <div class="stat-sub" id="statThreads">Số luồng xử lý: --</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Thời gian hoạt động (Uptime)</div>
+        <div class="stat-value" id="statUptime">00:00:00</div>
+        <div class="stat-sub">Tự động làm mới mỗi 3 giây</div>
+      </div>
+    </div>
+
+    <div class="actions-bar">
+      <div class="announce-box">
+        <input type="text" id="announceText" placeholder="Nhập thông báo gửi toàn bộ người chơi đang online..." onkeydown="if(event.key==='Enter') sendAnnounce()" />
+        <button onclick="sendAnnounce()">Gửi Thông Báo</button>
+      </div>
+      <div class="quick-btns">
+        <button class="btn-success" onclick="saveAllData()">Lưu Dữ Liệu (Save All)</button>
+        <button class="btn-purple" onclick="downloadBackup()">Tải Backup MySQL (.sql.gz) Về Máy</button>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn active" id="tabBtnPlayers" onclick="switchTab('players')">Người Chơi Đang Online (<span id="countPlayersTab">0</span>)</button>
+      <button class="tab-btn" id="tabBtnBosses" onclick="switchTab('bosses')">Giám Sát & Gọi Boss (<span id="countBossesTab">0</span>)</button>
+    </div>
+
+    <div class="card" id="tabPlayers">
+      <div class="card-header">
+        <h3>Danh sách Nhân vật đang trực tuyến</h3>
+        <input type="text" id="searchPlayer" placeholder="Tìm tên nhân vật hoặc map..." oninput="renderPlayers()" style="width: 240px;" />
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Tên nhân vật</th>
+              <th>Hệ</th>
+              <th>Sức mạnh</th>
+              <th>Chỉ số (HP / KI / SĐ)</th>
+              <th>Tài sản (Vàng / Ngọc / Hồng Ngọc)</th>
+              <th>Vị trí hiện tại</th>
+              <th>Đệ tử</th>
+              <th>Thao tác nhanh</th>
+            </tr>
+          </thead>
+          <tbody id="playersTableBody">
+            <tr><td colspan="9" style="text-align:center;color:var(--muted);">Chưa có dữ liệu...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card" id="tabBosses" style="display: none;">
+      <div class="card-header">
+        <h3>Giám sát vị trí & máu của toàn bộ Boss</h3>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <select id="filterBossStatus" onchange="renderBosses()">
+            <option value="all">Tất cả Boss</option>
+            <option value="alive">Chỉ Boss đang sống</option>
+            <option value="dead">Đang chờ hồi sinh</option>
+          </select>
+          <input type="text" id="searchBoss" placeholder="Tìm tên Boss hoặc tên Map..." oninput="renderBosses()" style="width: 240px;" />
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Tên Boss</th>
+              <th>Trạng thái</th>
+              <th>Máu hiện tại (HP)</th>
+              <th>Bản đồ (Map)</th>
+              <th>Khu vực</th>
+              <th>Điều khiển</th>
+            </tr>
+          </thead>
+          <tbody id="bossesTableBody">
+            <tr><td colspan="7" style="text-align:center;color:var(--muted);">Chưa có dữ liệu...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="giftModal">
+    <div class="modal">
+      <h3 id="giftModalTitle">Trao thưởng cho người chơi</h3>
+      <input type="hidden" id="giftPlayerId" />
+      <div class="form-group">
+        <label>Cộng thêm Vàng:</label>
+        <input type="number" id="giftGold" value="0" min="0" />
+      </div>
+      <div class="form-group">
+        <label>Cộng thêm Ngọc Xanh:</label>
+        <input type="number" id="giftGem" value="0" min="0" />
+      </div>
+      <div class="form-group">
+        <label>Cộng thêm Hồng Ngọc:</label>
+        <input type="number" id="giftRuby" value="0" min="0" />
+      </div>
+      <div class="form-group">
+        <label>Tặng Vật Phẩm theo ID (Để 0 nếu không tặng item):</label>
+        <input type="number" id="giftItemId" value="0" placeholder="VD: 457 (Thỏi vàng), 1833 (NR 7s tím)..." />
+      </div>
+      <div class="form-group">
+        <label>Số lượng Vật Phẩm:</label>
+        <input type="number" id="giftQuantity" value="1" min="1" />
+      </div>
+      <div class="modal-actions">
+        <button style="background:#475569;" onclick="closeGiftModal()">Hủy</button>
+        <button class="btn-success" onclick="submitGift()">Trao Ngay</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast"></div>
+
+  <script>
+    let cachedPlayers = [];
+    let cachedBosses = [];
+
+    if (window.location.protocol.startsWith('http') && window.location.port === '14446') {
+      document.getElementById('apiHost').value = window.location.origin;
+    }
+
+    function applyPresetHost() {
+      document.getElementById('apiHost').value = document.getElementById('presetHost').value;
+      fetchStatus();
+    }
+
+    function getBaseUrl() {
+      return document.getElementById('apiHost').value.replace(/\/+$/, '');
+    }
+
+    function getKey() {
+      return encodeURIComponent(document.getElementById('adminKey').value.trim());
+    }
+
+    function showToast(msg, isError = false) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.style.borderLeftColor = isError ? '#ef4444' : '#10b981';
+      t.style.display = 'block';
+      clearTimeout(window._toastTimer);
+      window._toastTimer = setTimeout(() => { t.style.display = 'none'; }, 4000);
+    }
+
+    function formatNum(n) {
+      return Number(n || 0).toLocaleString('vi-VN');
+    }
+
+    function formatUptime(sec) {
+      sec = Math.max(0, Number(sec || 0));
+      const h = Math.floor(sec / 3600);
+      const m = Math.floor((sec % 3600) / 60);
+      const s = Math.floor(sec % 60);
+      return [h, m, s].map(v => String(v).padStart(2, '0')).join(':');
+    }
+
+    function switchTab(tab) {
+      document.getElementById('tabPlayers').style.display = tab === 'players' ? 'block' : 'none';
+      document.getElementById('tabBosses').style.display = tab === 'bosses' ? 'block' : 'none';
+      document.getElementById('tabBtnPlayers').classList.toggle('active', tab === 'players');
+      document.getElementById('tabBtnBosses').classList.toggle('active', tab === 'bosses');
+    }
+
+    async function fetchStatus() {
+      const dot = document.getElementById('statusDot');
+      const statusText = document.getElementById('connStatusText');
+      try {
+        const res = await fetch(`${getBaseUrl()}/api/status?key=${getKey()}`);
+        const data = await res.json();
+        if (!data.ok) {
+          dot.classList.remove('online');
+          statusText.textContent = data.message || 'Lỗi xác thực!';
+          return;
+        }
+        dot.classList.add('online');
+        statusText.textContent = `Đã kết nối trực tiếp • Cập nhật lúc ${new Date().toLocaleTimeString('vi-VN')}`;
+        document.getElementById('statOnline').textContent = data.onlineCount;
+        document.getElementById('statStartTime').textContent = `Khởi chạy: ${data.timeStart || '--'}`;
+        document.getElementById('statBoss').textContent = `${data.aliveBossCount} / ${data.totalBossCount}`;
+        document.getElementById('statRam').textContent = `${data.usedRamMb} / ${data.maxRamMb} MB`;
+        document.getElementById('statThreads').textContent = `Số luồng xử lý: ${data.threadsCount} threads`;
+        document.getElementById('statUptime').textContent = formatUptime(data.uptimeSec);
+
+        cachedPlayers = data.players || [];
+        cachedBosses = data.bosses || [];
+        document.getElementById('countPlayersTab').textContent = cachedPlayers.length;
+        document.getElementById('countBossesTab').textContent = `${data.aliveBossCount}/${cachedBosses.length}`;
+
+        renderPlayers();
+        renderBosses();
+      } catch (err) {
+        dot.classList.remove('online');
+        statusText.textContent = 'Mất kết nối hoặc Server đang khởi động lại...';
+      }
+    }
+
+    function renderPlayers() {
+      const tbody = document.getElementById('playersTableBody');
+      const q = document.getElementById('searchPlayer').value.toLowerCase().trim();
+      const filtered = cachedPlayers.filter(p =>
+        !q || p.name.toLowerCase().includes(q) || p.mapName.toLowerCase().includes(q) || String(p.id).includes(q)
+      );
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;color:var(--muted);">Không có người chơi nào đang online.</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = filtered.map(p => `
+        <tr>
+          <td>#${p.id}</td>
+          <td style="font-weight:700;color:#60a5fa;">${p.name}</td>
+          <td>${p.gender}</td>
+          <td>${formatNum(p.power)}</td>
+          <td>
+            HP: ${formatNum(p.hp)}/${formatNum(p.hpMax)}<br/>
+            <span style="color:var(--muted);font-size:12px;">KI: ${formatNum(p.mp)} | SĐ: ${formatNum(p.dame)}</span>
+          </td>
+          <td>
+            <span style="color:#fbbf24;">${formatNum(p.gold)} Vàng</span><br/>
+            <span style="color:#34d399;font-size:12px;">${formatNum(p.gem)} Ngọc</span> •
+            <span style="color:#f472b6;font-size:12px;">${formatNum(p.ruby)} H.Ngọc</span>
+          </td>
+          <td><b>${p.mapName}</b> (${p.mapId})<br/><span style="color:var(--muted);font-size:12px;">Khu ${p.zoneId}</span></td>
+          <td>${p.hasPet ? `<span class="badge badge-alive">Có (${formatNum(p.petPower)})</span>` : `<span class="badge badge-dead">Chưa có</span>`}</td>
+          <td>
+            <button class="btn-sm btn-success" onclick="openGiftModal(${p.id}, '${p.name.replace(/'/g, "\\'")}')">Trao Quà</button>
+            <button class="btn-sm btn-danger" onclick="kickPlayer(${p.id}, '${p.name.replace(/'/g, "\\'")}')">Kick</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function renderBosses() {
+      const tbody = document.getElementById('bossesTableBody');
+      const filter = document.getElementById('filterBossStatus').value;
+      const q = document.getElementById('searchBoss').value.toLowerCase().trim();
+      const filtered = cachedBosses.filter(b => {
+        if (filter === 'alive' && !b.alive) return false;
+        if (filter === 'dead' && b.alive) return false;
+        if (q && !b.name.toLowerCase().includes(q) && !b.mapName.toLowerCase().includes(q)) return false;
+        return true;
+      });
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:var(--muted);">Không tìm thấy Boss phù hợp.</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = filtered.map(b => {
+        const pct = b.hpMax > 0 ? Math.max(0, Math.min(100, Math.round((b.hp / b.hpMax) * 100))) : 0;
+        return `
+          <tr>
+            <td>#${b.index}</td>
+            <td style="font-weight:700;">${b.name}</td>
+            <td>
+              ${b.alive
+                ? `<span class="badge badge-alive">Đang sống (${b.status})</span>`
+                : `<span class="badge badge-dead">Chờ hồi sinh (${b.status})</span>`}
+            </td>
+            <td>
+              ${b.alive ? `${formatNum(b.hp)} / ${formatNum(b.hpMax)} (${pct}%)` : `-- / ${formatNum(b.hpMax)}`}
+              <div class="hp-bar-bg"><div class="hp-bar-fill" style="width:${b.alive ? pct : 0}%"></div></div>
+            </td>
+            <td>${b.alive ? `<b>${b.mapName}</b> (${b.mapId})` : `<span style="color:var(--muted);">Chưa xuất hiện</span>`}</td>
+            <td>${b.alive ? `<b style="color:#fbbf24;">Khu ${b.zoneId}</b>` : `--`}</td>
+            <td>
+              ${!b.alive
+                ? `<button class="btn-sm btn-warning" onclick="spawnBoss(${b.index}, '${b.name.replace(/'/g, "\\'")}')">Gọi Xuất Hiện Ngay</button>`
+                : `<span style="color:#34d399;font-size:12px;">Đang ở khu ${b.zoneId}</span>`}
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    async function postAction(paramsObj) {
+      const body = new URLSearchParams({ key: document.getElementById('adminKey').value.trim(), ...paramsObj });
+      const res = await fetch(`${getBaseUrl()}/api/action`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+        body: body.toString()
+      });
+      return await res.json();
+    }
+
+    async function sendAnnounce() {
+      const input = document.getElementById('announceText');
+      const text = input.value.trim();
+      if (!text) return;
+      try {
+        const res = await postAction({ action: 'announce', text });
+        showToast(res.message, !res.ok);
+        if (res.ok) input.value = '';
+      } catch (e) {
+        showToast('Không thể gửi thông báo tới Server!', true);
+      }
+    }
+
+    async function saveAllData() {
+      try {
+        const res = await postAction({ action: 'save_all' });
+        showToast(res.message, !res.ok);
+      } catch (e) {
+        showToast('Lỗi khi lưu dữ liệu!', true);
+      }
+    }
+
+    function downloadBackup() {
+      showToast('Đang tạo bản Backup mới nhất và tải về máy...');
+      window.open(`${getBaseUrl()}/api/backup/download?key=${getKey()}`, '_blank');
+    }
+
+    async function spawnBoss(bossIndex, bossName) {
+      try {
+        const res = await postAction({ action: 'spawn_boss', bossIndex });
+        showToast(res.message, !res.ok);
+        setTimeout(fetchStatus, 800);
+      } catch (e) {
+        showToast('Lỗi khi gọi Boss!', true);
+      }
+    }
+
+    async function kickPlayer(playerId, playerName) {
+      if (!confirm(`Bạn có chắc muốn lưu dữ liệu và Kick [${playerName}] ra khỏi game?`)) return;
+      try {
+        const res = await postAction({ action: 'kick', playerId });
+        showToast(res.message, !res.ok);
+        fetchStatus();
+      } catch (e) {
+        showToast('Lỗi khi kick người chơi!', true);
+      }
+    }
+
+    function openGiftModal(playerId, playerName) {
+      document.getElementById('giftPlayerId').value = playerId;
+      document.getElementById('giftModalTitle').textContent = `Trao quà cho: ${playerName} (#${playerId})`;
+      document.getElementById('giftGold').value = 0;
+      document.getElementById('giftGem').value = 0;
+      document.getElementById('giftRuby').value = 0;
+      document.getElementById('giftItemId').value = 0;
+      document.getElementById('giftQuantity').value = 1;
+      document.getElementById('giftModal').classList.add('show');
+    }
+
+    function closeGiftModal() {
+      document.getElementById('giftModal').classList.remove('show');
+    }
+
+    async function submitGift() {
+      const playerId = document.getElementById('giftPlayerId').value;
+      const gold = document.getElementById('giftGold').value;
+      const gem = document.getElementById('giftGem').value;
+      const ruby = document.getElementById('giftRuby').value;
+      const itemId = document.getElementById('giftItemId').value;
+      const quantity = document.getElementById('giftQuantity').value;
+      try {
+        const res = await postAction({ action: 'give_item', playerId, gold, gem, ruby, itemId, quantity });
+        showToast(res.message, !res.ok);
+        if (res.ok) {
+          closeGiftModal();
+          fetchStatus();
+        }
+      } catch (e) {
+        showToast('Lỗi khi trao quà!', true);
+      }
+    }
+
+    fetchStatus();
+    setInterval(fetchStatus, 3000);
+  </script>
+</body>
+</html>

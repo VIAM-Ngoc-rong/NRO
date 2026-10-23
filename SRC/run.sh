@@ -4,6 +4,11 @@ export LC_ALL=C.UTF-8
 cd "$(dirname "$0")"
 SCRIPT_DIR="$(pwd)"
 
+# Mở port 14446 cho Web Giám Sát Admin (nếu VPS bật UFW)
+if command -v ufw >/dev/null 2>&1; then
+    ufw allow 14446/tcp >/dev/null 2>&1 || true
+fi
+
 if [ -f "backup_db.sh" ]; then
     sed -i 's/\r$//' backup_db.sh 2>/dev/null || true
     chmod +x backup_db.sh

@@ -108,6 +108,7 @@ public class ServerManager {
             isRunning = true;
             Runtime.getRuntime().addShutdownHook(new Thread(this::saveAllDataOnShutdown, "ShutdownSaveHook"));
             activeServerSocket();
+            AdminWebServer.start();
 
             // Gửi các nhiệm vụ cập nhật theo từng dịch vụ
             new Thread(NgocRongNamecService.gI(), "Update NRNM").start();
