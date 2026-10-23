@@ -6,18 +6,39 @@
   <title>Ngọc Rồng VIAM — Trung Tâm Quản Trị Server</title>
   <style>
     :root {
-      --bg: #0b1120;
-      --panel: #151f32;
-      --panel-hover: #1e293b;
-      --border: #26354d;
+      --bg: #f1f5f9;
+      --panel: #ffffff;
+      --panel-hover: #f8fafc;
+      --table-head: #f8fafc;
+      --input-bg: #ffffff;
+      --border: #cbd5e1;
+      --text: #0f172a;
+      --muted: #64748b;
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --success: #059669;
+      --warning: #d97706;
+      --danger: #dc2626;
+      --purple: #7c3aed;
+      --teal: #0d9488;
+      --shadow: 0 2px 10px rgba(15, 23, 42, 0.06);
+    }
+    body.dark-mode {
+      --bg: #0f172a;
+      --panel: #1e293b;
+      --panel-hover: #263449;
+      --table-head: #0f172a;
+      --input-bg: #0f172a;
+      --border: #334155;
       --text: #f8fafc;
       --muted: #94a3b8;
       --primary: #3b82f6;
-      --primary-hover: #2563eb;
       --success: #10b981;
       --warning: #f59e0b;
       --danger: #ef4444;
       --purple: #8b5cf6;
+      --teal: #14b8a6;
+      --shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -26,8 +47,9 @@
       color: var(--text);
       line-height: 1.5;
       padding: 18px;
+      transition: background 0.2s, color 0.2s;
     }
-    .container { max-width: 1440px; margin: 0 auto; }
+    .container { max-width: 1460px; margin: 0 auto; }
 
     header {
       display: flex;
@@ -37,14 +59,15 @@
       gap: 14px;
       background: var(--panel);
       border: 1px solid var(--border);
-      padding: 14px 20px;
+      box-shadow: var(--shadow);
+      padding: 15px 20px;
       border-radius: 12px;
       margin-bottom: 16px;
     }
     .brand { display: flex; align-items: center; gap: 12px; }
     .status-dot {
-      width: 13px;
-      height: 13px;
+      width: 14px;
+      height: 14px;
       border-radius: 50%;
       background: var(--danger);
       box-shadow: 0 0 10px var(--danger);
@@ -54,8 +77,8 @@
       background: var(--success);
       box-shadow: 0 0 12px var(--success);
     }
-    .brand h1 { font-size: 19px; font-weight: 700; }
-    .brand span { font-size: 12px; color: var(--muted); }
+    .brand h1 { font-size: 19px; font-weight: 800; color: var(--text); }
+    .brand span { font-size: 12.5px; color: var(--muted); font-weight: 500; }
 
     .conn-bar {
       display: flex;
@@ -64,7 +87,7 @@
       gap: 8px;
     }
     input, select {
-      background: #0f172a;
+      background: var(--input-bg);
       border: 1px solid var(--border);
       color: var(--text);
       padding: 8px 11px;
@@ -72,26 +95,27 @@
       font-size: 13px;
       outline: none;
     }
-    input:focus, select:focus { border-color: var(--primary); }
+    input:focus, select:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15); }
     button {
       background: var(--primary);
       color: #fff;
       border: none;
-      padding: 8px 13px;
+      padding: 8px 14px;
       border-radius: 8px;
       font-size: 13px;
       font-weight: 600;
       cursor: pointer;
-      transition: opacity 0.2s, transform 0.1s;
+      transition: opacity 0.18s, transform 0.1s;
     }
     button:hover { opacity: 0.92; }
     button:active { transform: scale(0.98); }
-    .btn-success { background: var(--success); }
-    .btn-warning { background: var(--warning); color: #111827; }
-    .btn-danger { background: var(--danger); }
-    .btn-purple { background: var(--purple); }
-    .btn-muted { background: #334155; }
-    .btn-sm { padding: 5px 9px; font-size: 12px; border-radius: 6px; }
+    .btn-success { background: var(--success); color: #fff; }
+    .btn-warning { background: var(--warning); color: #fff; }
+    .btn-danger { background: var(--danger); color: #fff; }
+    .btn-purple { background: var(--purple); color: #fff; }
+    .btn-teal { background: var(--teal); color: #fff; }
+    .btn-muted { background: #64748b; color: #fff; }
+    .btn-sm { padding: 5px 10px; font-size: 12px; border-radius: 6px; }
 
     .stats-grid {
       display: grid;
@@ -102,19 +126,21 @@
     .stat-card {
       background: var(--panel);
       border: 1px solid var(--border);
+      box-shadow: var(--shadow);
       border-radius: 12px;
-      padding: 14px 18px;
+      padding: 15px 18px;
     }
-    .stat-label { font-size: 12px; color: var(--muted); margin-bottom: 4px; }
-    .stat-value { font-size: 24px; font-weight: 700; }
-    .stat-sub { font-size: 12px; color: var(--muted); margin-top: 4px; }
+    .stat-label { font-size: 12.5px; color: var(--muted); font-weight: 600; margin-bottom: 4px; }
+    .stat-value { font-size: 25px; font-weight: 800; }
+    .stat-sub { font-size: 12px; color: var(--muted); margin-top: 5px; }
 
     .actions-bar {
       display: flex;
       flex-wrap: wrap;
-      gap: 10px;
+      gap: 9px;
       background: var(--panel);
       border: 1px solid var(--border);
+      box-shadow: var(--shadow);
       padding: 12px 16px;
       border-radius: 12px;
       margin-bottom: 16px;
@@ -123,7 +149,7 @@
     .announce-box {
       display: flex;
       flex: 1;
-      min-width: 260px;
+      min-width: 250px;
       gap: 8px;
     }
     .announce-box input { flex: 1; }
@@ -138,10 +164,11 @@
       background: var(--panel);
       border: 1px solid var(--border);
       color: var(--muted);
-      padding: 9px 16px;
-      border-radius: 8px;
+      padding: 10px 16px;
+      border-radius: 9px;
       font-size: 13.5px;
-      font-weight: 600;
+      font-weight: 700;
+      box-shadow: var(--shadow);
     }
     .tab-btn.active {
       background: var(--primary);
@@ -152,6 +179,7 @@
     .card {
       background: var(--panel);
       border: 1px solid var(--border);
+      box-shadow: var(--shadow);
       border-radius: 12px;
       padding: 16px 18px;
       margin-bottom: 18px;
@@ -166,10 +194,10 @@
     }
     .grid-2 {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(430px, 1fr));
       gap: 16px;
     }
-    .table-wrap { overflow-x: auto; max-height: 560px; overflow-y: auto; }
+    .table-wrap { overflow-x: auto; max-height: 600px; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px; }
     table {
       width: 100%;
       border-collapse: collapse;
@@ -177,14 +205,14 @@
     }
     th, td {
       text-align: left;
-      padding: 9px 11px;
+      padding: 9px 12px;
       border-bottom: 1px solid var(--border);
       white-space: nowrap;
     }
     th {
       color: var(--muted);
-      font-weight: 600;
-      background: #0f172a;
+      font-weight: 700;
+      background: var(--table-head);
       position: sticky;
       top: 0;
       z-index: 2;
@@ -192,35 +220,63 @@
     tr:hover td { background: var(--panel-hover); }
     .badge {
       display: inline-block;
-      padding: 2px 8px;
+      padding: 3px 9px;
       border-radius: 999px;
       font-size: 11px;
-      font-weight: 600;
+      font-weight: 700;
     }
-    .badge-alive { background: rgba(16, 185, 129, 0.2); color: #34d399; }
-    .badge-dead { background: rgba(148, 163, 184, 0.15); color: #94a3b8; }
-    .badge-ban { background: rgba(239, 68, 68, 0.2); color: #f87171; }
-    .badge-admin { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
+    .badge-alive { background: #d1fae5; color: #065f46; }
+    .badge-dead { background: #e2e8f0; color: #475569; }
+    .badge-ban { background: #fee2e2; color: #991b1b; }
+    .badge-admin { background: #fef3c7; color: #92400e; }
+    body.dark-mode .badge-alive { background: rgba(16, 185, 129, 0.22); color: #34d399; }
+    body.dark-mode .badge-dead { background: rgba(148, 163, 184, 0.18); color: #cbd5e1; }
+    body.dark-mode .badge-ban { background: rgba(239, 68, 68, 0.22); color: #f87171; }
+    body.dark-mode .badge-admin { background: rgba(245, 158, 11, 0.22); color: #fbbf24; }
+
+    .text-name { color: var(--primary); font-weight: 700; }
+    .text-power { color: #d97706; font-weight: 700; }
+    .text-gold { color: #b45309; font-weight: 600; }
+    .text-gem { color: #059669; font-weight: 600; }
+    .text-ruby { color: #e11d48; font-weight: 600; }
+    .text-vnd { color: #7c3aed; font-weight: 700; }
+    body.dark-mode .text-name { color: #60a5fa; }
+    body.dark-mode .text-power { color: #fbbf24; }
+    body.dark-mode .text-gold { color: #fcd34d; }
+    body.dark-mode .text-gem { color: #34d399; }
+    body.dark-mode .text-ruby { color: #fb7185; }
+    body.dark-mode .text-vnd { color: #a78bfa; }
 
     .hp-bar-bg {
       width: 110px;
       height: 7px;
-      background: #0f172a;
+      background: #cbd5e1;
       border-radius: 999px;
       overflow: hidden;
       margin-top: 4px;
     }
+    body.dark-mode .hp-bar-bg { background: #0f172a; }
     .hp-bar-fill {
       height: 100%;
       background: var(--success);
       transition: width 0.3s;
     }
 
+    .pagination-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 10px 4px 2px;
+      font-size: 12.5px;
+      color: var(--muted);
+    }
+
     .modal-backdrop {
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.72);
+      background: rgba(15, 23, 42, 0.6);
       align-items: center;
       justify-content: center;
       z-index: 999;
@@ -230,21 +286,22 @@
     .modal {
       background: var(--panel);
       border: 1px solid var(--border);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
       border-radius: 12px;
       padding: 20px;
       width: 100%;
-      max-width: 520px;
+      max-width: 540px;
       max-height: 90vh;
       overflow-y: auto;
     }
     .modal h3 { margin-bottom: 14px; }
     .form-group { margin-bottom: 11px; }
-    .form-group label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+    .form-group label { display: block; font-size: 12px; font-weight: 600; color: var(--muted); margin-bottom: 4px; }
     .form-group input, .form-group select { width: 100%; }
     .modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
 
     pre.log-box {
-      background: #090d16;
+      background: #0f172a;
       border: 1px solid var(--border);
       padding: 12px;
       border-radius: 8px;
@@ -260,15 +317,16 @@
       position: fixed;
       bottom: 20px;
       right: 20px;
-      background: #1e293b;
+      background: #0f172a;
       border-left: 4px solid var(--success);
       color: #fff;
       padding: 12px 18px;
       border-radius: 8px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
       display: none;
       z-index: 1000;
       font-size: 13px;
+      font-weight: 500;
     }
   </style>
 </head>
@@ -283,13 +341,14 @@
         </div>
       </div>
       <div class="conn-bar">
+        <button class="btn-muted btn-sm" onclick="toggleTheme()" id="themeBtn" title="Đổi giao diện Sáng / Tối">🌙 Giao diện Tối</button>
         <select id="presetHost" onchange="applyPresetHost()">
           <option value="http://103.179.190.242:14445">VPS (103.179.190.242:14445)</option>
           <option value="http://103.179.190.242:14446">VPS Port Phụ (103.179.190.242:14446)</option>
           <option value="http://127.0.0.1:14445">Máy Local (127.0.0.1:14445)</option>
         </select>
         <input type="text" id="apiHost" value="http://103.179.190.242:14445" style="width: 205px;" placeholder="http://IP:14445" />
-        <input type="password" id="adminKey" value="viam2026" style="width: 105px;" placeholder="Mã Admin" />
+        <input type="password" id="adminKey" value="viam2026" style="width: 100px;" placeholder="Mã Admin" />
         <button onclick="fetchStatus()">Làm mới</button>
       </div>
     </header>
@@ -297,28 +356,28 @@
     <div class="stats-grid">
       <div class="stat-card">
         <div class="stat-label">Người chơi Online / Bot</div>
-        <div class="stat-value"><span id="statOnline" style="color: #34d399;">0</span> <span style="font-size:15px;color:#94a3b8;">(+<span id="statBotCount">0</span> Bot)</span></div>
+        <div class="stat-value"><span id="statOnline" style="color: var(--success);">0</span> <span style="font-size:15px;color:var(--muted);">(+<span id="statBotCount">0</span> Bot)</span></div>
         <div class="stat-sub" id="statStartTime">Khởi chạy: --</div>
       </div>
       <div class="stat-card">
         <div class="stat-label">Boss đang xuất hiện</div>
-        <div class="stat-value" id="statBoss" style="color: #fbbf24;">0 / 0</div>
+        <div class="stat-value" id="statBoss" style="color: var(--warning);">0 / 0</div>
         <div class="stat-sub">Bấm tab Giám Sát Boss để xem khu & gọi Boss</div>
       </div>
       <div class="stat-card">
         <div class="stat-label">Tỷ lệ EXP Server hiện tại</div>
-        <div class="stat-value" id="statExpRate" style="color: #f472b6;">x1</div>
+        <div class="stat-value" id="statExpRate" style="color: var(--purple);">x1</div>
         <div class="stat-sub">
           Đổi nhanh:
-          <a href="javascript:void(0)" onclick="quickSetExp(1)" style="color:#60a5fa;">x1</a> ·
-          <a href="javascript:void(0)" onclick="quickSetExp(2)" style="color:#60a5fa;">x2</a> ·
-          <a href="javascript:void(0)" onclick="quickSetExp(5)" style="color:#60a5fa;">x5</a> ·
-          <a href="javascript:void(0)" onclick="quickSetExp(10)" style="color:#60a5fa;">x10</a>
+          <a href="javascript:void(0)" onclick="quickSetExp(1)" style="color:var(--primary);font-weight:600;">x1</a> ·
+          <a href="javascript:void(0)" onclick="quickSetExp(2)" style="color:var(--primary);font-weight:600;">x2</a> ·
+          <a href="javascript:void(0)" onclick="quickSetExp(5)" style="color:var(--primary);font-weight:600;">x5</a> ·
+          <a href="javascript:void(0)" onclick="quickSetExp(10)" style="color:var(--primary);font-weight:600;">x10</a>
         </div>
       </div>
       <div class="stat-card">
         <div class="stat-label">Bộ nhớ RAM Server (JVM)</div>
-        <div class="stat-value" id="statRam" style="color: #60a5fa;">0 / 0 MB</div>
+        <div class="stat-value" id="statRam" style="color: var(--primary);">0 / 0 MB</div>
         <div class="stat-sub" id="statThreads">Số luồng xử lý: --</div>
       </div>
       <div class="stat-card">
@@ -331,11 +390,12 @@
     <div class="actions-bar">
       <div class="announce-box">
         <input type="text" id="announceText" placeholder="Nhập thông báo gửi toàn bộ người chơi đang online..." onkeydown="if(event.key==='Enter') sendAnnounce()" />
-        <button onclick="sendAnnounce()">Gửi Thông Báo</button>
+        <button onclick="sendAnnounce()">📢 Gửi Thông Báo</button>
       </div>
-      <button class="btn-success" onclick="saveAllData()">Lưu Dữ Liệu (Save All)</button>
-      <button class="btn-warning" onclick="triggerBackupNow()">Backup & Đẩy GitHub Ngay</button>
-      <button class="btn-purple" onclick="downloadBackup()">Tải Backup (.sql.gz) Về Máy</button>
+      <button class="btn-success" onclick="saveAllData()">💾 Lưu Dữ Liệu</button>
+      <button class="btn-teal" onclick="updateAndRestartServer()" title="Tự động kéo code mới từ GitHub (git pull) và khởi động lại Server không cần mở SSH">🔄 Cập Nhật Code & Khởi Động Lại Server</button>
+      <button class="btn-warning" onclick="triggerBackupNow()">☁️ Backup & Đẩy GitHub</button>
+      <button class="btn-purple" onclick="downloadBackup()">⬇️ Tải File Backup (.sql.gz)</button>
     </div>
 
     <div class="tabs">
@@ -349,10 +409,10 @@
         3. Giám Sát & Gọi Boss (<span id="countBossesTab">0</span>)
       </button>
       <button id="tabBtnItems" class="tab-btn" onclick="switchTab('items')">
-        4. Kho Vật Phẩm & Option (1800+ Item)
+        4. Kho Vật Phẩm & Option (<span id="countItemsTab">Tất cả</span>)
       </button>
       <button id="tabBtnSystem" class="tab-btn" onclick="switchTab('system')">
-        5. Điều Khiển Bot, EXP, BXH & Backup
+        5. Hệ Thống, Bot, BXH & Log Server
       </button>
     </div>
 
@@ -361,7 +421,7 @@
       <div class="card-header">
         <div>
           <h3>Danh sách Nhân vật đang trực tuyến (Real-time)</h3>
-          <span style="font-size:12px;color:var(--muted);">Nếu người chơi đang Offline, hãy bấm sang Tab <b>2. Tài Khoản & Nhân Vật Database</b> để xem và chỉnh sửa!</span>
+          <span style="font-size:12.5px;color:var(--muted);">Nếu người chơi đang Offline, hãy bấm sang Tab <b>2. Tài Khoản & Nhân Vật Database</b> để xem và chỉnh sửa!</span>
         </div>
         <input type="text" id="searchPlayer" placeholder="Tìm tên nhân vật hoặc map..." oninput="renderPlayers()" style="width: 250px;" />
       </div>
@@ -392,7 +452,7 @@
       <div class="card-header">
         <div>
           <h3>Toàn bộ Tài Khoản & Nhân Vật trong MySQL (Cả Online & Offline)</h3>
-          <span style="font-size:12px;color:var(--muted);">Cộng VNĐ, Mở Thành Viên, Cấp quyền Admin, Đổi mật khẩu hoặc Khóa tài khoản ngay cả khi người chơi đang Offline.</span>
+          <span style="font-size:12.5px;color:var(--muted);">Cộng VNĐ, Mở Thành Viên, Cấp quyền Admin, Đổi mật khẩu hoặc Khóa tài khoản ngay cả khi người chơi đang Offline.</span>
         </div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;">
           <input type="text" id="searchAccountDb" placeholder="Tìm tài khoản, tên nhân vật, ID..." onkeydown="if(event.key==='Enter') loadAccountsDb()" style="width: 250px;" />
@@ -434,7 +494,7 @@
             <option value="dead">Chỉ Boss Đã Chết / Chờ</option>
           </select>
           <input type="text" id="searchBoss" placeholder="Tìm tên Boss hoặc tên Map..." oninput="renderBosses()" style="width: 240px;" />
-          <button class="btn-success" onclick="spawnAllBosses()">Hồi Sinh Tất Cả Boss Đã Chết</button>
+          <button class="btn-success" onclick="spawnAllBosses()">⚡ Hồi Sinh Tất Cả Boss Đã Chết</button>
         </div>
       </div>
       <div class="table-wrap">
@@ -457,15 +517,15 @@
       </div>
     </div>
 
-    <!-- TAB 4: TRA CỨU KHO ITEM & OPTION -->
+    <!-- TAB 4: TRA CỨU KHO ITEM & OPTION (HIỂN THỊ ĐẦY ĐỦ 100% ITEM) -->
     <div id="tabItems" class="card" style="display: none;">
       <div class="card-header">
         <div>
-          <h3>Tra cứu Kho Vật Phẩm (Item) & Chỉ Số (Option)</h3>
-          <span style="font-size:12px;color:var(--muted);">Gõ tên tiếng Việt có dấu hoặc không dấu (VD: "thoi vang", "da ngu sac", "cai trang", "suc danh"). Bấm "Chọn Trao Quà" để gửi đồ kèm Option!</span>
+          <h3>Kho Vật Phẩm (Item) & Chỉ Số (Option) Toàn Server</h3>
+          <span id="itemsSubInfo" style="font-size:12.5px;color:var(--muted);">Gõ tên tiếng Việt có dấu hoặc không dấu (VD: "thoi vang", "da ngu sac", "cai trang", "suc danh") hoặc duyệt qua toàn bộ các trang bên dưới.</span>
         </div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;">
-          <select id="filterItemType" onchange="searchItemsDb()">
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+          <select id="filterItemType" onchange="onFilterItemsLocal()">
             <option value="-1">Tất cả loại Item</option>
             <option value="0">0 - Áo</option>
             <option value="1">1 - Quần</option>
@@ -474,18 +534,32 @@
             <option value="4">4 - Rada</option>
             <option value="5">5 - Cải trang / Tóc</option>
             <option value="6">6 - Đậu thần</option>
+            <option value="7">7 - Sách võ công</option>
             <option value="11">11 - Vật phẩm đeo lưng / Phụ kiện</option>
             <option value="12">12 - Ngọc Rồng</option>
             <option value="14">14 - Đá nâng cấp / Sao pha lê</option>
+            <option value="21">21 - Thú cưỡi / Pet mới</option>
             <option value="27">27 - Vật phẩm tạp hóa / Sự kiện</option>
           </select>
-          <input type="text" id="searchItemInput" placeholder="Nhập tên Item, Option hoặc mã ID..." onkeydown="if(event.key==='Enter') searchItemsDb()" style="width: 260px;" />
-          <button onclick="searchItemsDb()">Tra cứu</button>
+          <select id="itemPageSize" onchange="onFilterItemsLocal()">
+            <option value="150">Hiện 150 Item / trang</option>
+            <option value="400">Hiện 400 Item / trang</option>
+            <option value="5000">Hiện TẤT CẢ (Không chia trang)</option>
+          </select>
+          <input type="text" id="searchItemInput" placeholder="Gõ tên Item, Option hoặc ID để lọc ngay..." oninput="onFilterItemsLocal()" style="width: 260px;" />
+          <button onclick="searchItemsDb()">Tải lại từ Server</button>
         </div>
       </div>
       <div class="grid-2">
         <div>
-          <h4 style="margin-bottom:8px;color:#60a5fa;">Danh sách Vật Phẩm (Items)</h4>
+          <div class="pagination-bar">
+            <b id="itemsCountLabel" style="color:var(--primary);">Danh sách Vật Phẩm</b>
+            <div style="display:flex;gap:6px;align-items:center;">
+              <button class="btn-muted btn-sm" onclick="changeItemPage(-1)">◀ Trang trước</button>
+              <span id="itemPageInfo" style="font-weight:700;">1 / 1</span>
+              <button class="btn-muted btn-sm" onclick="changeItemPage(1)">Trang sau ▶</button>
+            </div>
+          </div>
           <div class="table-wrap">
             <table>
               <thead>
@@ -498,13 +572,15 @@
                 </tr>
               </thead>
               <tbody id="itemsResultBody">
-                <tr><td colspan="5" style="text-align:center;color:var(--muted);">Nhập từ khóa và bấm Tra cứu...</td></tr>
+                <tr><td colspan="5" style="text-align:center;color:var(--muted);">Đang tải toàn bộ danh sách Vật Phẩm...</td></tr>
               </tbody>
             </table>
           </div>
         </div>
         <div>
-          <h4 style="margin-bottom:8px;color:#fbbf24;">Danh sách Chỉ Số (Item Options)</h4>
+          <div class="pagination-bar">
+            <b id="optionsCountLabel" style="color:var(--warning);">Danh sách Chỉ Số (Item Options)</b>
+          </div>
           <div class="table-wrap">
             <table>
               <thead>
@@ -515,7 +591,7 @@
                 </tr>
               </thead>
               <tbody id="optionsResultBody">
-                <tr><td colspan="3" style="text-align:center;color:var(--muted);">Nhập từ khóa và bấm Tra cứu...</td></tr>
+                <tr><td colspan="3" style="text-align:center;color:var(--muted);">Đang tải danh sách Option...</td></tr>
               </tbody>
             </table>
           </div>
@@ -523,13 +599,21 @@
       </div>
     </div>
 
-    <!-- TAB 5: HỆ THỐNG, BOT, EXP, BXH & BACKUP -->
+    <!-- TAB 5: HỆ THỐNG, BOT, EXP, BXH & LOG SERVER -->
     <div id="tabSystem" style="display: none;">
       <div class="grid-2">
         <div class="card">
-          <h3 style="margin-bottom:12px;">Điều Khiển Tỷ Lệ EXP & Hệ Thống Bot</h3>
+          <h3 style="margin-bottom:12px;">Điều Khiển Server, Tỷ Lệ EXP & Hệ Thống Bot</h3>
           <div class="form-group">
-            <label>Tỷ lệ Sức Mạnh / Tiềm Năng toàn Server (Hiện tại: <b id="sysExpLabel">x1</b>):</label>
+            <label>Cập nhật Code mới từ GitHub & Khởi động lại Server (Không cần mở SSH):</label>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;">
+              <button class="btn-teal" onclick="updateAndRestartServer()">🔄 Kéo Code Mới (Git Pull) & Khởi Động Lại Server</button>
+              <button class="btn-success" onclick="saveAllData()">💾 Lưu Toàn Bộ Dữ Liệu Ngay</button>
+            </div>
+          </div>
+          <hr style="border:none;border-top:1px solid var(--border);margin:14px 0;" />
+          <div class="form-group">
+            <label>Tỷ lệ Sức Mạnh / Tiềm Năng toàn Server (Hiện tại: <b id="sysExpLabel" style="color:var(--purple);">x1</b>):</label>
             <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;">
               <button class="btn-sm" onclick="quickSetExp(1)">x1 Mặc định</button>
               <button class="btn-sm" onclick="quickSetExp(2)">x2 Sự kiện</button>
@@ -537,16 +621,16 @@
               <button class="btn-sm" onclick="quickSetExp(5)">x5</button>
               <button class="btn-sm" onclick="quickSetExp(10)">x10</button>
               <button class="btn-sm" onclick="quickSetExp(20)">x20</button>
-              <input type="number" id="customExpInput" value="2" min="1" max="127" style="width:80px;" />
+              <input type="number" id="customExpInput" value="2" min="1" max="127" style="width:75px;" />
               <button class="btn-success btn-sm" onclick="quickSetExp(document.getElementById('customExpInput').value)">Áp dụng EXP</button>
             </div>
           </div>
-          <hr style="border:none;border-top:1px solid var(--border);margin:16px 0;" />
+          <hr style="border:none;border-top:1px solid var(--border);margin:14px 0;" />
           <div class="form-group">
             <label>Quản lý Bot Người Chơi Ảo (Đang hoạt động: <b id="sysBotLabel">0</b> Bot):</label>
-            <p style="font-size:12px;color:var(--muted);margin-bottom:10px;">Gọi Bot vào các bản đồ để đi săn quái, săn Boss hoặc PK giúp Server luôn đông vui nhộn nhịp.</p>
+            <p style="font-size:12px;color:var(--muted);margin-bottom:8px;">Gọi Bot vào các bản đồ để đi săn quái, săn Boss hoặc PK giúp Server luôn đông vui nhộn nhịp.</p>
             <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
-              <input type="number" id="botSpawnCount" value="10" min="1" max="50" style="width:80px;" title="Số lượng Bot" />
+              <input type="number" id="botSpawnCount" value="10" min="1" max="50" style="width:75px;" title="Số lượng Bot" />
               <button class="btn-success btn-sm" onclick="spawnBots(0)">+ Gọi Bot Train Quái</button>
               <button class="btn-warning btn-sm" onclick="spawnBots(2)">+ Gọi Bot Săn Boss</button>
               <button class="btn-purple btn-sm" onclick="spawnBots(3)">+ Gọi Bot PK</button>
@@ -557,15 +641,15 @@
 
         <div class="card">
           <div class="card-header">
-            <h3>Trạng Thái Backup MySQL & GitHub Private</h3>
+            <h3>Sao Lưu MySQL, GitHub Private & Log Server</h3>
             <button class="btn-sm" onclick="loadSystemTab()">Làm mới Log</button>
           </div>
           <div style="display:flex;gap:8px;margin-bottom:10px;align-items:center;flex-wrap:wrap;">
-            <input type="password" id="gitTokenInput" placeholder="Dán mã GitHub Token (ghp_...) nếu chưa lưu trên VPS" style="flex:1;min-width:220px;" />
+            <input type="password" id="gitTokenInput" placeholder="Dán mã GitHub Token (ghp_...) nếu muốn cập nhật Token Backup" style="flex:1;min-width:220px;" />
             <button class="btn-warning btn-sm" onclick="triggerBackupNow()">Lưu Token & Đẩy GitHub Ngay</button>
           </div>
           <div id="backupFilesList" style="font-size:12.5px;margin-bottom:10px;color:var(--muted);">Đang tải danh sách bản sao lưu...</div>
-          <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px;">Nhật ký Backup tự động (`/root/NRO/backups/backup.log`):</label>
+          <label style="font-size:12px;font-weight:600;color:var(--muted);display:block;margin-bottom:4px;">Nhật ký Backup (`backup.log`) & Console (`server.log`):</label>
           <pre id="backupLogBox" class="log-box">Chưa có log...</pre>
         </div>
       </div>
@@ -745,7 +829,23 @@
     let cachedPlayers = [];
     let cachedBosses = [];
     let cachedAccounts = [];
+    let allItemsCache = [];
+    let allOptionsCache = [];
+    let filteredItemsCache = [];
+    let currentItemPage = 1;
+    let totalServerItems = 0;
     let currentTab = 'players';
+
+    if (localStorage.getItem('nro_admin_theme') === 'dark') {
+      document.body.classList.add('dark-mode');
+      document.getElementById('themeBtn').textContent = '☀️ Giao diện Sáng';
+    }
+
+    function toggleTheme() {
+      const isDark = document.body.classList.toggle('dark-mode');
+      localStorage.setItem('nro_admin_theme', isDark ? 'dark' : 'light');
+      document.getElementById('themeBtn').textContent = isDark ? '☀️ Giao diện Sáng' : '🌙 Giao diện Tối';
+    }
 
     if (window.location.protocol.startsWith('http') && (window.location.port === '14445' || window.location.port === '14446')) {
       document.getElementById('apiHost').value = window.location.origin;
@@ -770,7 +870,7 @@
       t.style.borderLeftColor = isError ? '#ef4444' : '#10b981';
       t.style.display = 'block';
       clearTimeout(window._toastTimer);
-      window._toastTimer = setTimeout(() => { t.style.display = 'none'; }, 4000);
+      window._toastTimer = setTimeout(() => { t.style.display = 'none'; }, 4500);
     }
 
     function formatNum(n) {
@@ -783,6 +883,10 @@
       const m = Math.floor((sec % 3600) / 60);
       const s = Math.floor(sec % 60);
       return [h, m, s].map(v => String(v).padStart(2, '0')).join(':');
+    }
+
+    function normalizeVi(str) {
+      return String(str || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd');
     }
 
     function switchTab(tab) {
@@ -801,8 +905,7 @@
       }
       if (tab === 'accounts' && cachedAccounts.length === 0) {
         loadAccountsDb();
-      } else if (tab === 'items' && !window._itemsLoaded) {
-        window._itemsLoaded = true;
+      } else if (tab === 'items' && allItemsCache.length === 0) {
         searchItemsDb();
       } else if (tab === 'system') {
         loadSystemTab();
@@ -867,25 +970,25 @@
         !q || p.name.toLowerCase().includes(q) || p.mapName.toLowerCase().includes(q) || String(p.id).includes(q)
       );
       if (filtered.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;color:var(--muted);padding:20px;">
+        tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;color:var(--muted);padding:22px;">
           Hiện không có người chơi nào đang trực tuyến.<br/>
-          <button class="btn-sm" style="margin-top:8px;" onclick="switchTab('accounts')">👉 Bấm vào đây để quản lý Toàn bộ Tài khoản & Nhân vật trong Database (Offline)</button>
+          <button class="btn-sm" style="margin-top:8px;" onclick="switchTab('accounts')">👉 Bấm vào đây để xem & chỉnh sửa Toàn bộ Tài khoản trong Database (Cả Offline)</button>
         </td></tr>`;
         return;
       }
       tbody.innerHTML = filtered.map(p => `
         <tr>
           <td>#${p.id}</td>
-          <td style="font-weight:700;color:#60a5fa;">${escapeHtml(p.name)}</td>
+          <td class="text-name">${escapeHtml(p.name)}</td>
           <td>${escapeHtml(p.gender)}</td>
-          <td style="color:#fbbf24;font-weight:600;">${formatNum(p.power)}</td>
+          <td class="text-power">${formatNum(p.power)}</td>
           <td>
             HP: ${formatNum(p.hp)}/${formatNum(p.hpMax)}<br/>
             <span style="color:var(--muted);">KI: ${formatNum(p.mp)} • SĐ: ${formatNum(p.dame)}</span>
           </td>
           <td>
-            <span style="color:#fcd34d;">${formatNum(p.gold)} Vàng</span><br/>
-            <span style="color:#34d399;">${formatNum(p.gem)} Ngọc</span> • <span style="color:#f87171;">${formatNum(p.ruby)} HN</span> • <span style="color:#a78bfa;">${formatNum(p.vnd)}đ</span>
+            <span class="text-gold">${formatNum(p.gold)} Vàng</span><br/>
+            <span class="text-gem">${formatNum(p.gem)} Ngọc</span> • <span class="text-ruby">${formatNum(p.ruby)} HN</span> • <span class="text-vnd">${formatNum(p.vnd)}đ</span>
           </td>
           <td><b>${escapeHtml(p.mapName)}</b> <span class="badge badge-alive">Khu ${p.zoneId}</span></td>
           <td>${p.hasPet ? `Có (${formatNum(p.petPower)})` : '<span style="color:var(--muted)">Không</span>'}</td>
@@ -919,25 +1022,25 @@
         tbody.innerHTML = cachedAccounts.map(a => `
           <tr>
             <td>#${a.accId}</td>
-            <td style="font-weight:700;color:#fff;">${escapeHtml(a.username)}</td>
+            <td style="font-weight:700;">${escapeHtml(a.username)}</td>
             <td style="color:var(--muted);font-family:monospace;">${escapeHtml(a.password)}</td>
-            <td style="font-weight:600;color:#60a5fa;">${escapeHtml(a.playerName)} <span style="font-size:11px;color:var(--muted);">(${escapeHtml(a.gender)})</span></td>
+            <td class="text-name">${escapeHtml(a.playerName)} <span style="font-size:11px;color:var(--muted);font-weight:400;">(${escapeHtml(a.gender)})</span></td>
             <td>
               ${a.online ? '<span class="badge badge-alive">Đang Online</span>' : '<span class="badge badge-dead">Offline</span>'}
               ${a.ban ? '<span class="badge badge-ban">Đang Khóa</span>' : ''}
             </td>
             <td>
-              <b style="color:#a78bfa;">${formatNum(a.vnd)} đ</b><br/>
+              <span class="text-vnd">${formatNum(a.vnd)} đ</span><br/>
               <span style="font-size:11px;color:var(--muted);">Tổng nạp: ${formatNum(a.tongnap)} đ</span>
             </td>
             <td>
               ${a.active ? '<span class="badge badge-alive">Đã Mở TV</span>' : '<span class="badge badge-dead">Chưa Mở TV</span>'}
               ${a.isAdmin ? '<span class="badge badge-admin">ADMIN</span>' : ''}
             </td>
-            <td style="color:#fbbf24;font-weight:600;">${formatNum(a.power)}</td>
+            <td class="text-power">${formatNum(a.power)}</td>
             <td>
-              <span style="color:#fcd34d;">${formatNum(a.gold)} Vàng</span><br/>
-              <span style="color:#34d399;">${formatNum(a.gem)} Ngọc</span> • <span style="color:#f87171;">${formatNum(a.ruby)} HN</span>
+              <span class="text-gold">${formatNum(a.gold)} Vàng</span><br/>
+              <span class="text-gem">${formatNum(a.gem)} Ngọc</span> • <span class="text-ruby">${formatNum(a.ruby)} HN</span>
             </td>
             <td style="display:flex;gap:5px;">
               <button class="btn-sm" onclick="openEditAccount(${a.accId})">Cộng VNĐ / Sửa</button>
@@ -1035,7 +1138,7 @@
         return `
           <tr>
             <td>#${b.index}</td>
-            <td style="font-weight:700;color:${b.alive ? '#fbbf24' : '#94a3b8'};">${escapeHtml(b.name)}</td>
+            <td style="font-weight:700;color:${b.alive ? 'var(--warning)' : 'var(--muted)'};">${escapeHtml(b.name)}</td>
             <td>
               <span class="badge ${b.alive ? 'badge-alive' : 'badge-dead'}">
                 ${b.alive ? 'Đang Sống' : ('Chờ (' + b.status + ')')}
@@ -1059,34 +1162,85 @@
     }
 
     async function searchItemsDb() {
-      const q = document.getElementById('searchItemInput').value.trim();
-      const type = document.getElementById('filterItemType').value;
       const itemsBody = document.getElementById('itemsResultBody');
       const optsBody = document.getElementById('optionsResultBody');
       try {
-        const res = await fetch(`${getBaseUrl()}/api/items?key=${getKey()}&q=${encodeURIComponent(q)}&type=${type}`);
+        const res = await fetch(`${getBaseUrl()}/api/items?key=${getKey()}&q=&type=-1`);
         const data = await res.json();
         if (!data.ok) return;
-        itemsBody.innerHTML = (data.items || []).map(it => `
-          <tr>
-            <td><b>#${it.id}</b></td>
-            <td style="color:#60a5fa;font-weight:600;">${escapeHtml(it.name)}</td>
-            <td>Loại ${it.type} (${escapeHtml(it.gender)})</td>
-            <td style="color:var(--muted);max-width:220px;overflow:hidden;text-overflow:ellipsis;">${escapeHtml(it.description)}</td>
-            <td><button class="btn-success btn-sm" onclick="selectItemForGift(${it.id}, '${escapeJs(it.name)}')">Chọn Trao Quà</button></td>
-          </tr>
-        `).join('') || `<tr><td colspan="5" style="text-align:center;color:var(--muted);">Không tìm thấy Vật phẩm.</td></tr>`;
+        allItemsCache = data.items || [];
+        allOptionsCache = data.options || [];
+        totalServerItems = data.totalItems || allItemsCache.length;
+        document.getElementById('countItemsTab').textContent = `${totalServerItems} Item`;
 
-        optsBody.innerHTML = (data.options || []).map(op => `
-          <tr>
-            <td><b>#${op.id}</b></td>
-            <td style="color:#fbbf24;">${escapeHtml(op.name)}</td>
-            <td><button class="btn-sm" onclick="promptAddOption(${op.id}, '${escapeJs(op.name)}')">+ Ghép Option</button></td>
-          </tr>
-        `).join('') || `<tr><td colspan="3" style="text-align:center;color:var(--muted);">Không tìm thấy Option.</td></tr>`;
+        if (allItemsCache.length === 80 && totalServerItems > 80) {
+          document.getElementById('itemsSubInfo').innerHTML = `<span style="color:var(--danger);font-weight:700;">⚠️ Server VPS đang chạy bản code cũ (giới hạn 80 Item). Hãy cập nhật Server để tải đủ toàn bộ ${totalServerItems} Item!</span>`;
+        } else {
+          document.getElementById('itemsSubInfo').textContent = `Đã tải đầy đủ ${allItemsCache.length} Vật Phẩm và ${allOptionsCache.length} Chỉ Số Option từ Server.`;
+        }
+        onFilterItemsLocal();
       } catch (e) {
         showToast('Lỗi khi tra cứu Item!', true);
       }
+    }
+
+    function onFilterItemsLocal() {
+      const rawQ = document.getElementById('searchItemInput').value.trim();
+      const normQ = normalizeVi(rawQ);
+      const typeFilter = parseInt(document.getElementById('filterItemType').value, 10);
+
+      filteredItemsCache = allItemsCache.filter(it => {
+        if (typeFilter >= 0 && it.type !== typeFilter) return false;
+        if (!normQ) return true;
+        return String(it.id) === normQ
+          || normalizeVi(it.name).includes(normQ)
+          || normalizeVi(it.description).includes(normQ);
+      });
+
+      currentItemPage = 1;
+      renderItemsPage();
+
+      const filteredOpts = allOptionsCache.filter(op => {
+        if (!normQ) return true;
+        return String(op.id) === normQ || normalizeVi(op.name).includes(normQ);
+      });
+      document.getElementById('optionsCountLabel').textContent = `Danh sách Chỉ Số Option (${filteredOpts.length})`;
+      document.getElementById('optionsResultBody').innerHTML = filteredOpts.map(op => `
+        <tr>
+          <td><b>#${op.id}</b></td>
+          <td class="text-power">${escapeHtml(op.name)}</td>
+          <td><button class="btn-sm" onclick="promptAddOption(${op.id}, '${escapeJs(op.name)}')">+ Ghép Option</button></td>
+        </tr>
+      `).join('') || `<tr><td colspan="3" style="text-align:center;color:var(--muted);">Không tìm thấy Option.</td></tr>`;
+    }
+
+    function changeItemPage(delta) {
+      const pageSize = parseInt(document.getElementById('itemPageSize').value, 10) || 150;
+      const totalPages = Math.max(1, Math.ceil(filteredItemsCache.length / pageSize));
+      currentItemPage = Math.max(1, Math.min(totalPages, currentItemPage + delta));
+      renderItemsPage();
+    }
+
+    function renderItemsPage() {
+      const pageSize = parseInt(document.getElementById('itemPageSize').value, 10) || 150;
+      const totalPages = Math.max(1, Math.ceil(filteredItemsCache.length / pageSize));
+      if (currentItemPage > totalPages) currentItemPage = totalPages;
+
+      const start = (currentItemPage - 1) * pageSize;
+      const pageItems = filteredItemsCache.slice(start, start + pageSize);
+
+      document.getElementById('itemsCountLabel').textContent = `Vật Phẩm: ${filteredItemsCache.length} kết quả (Hiển thị ${pageItems.length})`;
+      document.getElementById('itemPageInfo').textContent = `Trang ${currentItemPage} / ${totalPages}`;
+
+      document.getElementById('itemsResultBody').innerHTML = pageItems.map(it => `
+        <tr>
+          <td><b>#${it.id}</b></td>
+          <td class="text-name">${escapeHtml(it.name)}</td>
+          <td>Loại ${it.type} (${escapeHtml(it.gender)})</td>
+          <td style="color:var(--muted);max-width:240px;overflow:hidden;text-overflow:ellipsis;" title="${escapeHtml(it.description)}">${escapeHtml(it.description)}</td>
+          <td><button class="btn-success btn-sm" onclick="selectItemForGift(${it.id}, '${escapeJs(it.name)}')">Chọn Trao Quà</button></td>
+        </tr>
+      `).join('') || `<tr><td colspan="5" style="text-align:center;color:var(--muted);">Không tìm thấy Vật phẩm.</td></tr>`;
     }
 
     function selectItemForGift(itemId, itemName) {
@@ -1129,20 +1283,22 @@
             `• <code>${escapeHtml(b.name)}</code> (${b.sizeKb} KB) — <i>${escapeHtml(b.time)}</i>`
           ).join('<br/>');
         }
-        document.getElementById('backupLogBox').textContent = data.backupLog || 'Chưa có nhật ký backup.';
+        const combinedLog = (data.backupLog ? `=== BACKUP LOG ===\n${data.backupLog}\n\n` : '') +
+                            (data.serverLog ? `=== SERVER LOG ===\n${data.serverLog}` : '');
+        document.getElementById('backupLogBox').textContent = combinedLog || 'Chưa có nhật ký.';
 
         const topBody = document.getElementById('topPlayersBody');
         topBody.innerHTML = (data.topPlayers || []).map(p => `
           <tr>
             <td><b>#${p.rank}</b></td>
             <td>#${p.id}</td>
-            <td style="font-weight:700;color:#60a5fa;">${escapeHtml(p.name)}</td>
+            <td class="text-name">${escapeHtml(p.name)}</td>
             <td>${escapeHtml(p.gender)}</td>
-            <td style="color:#fbbf24;font-weight:700;">${formatNum(p.power)}</td>
-            <td style="color:#fcd34d;">${formatNum(p.gold)}</td>
-            <td style="color:#34d399;">${formatNum(p.gem)}</td>
-            <td style="color:#f87171;">${formatNum(p.ruby)}</td>
-            <td><b style="color:#a78bfa;">${formatNum(p.vnd)} đ</b> (Tổng: ${formatNum(p.tongnap)} đ)</td>
+            <td class="text-power">${formatNum(p.power)}</td>
+            <td class="text-gold">${formatNum(p.gold)}</td>
+            <td class="text-gem">${formatNum(p.gem)}</td>
+            <td class="text-ruby">${formatNum(p.ruby)}</td>
+            <td><span class="text-vnd">${formatNum(p.vnd)} đ</span> (Tổng: ${formatNum(p.tongnap)} đ)</td>
           </tr>
         `).join('') || `<tr><td colspan="9" style="text-align:center;color:var(--muted);">Chưa có nhân vật nào.</td></tr>`;
       } catch (e) {}
@@ -1160,6 +1316,19 @@
         return await res.json();
       } catch (err) {
         return { ok: false, message: 'Không thể kết nối tới Server!' };
+      }
+    }
+
+    async function updateAndRestartServer() {
+      if (!confirm('Bạn có chắc muốn tự động kéo code mới từ GitHub (git pull) và khởi động lại Server? (Dữ liệu người chơi sẽ được tự động lưu trước khi khởi động lại)')) return;
+      showToast('Đang gửi lệnh Git Pull & Khởi động lại tới VPS...');
+      const res = await postAction({ action: 'update_and_restart' });
+      showToast(res.message, !res.ok);
+      if (res.ok) {
+        setTimeout(() => {
+          allItemsCache = [];
+          fetchStatus();
+        }, 9000);
       }
     }
 
@@ -1244,15 +1413,15 @@
       const renderSlots = (arr) => arr.length === 0
         ? '<p style="color:var(--muted);">Trống</p>'
         : `<table><thead><tr><th>Ô</th><th>ID</th><th>Tên Vật Phẩm</th><th>SL</th><th>Chỉ Số (Options)</th></tr></thead><tbody>` +
-          arr.map(x => `<tr><td>#${x.slot}</td><td>${x.id}</td><td style="color:#60a5fa;font-weight:600;">${escapeHtml(x.name)}</td><td>x${x.quantity}</td><td style="color:#fbbf24;">${escapeHtml(x.options)}</td></tr>`).join('') +
+          arr.map(x => `<tr><td>#${x.slot}</td><td>${x.id}</td><td class="text-name">${escapeHtml(x.name)}</td><td>x${x.quantity}</td><td class="text-power">${escapeHtml(x.options)}</td></tr>`).join('') +
           `</tbody></table>`;
 
       document.getElementById('inspectContent').innerHTML = `
-        <h4 style="margin:8px 0;color:#34d399;">1. Trang Bị Đang Mặc (${res.body.length})</h4>
+        <h4 style="margin:8px 0;color:var(--success);">1. Trang Bị Đang Mặc (${res.body.length})</h4>
         ${renderSlots(res.body)}
-        <h4 style="margin:14px 0 8px;color:#fbbf24;">2. Hành Trang Túi Đồ (${res.bag.length})</h4>
+        <h4 style="margin:14px 0 8px;color:var(--warning);">2. Hành Trang Túi Đồ (${res.bag.length})</h4>
         ${renderSlots(res.bag)}
-        <h4 style="margin:14px 0 8px;color:#a78bfa;">3. Rương Đồ (${res.box.length})</h4>
+        <h4 style="margin:14px 0 8px;color:var(--purple);">3. Rương Đồ (${res.box.length})</h4>
         ${renderSlots(res.box)}
       `;
       document.getElementById('inspectModal').classList.add('show');

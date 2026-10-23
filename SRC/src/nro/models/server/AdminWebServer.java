@@ -433,7 +433,7 @@ public class AdminWebServer {
         String normQ = normalizeSearch(rawQ);
         int typeFilter = (int) parseLongSafe(params.get("type"), -1);
 
-        StringBuilder sb = new StringBuilder(8192);
+        StringBuilder sb = new StringBuilder(131072);
         sb.append("{\"ok\":true,\"totalItems\":").append(Manager.ITEM_TEMPLATES.size());
         sb.append(",\"totalOptions\":").append(Manager.ITEM_OPTION_TEMPLATES.size());
         sb.append(",\"items\":[");
@@ -467,9 +467,6 @@ public class AdminWebServer {
             sb.append(",\"powerRequire\":").append(it.strRequire);
             sb.append("}");
             count++;
-            if (count >= 80) {
-                break;
-            }
         }
         sb.append("],\"options\":[");
 
@@ -493,9 +490,6 @@ public class AdminWebServer {
             sb.append(",\"name\":").append(jsonStr(iot.name));
             sb.append("}");
             optCount++;
-            if (optCount >= 100) {
-                break;
-            }
         }
         sb.append("]}");
         sendJson(exchange, 200, sb.toString());
@@ -616,6 +610,18 @@ public class AdminWebServer {
         boolean hasGitToken = new File("/root/.nro_git_token").exists() && new File("/root/.nro_git_token").length() > 5;
         sb.append(",\"hasGitToken\":").append(hasGitToken);
         sb.append(",\"backupLog\":").append(jsonStr(logTail));
+
+        String srvLogTail = "";
+        File srvLogFile = new File("server.log");
+        if (srvLogFile.exists()) {
+            try {
+                List<String> lines = Files.readAllLines(srvLogFile.toPath(), StandardCharsets.UTF_8);
+                int from = Math.max(0, lines.size() - 30);
+                srvLogTail = String.join("\n", lines.subList(from, lines.size()));
+            } catch (Exception ignored) {
+            }
+        }
+        sb.append(",\"serverLog\":").append(jsonStr(srvLogTail));
         sb.append("}");
         sendJson(exchange, 200, sb.toString());
     }
@@ -949,6 +955,39 @@ public class AdminWebServer {
                     } else {
                         sendJson(exchange, 200, "{\"ok\":false,\"message\":\"Chức năng chạy backup_db.sh chỉ hoạt động trên VPS Linux!\"}");
                     }
+                }
+                case "update_and_restart" -> {
+                    String os = System.getProperty("os.name").toLowerCase();
+                    if (os.contains("win")) {
+                        sendJson(exchange, 200, "{\"ok\":false,\"message\":\"Chức năng tự động Git Pull & Khởi động lại chỉ dành cho VPS Linux!\"}");
+                        return;
+                    }
+                    for (Player pl : new ArrayList<>(Client.gI().getPlayers())) {
+                        if (pl != null) {
+                            PlayerDAO.updatePlayer(pl);
+                        }
+                    }
+                    try {
+                        ClanService.gI().close();
+                    } catch (Exception ignored) {
+                    }
+                    try {
+                        ConsignShopManager.gI().save();
+                    } catch (Exception ignored) {
+                    }
+                    Service.gI().sendThongBaoAllPlayer("[THÔNG BÁO] Server đang cập nhật phiên bản mới và khởi động lại, vui lòng đăng nhập lại sau 10 giây!");
+                    sendJson(exchange, 200, "{\"ok\":true,\"message\":\"Đang tự động kéo code mới từ GitHub (git pull) và khởi động lại Server! Vui lòng đợi khoảng 8-12 giây để Server bật lại...\"}");
+
+                    new Thread(() -> {
+                        try {
+                            Thread.sleep(800);
+                            new ProcessBuilder("/bin/bash", "-c",
+                                    "nohup /bin/bash -c 'cd /root/NRO/SRC && git fetch origin && git reset --hard origin/main && sed -i \"s/\\r$//\" run.sh backup_db.sh && chmod +x run.sh backup_db.sh && ./run.sh' > /root/NRO/SRC/update.log 2>&1 < /dev/null &")
+                                    .directory(new File("."))
+                                    .start();
+                        } catch (Exception ignored) {
+                        }
+                    }, "WebAutoUpdater").start();
                 }
                 default -> sendJson(exchange, 400, "{\"ok\":false,\"message\":\"Hành động không hợp lệ!\"}");
             }
