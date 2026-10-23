@@ -242,6 +242,7 @@ public class AdminWebServer {
         sb.append(",\"bosses\":[");
         boolean firstBoss = true;
         int aliveBossCount = 0;
+        int visibleBossCount = 0;
         for (int i = 0; i < allBosses.size(); i++) {
             Boss b = allBosses.get(i);
             if (b == null || b.data == null || b.data.length == 0) {
@@ -255,6 +256,7 @@ public class AdminWebServer {
             if ((b.id >= nro.models.boss.BossID.XEN_CON_7 && b.id <= nro.models.boss.BossID.XEN_CON_1) && (b.zone == null || b.isDie())) {
                 continue;
             }
+            visibleBossCount++;
             if (!firstBoss) {
                 sb.append(",");
             }
@@ -287,7 +289,7 @@ public class AdminWebServer {
         }
         sb.append("]");
         sb.append(",\"aliveBossCount\":").append(aliveBossCount);
-        sb.append(",\"totalBossCount\":").append(allBosses.size());
+        sb.append(",\"totalBossCount\":").append(visibleBossCount);
         sb.append("}");
 
         sendJson(exchange, 200, sb.toString());

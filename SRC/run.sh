@@ -45,7 +45,7 @@ if [ "$1" = "--fg" ]; then
       -XX:+UseStringDeduplication \
       -Djava.awt.headless=true \
       -Dfile.encoding=UTF-8 \
-      -cp "lib/mysql-connector-java-5.1.49.jar:lib/*:20.jar" \
+      -cp "build/classes:lib/mysql-connector-java-5.1.49.jar:lib/*:20.jar" \
       nro.models.server.ServerManager
 fi
 
@@ -59,7 +59,7 @@ nohup java -server \
   -XX:+UseStringDeduplication \
   -Djava.awt.headless=true \
   -Dfile.encoding=UTF-8 \
-  -cp "lib/mysql-connector-java-5.1.49.jar:lib/*:20.jar" \
+  -cp "build/classes:lib/mysql-connector-java-5.1.49.jar:lib/*:20.jar" \
   nro.models.server.ServerManager > "$SCRIPT_DIR/server.log" 2>&1 < /dev/null &
 NEW_PID=$!
 disown $NEW_PID 2>/dev/null || true
