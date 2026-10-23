@@ -45,7 +45,12 @@ OLD_PIDS=$(pgrep -f "java.*nro.models.server.ServerManager" || true)
 if [ -n "$OLD_PIDS" ]; then
     echo "Đang lưu dữ liệu và đóng tiến trình Server cũ (PID: $OLD_PIDS)..."
     kill -15 $OLD_PIDS 2>/dev/null || true
-    sleep 4
+    for i in $(seq 1 12); do
+        if ! pgrep -f "java.*nro.models.server.ServerManager" >/dev/null 2>&1; then
+            break
+        fi
+        sleep 1
+    done
     REMAIN_PIDS=$(pgrep -f "java.*nro.models.server.ServerManager" || true)
     if [ -n "$REMAIN_PIDS" ]; then
         echo "Đang buộc đóng tiến trình bị treo (PID: $REMAIN_PIDS)..."
@@ -59,7 +64,9 @@ if [ "$1" = "--fg" ]; then
       -XX:ActiveProcessorCount=2 \
       -XX:ParallelGCThreads=2 \
       -XX:ConcGCThreads=1 \
-      -Xms1024M -Xmx2560M \
+      -Xms256M -Xmx896M \
+      -XX:MinHeapFreeRatio=15 \
+      -XX:MaxHeapFreeRatio=35 \
       -XX:+UseG1GC \
       -XX:MaxGCPauseMillis=40 \
       -XX:+UseStringDeduplication \
@@ -69,12 +76,14 @@ if [ "$1" = "--fg" ]; then
       nro.models.server.ServerManager
 fi
 
-echo "Đang khởi động Ngọc Rồng VIAM (2 Cores CPU + 2.5GB Max Heap, chừa RAM cho MySQL & SmartLab x5)..."
+echo "Đang khởi động Ngọc Rồng VIAM (2 Cores CPU + Heap linh hoạt 256MB~896MB cho VPS 1.5GB RAM vật lý)..."
 nohup nice -n 5 java -server \
   -XX:ActiveProcessorCount=2 \
   -XX:ParallelGCThreads=2 \
   -XX:ConcGCThreads=1 \
-  -Xms1024M -Xmx2560M \
+  -Xms256M -Xmx896M \
+  -XX:MinHeapFreeRatio=15 \
+  -XX:MaxHeapFreeRatio=35 \
   -XX:+UseG1GC \
   -XX:MaxGCPauseMillis=40 \
   -XX:+UseStringDeduplication \
