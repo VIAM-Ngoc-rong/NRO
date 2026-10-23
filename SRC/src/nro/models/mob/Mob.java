@@ -719,39 +719,36 @@ public class Mob {
 
         //========================Trang bị thường & Đồ Kích Hoạt (Map Up SKH / Map Riêng Tư)========================
         if (MapService.gI().isMapUpSKH(mapid) || MapService.gI().isMapRiengTu(mapid)) {
-            int baseSkhDrop = 200; // 200 / 10000 = 2% tỷ lệ rơi đồ kích hoạt
-            double skhTileDrop = baseSkhDrop;
+            int equipDropRate = 600; // 600 / 10000 = 6% tỷ lệ quái rơi trang bị
+            if (plOwner != null && Util.nextInt(10000) < equipDropRate) {
+                int baseSkhDrop = 200; // 200 / 10000 = 2% tỷ lệ trang bị rơi ra là Đồ Kích Hoạt
+                double skhTileDrop = baseSkhDrop;
 
-            int totalOption236Param = 0;
-            if (plOwner != null && plOwner.inventory != null && plOwner.inventory.itemsBody != null) {
-                for (Item item : plOwner.inventory.itemsBody) {
-                    if (item != null && item.itemOptions != null) {
-                        for (Item.ItemOption op : item.itemOptions) {
-                            if (op.optionTemplate.id == 236) {
-                                totalOption236Param += op.param;
+                int totalOption236Param = 0;
+                if (plOwner.inventory != null && plOwner.inventory.itemsBody != null) {
+                    for (Item item : plOwner.inventory.itemsBody) {
+                        if (item != null && item.itemOptions != null) {
+                            for (Item.ItemOption op : item.itemOptions) {
+                                if (op.optionTemplate.id == 236) {
+                                    totalOption236Param += op.param;
+                                }
                             }
                         }
                     }
                 }
-            }
 
-            if (totalOption236Param > 100) {
-                totalOption236Param = 100;
-            }
+                if (totalOption236Param > 100) {
+                    totalOption236Param = 100;
+                }
 
-            double percentFromOption236 = Math.pow(totalOption236Param / 100.0, 1.5) * 20.0; // max 20%
-            skhTileDrop *= (1 + percentFromOption236 / 100.0);
+                double percentFromOption236 = Math.pow(totalOption236Param / 100.0, 1.5) * 20.0; // max 20%
+                skhTileDrop *= (1 + percentFromOption236 / 100.0);
 
-            if (plOwner != null && plOwner.itemTime != null && plOwner.itemTime.isUseCoBonLa) {
-                skhTileDrop *= 1.5;
-            }
+                if (plOwner.itemTime != null && plOwner.itemTime.isUseCoBonLa) {
+                    skhTileDrop *= 1.5;
+                }
 
-            int normalEquipDrop = 600; // 600 / 10000 = 6% tỷ lệ rơi trang bị thường
-            int totalEquipDrop = normalEquipDrop + (int) skhTileDrop;
-            int rollEquip = Util.nextInt(10000);
-
-            if (plOwner != null && rollEquip < totalEquipDrop) {
-                boolean isSKH = rollEquip < (int) skhTileDrop;
+                boolean isSKH = Util.nextInt(10000) < (int) skhTileDrop;
                 short itTemp = (short) (MapService.gI().isMapCold(mapid)
                         ? ItemService.gI().randTempItemKichHoatCold(plOwner.gender)
                         : ItemService.gI().randTempItemKichHoat(plOwner.gender));
