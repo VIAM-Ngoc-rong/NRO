@@ -51,6 +51,43 @@ public class ItemService {
         item.quantity = 1;
         item.content = item.getContent();
         item.info = item.getInfo();
+        if (item.template != null && item.template.type == 11) {
+            int maxStat = 16;
+            for (Item.ItemOption io : itemShop.options) {
+                if (io.optionTemplate != null && io.optionTemplate.id == 50 && io.param > 0) {
+                    maxStat = io.param;
+                    break;
+                }
+            }
+            int minStat = Math.max(5, maxStat / 2);
+            item.itemOptions.add(new Item.ItemOption(50, Util.nextInt(minStat, maxStat)));
+            item.itemOptions.add(new Item.ItemOption(77, Util.nextInt(minStat, maxStat)));
+            item.itemOptions.add(new Item.ItemOption(103, Util.nextInt(minStat, maxStat)));
+
+            int[][] bonusPool = {
+                {14, 3, Math.max(6, maxStat / 2)},
+                {5, 5, Math.max(10, (maxStat * 2) / 3)},
+                {94, 5, Math.max(10, maxStat / 2 + 2)},
+                {108, 5, Math.max(10, maxStat / 2 + 2)},
+                {95, 5, Math.max(10, maxStat / 2 + 2)},
+                {96, 5, Math.max(10, maxStat / 2 + 2)},
+                {101, 10, Math.max(20, maxStat + 10)},
+                {98, 5, Math.max(10, maxStat / 2)},
+                {99, 5, Math.max(10, maxStat / 2)}
+            };
+            int bonusCount = Util.nextInt(1, 3);
+            List<Integer> pickedIndices = new ArrayList<>();
+            for (int b = 0; b < bonusCount; b++) {
+                int idx = Util.nextInt(0, bonusPool.length - 1);
+                if (!pickedIndices.contains(idx)) {
+                    pickedIndices.add(idx);
+                    int[] bp = bonusPool[idx];
+                    item.itemOptions.add(new Item.ItemOption(bp[0], Util.nextInt(bp[1], bp[2])));
+                }
+            }
+            item.itemOptions.add(new Item.ItemOption(30, 0));
+            return item;
+        }
         for (Item.ItemOption io : itemShop.options) {
             Item.ItemOption copyOpt = new Item.ItemOption(io);
             if (copyOpt.optionTemplate != null) {

@@ -406,6 +406,7 @@ public class InventoryService {
             sendItemBody(player);
             Service.gI().point(player);
             Service.gI().Send_Caitrang(player);
+            Service.gI().sendFlagBag(player);
         }
     }
 

@@ -45,10 +45,127 @@ public class ShopDAO {
             } catch (SQLException ex) {
             }
             populateAllCostumesIntoSanta(list);
+            populateBackItemsIntoShopDoiDiem(list);
         } catch (Exception e) {
             Logger.logException(ShopDAO.class, e);
         }
         return list;
+    }
+
+    private static int getRubyCostForPlanetCostume(int tempId) {
+        return switch (tempId) {
+            case 710 -> 1250;  // Quy Lão Kamê (26% SĐ, 25% HP, 28% KI)
+            case 738 -> 1350;  // Dr. Lychee (26% SĐ, 26% HP, 34% KI)
+            case 1744 -> 1350; // Cađíc SSJ2 M (26% SĐ, 34% HP, 25% KI)
+            case 711 -> 1500;  // Jacky Chun (27% SĐ, 26% HP, 28% KI, Kháng TDHS)
+            case 1567 -> 1650; // CT Frieren (27% SĐ, 26% HP, 36% KI)
+            case 1693 -> 1650; // Cađíc SSJ4 (27% SĐ, 36% HP, 26% KI)
+            case 1553 -> 1950; // CT Goku SSJ4 (32% SĐ, 28% HP, 27% KI, Hút 15%)
+            case 898 -> 1950;  // Cải trang Zamasu (32% SĐ, 28% HP, 27% KI, Hút 15%)
+            case 1783 -> 1950; // CT Broly (32% SĐ, 28% HP, 27% KI, Hút 15%)
+            case 1454 -> 2200; // Super Black Goku Rose (32% SĐ, 28% HP, 28% KI, Hút 18%)
+            case 1590 -> 2500; // CT Goku SSJ Blue (33% SĐ, 28% HP, 28% KI, Hút 20%, XGCC 15%)
+            case 1396 -> 2500; // Cải trang Super Píc (33% SĐ, 28% HP, 28% KI, Hút 20%, XGCC 15%)
+            case 1275 -> 2500; // Cumber SSJ (33% SĐ, 28% HP, 28% KI, Hút 20%, XGCC 15%)
+            case 1697 -> 2600; // CT Gogeta (33% SĐ, 28% HP, 28% KI, Hút 20%, CM 10%)
+            default -> 1500;
+        };
+    }
+
+    private static void populateBackItemsIntoShopDoiDiem(List<Shop> shops) {
+        Shop doiDiemShop = null;
+        for (Shop s : shops) {
+            if ("SHOP_DOI_DIEM".equals(s.tagName)) {
+                doiDiemShop = s;
+                break;
+            }
+        }
+        if (doiDiemShop == null) {
+            return;
+        }
+
+        int iconEventPoint = 15451;
+        for (TabShop t : doiDiemShop.tabShops) {
+            for (ItemShop is : t.itemShops) {
+                if (is.iconSpec > 0) {
+                    iconEventPoint = is.iconSpec;
+                    break;
+                }
+            }
+        }
+
+        List<ItemTemplate> backTemplates = new ArrayList<>();
+        for (ItemTemplate temp : Manager.ITEM_TEMPLATES) {
+            if (temp != null && temp.type == 11 && temp.part != -1 && temp.iconID > 0
+                    && temp.name != null && !temp.name.trim().isEmpty()) {
+                backTemplates.add(temp);
+            }
+        }
+        if (backTemplates.isEmpty()) {
+            return;
+        }
+
+        doiDiemShop.tabShops.clear();
+        int pageSize = 50;
+        int totalPages = (int) Math.ceil(backTemplates.size() / (double) pageSize);
+        int autoId = 200000;
+
+        for (int p = 0; p < totalPages; p++) {
+            TabShop tab = new TabShop();
+            tab.shop = doiDiemShop;
+            tab.id = 59;
+            tab.name = totalPages == 1 ? "Đeo Lưng\nSự Kiện" : ("Đeo Lưng\nTrang " + (p + 1));
+
+            int start = p * pageSize;
+            int end = Math.min(backTemplates.size(), start + pageSize);
+            for (int idx = start; idx < end; idx++) {
+                ItemTemplate temp = backTemplates.get(idx);
+                ItemShop is = new ItemShop();
+                is.id = autoId++;
+                is.tabShop = tab;
+                is.temp = temp;
+                is.isNew = true;
+                is.typeSell = 3;
+                is.iconSpec = iconEventPoint;
+
+                // Phân bậc điểm sự kiện và khung chỉ số trần (khi mua sẽ roll ngẫu nhiên)
+                if (idx < backTemplates.size() / 4) {
+                    is.cost = 150;
+                    is.options.add(new Item.ItemOption(50, 12));  // SĐ ngẫu nhiên 6-12%
+                    is.options.add(new Item.ItemOption(77, 12));  // HP ngẫu nhiên 6-12%
+                    is.options.add(new Item.ItemOption(103, 12)); // KI ngẫu nhiên 6-12%
+                    is.options.add(new Item.ItemOption(14, 6));   // +1~2 dòng phụ ngẫu nhiên
+                    is.options.add(new Item.ItemOption(30, 0));
+                } else if (idx < backTemplates.size() / 2) {
+                    is.cost = 250;
+                    is.options.add(new Item.ItemOption(50, 16));  // SĐ ngẫu nhiên 9-16%
+                    is.options.add(new Item.ItemOption(77, 16));  // HP ngẫu nhiên 9-16%
+                    is.options.add(new Item.ItemOption(103, 16)); // KI ngẫu nhiên 9-16%
+                    is.options.add(new Item.ItemOption(14, 8));
+                    is.options.add(new Item.ItemOption(5, 10));
+                    is.options.add(new Item.ItemOption(30, 0));
+                } else if (idx < (backTemplates.size() * 3) / 4) {
+                    is.cost = 400;
+                    is.options.add(new Item.ItemOption(50, 20));  // SĐ ngẫu nhiên 12-20%
+                    is.options.add(new Item.ItemOption(77, 20));  // HP ngẫu nhiên 12-20%
+                    is.options.add(new Item.ItemOption(103, 20)); // KI ngẫu nhiên 12-20%
+                    is.options.add(new Item.ItemOption(5, 14));
+                    is.options.add(new Item.ItemOption(95, 12));
+                    is.options.add(new Item.ItemOption(30, 0));
+                } else {
+                    is.cost = 600;
+                    is.options.add(new Item.ItemOption(50, 25));  // SĐ ngẫu nhiên 15-25%
+                    is.options.add(new Item.ItemOption(77, 25));  // HP ngẫu nhiên 15-25%
+                    is.options.add(new Item.ItemOption(103, 25)); // KI ngẫu nhiên 15-25%
+                    is.options.add(new Item.ItemOption(5, 18));
+                    is.options.add(new Item.ItemOption(95, 15));
+                    is.options.add(new Item.ItemOption(14, 12));
+                    is.options.add(new Item.ItemOption(30, 0));
+                }
+                tab.itemShops.add(is);
+            }
+            doiDiemShop.tabShops.add(tab);
+        }
     }
 
     private static void populateAllCostumesIntoSanta(List<Shop> shops) {
@@ -113,7 +230,7 @@ public class ShopDAO {
                 is.temp = temp;
                 is.isNew = true;
                 is.typeSell = 3; // Bán bằng Hồng ngọc (COST_RUBY)
-                is.cost = 1000;  // Giá 1.000 Hồng ngọc
+                is.cost = getRubyCostForPlanetCostume(def[0]); // Giá > 1.000 Hồng ngọc theo chỉ số
                 is.iconSpec = iconRuby;
                 for (int i = 1; i + 1 < def.length; i += 2) {
                     is.options.add(new Item.ItemOption(def[i], def[i + 1]));
@@ -180,7 +297,7 @@ public class ShopDAO {
                     TabShop tabPlanet = new TabShop();
                     tabPlanet.shop = santaShop;
                     tabPlanet.id = 18;
-                    tabPlanet.name = "CT Hành Tinh\n(1K Hồng Ngọc)";
+                    tabPlanet.name = "CT Hành Tinh\n(Hồng Ngọc)";
                     for (ItemShop is : planetCostumes) {
                         is.tabShop = tabPlanet;
                         tabPlanet.itemShops.add(is);
@@ -238,7 +355,7 @@ public class ShopDAO {
             TabShop tabPlanet = new TabShop();
             tabPlanet.shop = santaShop;
             tabPlanet.id = 18;
-            tabPlanet.name = "CT Hành Tinh\n(1K Hồng Ngọc)";
+            tabPlanet.name = "CT Hành Tinh\n(Hồng Ngọc)";
             for (ItemShop is : planetCostumes) {
                 is.tabShop = tabPlanet;
                 tabPlanet.itemShops.add(is);
@@ -268,7 +385,7 @@ public class ShopDAO {
         TabShop specTabPlanet = new TabShop();
         specTabPlanet.shop = santaCostumeShop;
         specTabPlanet.id = 1801;
-        specTabPlanet.name = "CT Hành Tinh\n(1K Hồng Ngọc)";
+        specTabPlanet.name = "CT Hành Tinh\n(Hồng Ngọc)";
         for (ItemShop is : planetCostumes) {
             ItemShop copy = new ItemShop(is);
             copy.tabShop = specTabPlanet;
