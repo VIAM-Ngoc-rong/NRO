@@ -69,7 +69,7 @@ public class Cumber extends Boss {
             Service.gI().dropItemMap(zone, optionalItemMap);
         }
         if (Util.isTrue(10, 100)) {
-            int[] dropItems = {15,16,17,18,19,20,992};
+            int[] dropItems = {14, 15, 16, 17, 992};
             int dropOptional = dropItems[Util.nextInt(0, dropItems.length - 1)];
             ItemMap optionalItemMap = new ItemMap(this.zone, dropOptional, Util.nextInt(1, 3), x, y, plKill.id);
             Item optionalItem = ItemService.gI().createNewItem((short) dropOptional);

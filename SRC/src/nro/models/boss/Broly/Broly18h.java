@@ -147,24 +147,6 @@ public class Broly18h extends Boss {
             ItemMap eggMap = new ItemMap(this.zone, 1826, 1, x, y, plOwner.id);
             Service.gI().dropItemMap(this.zone, eggMap);
         }
-
-        // Tỷ lệ rớt Đồ Lưỡng Long (cấp 12) đến Đồ Thần Linh
-        if (Util.isTrue(15, 100)) {
-            ItemMap godItem = ItemService.gI().randDoTLBoss(this.zone, 1, x + 20, y, plOwner.id);
-            if (godItem != null) {
-                Service.gI().dropItemMap(this.zone, godItem);
-                return;
-            }
-        }
-        int dropItemId = LEVEL_12_EQUIPS[Util.nextInt(0, LEVEL_12_EQUIPS.length - 1)];
-        ItemMap equipMap = new ItemMap(this.zone, dropItemId, 1, x + 20, y, plOwner.id);
-        List<Item.ItemOption> ops = ItemService.gI().getListOptionItemShop((short) dropItemId);
-        ops.forEach(option -> option.param = (int) (option.param * Util.nextInt(100, 115) / 100.0));
-        equipMap.options.addAll(ops);
-        int randStar = Util.nextInt(1, 100);
-        int stars = randStar <= 75 ? Util.nextInt(1, 3) : (randStar <= 95 ? Util.nextInt(4, 5) : 6);
-        equipMap.options.add(new Item.ItemOption(107, stars));
-        Service.gI().dropItemMap(this.zone, equipMap);
     }
 
     @Override

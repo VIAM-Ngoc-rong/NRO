@@ -90,13 +90,10 @@ public class Drabura2 extends Boss {
             // Drop vật phẩm tùy chọn xuống bản đồ
             Service.gI().dropItemMap(zone, optionalItemMap);
         }
-        // 80% xác suất rơi ngọc rồng
         if (Util.isTrue(10, 100)) {
-            int[] dropItems = {15,16,17,18,19,20};
+            int[] dropItems = {14, 15, 16, 17};
             int dropOptional = dropItems[Util.nextInt(0, dropItems.length - 1)];
-            // Tạo và rơi vật phẩm ngọc rồng hoặc item cấp 2
-            ItemMap optionalItemMap = new ItemMap(this.zone, dropOptional, Util.nextInt(1, 3), x, y, plKill.id);
-            Item optionalItem = ItemService.gI().createNewItem((short) dropOptional);
+            ItemMap optionalItemMap = new ItemMap(this.zone, dropOptional, 1, x, y, plKill.id);
             Service.gI().dropItemMap(zone, optionalItemMap);
         }
         plKill.fightMabu.changePoint((byte) 10);

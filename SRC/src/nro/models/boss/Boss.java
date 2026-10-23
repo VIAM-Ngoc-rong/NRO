@@ -831,7 +831,37 @@ public class Boss extends Player implements IBoss {
         }
     }
 
+    public boolean isDailyEarlyBoss() {
+        switch ((int) this.id) {
+            case BossID.BUJIN, BossID.KOGU, BossID.ZANGYA, BossID.BIDO, BossID.BOJACK, BossID.SUPER_BOJACK,
+                 BossID.SO_4_NM, BossID.SO_3_NM, BossID.SO_2_NM, BossID.SO_1_NM, BossID.TIEU_DOI_TRUONG_NM:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    public boolean isMiniBoss() {
+        return this.id == BossID.AN_TROM || this.id == BossID.O_DO1
+                || this.id == BossID.SOI_HEC_QUYN1 || this.id == BossID.SOI_HEC_QUYN;
+    }
+
+    public boolean isBossFromNappaOnwards() {
+        if (isDailyEarlyBoss() || isMiniBoss() || isBrolyBoss()) {
+            return false;
+        }
+        switch ((int) this.id) {
+            case BossID.KUKU, BossID.MAP_DAU_DINH, BossID.RAMBO:
+                return true;
+            default:
+                return isBossFromTDSTNappaOnwards();
+        }
+    }
+
     public boolean isBossFromTDSTNappaOnwards() {
+        if (isDailyEarlyBoss() || isMiniBoss() || isBrolyBoss()) {
+            return false;
+        }
         switch ((int) this.id) {
             case BossID.SO_4, BossID.SO_3, BossID.SO_2, BossID.SO_1, BossID.TIEU_DOI_TRUONG, BossID.TDST,
                  BossID.FIDE, BossID.COOLER, BossID.ANDROID_19, BossID.DR_KORE,
@@ -851,7 +881,7 @@ public class Boss extends Player implements IBoss {
         }
         if (this.zone != null && this.zone.map != null) {
             int mapId = this.zone.map.mapId;
-            if (MapService.gI().isMapTuongLai(mapId) || MapService.gI().isMapCold(mapId)
+            if (MapService.gI().isMapNappa(mapId) || MapService.gI().isMapTuongLai(mapId) || MapService.gI().isMapCold(mapId)
                     || MapService.gI().isMapNgucTu(mapId) || MapService.gI().isMapMaBu(mapId)
                     || MapService.gI().isMapMabu2H(mapId) || MapService.gI().isMapCadic(mapId)) {
                 return true;
@@ -861,6 +891,9 @@ public class Boss extends Player implements IBoss {
     }
 
     public boolean isBossFromFutureOnwards() {
+        if (isDailyEarlyBoss() || isMiniBoss() || isBrolyBoss()) {
+            return false;
+        }
         switch ((int) this.id) {
             case BossID.BLACK_GOKU, BossID.ZAMASU, BossID.CUMBER, BossID.COOLER,
                  BossID.BASIL, BossID.LAVENDER, BossID.BERGAMO, BossID.MABU_14H,
@@ -900,7 +933,7 @@ public class Boss extends Player implements IBoss {
     }
 
     protected void dropExtraBossReward(Player plKill) {
-        if (plKill == null || this.zone == null || this.zone.map == null) {
+        if (plKill == null || this.zone == null || this.zone.map == null || isMiniBoss()) {
             return;
         }
         Player plOwner = plKill.isPet ? ((Pet) plKill).master : plKill;
@@ -910,13 +943,7 @@ public class Boss extends Player implements IBoss {
         int x = this.location.x;
         int y = this.zone.map.yPhysicInTop(x, this.location.y - 24);
 
-        if (isDailyBossDropNgocRongTim() || isBossFromTDSTNappaOnwards()) {
-            int nrTimId = Util.isTrue(50, 100) ? 1832 : 1833;
-            ItemMap nrTimMap = new ItemMap(this.zone, nrTimId, 1, x + Util.nextInt(-25, 25), y, plOwner.id);
-            Service.gI().dropItemMap(this.zone, nrTimMap);
-        }
-
-        // Rớt Hồng Ngọc (ID 861) khi tiêu diệt Boss (phục vụ mua Cải trang tối ưu hành tinh 1000 Hồng ngọc)
+        // Rớt Hồng Ngọc (ID 861) khi tiêu diệt Boss (phục vụ mua Cải trang tối ưu hành tinh >1000 Hồng ngọc)
         long bossHpForRuby = this.nPoint != null ? Math.max(1L, (long) this.nPoint.hpMax) : 1L;
         int rubyDrop;
         if (bossHpForRuby < 50_000_000L) {
@@ -929,7 +956,7 @@ public class Boss extends Player implements IBoss {
         ItemMap rubyMap = new ItemMap(this.zone, 861, rubyDrop, x + Util.nextInt(-20, 20), y, plOwner.id);
         Service.gI().dropItemMap(this.zone, rubyMap);
 
-        // 0. Đánh Boss rớt 5 cục vàng (tham chiếu TDST Nappa Số 4 -> Số 1: 5 cục x 1.000.000 vàng, x2 cuối tuần)
+        // 0. Đánh Boss rớt 5 cục vàng
         long bossHp = this.nPoint != null ? Math.max(1L, (long) this.nPoint.hpMax) : 1L;
         int piles = 5;
         long baseGoldPerPile;
@@ -957,55 +984,78 @@ public class Boss extends Player implements IBoss {
             Service.gI().dropItemMap(this.zone, goldMap);
         }
 
-        // 1. Kèm đúng 1 món vật phẩm ngẫu nhiên: Đồ hoặc Ngọc Rồng
-        boolean droppedRandomItem = false;
+        // 1. Chỉ các Boss từ Nappa trở đi mới có cơ hội rơi Đồ (Trang bị).
+        // Các Boss hằng ngày như TDST Namek, Bojack không rơi đồ, chỉ rơi Ngọc Rồng.
+        boolean droppedEquip = false;
+        boolean canDropEquip = isBossFromNappaOnwards();
 
-        // Các Boss ở Tương Lai trở đi: có tỷ lệ rớt Đồ Thần Linh, tỷ lệ tăng dần theo máu của Boss
-        if (isBossFromFutureOnwards()) {
+        if (canDropEquip && isBossFromFutureOnwards()) {
             long hpBoss = Math.max(1L, (long) this.nPoint.hpMax);
             int ratePer1000 = (int) Math.min(250L, 20L + (hpBoss / 10_000_000L));
             if (Util.isTrue(ratePer1000, 1000)) {
                 ItemMap godItem = ItemService.gI().randDoTLBoss(this.zone, 1, x, y, plOwner.id);
                 if (godItem != null) {
                     Service.gI().dropItemMap(this.zone, godItem);
-                    droppedRandomItem = true;
+                    droppedEquip = true;
                 }
             }
         }
 
-        if (!droppedRandomItem) {
-            // Random 50% ra Đồ (Trang bị) hoặc 50% ra Ngọc Rồng
-            boolean dropEquip = Util.isTrue(50, 100);
-            if (dropEquip) {
-                int group = Util.nextInt(1, 100) <= 70 ? 0 : 1;
-                int[][] shopHighValueDrops = {
-                    {230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 266, 267, 268, 269, 270, 271, 272, 273, 274, 275, 276, 277},
-                    {254, 255, 256, 257, 258, 259, 260, 261, 262, 263, 264, 265, 278, 279, 280, 281}
-                };
-                int dropItemId = shopHighValueDrops[group][Util.nextInt(0, shopHighValueDrops[group].length - 1)];
-                ItemMap shopItemMap = new ItemMap(this.zone, dropItemId, 1, x, y, plOwner.id);
-                List<Item.ItemOption> shopOps = ItemService.gI().getListOptionItemShop((short) dropItemId);
-                shopOps.forEach(option -> option.param = (int) (option.param * Util.nextInt(100, 115) / 100.0));
-                shopItemMap.options.addAll(shopOps);
-                int randStar = Util.nextInt(1, 100);
-                int stars = randStar <= 75 ? Util.nextInt(1, 3) : (randStar <= 95 ? Util.nextInt(4, 5) : 6);
-                shopItemMap.options.add(new Item.ItemOption(107, stars));
-                Service.gI().dropItemMap(this.zone, shopItemMap);
+        if (canDropEquip && !droppedEquip && Util.isTrue(50, 100)) {
+            int group = Util.nextInt(1, 100) <= 70 ? 0 : 1;
+            int[][] shopHighValueDrops = {
+                {230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 266, 267, 268, 269, 270, 271, 272, 273, 274, 275, 276, 277},
+                {254, 255, 256, 257, 258, 259, 260, 261, 262, 263, 264, 265, 278, 279, 280, 281}
+            };
+            int dropItemId = shopHighValueDrops[group][Util.nextInt(0, shopHighValueDrops[group].length - 1)];
+            ItemMap shopItemMap = new ItemMap(this.zone, dropItemId, 1, x, y, plOwner.id);
+            List<Item.ItemOption> shopOps = ItemService.gI().getListOptionItemShop((short) dropItemId);
+            shopOps.forEach(option -> option.param = (int) (option.param * Util.nextInt(100, 115) / 100.0));
+            shopItemMap.options.addAll(shopOps);
+            int randStar = Util.nextInt(1, 100);
+            int stars = randStar <= 75 ? Util.nextInt(1, 3) : (randStar <= 95 ? Util.nextInt(4, 5) : 6);
+            shopItemMap.options.add(new Item.ItemOption(107, stars));
+            Service.gI().dropItemMap(this.zone, shopItemMap);
+            droppedEquip = true;
+        }
+
+        // 2. Khi rớt Ngọc Rồng (hoặc Boss chỉ rớt Ngọc Rồng):
+        // - Một khi rớt Ngọc Rồng Tím (1832/1833) thì KHÔNG rớt Ngọc Rồng Thường và ngược lại.
+        // - Khi rớt Ngọc Rồng Thường: chỉ rớt từ 4 sao trở lên (1s, 2s, 3s, 4s - ID 14..17), tuyệt đối KHÔNG rớt 5s trở xuống (18..20).
+        // - Các Boss hằng ngày như TDST Namek, Bojack: tỷ lệ rớt 1-2s thấp.
+        if (!droppedEquip) {
+            boolean canDropPurpleBall = isDailyBossDropNgocRongTim() || isBossFromNappaOnwards();
+            boolean dropPurpleBall = canDropPurpleBall && Util.isTrue(50, 100);
+
+            if (dropPurpleBall) {
+                int nrTimId = Util.isTrue(50, 100) ? 1832 : 1833;
+                ItemMap nrTimMap = new ItemMap(this.zone, nrTimId, 1, x + Util.nextInt(-25, 25), y, plOwner.id);
+                Service.gI().dropItemMap(this.zone, nrTimMap);
             } else {
                 int nroId;
-                if (isBossFromTDSTNappaOnwards()) {
-                    int rdNro = Util.nextInt(1, 100);
-                    if (rdNro <= 10) {
-                        nroId = 14; // Ngọc rồng 1 sao (5%)
-                    } else if (rdNro <= 20) {
-                        nroId = 15; // Ngọc rồng 2 sao (15%)
-                    } else if (rdNro <= 50) {
-                        nroId = 16; // Ngọc rồng 3 sao (30%)
+                int rdNro = Util.nextInt(1, 100);
+                if (isDailyEarlyBoss() || !isBossFromNappaOnwards()) {
+                    // Boss hằng ngày (TDST Namek, Bojack, ...): chỉ rớt 1s-4s nhưng tỷ lệ 1s-2s thấp
+                    if (rdNro <= 3) {
+                        nroId = 14; // Ngọc rồng 1 sao (3%)
+                    } else if (rdNro <= 10) {
+                        nroId = 15; // Ngọc rồng 2 sao (7%)
+                    } else if (rdNro <= 45) {
+                        nroId = 16; // Ngọc rồng 3 sao (35%)
                     } else {
-                        nroId = Util.nextInt(17, 19); // Ngọc rồng 4-6 sao (50%)
+                        nroId = 17; // Ngọc rồng 4 sao (55%)
                     }
                 } else {
-                    nroId = Util.nextInt(17, 20); // Ngọc rồng 4-7 sao cho Boss nhỏ
+                    // Các Boss từ Nappa trở đi: chỉ rớt từ 4 sao trở lên (1s, 2s, 3s, 4s), không rớt 5s-7s
+                    if (rdNro <= 10) {
+                        nroId = 14; // Ngọc rồng 1 sao (10%)
+                    } else if (rdNro <= 25) {
+                        nroId = 15; // Ngọc rồng 2 sao (15%)
+                    } else if (rdNro <= 60) {
+                        nroId = 16; // Ngọc rồng 3 sao (35%)
+                    } else {
+                        nroId = 17; // Ngọc rồng 4 sao (40%)
+                    }
                 }
                 ItemMap nroMap = new ItemMap(this.zone, nroId, 1, x, y, plOwner.id);
                 Service.gI().dropItemMap(this.zone, nroMap);
