@@ -721,7 +721,7 @@ public class Mob {
         if (MapService.gI().isMapUpSKH(mapid) || MapService.gI().isMapRiengTu(mapid)) {
             int equipDropRate = 600; // 600 / 10000 = 6% tỷ lệ quái rơi trang bị
             if (plOwner != null && Util.nextInt(10000) < equipDropRate) {
-                int baseSkhDrop = 200; // 200 / 10000 = 2% tỷ lệ trang bị rơi ra là Đồ Kích Hoạt
+                int baseSkhDrop = 500; // 500 / 10000 = 5% tỷ lệ trang bị rơi ra là Đồ Kích Hoạt
                 double skhTileDrop = baseSkhDrop;
 
                 int totalOption236Param = 0;
