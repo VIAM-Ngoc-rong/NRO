@@ -101,13 +101,29 @@ public class ItemService {
             item.itemOptions.add(new Item.ItemOption(30, 0));
             return item;
         }
+        boolean isBoughtWithRuby = itemShop.typeSell == 3
+                || (itemShop.iconSpec > 0 && getItemIdByIcon((short) itemShop.iconSpec) == 861)
+                || (itemShop.tabShop != null && (itemShop.tabShop.id == 18 || itemShop.tabShop.id == 1801 || itemShop.tabShop.id == 590));
         for (Item.ItemOption io : itemShop.options) {
             Item.ItemOption copyOpt = new Item.ItemOption(io);
             if (copyOpt.optionTemplate != null) {
-                switch (copyOpt.optionTemplate.id) {
+                int optId = copyOpt.optionTemplate.id;
+                switch (optId) {
                     case 159 -> copyOpt.param = Util.nextInt(50, 150); // Ngẫu nhiên 50% - 150% sát thương đòn chưởng
                     case 153 -> copyOpt.param = Util.nextInt(25, 75);  // Ngẫu nhiên 25% - 75% sát thương chiêu phát nổ
                     case 66  -> copyOpt.param = Util.nextInt(25, 75);  // Ngẫu nhiên 25% - 75% sát thương chiêu Laze
+                    case 50, 77, 103 -> {
+                        if (isBoughtWithRuby && copyOpt.param > 1) {
+                            int minMain = Math.max(5, (copyOpt.param * 70) / 100);
+                            copyOpt.param = Util.nextInt(minMain, copyOpt.param);
+                        }
+                    }
+                    case 0, 5, 6, 7, 14, 22, 23, 27, 28, 47, 80, 81, 94, 95, 96, 97, 98, 99, 100, 101, 108, 114, 117, 160 -> {
+                        if (isBoughtWithRuby && copyOpt.param > 1) {
+                            int minSub = Math.max(1, (copyOpt.param * 60) / 100);
+                            copyOpt.param = Util.nextInt(minSub, copyOpt.param);
+                        }
+                    }
                 }
             }
             item.itemOptions.add(copyOpt);

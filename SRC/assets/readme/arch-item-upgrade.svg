@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 420" width="100%" height="auto">
+  <defs>
+    <linearGradient id="bgItem" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#172554"/>
+    </linearGradient>
+    <marker id="arrGold2" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#fbbf24"/>
+    </marker>
+  </defs>
+
+  <rect width="1200" height="420" rx="18" fill="url(#bgItem)" stroke="#fbbf24" stroke-width="2"/>
+  <text x="600" y="40" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="22" font-weight="900" fill="#fde047">CHUỖI TIẾN HÓA TRANG BỊ &amp; QUY TRÌNH ĐẬP ĐỒ 9 SAO PHA LÊ CẤP 2</text>
+  <text x="600" y="66" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="14" fill="#cbd5e1">Từ Đồ Vải Thô SKH Tân Thủ → Tinh Luyện SKH Đá Ngũ Sắc → Đồ Thần Linh → Đồ Hủy Diệt → Đồ Thiên Sứ</text>
+
+  <!-- Row 1: Gear Progression Tiers -->
+  <g transform="translate(40, 92)">
+    <rect width="1120" height="135" rx="12" fill="#090d16" stroke="#38bdf8" stroke-width="1.5"/>
+    <text x="20" y="28" font-family="Segoe UI, sans-serif" font-size="15" font-weight="800" fill="#38bdf8">A. LỘ TRÌNH THăng CẤP BẬC TRANG BỊ MẶC TRÊN NGƯỜI &amp; ĐỆ TỬ</text>
+
+    <rect x="20" y="44" width="240" height="74" rx="10" fill="#1e293b" stroke="#38bdf8"/>
+    <text x="140" y="68" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="14" font-weight="800" fill="#38bdf8">1. Đồ Vải Thô SKH Tân Thủ</text>
+    <text x="140" y="90" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="12" fill="#cbd5e1">Nhận miễn phí tại Ông Gôhan</text>
+    <text x="140" y="108" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="11.5" fill="#fde047">+100% ST Kỹ năng (Dùng xuyên suốt)</text>
+
+    <line x1="265" y1="81" x2="295" y2="81" stroke="#fbbf24" stroke-width="2.5" marker-end="url(#arrGold2)"/>
+
+    <rect x="300" y="44" width="245" height="74" rx="10" fill="#1e293b" stroke="#22c55e"/>
+    <text x="422" y="68" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="14" font-weight="800" fill="#4ade80">2. Đồ SKH Cao Cấp / Đá Ngũ Sắc</text>
+    <text x="422" y="90" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="12" fill="#cbd5e1">Rớt 2% từ Boss hoặc Đập tại Bà Hạt Mít</text>
+    <text x="422" y="108" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="11.5" fill="#86efac">Chỉ số gốc cao + Giữ nguyên +100% SKH</text>
+
+    <line x1="550" y1="81" x2="580" y2="81" stroke="#fbbf24" stroke-width="2.5" marker-end="url(#arrGold2)"/>
+
+    <rect x="585" y="44" width="245" height="74" rx="10" fill="#1e293b" stroke="#f59e0b"/>
+    <text x="707" y="68" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="14" font-weight="800" fill="#fbbf24">3. Đồ Thần Linh &amp; Hủy Diệt</text>
+    <text x="707" y="90" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="12" fill="#cbd5e1">Săn Boss Tương Lai / Cold (15% rớt)</text>
+    <text x="707" y="108" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="11.5" fill="#fde047">Nền tảng đổi Đồ Hủy Diệt (+15% chỉ số)</text>
+
+    <line x1="835" y1="81" x2="865" y2="81" stroke="#fbbf24" stroke-width="2.5" marker-end="url(#arrGold2)"/>
+
+    <rect x="870" y="44" width="230" height="74" rx="10" fill="#1e293b" stroke="#a855f7"/>
+    <text x="985" y="68" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="14" font-weight="800" fill="#c084fc">4. Trang Bị Thiên Sứ (Max)</text>
+    <text x="985" y="90" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="12" fill="#cbd5e1">Chế tạo tại NPC Whis (Hành Tinh Bill)</text>
+    <text x="985" y="108" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="11.5" fill="#e9d5ff">Đỉnh cao chỉ số gốc &amp; Nổ dòng VIP</text>
+  </g>
+
+  <!-- Row 2: Star & Upgrade Pipeline -->
+  <g transform="translate(40, 248)">
+    <rect width="1120" height="145" rx="12" fill="#090d16" stroke="#f59e0b" stroke-width="1.5"/>
+    <text x="20" y="28" font-family="Segoe UI, sans-serif" font-size="15" font-weight="800" fill="#fbbf24">B. QUY TRÌNH 4 BƯỚC ĐẬP ĐỒ SAO PHA LÊ &amp; NÂNG CẤP TRANG BỊ (TẠI BÀ HẠT MÍT — ĐẢO KAME)</text>
+
+    <rect x="20" y="46" width="250" height="82" rx="10" fill="#1e293b" stroke="#fbbf24"/>
+    <text x="145" y="70" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="14" font-weight="800" fill="#fde047">Bước 1: Pha Lê Hóa (1 → 9 Sao)</text>
+    <text x="145" y="92" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="12" fill="#cbd5e1">• Dùng Vàng &amp; Ngọc đục lỗ pha lê</text>
+    <text x="145" y="112" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="11.5" fill="#4ade80">• Hỗ trợ đập tự động x10, x100 lần</text>
+
+    <line x1="275" y1="87" x2="305" y2="87" stroke="#fbbf24" stroke-width="2.5" marker-end="url(#arrGold2)"/>
+
+    <rect x="310" y="46" width="250" height="82" rx="10" fill="#1e293b" stroke="#fbbf24"/>
+    <text x="435" y="70" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="14" font-weight="800" fill="#fde047">Bước 2: Cường Hóa Lỗ 8 &amp; 9</text>
+    <text x="435" y="92" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="12" fill="#cbd5e1">• Dùng Đá Hematite + Dùi Đục</text>
+    <text x="435" y="112" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="11.5" fill="#4ade80">• Mở khóa lỗ sao thứ 8 và thứ 9</text>
+
+    <line x1="565" y1="87" x2="595" y2="87" stroke="#fbbf24" stroke-width="2.5" marker-end="url(#arrGold2)"/>
+
+    <rect x="600" y="46" width="250" height="82" rx="10" fill="#1e293b" stroke="#fbbf24"/>
+    <text x="725" y="70" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="14" font-weight="800" fill="#fde047">Bước 3: Ép SPL Cấp 2 &amp; Đánh Bóng</text>
+    <text x="725" y="92" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="12" fill="#cbd5e1">• Nâng SPL + Hematite → SPL Cấp 2</text>
+    <text x="725" y="112" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="11.5" fill="#4ade80">• Dùng Đá Mài đánh bóng &amp; ép vào đồ</text>
+
+    <line x1="855" y1="87" x2="885" y2="87" stroke="#fbbf24" stroke-width="2.5" marker-end="url(#arrGold2)"/>
+
+    <rect x="890" y="46" width="210" height="82" rx="10" fill="#1e293b" stroke="#22c55e"/>
+    <text x="995" y="70" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="14" font-weight="800" fill="#4ade80">Bước 4: Đập Cấp [+1..+16]</text>
+    <text x="995" y="92" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="12" fill="#cbd5e1">• Dùng Đá Nâng Cấp + Đá Bảo Vệ</text>
+    <text x="995" y="112" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="11.5" fill="#fde047">• Tăng mạnh chỉ số gốc + Hiệu ứng</text>
+  </g>
+</svg>

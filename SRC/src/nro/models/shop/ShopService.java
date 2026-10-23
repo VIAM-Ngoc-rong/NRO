@@ -742,7 +742,7 @@ public class ShopService {
             InventoryService.gI().addItemBag(player, item);
             InventoryService.gI().sendItemBags(player);
             Service.gI().sendThongBao(player, "Đã đổi " + is.temp.name + " (HSD 5 ngày, -" + eventPointPrice
-                    + " điểm sự kiện) nhận chỉ số ngẫu nhiên!");
+                    + " điểm SK)" + formatRolledStatsSummary(item));
             return;
         }
         // Mua đeo lưng Vĩnh Viễn bằng Hồng Ngọc
@@ -754,7 +754,7 @@ public class ShopService {
             InventoryService.gI().addItemBag(player, item);
             InventoryService.gI().sendItemBags(player);
             Service.gI().sendThongBao(player, "Đã mua " + is.temp.name + " Vĩnh Viễn (-" + is.cost
-                    + " Hồng ngọc) nhận chỉ số ngẫu nhiên!");
+                    + " Hồng ngọc)" + formatRolledStatsSummary(item));
             return;
         }
         // Đổi bằng điểm Capsule Bang
@@ -865,7 +865,12 @@ public class ShopService {
         InventoryService.gI().addItemBag(player, item);
         InventoryService.gI().sendItemBags(player);
         String extraRollMsg = "";
-        if (item.itemOptions != null) {
+        boolean isRubyBuy = is.typeSell == COST_RUBY
+                || (is.iconSpec > 0 && ItemService.gI().getItemIdByIcon((short) is.iconSpec) == 861)
+                || (is.tabShop != null && (is.tabShop.id == 18 || is.tabShop.id == 1801 || is.tabShop.id == 590));
+        if (isRubyBuy) {
+            extraRollMsg = formatRolledStatsSummary(item);
+        } else if (item.itemOptions != null) {
             for (ItemOption io : item.itemOptions) {
                 if (io.optionTemplate != null) {
                     if (io.optionTemplate.id == 159) {
@@ -887,6 +892,37 @@ public class ShopService {
             updateAutoTrainPurchase(player, itemTempId);
             Service.gI().sendThongBao(player, "Mua thành công " + is.temp.name);
         }
+    }
+
+    private String formatRolledStatsSummary(Item item) {
+        if (item == null || item.itemOptions == null || item.itemOptions.isEmpty()) {
+            return "";
+        }
+        StringBuilder sb = new StringBuilder();
+        for (ItemOption io : item.itemOptions) {
+            if (io == null || io.optionTemplate == null) {
+                continue;
+            }
+            int id = io.optionTemplate.id;
+            int p = io.param;
+            switch (id) {
+                case 50 -> sb.append("SĐ +").append(p).append("%, ");
+                case 77 -> sb.append("HP +").append(p).append("%, ");
+                case 103 -> sb.append("KI +").append(p).append("%, ");
+                case 159 -> sb.append("ST Chưởng +").append(p).append("%, ");
+                case 153 -> sb.append("ST Nổ +").append(p).append("%, ");
+                case 66 -> sb.append("ST Laze +").append(p).append("%, ");
+                case 95 -> sb.append("Hút HP +").append(p).append("%, ");
+                case 96 -> sb.append("Hút KI +").append(p).append("%, ");
+                case 14 -> sb.append("CM +").append(p).append("%, ");
+                case 5 -> sb.append("SĐCM +").append(p).append("%, ");
+            }
+        }
+        if (sb.length() > 2) {
+            sb.setLength(sb.length() - 2);
+            return " [Random: " + sb.toString() + "]";
+        }
+        return "";
     }
 
     private boolean checkAutoTrainPurchase(Player player, int itemTempId) {
