@@ -252,10 +252,11 @@
       </div>
       <div class="conn-bar">
         <select id="presetHost" onchange="applyPresetHost()">
-          <option value="http://103.179.190.242:14446">VPS (103.179.190.242:14446)</option>
-          <option value="http://127.0.0.1:14446">Máy Local (127.0.0.1:14446)</option>
+          <option value="http://103.179.190.242:14445">VPS (103.179.190.242:14445)</option>
+          <option value="http://103.179.190.242:14446">VPS Port Phụ (103.179.190.242:14446)</option>
+          <option value="http://127.0.0.1:14445">Máy Local (127.0.0.1:14445)</option>
         </select>
-        <input type="text" id="apiHost" value="http://103.179.190.242:14446" style="width: 210px;" placeholder="http://IP:14446" />
+        <input type="text" id="apiHost" value="http://103.179.190.242:14445" style="width: 210px;" placeholder="http://IP:14445" />
         <input type="password" id="adminKey" value="viam2026" style="width: 110px;" placeholder="Mã Admin" />
         <button onclick="fetchStatus()">Làm mới ngay</button>
       </div>
@@ -450,7 +451,22 @@
       const dot = document.getElementById('statusDot');
       const statusText = document.getElementById('connStatusText');
       try {
-        const res = await fetch(`${getBaseUrl()}/api/status?key=${getKey()}`);
+        let baseUrl = getBaseUrl();
+        let res;
+        try {
+          res = await fetch(`${baseUrl}/api/status?key=${getKey()}`);
+        } catch (firstErr) {
+          // Tự động chuyển đổi dự phòng giữa port 14445 (cổng game mở sẵn) và 14446
+          const altUrl = baseUrl.endsWith(':14446')
+            ? baseUrl.replace(/:14446$/, ':14445')
+            : (baseUrl.endsWith(':14445') ? baseUrl.replace(/:14445$/, ':14446') : null);
+          if (altUrl) {
+            res = await fetch(`${altUrl}/api/status?key=${getKey()}`);
+            document.getElementById('apiHost').value = altUrl;
+          } else {
+            throw firstErr;
+          }
+        }
         const data = await res.json();
         if (!data.ok) {
           dot.classList.remove('online');
@@ -652,3 +668,4 @@
   </script>
 </body>
 </html>
+

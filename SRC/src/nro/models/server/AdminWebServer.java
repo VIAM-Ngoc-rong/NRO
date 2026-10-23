@@ -61,6 +61,45 @@ public class AdminWebServer {
         exchange.getResponseHeaders().set("Access-Control-Allow-Origin", "*");
         exchange.getResponseHeaders().set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
         exchange.getResponseHeaders().set("Access-Control-Allow-Headers", "Content-Type, X-Admin-Key");
+        exchange.getResponseHeaders().set("Connection", "close");
+    }
+
+    /**
+     * Multiplexes HTTP requests arriving on the main game port (14445) directly
+     * to the local HttpServer (127.0.0.1:14446) so external cloud firewalls never block the dashboard.
+     */
+    public static void relaySocketToLocalHttp(java.net.Socket clientSocket, InputStream clientIn) {
+        try {
+            clientSocket.setSoTimeout(8000);
+            try (java.net.Socket local = new java.net.Socket("127.0.0.1", WEB_PORT)) {
+                local.setSoTimeout(8000);
+                OutputStream localOut = local.getOutputStream();
+                InputStream localIn = local.getInputStream();
+                OutputStream clientOut = clientSocket.getOutputStream();
+
+                Thread reqPipe = new Thread(() -> {
+                    try {
+                        byte[] buf = new byte[4096];
+                        int n;
+                        while ((n = clientIn.read(buf)) != -1) {
+                            localOut.write(buf, 0, n);
+                            localOut.flush();
+                        }
+                    } catch (Exception ignored) {
+                    }
+                }, "AdminHttpRelayReq");
+                reqPipe.setDaemon(true);
+                reqPipe.start();
+
+                byte[] buf = new byte[8192];
+                int n;
+                while ((n = localIn.read(buf)) != -1) {
+                    clientOut.write(buf, 0, n);
+                }
+                clientOut.flush();
+            }
+        } catch (Exception ignored) {
+        }
     }
 
     private static boolean checkAuth(HttpExchange exchange, Map<String, String> params) throws IOException {
