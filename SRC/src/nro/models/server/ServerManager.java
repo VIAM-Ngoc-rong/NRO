@@ -320,7 +320,7 @@ public class ServerManager {
             if (os.contains("win")) {
                 Runtime.getRuntime().exec("cmd /c start restart_server.bat");
             } else {
-                new ProcessBuilder("/bin/bash", "-c", "sleep 2 && nohup ./run.sh > server.log 2>&1 &")
+                new ProcessBuilder("/bin/bash", "-c", "sleep 2 && nohup ./run.sh --fg > server.log 2>&1 &")
                         .directory(new java.io.File("."))
                         .start();
             }

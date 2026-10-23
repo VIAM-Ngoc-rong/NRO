@@ -29,6 +29,28 @@ fi
 if [ -f "dist/NgocRongOnline.jar" ]; then
     cp -f "dist/NgocRongOnline.jar" "20.jar"
 fi
+
+# Mặc định tự động chạy ngầm (nohup) để tắt SSH không bị sập Server
+if [ "$1" != "--fg" ]; then
+    OLD_PID=$(pgrep -f "nro.models.server.ServerManager" || true)
+    if [ -n "$OLD_PID" ]; then
+        echo "Đang lưu dữ liệu và tắt tiến trình Server cũ (PID: $OLD_PID)..."
+        pkill -TERM -f "nro.models.server.ServerManager" 2>/dev/null || true
+        sleep 4
+    fi
+    echo "Đang khởi động Ngọc Rồng VIAM ở chế độ chạy ngầm (Background)..."
+    nohup "$SCRIPT_DIR/run.sh" --fg > "$SCRIPT_DIR/server.log" 2>&1 < /dev/null &
+    NEW_PID=$!
+    sleep 4
+    echo "=========================================================="
+    echo "Server đã chạy ngầm thành công! (PID: $NEW_PID)"
+    echo "Bạn có thể đóng cửa sổ SSH thoải mái, Server vẫn hoạt động 24/7."
+    echo "Xem log trực tiếp bất kỳ lúc nào bằng lệnh: tail -f /root/NRO/SRC/server.log"
+    echo "=========================================================="
+    tail -n 15 "$SCRIPT_DIR/server.log" 2>/dev/null || true
+    exit 0
+fi
+
 exec java -server \
   -Xms256M -Xmx512M \
   -XX:MaxMetaspaceSize=96M \

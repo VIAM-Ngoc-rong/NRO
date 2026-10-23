@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ngọc Rồng VIAM — Bảng Giám Sát & Điều Khiển Server</title>
+  <title>Ngọc Rồng VIAM — Trung Tâm Quản Trị Server</title>
   <style>
     :root {
       --bg: #0b1120;
       --panel: #151f32;
       --panel-hover: #1e293b;
-      --border: #283548;
-      --text: #f1f5f9;
+      --border: #26354d;
+      --text: #f8fafc;
       --muted: #94a3b8;
       --primary: #3b82f6;
       --primary-hover: #2563eb;
@@ -25,24 +25,27 @@
       background: var(--bg);
       color: var(--text);
       line-height: 1.5;
-      padding: 20px;
+      padding: 18px;
     }
-    .container { max-width: 1380px; margin: 0 auto; }
+    .container { max-width: 1440px; margin: 0 auto; }
+
     header {
       display: flex;
       flex-wrap: wrap;
       align-items: center;
       justify-content: space-between;
-      gap: 16px;
+      gap: 14px;
       background: var(--panel);
       border: 1px solid var(--border);
+      padding: 14px 20px;
       border-radius: 12px;
-      padding: 16px 20px;
-      margin-bottom: 20px;
+      margin-bottom: 16px;
     }
     .brand { display: flex; align-items: center; gap: 12px; }
     .status-dot {
-      width: 12px; height: 12px; border-radius: 50%;
+      width: 13px;
+      height: 13px;
+      border-radius: 50%;
       background: var(--danger);
       box-shadow: 0 0 10px var(--danger);
       transition: all 0.3s;
@@ -51,8 +54,9 @@
       background: var(--success);
       box-shadow: 0 0 12px var(--success);
     }
-    .brand h1 { font-size: 20px; font-weight: 700; }
-    .brand span { font-size: 13px; color: var(--muted); }
+    .brand h1 { font-size: 19px; font-weight: 700; }
+    .brand span { font-size: 12px; color: var(--muted); }
+
     .conn-bar {
       display: flex;
       flex-wrap: wrap;
@@ -63,7 +67,7 @@
       background: #0f172a;
       border: 1px solid var(--border);
       color: var(--text);
-      padding: 8px 12px;
+      padding: 8px 11px;
       border-radius: 8px;
       font-size: 13px;
       outline: none;
@@ -73,71 +77,70 @@
       background: var(--primary);
       color: #fff;
       border: none;
-      padding: 8px 14px;
+      padding: 8px 13px;
       border-radius: 8px;
       font-size: 13px;
       font-weight: 600;
       cursor: pointer;
-      transition: background 0.2s, transform 0.1s;
+      transition: opacity 0.2s, transform 0.1s;
     }
-    button:hover { background: var(--primary-hover); }
+    button:hover { opacity: 0.92; }
     button:active { transform: scale(0.98); }
-    button.btn-success { background: var(--success); }
-    button.btn-success:hover { background: #059669; }
-    button.btn-warning { background: var(--warning); color: #000; }
-    button.btn-danger { background: var(--danger); }
-    button.btn-purple { background: var(--purple); }
-    button.btn-sm { padding: 5px 10px; font-size: 12px; border-radius: 6px; }
+    .btn-success { background: var(--success); }
+    .btn-warning { background: var(--warning); color: #111827; }
+    .btn-danger { background: var(--danger); }
+    .btn-purple { background: var(--purple); }
+    .btn-muted { background: #334155; }
+    .btn-sm { padding: 5px 9px; font-size: 12px; border-radius: 6px; }
 
     .stats-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 16px;
-      margin-bottom: 20px;
+      gap: 14px;
+      margin-bottom: 16px;
     }
     .stat-card {
       background: var(--panel);
       border: 1px solid var(--border);
       border-radius: 12px;
-      padding: 16px 20px;
+      padding: 14px 18px;
     }
-    .stat-label { font-size: 13px; color: var(--muted); margin-bottom: 6px; }
-    .stat-value { font-size: 26px; font-weight: 700; }
+    .stat-label { font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+    .stat-value { font-size: 24px; font-weight: 700; }
     .stat-sub { font-size: 12px; color: var(--muted); margin-top: 4px; }
 
     .actions-bar {
       display: flex;
       flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
+      gap: 10px;
       background: var(--panel);
       border: 1px solid var(--border);
+      padding: 12px 16px;
       border-radius: 12px;
-      padding: 14px 20px;
-      margin-bottom: 20px;
+      margin-bottom: 16px;
+      align-items: center;
     }
     .announce-box {
       display: flex;
       flex: 1;
-      min-width: 280px;
+      min-width: 260px;
       gap: 8px;
     }
     .announce-box input { flex: 1; }
-    .quick-btns { display: flex; flex-wrap: wrap; gap: 8px; }
 
     .tabs {
       display: flex;
-      gap: 10px;
-      margin-bottom: 16px;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 14px;
     }
     .tab-btn {
       background: var(--panel);
       border: 1px solid var(--border);
       color: var(--muted);
-      padding: 10px 20px;
-      border-radius: 10px;
-      font-size: 14px;
+      padding: 9px 16px;
+      border-radius: 8px;
+      font-size: 13.5px;
       font-weight: 600;
     }
     .tab-btn.active {
@@ -150,18 +153,23 @@
       background: var(--panel);
       border: 1px solid var(--border);
       border-radius: 12px;
-      padding: 16px 20px;
-      margin-bottom: 20px;
+      padding: 16px 18px;
+      margin-bottom: 18px;
     }
     .card-header {
       display: flex;
       flex-wrap: wrap;
       align-items: center;
       justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 14px;
+      gap: 10px;
+      margin-bottom: 12px;
     }
-    .table-wrap { overflow-x: auto; }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+      gap: 16px;
+    }
+    .table-wrap { overflow-x: auto; max-height: 560px; overflow-y: auto; }
     table {
       width: 100%;
       border-collapse: collapse;
@@ -169,11 +177,18 @@
     }
     th, td {
       text-align: left;
-      padding: 10px 12px;
+      padding: 9px 11px;
       border-bottom: 1px solid var(--border);
       white-space: nowrap;
     }
-    th { color: var(--muted); font-weight: 600; background: #0f172a; }
+    th {
+      color: var(--muted);
+      font-weight: 600;
+      background: #0f172a;
+      position: sticky;
+      top: 0;
+      z-index: 2;
+    }
     tr:hover td { background: var(--panel-hover); }
     .badge {
       display: inline-block;
@@ -184,10 +199,12 @@
     }
     .badge-alive { background: rgba(16, 185, 129, 0.2); color: #34d399; }
     .badge-dead { background: rgba(148, 163, 184, 0.15); color: #94a3b8; }
+    .badge-ban { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+    .badge-admin { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
 
     .hp-bar-bg {
-      width: 120px;
-      height: 8px;
+      width: 110px;
+      height: 7px;
       background: #0f172a;
       border-radius: 999px;
       overflow: hidden;
@@ -203,10 +220,11 @@
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.7);
+      background: rgba(0, 0, 0, 0.72);
       align-items: center;
       justify-content: center;
       z-index: 999;
+      padding: 16px;
     }
     .modal-backdrop.show { display: flex; }
     .modal {
@@ -215,13 +233,28 @@
       border-radius: 12px;
       padding: 20px;
       width: 100%;
-      max-width: 420px;
+      max-width: 520px;
+      max-height: 90vh;
+      overflow-y: auto;
     }
     .modal h3 { margin-bottom: 14px; }
-    .form-group { margin-bottom: 12px; }
+    .form-group { margin-bottom: 11px; }
     .form-group label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 4px; }
-    .form-group input { width: 100%; }
+    .form-group input, .form-group select { width: 100%; }
     .modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
+
+    pre.log-box {
+      background: #090d16;
+      border: 1px solid var(--border);
+      padding: 12px;
+      border-radius: 8px;
+      color: #a7f3d0;
+      font-family: Consolas, monospace;
+      font-size: 12px;
+      max-height: 220px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+    }
 
     #toast {
       position: fixed;
@@ -245,7 +278,7 @@
       <div class="brand">
         <div id="statusDot" class="status-dot"></div>
         <div>
-          <h1 id="serverTitle">Ngọc Rồng VIAM — Giám Sát Server</h1>
+          <h1 id="serverTitle">Ngọc Rồng VIAM — Trung Tâm Quản Trị Server</h1>
           <span id="connStatusText">Đang kết nối tới máy chủ...</span>
         </div>
       </div>
@@ -255,22 +288,33 @@
           <option value="http://103.179.190.242:14446">VPS Port Phụ (103.179.190.242:14446)</option>
           <option value="http://127.0.0.1:14445">Máy Local (127.0.0.1:14445)</option>
         </select>
-        <input type="text" id="apiHost" value="http://103.179.190.242:14445" style="width: 210px;" placeholder="http://IP:14445" />
-        <input type="password" id="adminKey" value="viam2026" style="width: 110px;" placeholder="Mã Admin" />
-        <button onclick="fetchStatus()">Làm mới ngay</button>
+        <input type="text" id="apiHost" value="http://103.179.190.242:14445" style="width: 205px;" placeholder="http://IP:14445" />
+        <input type="password" id="adminKey" value="viam2026" style="width: 105px;" placeholder="Mã Admin" />
+        <button onclick="fetchStatus()">Làm mới</button>
       </div>
     </header>
 
     <div class="stats-grid">
       <div class="stat-card">
-        <div class="stat-label">Người chơi đang Online</div>
-        <div class="stat-value" id="statOnline" style="color: #34d399;">0</div>
+        <div class="stat-label">Người chơi Online / Bot</div>
+        <div class="stat-value"><span id="statOnline" style="color: #34d399;">0</span> <span style="font-size:15px;color:#94a3b8;">(+<span id="statBotCount">0</span> Bot)</span></div>
         <div class="stat-sub" id="statStartTime">Khởi chạy: --</div>
       </div>
       <div class="stat-card">
         <div class="stat-label">Boss đang xuất hiện</div>
         <div class="stat-value" id="statBoss" style="color: #fbbf24;">0 / 0</div>
         <div class="stat-sub">Bấm tab Giám Sát Boss để xem khu & gọi Boss</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Tỷ lệ EXP Server hiện tại</div>
+        <div class="stat-value" id="statExpRate" style="color: #f472b6;">x1</div>
+        <div class="stat-sub">
+          Đổi nhanh:
+          <a href="javascript:void(0)" onclick="quickSetExp(1)" style="color:#60a5fa;">x1</a> ·
+          <a href="javascript:void(0)" onclick="quickSetExp(2)" style="color:#60a5fa;">x2</a> ·
+          <a href="javascript:void(0)" onclick="quickSetExp(5)" style="color:#60a5fa;">x5</a> ·
+          <a href="javascript:void(0)" onclick="quickSetExp(10)" style="color:#60a5fa;">x10</a>
+        </div>
       </div>
       <div class="stat-card">
         <div class="stat-label">Bộ nhớ RAM Server (JVM)</div>
@@ -280,7 +324,7 @@
       <div class="stat-card">
         <div class="stat-label">Thời gian hoạt động (Uptime)</div>
         <div class="stat-value" id="statUptime">00:00:00</div>
-        <div class="stat-sub">Tự động làm mới mỗi 3 giây</div>
+        <div class="stat-sub">Tự động cập nhật mỗi 3 giây</div>
       </div>
     </div>
 
@@ -289,21 +333,37 @@
         <input type="text" id="announceText" placeholder="Nhập thông báo gửi toàn bộ người chơi đang online..." onkeydown="if(event.key==='Enter') sendAnnounce()" />
         <button onclick="sendAnnounce()">Gửi Thông Báo</button>
       </div>
-      <div class="quick-btns">
-        <button class="btn-success" onclick="saveAllData()">Lưu Dữ Liệu (Save All)</button>
-        <button class="btn-purple" onclick="downloadBackup()">Tải Backup MySQL (.sql.gz) Về Máy</button>
-      </div>
+      <button class="btn-success" onclick="saveAllData()">Lưu Dữ Liệu (Save All)</button>
+      <button class="btn-warning" onclick="triggerBackupNow()">Backup & Đẩy GitHub Ngay</button>
+      <button class="btn-purple" onclick="downloadBackup()">Tải Backup (.sql.gz) Về Máy</button>
     </div>
 
     <div class="tabs">
-      <button class="tab-btn active" id="tabBtnPlayers" onclick="switchTab('players')">Người Chơi Đang Online (<span id="countPlayersTab">0</span>)</button>
-      <button class="tab-btn" id="tabBtnBosses" onclick="switchTab('bosses')">Giám Sát & Gọi Boss (<span id="countBossesTab">0</span>)</button>
+      <button id="tabBtnPlayers" class="tab-btn active" onclick="switchTab('players')">
+        1. Người Chơi Online (<span id="countPlayersTab">0</span>)
+      </button>
+      <button id="tabBtnAccounts" class="tab-btn" onclick="switchTab('accounts')">
+        2. Tài Khoản & Nhân Vật Database (<span id="countAccountsTab">Tất cả</span>)
+      </button>
+      <button id="tabBtnBosses" class="tab-btn" onclick="switchTab('bosses')">
+        3. Giám Sát & Gọi Boss (<span id="countBossesTab">0</span>)
+      </button>
+      <button id="tabBtnItems" class="tab-btn" onclick="switchTab('items')">
+        4. Kho Vật Phẩm & Option (1800+ Item)
+      </button>
+      <button id="tabBtnSystem" class="tab-btn" onclick="switchTab('system')">
+        5. Điều Khiển Bot, EXP, BXH & Backup
+      </button>
     </div>
 
-    <div class="card" id="tabPlayers">
+    <!-- TAB 1: NGƯỜI CHƠI ĐANG ONLINE -->
+    <div id="tabPlayers" class="card">
       <div class="card-header">
-        <h3>Danh sách Nhân vật đang trực tuyến</h3>
-        <input type="text" id="searchPlayer" placeholder="Tìm tên nhân vật hoặc map..." oninput="renderPlayers()" style="width: 240px;" />
+        <div>
+          <h3>Danh sách Nhân vật đang trực tuyến (Real-time)</h3>
+          <span style="font-size:12px;color:var(--muted);">Nếu người chơi đang Offline, hãy bấm sang Tab <b>2. Tài Khoản & Nhân Vật Database</b> để xem và chỉnh sửa!</span>
+        </div>
+        <input type="text" id="searchPlayer" placeholder="Tìm tên nhân vật hoặc map..." oninput="renderPlayers()" style="width: 250px;" />
       </div>
       <div class="table-wrap">
         <table>
@@ -314,7 +374,7 @@
               <th>Hệ</th>
               <th>Sức mạnh</th>
               <th>Chỉ số (HP / KI / SĐ)</th>
-              <th>Tài sản (Vàng / Ngọc / Hồng Ngọc)</th>
+              <th>Tài sản (Vàng / Ngọc / Hồng Ngọc / VNĐ)</th>
               <th>Vị trí hiện tại</th>
               <th>Đệ tử</th>
               <th>Thao tác nhanh</th>
@@ -327,16 +387,54 @@
       </div>
     </div>
 
-    <div class="card" id="tabBosses" style="display: none;">
+    <!-- TAB 2: QUẢN LÝ TÀI KHOẢN & NHÂN VẬT DATABASE (CẢ OFFLINE) -->
+    <div id="tabAccounts" class="card" style="display: none;">
       <div class="card-header">
-        <h3>Giám sát vị trí & máu của toàn bộ Boss</h3>
+        <div>
+          <h3>Toàn bộ Tài Khoản & Nhân Vật trong MySQL (Cả Online & Offline)</h3>
+          <span style="font-size:12px;color:var(--muted);">Cộng VNĐ, Mở Thành Viên, Cấp quyền Admin, Đổi mật khẩu hoặc Khóa tài khoản ngay cả khi người chơi đang Offline.</span>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <input type="text" id="searchAccountDb" placeholder="Tìm tài khoản, tên nhân vật, ID..." onkeydown="if(event.key==='Enter') loadAccountsDb()" style="width: 250px;" />
+          <button onclick="loadAccountsDb()">Tìm kiếm DB</button>
+          <button class="btn-success" onclick="openCreateAccModal()">+ Tạo Tài Khoản Mới</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>ID TK</th>
+              <th>Tài khoản (Username)</th>
+              <th>Mật khẩu</th>
+              <th>Tên Nhân Vật</th>
+              <th>Trạng thái</th>
+              <th>VNĐ / Tổng Nạp</th>
+              <th>Thành Viên / Quyền</th>
+              <th>Sức mạnh</th>
+              <th>Tài sản (Vàng / Ngọc / HN)</th>
+              <th>Thao tác quản trị</th>
+            </tr>
+          </thead>
+          <tbody id="accountsTableBody">
+            <tr><td colspan="10" style="text-align:center;color:var(--muted);">Đang tải dữ liệu từ MySQL...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- TAB 3: BOSS -->
+    <div id="tabBosses" class="card" style="display: none;">
+      <div class="card-header">
+        <h3>Danh sách toàn bộ Boss trong Server (Hiện rõ Khu cho Admin)</h3>
         <div style="display:flex;gap:8px;flex-wrap:wrap;">
           <select id="filterBossStatus" onchange="renderBosses()">
             <option value="all">Tất cả Boss</option>
-            <option value="alive">Chỉ Boss đang sống</option>
-            <option value="dead">Đang chờ hồi sinh</option>
+            <option value="alive">Chỉ Boss Đang Sống</option>
+            <option value="dead">Chỉ Boss Đã Chết / Chờ</option>
           </select>
           <input type="text" id="searchBoss" placeholder="Tìm tên Boss hoặc tên Map..." oninput="renderBosses()" style="width: 240px;" />
+          <button class="btn-success" onclick="spawnAllBosses()">Hồi Sinh Tất Cả Boss Đã Chết</button>
         </div>
       </div>
       <div class="table-wrap">
@@ -348,7 +446,7 @@
               <th>Trạng thái</th>
               <th>Máu hiện tại (HP)</th>
               <th>Bản đồ (Map)</th>
-              <th>Khu vực</th>
+              <th>Khu vực (Zone)</th>
               <th>Điều khiển</th>
             </tr>
           </thead>
@@ -358,35 +456,281 @@
         </table>
       </div>
     </div>
+
+    <!-- TAB 4: TRA CỨU KHO ITEM & OPTION -->
+    <div id="tabItems" class="card" style="display: none;">
+      <div class="card-header">
+        <div>
+          <h3>Tra cứu Kho Vật Phẩm (Item) & Chỉ Số (Option)</h3>
+          <span style="font-size:12px;color:var(--muted);">Gõ tên tiếng Việt có dấu hoặc không dấu (VD: "thoi vang", "da ngu sac", "cai trang", "suc danh"). Bấm "Chọn Trao Quà" để gửi đồ kèm Option!</span>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <select id="filterItemType" onchange="searchItemsDb()">
+            <option value="-1">Tất cả loại Item</option>
+            <option value="0">0 - Áo</option>
+            <option value="1">1 - Quần</option>
+            <option value="2">2 - Găng</option>
+            <option value="3">3 - Giày</option>
+            <option value="4">4 - Rada</option>
+            <option value="5">5 - Cải trang / Tóc</option>
+            <option value="6">6 - Đậu thần</option>
+            <option value="11">11 - Vật phẩm đeo lưng / Phụ kiện</option>
+            <option value="12">12 - Ngọc Rồng</option>
+            <option value="14">14 - Đá nâng cấp / Sao pha lê</option>
+            <option value="27">27 - Vật phẩm tạp hóa / Sự kiện</option>
+          </select>
+          <input type="text" id="searchItemInput" placeholder="Nhập tên Item, Option hoặc mã ID..." onkeydown="if(event.key==='Enter') searchItemsDb()" style="width: 260px;" />
+          <button onclick="searchItemsDb()">Tra cứu</button>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div>
+          <h4 style="margin-bottom:8px;color:#60a5fa;">Danh sách Vật Phẩm (Items)</h4>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Tên Vật Phẩm</th>
+                  <th>Loại / Hệ</th>
+                  <th>Mô tả</th>
+                  <th>Chọn</th>
+                </tr>
+              </thead>
+              <tbody id="itemsResultBody">
+                <tr><td colspan="5" style="text-align:center;color:var(--muted);">Nhập từ khóa và bấm Tra cứu...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div>
+          <h4 style="margin-bottom:8px;color:#fbbf24;">Danh sách Chỉ Số (Item Options)</h4>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Mã Option</th>
+                  <th>Tên Chỉ Số (# là giá trị)</th>
+                  <th>Ghép vào Quà</th>
+                </tr>
+              </thead>
+              <tbody id="optionsResultBody">
+                <tr><td colspan="3" style="text-align:center;color:var(--muted);">Nhập từ khóa và bấm Tra cứu...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 5: HỆ THỐNG, BOT, EXP, BXH & BACKUP -->
+    <div id="tabSystem" style="display: none;">
+      <div class="grid-2">
+        <div class="card">
+          <h3 style="margin-bottom:12px;">Điều Khiển Tỷ Lệ EXP & Hệ Thống Bot</h3>
+          <div class="form-group">
+            <label>Tỷ lệ Sức Mạnh / Tiềm Năng toàn Server (Hiện tại: <b id="sysExpLabel">x1</b>):</label>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;">
+              <button class="btn-sm" onclick="quickSetExp(1)">x1 Mặc định</button>
+              <button class="btn-sm" onclick="quickSetExp(2)">x2 Sự kiện</button>
+              <button class="btn-sm" onclick="quickSetExp(3)">x3</button>
+              <button class="btn-sm" onclick="quickSetExp(5)">x5</button>
+              <button class="btn-sm" onclick="quickSetExp(10)">x10</button>
+              <button class="btn-sm" onclick="quickSetExp(20)">x20</button>
+              <input type="number" id="customExpInput" value="2" min="1" max="127" style="width:80px;" />
+              <button class="btn-success btn-sm" onclick="quickSetExp(document.getElementById('customExpInput').value)">Áp dụng EXP</button>
+            </div>
+          </div>
+          <hr style="border:none;border-top:1px solid var(--border);margin:16px 0;" />
+          <div class="form-group">
+            <label>Quản lý Bot Người Chơi Ảo (Đang hoạt động: <b id="sysBotLabel">0</b> Bot):</label>
+            <p style="font-size:12px;color:var(--muted);margin-bottom:10px;">Gọi Bot vào các bản đồ để đi săn quái, săn Boss hoặc PK giúp Server luôn đông vui nhộn nhịp.</p>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+              <input type="number" id="botSpawnCount" value="10" min="1" max="50" style="width:80px;" title="Số lượng Bot" />
+              <button class="btn-success btn-sm" onclick="spawnBots(0)">+ Gọi Bot Train Quái</button>
+              <button class="btn-warning btn-sm" onclick="spawnBots(2)">+ Gọi Bot Săn Boss</button>
+              <button class="btn-purple btn-sm" onclick="spawnBots(3)">+ Gọi Bot PK</button>
+              <button class="btn-danger btn-sm" onclick="clearAllBots()">Xóa Toàn Bộ Bot</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h3>Trạng Thái Backup MySQL & GitHub Private</h3>
+            <button class="btn-sm" onclick="loadSystemTab()">Làm mới Log</button>
+          </div>
+          <div id="backupFilesList" style="font-size:12.5px;margin-bottom:10px;color:var(--muted);">Đang tải danh sách bản sao lưu...</div>
+          <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px;">Nhật ký Backup tự động (`/root/NRO/backups/backup.log`):</label>
+          <pre id="backupLogBox" class="log-box">Chưa có log...</pre>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h3>Bảng Xếp Hạng Top 20 Cao Thủ Server (Từ Database)</h3>
+          <button class="btn-sm" onclick="loadSystemTab()">Cập nhật BXH</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Hạng</th>
+                <th>ID</th>
+                <th>Tên Nhân Vật</th>
+                <th>Hệ</th>
+                <th>Sức Mạnh</th>
+                <th>Vàng</th>
+                <th>Ngọc Xanh</th>
+                <th>Hồng Ngọc</th>
+                <th>VNĐ / Tổng Nạp</th>
+              </tr>
+            </thead>
+            <tbody id="topPlayersBody">
+              <tr><td colspan="9" style="text-align:center;color:var(--muted);">Đang tải Bảng xếp hạng...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <div class="modal-backdrop" id="giftModal">
+  <!-- MODAL 1: TRAO QUÀ & ITEM KÈM OPTION CHO NGƯỜI CHƠI ONLINE -->
+  <div id="giftModal" class="modal-backdrop">
     <div class="modal">
-      <h3 id="giftModalTitle">Trao thưởng cho người chơi</h3>
+      <h3 id="giftModalTitle">Trao Thưởng Cho Người Chơi</h3>
       <input type="hidden" id="giftPlayerId" />
-      <div class="form-group">
-        <label>Cộng thêm Vàng:</label>
-        <input type="number" id="giftGold" value="0" min="0" />
+      <div class="grid-2" style="grid-template-columns: 1fr 1fr; gap: 10px;">
+        <div class="form-group">
+          <label>Cộng thêm Vàng:</label>
+          <input type="number" id="giftGold" value="0" min="0" step="10000000" />
+        </div>
+        <div class="form-group">
+          <label>Cộng thêm Ngọc Xanh:</label>
+          <input type="number" id="giftGem" value="0" min="0" step="100" />
+        </div>
+      </div>
+      <div class="grid-2" style="grid-template-columns: 1fr 1fr; gap: 10px;">
+        <div class="form-group">
+          <label>Cộng thêm Hồng Ngọc:</label>
+          <input type="number" id="giftRuby" value="0" min="0" step="100" />
+        </div>
+        <div class="form-group">
+          <label>Số lượng Vật Phẩm:</label>
+          <input type="number" id="giftQuantity" value="1" min="1" />
+        </div>
       </div>
       <div class="form-group">
-        <label>Cộng thêm Ngọc Xanh:</label>
-        <input type="number" id="giftGem" value="0" min="0" />
+        <label>Tặng Vật Phẩm theo Mã ID (Để 0 nếu chỉ tặng tiền):</label>
+        <input type="number" id="giftItemId" value="0" placeholder="VD: 457 (Thỏi vàng), 674 (Đá ngũ sắc), 1833 (NR 7s tím)..." />
       </div>
       <div class="form-group">
-        <label>Cộng thêm Hồng Ngọc:</label>
-        <input type="number" id="giftRuby" value="0" min="0" />
-      </div>
-      <div class="form-group">
-        <label>Tặng Vật Phẩm theo ID (Để 0 nếu không tặng item):</label>
-        <input type="number" id="giftItemId" value="0" placeholder="VD: 457 (Thỏi vàng), 1833 (NR 7s tím)..." />
-      </div>
-      <div class="form-group">
-        <label>Số lượng Vật Phẩm:</label>
-        <input type="number" id="giftQuantity" value="1" min="1" />
+        <label>Tuỳ chỉnh Chỉ Số Option (Định dạng: <code>ID:ChỉSố,ID:ChỉSố</code> — để trống sẽ lấy Option mặc định):</label>
+        <input type="text" id="giftOptions" placeholder="VD: 50:30,77:30,103:30 (SĐ +30%, HP +30%, KI +30%)" />
+        <div style="margin-top:6px;display:flex;gap:5px;flex-wrap:wrap;">
+          <button type="button" class="btn-muted btn-sm" onclick="appendGiftOption('50:25')">+25% SĐ (50)</button>
+          <button type="button" class="btn-muted btn-sm" onclick="appendGiftOption('77:25')">+25% HP (77)</button>
+          <button type="button" class="btn-muted btn-sm" onclick="appendGiftOption('103:25')">+25% KI (103)</button>
+          <button type="button" class="btn-muted btn-sm" onclick="appendGiftOption('108:15')">+15% Né đòn (108)</button>
+          <button type="button" class="btn-muted btn-sm" onclick="appendGiftOption('107:8')">8 Sao Pha Lê (107)</button>
+          <button type="button" class="btn-muted btn-sm" onclick="appendGiftOption('30:1')">Không GD (30)</button>
+        </div>
       </div>
       <div class="modal-actions">
-        <button style="background:#475569;" onclick="closeGiftModal()">Hủy</button>
+        <button class="btn-muted" onclick="closeGiftModal()">Đóng</button>
         <button class="btn-success" onclick="submitGift()">Trao Ngay</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 2: CHỈNH SỬA TÀI KHOẢN DATABASE (ONLINE & OFFLINE) -->
+  <div id="accModal" class="modal-backdrop">
+    <div class="modal">
+      <h3 id="accModalTitle">Chỉnh Sửa Tài Khoản</h3>
+      <input type="hidden" id="editAccId" />
+      <div class="grid-2" style="grid-template-columns: 1fr 1fr; gap: 10px;">
+        <div class="form-group">
+          <label>Cộng / Trừ thêm VNĐ (Nhập số âm để trừ):</label>
+          <input type="number" id="editAccAddVnd" value="0" step="10000" />
+        </div>
+        <div class="form-group">
+          <label>Cộng / Trừ thêm Tổng Nạp:</label>
+          <input type="number" id="editAccAddTongnap" value="0" step="10000" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Đổi Mật Khẩu Mới (Để trống nếu giữ nguyên):</label>
+        <input type="text" id="editAccPassword" placeholder="Nhập mật khẩu mới..." />
+      </div>
+      <div class="grid-2" style="grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
+        <div class="form-group">
+          <label>Mở Thành Viên:</label>
+          <select id="editAccActive">
+            <option value="1">Đã Mở TV (1)</option>
+            <option value="0">Chưa Mở (0)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Quyền Admin:</label>
+          <select id="editAccAdmin">
+            <option value="0">Người chơi (0)</option>
+            <option value="1">Admin (1)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Trạng thái Khóa:</label>
+          <select id="editAccBan">
+            <option value="0">Bình thường (0)</option>
+            <option value="1">Khóa / Ban (1)</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-muted" onclick="document.getElementById('accModal').classList.remove('show')">Hủy</button>
+        <button class="btn-success" onclick="submitAccountUpdate()">Lưu Thay Đổi DB</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 3: TẠO TÀI KHOẢN MỚI -->
+  <div id="createAccModal" class="modal-backdrop">
+    <div class="modal">
+      <h3>Tạo Tài Khoản Mới</h3>
+      <div class="form-group">
+        <label>Tên đăng nhập (Username):</label>
+        <input type="text" id="newAccUsername" placeholder="Nhập tên tài khoản..." />
+      </div>
+      <div class="form-group">
+        <label>Mật khẩu (Password):</label>
+        <input type="text" id="newAccPassword" value="1" placeholder="Nhập mật khẩu..." />
+      </div>
+      <div class="grid-2" style="grid-template-columns: 1fr 1fr; gap: 10px;">
+        <div class="form-group">
+          <label>Số dư VNĐ ban đầu:</label>
+          <input type="number" id="newAccVnd" value="0" min="0" step="10000" />
+        </div>
+        <div class="form-group">
+          <label>Mở Thành Viên sẵn:</label>
+          <select id="newAccActive">
+            <option value="1">Mở Thành Viên luôn</option>
+            <option value="0">Chưa mở</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-muted" onclick="document.getElementById('createAccModal').classList.remove('show')">Hủy</button>
+        <button class="btn-success" onclick="submitCreateAccount()">Tạo Tài Khoản</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 4: XEM TÚI ĐỒ / TRANG BỊ NGƯỜI CHƠI -->
+  <div id="inspectModal" class="modal-backdrop">
+    <div class="modal" style="max-width: 720px;">
+      <h3 id="inspectModalTitle">Kiểm Tra Hành Trang Nhân Vật</h3>
+      <div id="inspectContent" style="font-size:13px;max-height:65vh;overflow-y:auto;"></div>
+      <div class="modal-actions">
+        <button class="btn-muted" onclick="document.getElementById('inspectModal').classList.remove('show')">Đóng</button>
       </div>
     </div>
   </div>
@@ -396,8 +740,10 @@
   <script>
     let cachedPlayers = [];
     let cachedBosses = [];
+    let cachedAccounts = [];
+    let currentTab = 'players';
 
-    if (window.location.protocol.startsWith('http') && window.location.port === '14446') {
+    if (window.location.protocol.startsWith('http') && (window.location.port === '14445' || window.location.port === '14446')) {
       document.getElementById('apiHost').value = window.location.origin;
     }
 
@@ -436,10 +782,27 @@
     }
 
     function switchTab(tab) {
-      document.getElementById('tabPlayers').style.display = tab === 'players' ? 'block' : 'none';
-      document.getElementById('tabBosses').style.display = tab === 'bosses' ? 'block' : 'none';
-      document.getElementById('tabBtnPlayers').classList.toggle('active', tab === 'players');
-      document.getElementById('tabBtnBosses').classList.toggle('active', tab === 'bosses');
+      currentTab = tab;
+      const tabs = ['players', 'accounts', 'bosses', 'items', 'system'];
+      const mapIds = {
+        players: ['tabPlayers', 'tabBtnPlayers'],
+        accounts: ['tabAccounts', 'tabBtnAccounts'],
+        bosses: ['tabBosses', 'tabBtnBosses'],
+        items: ['tabItems', 'tabBtnItems'],
+        system: ['tabSystem', 'tabBtnSystem']
+      };
+      for (const k of tabs) {
+        document.getElementById(mapIds[k][0]).style.display = (k === tab) ? 'block' : 'none';
+        document.getElementById(mapIds[k][1]).classList.toggle('active', k === tab);
+      }
+      if (tab === 'accounts' && cachedAccounts.length === 0) {
+        loadAccountsDb();
+      } else if (tab === 'items' && !window._itemsLoaded) {
+        window._itemsLoaded = true;
+        searchItemsDb();
+      } else if (tab === 'system') {
+        loadSystemTab();
+      }
     }
 
     async function fetchStatus() {
@@ -451,7 +814,6 @@
         try {
           res = await fetch(`${baseUrl}/api/status?key=${getKey()}`);
         } catch (firstErr) {
-          // Tự động chuyển đổi dự phòng giữa port 14445 (cổng game mở sẵn) và 14446
           const altUrl = baseUrl.endsWith(':14446')
             ? baseUrl.replace(/:14446$/, ':14445')
             : (baseUrl.endsWith(':14445') ? baseUrl.replace(/:14445$/, ':14446') : null);
@@ -471,8 +833,12 @@
         dot.classList.add('online');
         statusText.textContent = `Đã kết nối trực tiếp • Cập nhật lúc ${new Date().toLocaleTimeString('vi-VN')}`;
         document.getElementById('statOnline').textContent = data.onlineCount;
+        document.getElementById('statBotCount').textContent = data.botCount || 0;
         document.getElementById('statStartTime').textContent = `Khởi chạy: ${data.timeStart || '--'}`;
         document.getElementById('statBoss').textContent = `${data.aliveBossCount} / ${data.totalBossCount}`;
+        document.getElementById('statExpRate').textContent = `x${data.expRate || 1}`;
+        document.getElementById('sysExpLabel').textContent = `x${data.expRate || 1}`;
+        document.getElementById('sysBotLabel').textContent = data.botCount || 0;
         document.getElementById('statRam').textContent = `${data.usedRamMb} / ${data.maxRamMb} MB`;
         document.getElementById('statThreads').textContent = `Số luồng xử lý: ${data.threadsCount} threads`;
         document.getElementById('statUptime').textContent = formatUptime(data.uptimeSec);
@@ -497,43 +863,164 @@
         !q || p.name.toLowerCase().includes(q) || p.mapName.toLowerCase().includes(q) || String(p.id).includes(q)
       );
       if (filtered.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;color:var(--muted);">Không có người chơi nào đang online.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;color:var(--muted);padding:20px;">
+          Hiện không có người chơi nào đang trực tuyến.<br/>
+          <button class="btn-sm" style="margin-top:8px;" onclick="switchTab('accounts')">👉 Bấm vào đây để quản lý Toàn bộ Tài khoản & Nhân vật trong Database (Offline)</button>
+        </td></tr>`;
         return;
       }
       tbody.innerHTML = filtered.map(p => `
         <tr>
           <td>#${p.id}</td>
-          <td style="font-weight:700;color:#60a5fa;">${p.name}</td>
-          <td>${p.gender}</td>
-          <td>${formatNum(p.power)}</td>
+          <td style="font-weight:700;color:#60a5fa;">${escapeHtml(p.name)}</td>
+          <td>${escapeHtml(p.gender)}</td>
+          <td style="color:#fbbf24;font-weight:600;">${formatNum(p.power)}</td>
           <td>
             HP: ${formatNum(p.hp)}/${formatNum(p.hpMax)}<br/>
-            <span style="color:var(--muted);font-size:12px;">KI: ${formatNum(p.mp)} | SĐ: ${formatNum(p.dame)}</span>
+            <span style="color:var(--muted);">KI: ${formatNum(p.mp)} • SĐ: ${formatNum(p.dame)}</span>
           </td>
           <td>
-            <span style="color:#fbbf24;">${formatNum(p.gold)} Vàng</span><br/>
-            <span style="color:#34d399;font-size:12px;">${formatNum(p.gem)} Ngọc</span> •
-            <span style="color:#f472b6;font-size:12px;">${formatNum(p.ruby)} H.Ngọc</span>
+            <span style="color:#fcd34d;">${formatNum(p.gold)} Vàng</span><br/>
+            <span style="color:#34d399;">${formatNum(p.gem)} Ngọc</span> • <span style="color:#f87171;">${formatNum(p.ruby)} HN</span> • <span style="color:#a78bfa;">${formatNum(p.vnd)}đ</span>
           </td>
-          <td><b>${p.mapName}</b> (${p.mapId})<br/><span style="color:var(--muted);font-size:12px;">Khu ${p.zoneId}</span></td>
-          <td>${p.hasPet ? `<span class="badge badge-alive">Có (${formatNum(p.petPower)})</span>` : `<span class="badge badge-dead">Chưa có</span>`}</td>
-          <td>
-            <button class="btn-sm btn-success" onclick="openGiftModal(${p.id}, '${p.name.replace(/'/g, "\\'")}')">Trao Quà</button>
-            <button class="btn-sm btn-danger" onclick="kickPlayer(${p.id}, '${p.name.replace(/'/g, "\\'")}')">Kick</button>
+          <td><b>${escapeHtml(p.mapName)}</b> <span class="badge badge-alive">Khu ${p.zoneId}</span></td>
+          <td>${p.hasPet ? `Có (${formatNum(p.petPower)})` : '<span style="color:var(--muted)">Không</span>'}</td>
+          <td style="display:flex;gap:5px;">
+            <button class="btn-success btn-sm" onclick="openGiftModal(${p.id}, '${escapeJs(p.name)}')">Trao Quà</button>
+            <button class="btn-purple btn-sm" onclick="inspectPlayer(${p.id})">Xem Đồ</button>
+            <button class="btn-sm" onclick="healPlayer(${p.id})">Hồi HP/KI</button>
+            <button class="btn-danger btn-sm" onclick="kickPlayer(${p.id}, '${escapeJs(p.name)}')">Kick</button>
           </td>
         </tr>
       `).join('');
     }
 
+    async function loadAccountsDb() {
+      const q = document.getElementById('searchAccountDb').value.trim();
+      const tbody = document.getElementById('accountsTableBody');
+      tbody.innerHTML = `<tr><td colspan="10" style="text-align:center;color:var(--muted);">Đang truy vấn MySQL...</td></tr>`;
+      try {
+        const res = await fetch(`${getBaseUrl()}/api/accounts?key=${getKey()}&q=${encodeURIComponent(q)}`);
+        const data = await res.json();
+        if (!data.ok) {
+          tbody.innerHTML = `<tr><td colspan="10" style="text-align:center;color:#ef4444;">${escapeHtml(data.message)}</td></tr>`;
+          return;
+        }
+        cachedAccounts = data.accounts || [];
+        document.getElementById('countAccountsTab').textContent = data.totalAccounts || cachedAccounts.length;
+        if (cachedAccounts.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="10" style="text-align:center;color:var(--muted);">Không tìm thấy tài khoản nào khớp từ khóa.</td></tr>`;
+          return;
+        }
+        tbody.innerHTML = cachedAccounts.map(a => `
+          <tr>
+            <td>#${a.accId}</td>
+            <td style="font-weight:700;color:#fff;">${escapeHtml(a.username)}</td>
+            <td style="color:var(--muted);font-family:monospace;">${escapeHtml(a.password)}</td>
+            <td style="font-weight:600;color:#60a5fa;">${escapeHtml(a.playerName)} <span style="font-size:11px;color:var(--muted);">(${escapeHtml(a.gender)})</span></td>
+            <td>
+              ${a.online ? '<span class="badge badge-alive">Đang Online</span>' : '<span class="badge badge-dead">Offline</span>'}
+              ${a.ban ? '<span class="badge badge-ban">Đang Khóa</span>' : ''}
+            </td>
+            <td>
+              <b style="color:#a78bfa;">${formatNum(a.vnd)} đ</b><br/>
+              <span style="font-size:11px;color:var(--muted);">Tổng nạp: ${formatNum(a.tongnap)} đ</span>
+            </td>
+            <td>
+              ${a.active ? '<span class="badge badge-alive">Đã Mở TV</span>' : '<span class="badge badge-dead">Chưa Mở TV</span>'}
+              ${a.isAdmin ? '<span class="badge badge-admin">ADMIN</span>' : ''}
+            </td>
+            <td style="color:#fbbf24;font-weight:600;">${formatNum(a.power)}</td>
+            <td>
+              <span style="color:#fcd34d;">${formatNum(a.gold)} Vàng</span><br/>
+              <span style="color:#34d399;">${formatNum(a.gem)} Ngọc</span> • <span style="color:#f87171;">${formatNum(a.ruby)} HN</span>
+            </td>
+            <td style="display:flex;gap:5px;">
+              <button class="btn-sm" onclick="openEditAccount(${a.accId})">Cộng VNĐ / Sửa</button>
+              ${!a.active ? `<button class="btn-success btn-sm" onclick="quickToggleAccount(${a.accId}, 'active', 1)">Mở TV</button>` : ''}
+              ${a.online && a.playerId > 0 ? `<button class="btn-purple btn-sm" onclick="openGiftModal(${a.playerId}, '${escapeJs(a.playerName)}')">Tặng Đồ</button>` : ''}
+              <button class="${a.ban ? 'btn-warning' : 'btn-danger'} btn-sm" onclick="quickToggleAccount(${a.accId}, 'ban', ${a.ban ? 0 : 1})">${a.ban ? 'Mở Khóa' : 'Khóa'}</button>
+            </td>
+          </tr>
+        `).join('');
+      } catch (e) {
+        tbody.innerHTML = `<tr><td colspan="10" style="text-align:center;color:#ef4444;">Không thể tải danh sách tài khoản!</td></tr>`;
+      }
+    }
+
+    function openEditAccount(accId) {
+      const a = cachedAccounts.find(x => x.accId === accId);
+      if (!a) return;
+      document.getElementById('editAccId').value = a.accId;
+      document.getElementById('accModalTitle').textContent = `Quản Lý Tài Khoản: ${a.username} (${a.playerName})`;
+      document.getElementById('editAccAddVnd').value = 0;
+      document.getElementById('editAccAddTongnap').value = 0;
+      document.getElementById('editAccPassword').value = '';
+      document.getElementById('editAccActive').value = a.active ? '1' : '0';
+      document.getElementById('editAccAdmin').value = a.isAdmin ? '1' : '0';
+      document.getElementById('editAccBan').value = a.ban ? '1' : '0';
+      document.getElementById('accModal').classList.add('show');
+    }
+
+    async function submitAccountUpdate() {
+      const accId = document.getElementById('editAccId').value;
+      const res = await postAction({
+        action: 'account_update',
+        accId,
+        addVnd: document.getElementById('editAccAddVnd').value,
+        addTongnap: document.getElementById('editAccAddTongnap').value,
+        password: document.getElementById('editAccPassword').value,
+        active: document.getElementById('editAccActive').value,
+        isAdmin: document.getElementById('editAccAdmin').value,
+        ban: document.getElementById('editAccBan').value
+      });
+      showToast(res.message, !res.ok);
+      if (res.ok) {
+        document.getElementById('accModal').classList.remove('show');
+        loadAccountsDb();
+        fetchStatus();
+      }
+    }
+
+    async function quickToggleAccount(accId, field, val) {
+      const payload = { action: 'account_update', accId };
+      payload[field] = val;
+      const res = await postAction(payload);
+      showToast(res.message, !res.ok);
+      loadAccountsDb();
+      fetchStatus();
+    }
+
+    function openCreateAccModal() {
+      document.getElementById('newAccUsername').value = '';
+      document.getElementById('newAccPassword').value = '1';
+      document.getElementById('newAccVnd').value = '0';
+      document.getElementById('createAccModal').classList.add('show');
+    }
+
+    async function submitCreateAccount() {
+      const res = await postAction({
+        action: 'account_create',
+        username: document.getElementById('newAccUsername').value.trim(),
+        password: document.getElementById('newAccPassword').value.trim(),
+        vnd: document.getElementById('newAccVnd').value,
+        active: document.getElementById('newAccActive').value
+      });
+      showToast(res.message, !res.ok);
+      if (res.ok) {
+        document.getElementById('createAccModal').classList.remove('show');
+        loadAccountsDb();
+      }
+    }
+
     function renderBosses() {
       const tbody = document.getElementById('bossesTableBody');
-      const filter = document.getElementById('filterBossStatus').value;
       const q = document.getElementById('searchBoss').value.toLowerCase().trim();
+      const statusFilter = document.getElementById('filterBossStatus').value;
       const filtered = cachedBosses.filter(b => {
-        if (filter === 'alive' && !b.alive) return false;
-        if (filter === 'dead' && b.alive) return false;
-        if (q && !b.name.toLowerCase().includes(q) && !b.mapName.toLowerCase().includes(q)) return false;
-        return true;
+        if (statusFilter === 'alive' && !b.alive) return false;
+        if (statusFilter === 'dead' && b.alive) return false;
+        return !q || b.name.toLowerCase().includes(q) || b.mapName.toLowerCase().includes(q);
       });
       if (filtered.length === 0) {
         tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:var(--muted);">Không tìm thấy Boss phù hợp.</td></tr>`;
@@ -544,94 +1031,243 @@
         return `
           <tr>
             <td>#${b.index}</td>
-            <td style="font-weight:700;">${b.name}</td>
+            <td style="font-weight:700;color:${b.alive ? '#fbbf24' : '#94a3b8'};">${escapeHtml(b.name)}</td>
             <td>
-              ${b.alive
-                ? `<span class="badge badge-alive">Đang sống (${b.status})</span>`
-                : `<span class="badge badge-dead">Chờ hồi sinh (${b.status})</span>`}
+              <span class="badge ${b.alive ? 'badge-alive' : 'badge-dead'}">
+                ${b.alive ? 'Đang Sống' : ('Chờ (' + b.status + ')')}
+              </span>
             </td>
             <td>
-              ${b.alive ? `${formatNum(b.hp)} / ${formatNum(b.hpMax)} (${pct}%)` : `-- / ${formatNum(b.hpMax)}`}
+              ${b.alive ? `${formatNum(b.hp)} / ${formatNum(b.hpMax)} (${pct}%)` : '--'}
               <div class="hp-bar-bg"><div class="hp-bar-fill" style="width:${b.alive ? pct : 0}%"></div></div>
             </td>
-            <td>${b.alive ? `<b>${b.mapName}</b> (${b.mapId})` : `<span style="color:var(--muted);">Chưa xuất hiện</span>`}</td>
-            <td>${b.alive ? `<b style="color:#fbbf24;">Khu ${b.zoneId}</b>` : `--`}</td>
-            <td>
-              ${!b.alive
-                ? `<button class="btn-sm btn-warning" onclick="spawnBoss(${b.index}, '${b.name.replace(/'/g, "\\'")}')">Gọi Xuất Hiện Ngay</button>`
-                : `<span style="color:#34d399;font-size:12px;">Đang ở khu ${b.zoneId}</span>`}
+            <td><b>${escapeHtml(b.mapName)}</b></td>
+            <td>${b.alive ? `<span class="badge badge-alive">Khu ${b.zoneId}</span>` : '--'}</td>
+            <td style="display:flex;gap:6px;">
+              ${b.alive
+                ? `<button class="btn-danger btn-sm" onclick="killBoss(${b.index})">Thu Hồi / Diệt</button>`
+                : `<button class="btn-warning btn-sm" onclick="spawnBoss(${b.index})">Hồi Sinh Ngay</button>`
+              }
             </td>
           </tr>
         `;
       }).join('');
     }
 
+    async function searchItemsDb() {
+      const q = document.getElementById('searchItemInput').value.trim();
+      const type = document.getElementById('filterItemType').value;
+      const itemsBody = document.getElementById('itemsResultBody');
+      const optsBody = document.getElementById('optionsResultBody');
+      try {
+        const res = await fetch(`${getBaseUrl()}/api/items?key=${getKey()}&q=${encodeURIComponent(q)}&type=${type}`);
+        const data = await res.json();
+        if (!data.ok) return;
+        itemsBody.innerHTML = (data.items || []).map(it => `
+          <tr>
+            <td><b>#${it.id}</b></td>
+            <td style="color:#60a5fa;font-weight:600;">${escapeHtml(it.name)}</td>
+            <td>Loại ${it.type} (${escapeHtml(it.gender)})</td>
+            <td style="color:var(--muted);max-width:220px;overflow:hidden;text-overflow:ellipsis;">${escapeHtml(it.description)}</td>
+            <td><button class="btn-success btn-sm" onclick="selectItemForGift(${it.id}, '${escapeJs(it.name)}')">Chọn Trao Quà</button></td>
+          </tr>
+        `).join('') || `<tr><td colspan="5" style="text-align:center;color:var(--muted);">Không tìm thấy Vật phẩm.</td></tr>`;
+
+        optsBody.innerHTML = (data.options || []).map(op => `
+          <tr>
+            <td><b>#${op.id}</b></td>
+            <td style="color:#fbbf24;">${escapeHtml(op.name)}</td>
+            <td><button class="btn-sm" onclick="promptAddOption(${op.id}, '${escapeJs(op.name)}')">+ Ghép Option</button></td>
+          </tr>
+        `).join('') || `<tr><td colspan="3" style="text-align:center;color:var(--muted);">Không tìm thấy Option.</td></tr>`;
+      } catch (e) {
+        showToast('Lỗi khi tra cứu Item!', true);
+      }
+    }
+
+    function selectItemForGift(itemId, itemName) {
+      document.getElementById('giftItemId').value = itemId;
+      if (cachedPlayers.length > 0 && !document.getElementById('giftPlayerId').value) {
+        document.getElementById('giftPlayerId').value = cachedPlayers[0].id;
+        document.getElementById('giftModalTitle').textContent = `Trao [${itemName} #${itemId}] cho: ${cachedPlayers[0].name}`;
+      } else {
+        document.getElementById('giftModalTitle').textContent = `Đã chọn Vật Phẩm: ${itemName} (ID: ${itemId})`;
+      }
+      document.getElementById('giftModal').classList.add('show');
+    }
+
+    function promptAddOption(optId, optName) {
+      const val = prompt(`Nhập chỉ số (#) cho Option [${optId} - ${optName}]:`, '20');
+      if (val !== null && val.trim() !== '') {
+        appendGiftOption(`${optId}:${val.trim()}`);
+        showToast(`Đã thêm Option ${optId}:${val.trim()} vào khung Trao Quà!`);
+      }
+    }
+
+    function appendGiftOption(pair) {
+      const inp = document.getElementById('giftOptions');
+      const cur = inp.value.trim();
+      inp.value = cur ? `${cur},${pair}` : pair;
+    }
+
+    async function loadSystemTab() {
+      try {
+        const res = await fetch(`${getBaseUrl()}/api/system?key=${getKey()}`);
+        const data = await res.json();
+        if (!data.ok) return;
+
+        const backups = data.backups || [];
+        const bDiv = document.getElementById('backupFilesList');
+        if (backups.length === 0) {
+          bDiv.innerHTML = 'Chưa có file backup trong <code>/root/NRO/backups</code>.';
+        } else {
+          bDiv.innerHTML = '<b>Các bản sao lưu gần nhất:</b><br/>' + backups.map(b =>
+            `• <code>${escapeHtml(b.name)}</code> (${b.sizeKb} KB) — <i>${escapeHtml(b.time)}</i>`
+          ).join('<br/>');
+        }
+        document.getElementById('backupLogBox').textContent = data.backupLog || 'Chưa có nhật ký backup.';
+
+        const topBody = document.getElementById('topPlayersBody');
+        topBody.innerHTML = (data.topPlayers || []).map(p => `
+          <tr>
+            <td><b>#${p.rank}</b></td>
+            <td>#${p.id}</td>
+            <td style="font-weight:700;color:#60a5fa;">${escapeHtml(p.name)}</td>
+            <td>${escapeHtml(p.gender)}</td>
+            <td style="color:#fbbf24;font-weight:700;">${formatNum(p.power)}</td>
+            <td style="color:#fcd34d;">${formatNum(p.gold)}</td>
+            <td style="color:#34d399;">${formatNum(p.gem)}</td>
+            <td style="color:#f87171;">${formatNum(p.ruby)}</td>
+            <td><b style="color:#a78bfa;">${formatNum(p.vnd)} đ</b> (Tổng: ${formatNum(p.tongnap)} đ)</td>
+          </tr>
+        `).join('') || `<tr><td colspan="9" style="text-align:center;color:var(--muted);">Chưa có nhân vật nào.</td></tr>`;
+      } catch (e) {}
+    }
+
     async function postAction(paramsObj) {
-      const body = new URLSearchParams({ key: document.getElementById('adminKey').value.trim(), ...paramsObj });
-      const res = await fetch(`${getBaseUrl()}/api/action`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
-        body: body.toString()
-      });
-      return await res.json();
+      const body = new URLSearchParams(paramsObj);
+      body.set('key', document.getElementById('adminKey').value.trim());
+      try {
+        const res = await fetch(`${getBaseUrl()}/api/action`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+          body: body.toString()
+        });
+        return await res.json();
+      } catch (err) {
+        return { ok: false, message: 'Không thể kết nối tới Server!' };
+      }
     }
 
     async function sendAnnounce() {
       const input = document.getElementById('announceText');
       const text = input.value.trim();
       if (!text) return;
-      try {
-        const res = await postAction({ action: 'announce', text });
-        showToast(res.message, !res.ok);
-        if (res.ok) input.value = '';
-      } catch (e) {
-        showToast('Không thể gửi thông báo tới Server!', true);
-      }
+      const res = await postAction({ action: 'announce', text });
+      showToast(res.message, !res.ok);
+      if (res.ok) input.value = '';
     }
 
     async function saveAllData() {
-      try {
-        const res = await postAction({ action: 'save_all' });
-        showToast(res.message, !res.ok);
-      } catch (e) {
-        showToast('Lỗi khi lưu dữ liệu!', true);
-      }
+      const res = await postAction({ action: 'save_all' });
+      showToast(res.message, !res.ok);
+    }
+
+    async function triggerBackupNow() {
+      showToast('Đang chạy mysqldump và đẩy lên GitHub Private...');
+      const res = await postAction({ action: 'backup_now' });
+      showToast(res.message, !res.ok);
+      if (currentTab === 'system') loadSystemTab();
     }
 
     function downloadBackup() {
-      showToast('Đang tạo bản Backup mới nhất và tải về máy...');
       window.open(`${getBaseUrl()}/api/backup/download?key=${getKey()}`, '_blank');
     }
 
-    async function spawnBoss(bossIndex, bossName) {
-      try {
-        const res = await postAction({ action: 'spawn_boss', bossIndex });
-        showToast(res.message, !res.ok);
-        setTimeout(fetchStatus, 800);
-      } catch (e) {
-        showToast('Lỗi khi gọi Boss!', true);
-      }
+    async function quickSetExp(rate) {
+      const res = await postAction({ action: 'set_exp_rate', rate });
+      showToast(res.message, !res.ok);
+      fetchStatus();
     }
 
-    async function kickPlayer(playerId, playerName) {
-      if (!confirm(`Bạn có chắc muốn lưu dữ liệu và Kick [${playerName}] ra khỏi game?`)) return;
-      try {
-        const res = await postAction({ action: 'kick', playerId });
-        showToast(res.message, !res.ok);
-        fetchStatus();
-      } catch (e) {
-        showToast('Lỗi khi kick người chơi!', true);
-      }
+    async function spawnBots(botType) {
+      const count = document.getElementById('botSpawnCount').value || 5;
+      const res = await postAction({ action: 'spawn_bot', botType, count });
+      showToast(res.message, !res.ok);
+      fetchStatus();
     }
 
-    function openGiftModal(playerId, playerName) {
+    async function clearAllBots() {
+      if (!confirm('Xóa toàn bộ Bot đang hoạt động trên Server?')) return;
+      const res = await postAction({ action: 'clear_bots' });
+      showToast(res.message, !res.ok);
+      fetchStatus();
+    }
+
+    async function spawnBoss(bossIndex) {
+      const res = await postAction({ action: 'spawn_boss', bossIndex });
+      showToast(res.message, !res.ok);
+      fetchStatus();
+    }
+
+    async function killBoss(bossIndex) {
+      const res = await postAction({ action: 'kill_boss', bossIndex });
+      showToast(res.message, !res.ok);
+      fetchStatus();
+    }
+
+    async function spawnAllBosses() {
+      const res = await postAction({ action: 'spawn_all_bosses' });
+      showToast(res.message, !res.ok);
+      fetchStatus();
+    }
+
+    async function healPlayer(playerId) {
+      const res = await postAction({ action: 'heal_player', playerId });
+      showToast(res.message, !res.ok);
+      fetchStatus();
+    }
+
+    async function inspectPlayer(playerId) {
+      const res = await postAction({ action: 'inspect_player', playerId });
+      if (!res.ok) {
+        showToast(res.message, true);
+        return;
+      }
+      document.getElementById('inspectModalTitle').textContent = `Hành Trang Nhân Vật: ${res.name}`;
+      const renderSlots = (arr) => arr.length === 0
+        ? '<p style="color:var(--muted);">Trống</p>'
+        : `<table><thead><tr><th>Ô</th><th>ID</th><th>Tên Vật Phẩm</th><th>SL</th><th>Chỉ Số (Options)</th></tr></thead><tbody>` +
+          arr.map(x => `<tr><td>#${x.slot}</td><td>${x.id}</td><td style="color:#60a5fa;font-weight:600;">${escapeHtml(x.name)}</td><td>x${x.quantity}</td><td style="color:#fbbf24;">${escapeHtml(x.options)}</td></tr>`).join('') +
+          `</tbody></table>`;
+
+      document.getElementById('inspectContent').innerHTML = `
+        <h4 style="margin:8px 0;color:#34d399;">1. Trang Bị Đang Mặc (${res.body.length})</h4>
+        ${renderSlots(res.body)}
+        <h4 style="margin:14px 0 8px;color:#fbbf24;">2. Hành Trang Túi Đồ (${res.bag.length})</h4>
+        ${renderSlots(res.bag)}
+        <h4 style="margin:14px 0 8px;color:#a78bfa;">3. Rương Đồ (${res.box.length})</h4>
+        ${renderSlots(res.box)}
+      `;
+      document.getElementById('inspectModal').classList.add('show');
+    }
+
+    async function kickPlayer(playerId, name) {
+      if (!confirm(`Lưu dữ liệu và kick người chơi [${name}]?`)) return;
+      const res = await postAction({ action: 'kick', playerId });
+      showToast(res.message, !res.ok);
+      fetchStatus();
+    }
+
+    function openGiftModal(playerId, name) {
       document.getElementById('giftPlayerId').value = playerId;
-      document.getElementById('giftModalTitle').textContent = `Trao quà cho: ${playerName} (#${playerId})`;
+      document.getElementById('giftModalTitle').textContent = `Trao Thưởng Cho: ${name} (#${playerId})`;
       document.getElementById('giftGold').value = 0;
       document.getElementById('giftGem').value = 0;
       document.getElementById('giftRuby').value = 0;
       document.getElementById('giftItemId').value = 0;
       document.getElementById('giftQuantity').value = 1;
+      document.getElementById('giftOptions').value = '';
       document.getElementById('giftModal').classList.add('show');
     }
 
@@ -641,21 +1277,35 @@
 
     async function submitGift() {
       const playerId = document.getElementById('giftPlayerId').value;
-      const gold = document.getElementById('giftGold').value;
-      const gem = document.getElementById('giftGem').value;
-      const ruby = document.getElementById('giftRuby').value;
-      const itemId = document.getElementById('giftItemId').value;
-      const quantity = document.getElementById('giftQuantity').value;
-      try {
-        const res = await postAction({ action: 'give_item', playerId, gold, gem, ruby, itemId, quantity });
-        showToast(res.message, !res.ok);
-        if (res.ok) {
-          closeGiftModal();
-          fetchStatus();
-        }
-      } catch (e) {
-        showToast('Lỗi khi trao quà!', true);
+      if (!playerId) {
+        showToast('Hãy chọn người chơi đang Online ở Tab 1 hoặc Tab 2 trước!', true);
+        return;
       }
+      const res = await postAction({
+        action: 'give_item',
+        playerId,
+        gold: document.getElementById('giftGold').value,
+        gem: document.getElementById('giftGem').value,
+        ruby: document.getElementById('giftRuby').value,
+        itemId: document.getElementById('giftItemId').value,
+        quantity: document.getElementById('giftQuantity').value,
+        options: document.getElementById('giftOptions').value.trim()
+      });
+      showToast(res.message, !res.ok);
+      if (res.ok) {
+        closeGiftModal();
+        fetchStatus();
+      }
+    }
+
+    function escapeHtml(s) {
+      return String(s || '').replace(/[&<>"']/g, c => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      }[c]));
+    }
+
+    function escapeJs(s) {
+      return String(s || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
     }
 
     fetchStatus();
@@ -663,4 +1313,3 @@
   </script>
 </body>
 </html>
-
