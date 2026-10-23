@@ -277,6 +277,7 @@ public class Boss extends Player implements IBoss {
         this.droppedBelow50Hp = false;
         this.usedTTNL = false;
         this.isUsingTTNL = false;
+        this.lastTimeStartTTNL = 0;
         this.ticksTTNL = 0;
     }
 
@@ -286,12 +287,16 @@ public class Boss extends Player implements IBoss {
     }
 
     public void startBossTTNL() {
-        if ((!this.isTieuDoiBojack() && this.usedTTNL) || this.isUsingTTNL || this.isDie() || this.zone == null) {
+        if (this.isUsingTTNL || this.isDie() || this.zone == null) {
+            return;
+        }
+        if (!this.isTieuDoiBojack() && this.lastTimeStartTTNL > 0 && !Util.canDoWithTime(this.lastTimeStartTTNL, 60000)) {
             return;
         }
         if (this.effectSkill != null && (this.effectSkill.anTroi || this.effectSkill.isHaveEffectSkill() || this.effectSkill.isBinh || this.effectSkill.isSocola)) {
             if (!this.isTieuDoiBojack()) {
                 this.usedTTNL = true;
+                this.lastTimeStartTTNL = System.currentTimeMillis();
             }
             return;
         }
@@ -472,7 +477,8 @@ public class Boss extends Player implements IBoss {
                 if (!this.isUsingTTNL && this.nPoint.hp > 0 && this.nPoint.hp < 2000) {
                     this.startBossTTNL();
                 }
-            } else if (!this.usedTTNL && this.nPoint.hp > 0 && this.nPoint.hp < (this.nPoint.hpMax * 30L / 100L)) {
+            } else if (!this.isUsingTTNL && this.nPoint.hp > 0 && this.nPoint.hp < (this.nPoint.hpMax * 30L / 100L)
+                    && (this.lastTimeStartTTNL == 0 || Util.canDoWithTime(this.lastTimeStartTTNL, 60000))) {
                 this.startBossTTNL();
             }
         }
