@@ -2,6 +2,7 @@ package nro.models.player;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -18,8 +19,24 @@ import nro.models.task.BadgesTaskService;
 public class Inventory {
 
     public static final long LIMIT_GOLD = 100_000_000_000L;
-    public static final int MAX_ITEMS_BAG = 80;
+    public static final int DEFAULT_ITEMS_BAG = 200;
+    public static final int MAX_ITEMS_BAG = 500;
+    public static final int BAG_TAB_SIZE = 50;
     public static final int MAX_ITEMS_BOX = 100;
+
+    public static class BagList extends ArrayList<Item> {
+        private final Inventory owner;
+
+        public BagList(Inventory owner) {
+            this.owner = owner;
+        }
+
+        public int getFirstChunkSize() {
+            return owner.getActiveTabSize();
+        }
+    }
+
+    public int currentBagTab = 0;
     public Item trainArmor;
     public List<String> giftCode;
     public List<Item> itemsBody;
@@ -38,11 +55,106 @@ public class Inventory {
 
     public Inventory() {
         itemsBody = new ArrayList<>();
-        itemsBag = new ArrayList<>();
+        itemsBag = new BagList(this);
         itemsBox = new ArrayList<>();
         itemsBoxCrackBall = new ArrayList<>();
         itemsDaBan = new ArrayList<>();
         giftCode = new ArrayList<>();
+    }
+
+    public int getTotalBagTabs() {
+        if (this.itemsBag == null || this.itemsBag.isEmpty()) {
+            return 1;
+        }
+        return Math.max(1, (this.itemsBag.size() + BAG_TAB_SIZE - 1) / BAG_TAB_SIZE);
+    }
+
+    public int getTabSize(int tabIndex) {
+        if (this.itemsBag == null || tabIndex < 0) {
+            return 0;
+        }
+        int start = tabIndex * BAG_TAB_SIZE;
+        if (start >= this.itemsBag.size()) {
+            return 0;
+        }
+        return Math.min(BAG_TAB_SIZE, this.itemsBag.size() - start);
+    }
+
+    public int getActiveTabSize() {
+        int size = getTabSize(this.currentBagTab);
+        return size > 0 ? size : Math.min(BAG_TAB_SIZE, this.itemsBag != null ? this.itemsBag.size() : 0);
+    }
+
+    public synchronized void restoreBagLogicalOrder() {
+        if (this.itemsBag == null || this.currentBagTab <= 0) {
+            this.currentBagTab = 0;
+            return;
+        }
+        int t = this.currentBagTab;
+        int start = t * BAG_TAB_SIZE;
+        int tabSize = getTabSize(t);
+        int end = start + tabSize;
+        if (tabSize > 0 && end <= this.itemsBag.size()) {
+            Collections.rotate(this.itemsBag.subList(0, end), -tabSize);
+        }
+        this.currentBagTab = 0;
+    }
+
+    public synchronized boolean switchBagTab(int newTab) {
+        if (this.itemsBag == null) {
+            return false;
+        }
+        int totalTabs = getTotalBagTabs();
+        if (newTab < 0 || newTab >= totalTabs) {
+            return false;
+        }
+        if (newTab == this.currentBagTab) {
+            return true;
+        }
+        restoreBagLogicalOrder();
+        if (newTab > 0) {
+            int start = newTab * BAG_TAB_SIZE;
+            int tabSize = getTabSize(newTab);
+            int end = start + tabSize;
+            if (tabSize > 0 && end <= this.itemsBag.size()) {
+                Collections.rotate(this.itemsBag.subList(0, end), tabSize);
+                this.currentBagTab = newTab;
+            }
+        }
+        return true;
+    }
+
+    public Item getBagItemInLogicalOrder(int logicalIndex) {
+        if (this.itemsBag == null || logicalIndex < 0 || logicalIndex >= this.itemsBag.size()) {
+            return null;
+        }
+        int t = this.currentBagTab;
+        if (t > 0) {
+            int start = t * BAG_TAB_SIZE;
+            int tabSize = getTabSize(t);
+            int end = start + tabSize;
+            if (tabSize > 0 && end <= this.itemsBag.size()) {
+                if (logicalIndex < start) {
+                    return this.itemsBag.get(logicalIndex + tabSize);
+                } else if (logicalIndex < end) {
+                    return this.itemsBag.get(logicalIndex - start);
+                }
+            }
+        }
+        return this.itemsBag.get(logicalIndex);
+    }
+
+    public int getUsedSlotsInTab(int tabIndex) {
+        int start = tabIndex * BAG_TAB_SIZE;
+        int tabSize = getTabSize(tabIndex);
+        int used = 0;
+        for (int i = start; i < start + tabSize; i++) {
+            Item it = getBagItemInLogicalOrder(i);
+            if (it != null && it.isNotNullItem()) {
+                used++;
+            }
+        }
+        return used;
     }
 
     public int getGem() {

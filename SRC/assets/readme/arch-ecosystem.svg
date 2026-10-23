@@ -1,0 +1,93 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 520" width="100%" height="auto">
+  <defs>
+    <linearGradient id="bgEco" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#1e1b4b"/>
+    </linearGradient>
+    <marker id="arrowGold" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#f59e0b"/>
+    </marker>
+    <marker id="arrowCyan" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#38bdf8"/>
+    </marker>
+  </defs>
+
+  <rect width="1200" height="520" rx="18" fill="url(#bgEco)" stroke="#334155" stroke-width="2"/>
+  <text x="600" y="42" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="22" font-weight="900" fill="#fde047">KIẾN TRÚC TRỪU TƯỢNG HÓA VÒNG LẶP SỨC MẠNH (3-LAYER POWER ARCHITECTURE)</text>
+  <text x="600" y="68" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="14" fill="#94a3b8">Mô hình chuyển hóa từ Tài Nguyên Thô (Tầng 1) → Tinh Luyện Cơ Chế (Tầng 2) → Đột Phá Chỉ Số Vĩnh Viễn (Tầng 3)</text>
+
+  <!-- LAYER 1: INPUT / ACQUISITION -->
+  <g transform="translate(40, 95)">
+    <rect width="330" height="390" rx="14" fill="#090d16" fill-opacity="0.7" stroke="#38bdf8" stroke-width="2"/>
+    <rect width="330" height="44" rx="14" fill="#0284c7"/>
+    <text x="165" y="28" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="16" font-weight="800" fill="#ffffff">TẦNG 1: THU THẬP TÀI NGUYÊN</text>
+
+    <rect x="20" y="65" width="290" height="68" rx="10" fill="#1e293b" stroke="#38bdf8" stroke-width="1"/>
+    <text x="35" y="92" font-family="Segoe UI, sans-serif" font-size="15" font-weight="700" fill="#38bdf8">1. Khởi Nguyên Tân Thủ</text>
+    <text x="35" y="116" font-family="Segoe UI, sans-serif" font-size="13" fill="#cbd5e1">• 99 Thỏi Vàng + 1M Ngọc + Rương SKH</text>
+
+    <rect x="20" y="150" width="290" height="68" rx="10" fill="#1e293b" stroke="#38bdf8" stroke-width="1"/>
+    <text x="35" y="177" font-family="Segoe UI, sans-serif" font-size="15" font-weight="700" fill="#38bdf8">2. Auto Treo Quái &amp; Ngũ Hành Sơn</text>
+    <text x="35" y="201" font-family="Segoe UI, sans-serif" font-size="13" fill="#cbd5e1">• x5 TNSM + Lọc đồ thông minh vào 10 Tab</text>
+
+    <rect x="20" y="235" width="290" height="68" rx="10" fill="#1e293b" stroke="#38bdf8" stroke-width="1"/>
+    <text x="35" y="262" font-family="Segoe UI, sans-serif" font-size="15" font-weight="700" fill="#38bdf8">3. Chuỗi Nhiệm Vụ Mở Bản Đồ</text>
+    <text x="35" y="286" font-family="Segoe UI, sans-serif" font-size="13" fill="#cbd5e1">• Kuku → Fide → Xên → Tương Lai / Cold</text>
+
+    <rect x="20" y="320" width="290" height="55" rx="10" fill="#1e293b" stroke="#38bdf8" stroke-width="1"/>
+    <text x="35" y="344" font-family="Segoe UI, sans-serif" font-size="15" font-weight="700" fill="#38bdf8">4. Săn Boss Chiến Thuật (Khu 1..N)</text>
+    <text x="35" y="365" font-family="Segoe UI, sans-serif" font-size="13" fill="#cbd5e1">• Đồ Thần (15%), SKH (2%), NRT, Điểm Boss</text>
+  </g>
+
+  <!-- LAYER 2: PROCESSING / SYNTHESIS -->
+  <g transform="translate(435, 95)">
+    <rect width="330" height="390" rx="14" fill="#090d16" fill-opacity="0.7" stroke="#f59e0b" stroke-width="2"/>
+    <rect width="330" height="44" rx="14" fill="#d97706"/>
+    <text x="165" y="28" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="16" font-weight="800" fill="#ffffff">TẦNG 2: LÒ LUYỆN &amp; CHUYỂN HÓA</text>
+
+    <rect x="20" y="65" width="290" height="68" rx="10" fill="#1e293b" stroke="#f59e0b" stroke-width="1"/>
+    <text x="35" y="92" font-family="Segoe UI, sans-serif" font-size="15" font-weight="700" fill="#fbbf24">A. Pha Lê Hóa &amp; Cường Hóa 9 Sao</text>
+    <text x="35" y="116" font-family="Segoe UI, sans-serif" font-size="13" fill="#cbd5e1">• Đục 9 lỗ + SPL Cấp 2 (Hematite + Đá Mài)</text>
+
+    <rect x="20" y="150" width="290" height="68" rx="10" fill="#1e293b" stroke="#f59e0b" stroke-width="1"/>
+    <text x="35" y="177" font-family="Segoe UI, sans-serif" font-size="15" font-weight="700" fill="#fbbf24">B. Tái Tạo SKH &amp; Đá Ngũ Sắc</text>
+    <text x="35" y="201" font-family="Segoe UI, sans-serif" font-size="13" fill="#cbd5e1">• Phân rã Đồ Thần → Đập SKH Cao Cấp</text>
+
+    <rect x="20" y="235" width="290" height="68" rx="10" fill="#1e293b" stroke="#f59e0b" stroke-width="1"/>
+    <text x="35" y="262" font-family="Segoe UI, sans-serif" font-size="15" font-weight="700" fill="#fbbf24">C. Tiến Hóa Đệ Tử &amp; Porata Cấp 3</text>
+    <text x="35" y="286" font-family="Segoe UI, sans-serif" font-size="13" fill="#cbd5e1">• Trứng Mabư → Trứng Broly + Mở Chỉ Số</text>
+
+    <rect x="20" y="320" width="290" height="55" rx="10" fill="#1e293b" stroke="#f59e0b" stroke-width="1"/>
+    <text x="35" y="344" font-family="Segoe UI, sans-serif" font-size="15" font-weight="700" fill="#fbbf24">D. Lò Whis &amp; Quy Lão Kame</text>
+    <text x="35" y="365" font-family="Segoe UI, sans-serif" font-size="13" fill="#cbd5e1">• Đúc Đồ Thiên Sứ, Sách Tuyệt Kỹ, Đeo Lưng</text>
+  </g>
+
+  <!-- LAYER 3: TRANSCENDENCE / ENDGAME -->
+  <g transform="translate(830, 95)">
+    <rect width="330" height="390" rx="14" fill="#090d16" fill-opacity="0.7" stroke="#a855f7" stroke-width="2"/>
+    <rect width="330" height="44" rx="14" fill="#7e22ce"/>
+    <text x="165" y="28" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="16" font-weight="800" fill="#ffffff">TẦNG 3: ĐỘT PHÁ BẢN THỂ TỐI THƯỢNG</text>
+
+    <rect x="20" y="65" width="290" height="68" rx="10" fill="#1e293b" stroke="#a855f7" stroke-width="1"/>
+    <text x="35" y="92" font-family="Segoe UI, sans-serif" font-size="15" font-weight="700" fill="#c084fc">★ Hợp Thể Broly + Porata Cấp 3</text>
+    <text x="35" y="116" font-family="Segoe UI, sans-serif" font-size="13" fill="#cbd5e1">• Cộng dồn +30% toàn diện chỉ số Đệ Tử</text>
+
+    <rect x="20" y="150" width="290" height="68" rx="10" fill="#1e293b" stroke="#a855f7" stroke-width="1"/>
+    <text x="35" y="177" font-family="Segoe UI, sans-serif" font-size="15" font-weight="700" fill="#c084fc">★ Cộng Hưởng SKH + Nội Tại Max</text>
+    <text x="35" y="201" font-family="Segoe UI, sans-serif" font-size="13" fill="#cbd5e1">• x2 Sát thương kỹ năng + Nhân bội Nội tại</text>
+
+    <rect x="20" y="235" width="290" height="68" rx="10" fill="#1e293b" stroke="#a855f7" stroke-width="1"/>
+    <text x="35" y="262" font-family="Segoe UI, sans-serif" font-size="15" font-weight="700" fill="#c084fc">★ Bách Khoa Thẻ Sưu Tầm &amp; Danh Hiệu</text>
+    <text x="35" y="286" font-family="Segoe UI, sans-serif" font-size="13" fill="#cbd5e1">• Tăng Sức Đánh / HP / KI gốc vĩnh viễn</text>
+
+    <rect x="20" y="320" width="290" height="55" rx="10" fill="#1e293b" stroke="#a855f7" stroke-width="1"/>
+    <text x="35" y="344" font-family="Segoe UI, sans-serif" font-size="15" font-weight="700" fill="#c084fc">★ Triệu Hồi Rồng Thần &amp; Rồng Tím</text>
+    <text x="35" y="365" font-family="Segoe UI, sans-serif" font-size="13" fill="#cbd5e1">• Ước Chí Mạng, Nâng Găng, Phúc Lợi VIP</text>
+  </g>
+
+  <!-- Connecting Arrows -->
+  <line x1="372" y1="200" x2="430" y2="200" stroke="#38bdf8" stroke-width="3" marker-end="url(#arrowCyan)"/>
+  <line x1="372" y1="340" x2="430" y2="340" stroke="#38bdf8" stroke-width="3" marker-end="url(#arrowCyan)"/>
+  <line x1="767" y1="200" x2="825" y2="200" stroke="#f59e0b" stroke-width="3" marker-end="url(#arrowGold)"/>
+  <line x1="767" y1="340" x2="825" y2="340" stroke="#f59e0b" stroke-width="3" marker-end="url(#arrowGold)"/>
+</svg>

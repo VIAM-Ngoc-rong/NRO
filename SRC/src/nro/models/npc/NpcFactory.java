@@ -791,8 +791,45 @@ public class NpcFactory {
                                 openMenuQuanLyDeTu(player);
                             }
                             case 5 -> {
+                                openMenuBagTab(player);
+                            }
+                            case 6 -> {
                                 Service.gI().openFlagUI(player);
                             }
+                        }
+                    }
+                    case 9903 -> {
+                        int totalTabs = player.inventory.getTotalBagTabs();
+                        boolean canExpand = player.inventory.itemsBag.size() < nro.models.player.Inventory.MAX_ITEMS_BAG;
+                        if (select >= 0 && select < totalTabs) {
+                            player.inventory.switchBagTab(select);
+                            InventoryService.gI().sendItemBags(player);
+                            int startSlot = select * nro.models.player.Inventory.BAG_TAB_SIZE + 1;
+                            int endSlot = Math.min(player.inventory.itemsBag.size(), (select + 1) * nro.models.player.Inventory.BAG_TAB_SIZE);
+                            Service.gI().sendThongBao(player, "Đã chuyển sang Hành trang Tab " + (select + 1) + " (Ô " + startSlot + " - " + endSlot + ")!");
+                        } else if (canExpand && select == totalTabs) {
+                            if (player.inventory.gem < 50_000) {
+                                Service.gI().sendThongBao(player, "Cần 50.000 Ngọc xanh để mở thêm 1 Tab Hành trang (+50 ô)!");
+                                openMenuBagTab(player);
+                                return;
+                            }
+                            int canAdd = Math.min(nro.models.player.Inventory.BAG_TAB_SIZE,
+                                    nro.models.player.Inventory.MAX_ITEMS_BAG - player.inventory.itemsBag.size());
+                            player.inventory.gem -= 50_000;
+                            Service.gI().sendMoney(player);
+                            int savedTab = player.inventory.currentBagTab;
+                            player.inventory.restoreBagLogicalOrder();
+                            for (int k = 0; k < canAdd; k++) {
+                                player.inventory.itemsBag.add(ItemService.gI().createItemNull());
+                            }
+                            player.inventory.switchBagTab(savedTab);
+                            InventoryService.gI().sendItemBags(player);
+                            Service.gI().sendThongBao(player, "Đã mở rộng thêm " + canAdd + " ô! Tổng: "
+                                    + player.inventory.itemsBag.size() + "/" + nro.models.player.Inventory.MAX_ITEMS_BAG
+                                    + " ô (" + player.inventory.getTotalBagTabs() + " Tab).");
+                            openMenuBagTab(player);
+                        } else {
+                            openMenuTienIch(player);
                         }
                     }
                     case 9901 -> {
@@ -886,19 +923,61 @@ public class NpcFactory {
     }
 
     public static void openMenuTienIch(Player player) {
+        int curTab = player.inventory.currentBagTab + 1;
+        int totalTabs = player.inventory.getTotalBagTabs();
         String npcSay = "|7|=== BẢNG ĐIỀU KHIỂN TIỆN ÍCH ===\n"
                 + "|2|Auto Buff Đậu (Sư phụ & Đệ): " + (player.isAutoBuffPea ? "|1|[Đang Bật]" : "|7|[Đang Tắt]") + "\n"
                 + "|2|Auto Treo Quái (Chống đầy túi): " + (player.isAutoCleanBag ? "|1|[Đang Bật]" : "|7|[Đang Tắt]") + "\n"
+                + "|2|Hành trang: |1|Tab " + curTab + "/" + totalTabs + " (" + player.inventory.itemsBag.size() + "/" + nro.models.player.Inventory.MAX_ITEMS_BAG + " ô - 50 ô/Tab)\n"
                 + "|2|Điểm Săn Boss hiện có: |1|" + player.pointSanBoss + " điểm\n"
-                + "|0|(Mẹo: Bấm nút Lá Cờ trên góc màn hình để mở nhanh bảng này ở mọi nơi)";
+                + "|0|(Mẹo: Bấm nút Lá Cờ hoặc gõ 'tab 1'..'tab 10' để đổi Tab Hành trang nhanh)";
         NpcService.gI().createMenuConMeo(player, 9900, -1, npcSay,
                 "Auto Đậu\n" + (player.isAutoBuffPea ? "[Tắt]" : "[Bật]"),
                 "Treo Quái\n" + (player.isAutoCleanBag ? "[Tắt]" : "[Bật]"),
                 "Danh sách\nBoss",
                 "Cộng nhanh\nChỉ số",
                 "Quản lý\nĐệ tử",
+                "Tab Túi Đồ\n[Tab " + curTab + "/" + totalTabs + "]",
                 "Đổi Cờ\nPK",
                 "Đóng");
+    }
+
+    public static void openMenuBagTab(Player player) {
+        int totalTabs = player.inventory.getTotalBagTabs();
+        int curTab = player.inventory.currentBagTab + 1;
+        StringBuilder sb = new StringBuilder();
+        sb.append("|7|=== QUẢN LÝ TAB HÀNH TRANG (50 Ô / TAB) ===\n");
+        sb.append("|2|Đang mở: |1|Tab ").append(curTab).append("/").append(totalTabs)
+                .append(" (Tổng: ").append(player.inventory.itemsBag.size()).append("/")
+                .append(nro.models.player.Inventory.MAX_ITEMS_BAG).append(" ô)\n");
+        for (int t = 0; t < totalTabs; t++) {
+            int used = player.inventory.getUsedSlotsInTab(t);
+            int cap = player.inventory.getTabSize(t);
+            sb.append(t == player.inventory.currentBagTab ? "|1|► " : "|2|• ")
+                    .append("Tab ").append(t + 1).append(": ").append(used).append("/").append(cap).append(" ô");
+            if (t % 2 == 1 || t == totalTabs - 1) {
+                sb.append("\n");
+            } else {
+                sb.append("   ");
+            }
+        }
+        sb.append("|0|(Mẹo: Chat 'tab 1', 'tab 2'... hoặc 't1', 't2'... để chuyển Tab tức thì)");
+
+        boolean canExpand = player.inventory.itemsBag.size() < nro.models.player.Inventory.MAX_ITEMS_BAG;
+        String[] options = new String[totalTabs + (canExpand ? 2 : 1)];
+        for (int t = 0; t < totalTabs; t++) {
+            int used = player.inventory.getUsedSlotsInTab(t);
+            int cap = player.inventory.getTabSize(t);
+            options[t] = (t == player.inventory.currentBagTab ? "[Đang mở]\n" : "")
+                    + "Tab " + (t + 1) + "\n(" + used + "/" + cap + ")";
+        }
+        if (canExpand) {
+            options[totalTabs] = "Mở thêm Tab\n(+50 ô / 50k Ngọc)";
+            options[totalTabs + 1] = "Quay lại";
+        } else {
+            options[totalTabs] = "Quay lại";
+        }
+        NpcService.gI().createMenuConMeo(player, 9903, -1, sb.toString(), options);
     }
 
     public static void openMenuCongNhanh(Player player) {

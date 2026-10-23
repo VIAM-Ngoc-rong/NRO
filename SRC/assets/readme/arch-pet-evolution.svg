@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 430" width="100%" height="auto">
+  <defs>
+    <linearGradient id="bgPet" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#180d29"/>
+      <stop offset="100%" stop-color="#2e1065"/>
+    </linearGradient>
+    <marker id="arrPink" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#f472b6"/>
+    </marker>
+  </defs>
+
+  <rect width="1200" height="430" rx="18" fill="url(#bgPet)" stroke="#a855f7" stroke-width="2"/>
+  <text x="600" y="42" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="22" font-weight="900" fill="#f472b6">MA TRẬN TIẾN HÓA ĐỆ TỬ &amp; CỘNG HƯỞNG HỢP THỂ PORATA</text>
+  <text x="600" y="68" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="14" fill="#d8b4fe">Chuỗi tiến hóa bắt buộc: Đệ Thường → Đệ Mabư → Đệ Broly • Mở khóa 5 Kỹ năng &amp; Hợp thể Porata Cấp 1–3</text>
+
+  <!-- Tier 1: Normal Pet -->
+  <g transform="translate(45, 95)">
+    <rect width="310" height="190" rx="14" fill="#1e1b4b" stroke="#38bdf8" stroke-width="2"/>
+    <rect width="310" height="40" rx="14" fill="#0284c7"/>
+    <text x="155" y="26" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="16" font-weight="800" fill="#ffffff">CẤP 1: ĐỆ TỬ THƯỜNG</text>
+    <text x="155" y="72" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="22" font-weight="900" fill="#38bdf8">+20% Chỉ Số Hợp Thể</text>
+    <text x="25" y="108" font-family="Segoe UI, sans-serif" font-size="13.5" fill="#e2e8f0">• Nguồn: Nhận miễn phí tại Menu "auto"</text>
+    <text x="25" y="134" font-family="Segoe UI, sans-serif" font-size="13.5" fill="#e2e8f0">  hoặc tiêu diệt Boss Super Broly.</text>
+    <text x="25" y="164" font-family="Segoe UI, sans-serif" font-size="13" font-weight="700" fill="#93c5fd">• Điều kiện ấp lên Đệ Mabư: Đang có Đệ Thường</text>
+  </g>
+
+  <!-- Arrow 1 -> 2 -->
+  <line x1="360" y1="190" x2="435" y2="190" stroke="#f472b6" stroke-width="3" marker-end="url(#arrPink)"/>
+  <text x="398" y="168" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="12" font-weight="700" fill="#fbcfe8">Trứng Mabư</text>
+  <text x="398" y="214" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="11" fill="#f9a8d4">(50% từ Mabư Mập)</text>
+
+  <!-- Tier 2: Mabu Pet -->
+  <g transform="translate(445, 95)">
+    <rect width="310" height="190" rx="14" fill="#1e1b4b" stroke="#f472b6" stroke-width="2"/>
+    <rect width="310" height="40" rx="14" fill="#db2777"/>
+    <text x="155" y="26" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="16" font-weight="800" fill="#ffffff">CẤP 2: ĐỆ TỬ MABƯ</text>
+    <text x="155" y="72" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="22" font-weight="900" fill="#f472b6">+25% Chỉ Số Hợp Thể</text>
+    <text x="25" y="108" font-family="Segoe UI, sans-serif" font-size="13.5" fill="#e2e8f0">• Nguồn: Hạ Kid Bư → Mabư Mập xuất hiện</text>
+    <text x="25" y="134" font-family="Segoe UI, sans-serif" font-size="13.5" fill="#e2e8f0">  → Nhặt Quả Trứng Mabư đem về Nhà ấp.</text>
+    <text x="25" y="164" font-family="Segoe UI, sans-serif" font-size="13" font-weight="700" fill="#fbcfe8">• Điều kiện ấp lên Đệ Broly: Đang có Đệ Mabư</text>
+  </g>
+
+  <!-- Arrow 2 -> 3 -->
+  <line x1="760" y1="190" x2="835" y2="190" stroke="#f472b6" stroke-width="3" marker-end="url(#arrPink)"/>
+  <text x="798" y="168" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="12" font-weight="700" fill="#fde047">Trứng Broly</text>
+  <text x="798" y="214" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="11" fill="#fde047">(Rớt từ Boss Broly)</text>
+
+  <!-- Tier 3: Broly Pet -->
+  <g transform="translate(845, 95)">
+    <rect width="310" height="190" rx="14" fill="#1e1b4b" stroke="#f59e0b" stroke-width="2.5"/>
+    <rect width="310" height="40" rx="14" fill="#d97706"/>
+    <text x="155" y="26" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="16" font-weight="800" fill="#ffffff">CẤP 3: ĐỆ TỬ BROLY (MAX)</text>
+    <text x="155" y="72" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="22" font-weight="900" fill="#fde047">+30% Chỉ Số Hợp Thể</text>
+    <text x="25" y="108" font-family="Segoe UI, sans-serif" font-size="13.5" fill="#e2e8f0">• Nguồn: Săn 5 Boss Broly ở 3 hành tinh</text>
+    <text x="25" y="134" font-family="Segoe UI, sans-serif" font-size="13.5" fill="#e2e8f0">  → Dùng Quả Trứng Broly ấp từ Đệ Mabư.</text>
+    <text x="25" y="164" font-family="Segoe UI, sans-serif" font-size="13" font-weight="700" fill="#fde047">• Đỉnh cao hợp thể cùng Bông Tai Porata Cấp 3!</text>
+  </g>
+
+  <!-- Bottom Timeline: Skill Unlock Milestones -->
+  <g transform="translate(45, 310)">
+    <rect width="1110" height="90" rx="12" fill="#0f172a" stroke="#a855f7" stroke-width="1.5"/>
+    <text x="555" y="28" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="15" font-weight="800" fill="#e9d5ff">MỐC SỨC MẠNH MỞ KỸ NĂNG ĐỆ TỬ (UP TẠI NGŨ HÀNH SƠN x5 TNSM + AUTO ĐẬU)</text>
+    <text x="130" y="64" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="14" font-weight="700" fill="#38bdf8">1.5 Triệu SM: Mặc Trang Bị</text>
+    <text x="360" y="64" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="14" font-weight="700" fill="#4ade80">150 Triệu SM: Mở Chiêu 2</text>
+    <text x="590" y="64" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="14" font-weight="700" fill="#fbbf24">1.5 Tỷ SM: Mở Chiêu 3</text>
+    <text x="815" y="64" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="14" font-weight="700" fill="#f472b6">20 Tỷ SM: Mở Chiêu 4</text>
+    <text x="1015" y="64" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="14" font-weight="700" fill="#fde047">40 Tỷ SM: Mở Chiêu 5</text>
+  </g>
+</svg>

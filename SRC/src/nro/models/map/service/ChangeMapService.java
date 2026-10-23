@@ -68,8 +68,8 @@ public class ChangeMapService {
                     msg.writer().writeByte(list.size());
                     for (int i = 0; i < pl.mapCapsule.size(); i++) {
                         Zone zone = pl.mapCapsule.get(i);
-                        if (i == 0 && pl.mapBeforeCapsule != null) {
-                            msg.writer().writeUTF("Về chỗ cũ: " + zone.map.mapName);
+                        if (i == 0 && pl.mapBeforeCapsule != null && zone.map.mapId == pl.mapBeforeCapsule.map.mapId) {
+                            msg.writer().writeUTF("Về chỗ cũ: " + zone.map.mapName + " (Khu " + pl.mapBeforeCapsule.zoneId + ")");
                         } else if (zone.map.mapName.equals("Nhà Broly") || zone.map.mapName.equals("Nhà Gôhan")
                                 || zone.map.mapName.equals("Nhà Moori")) {
                             msg.writer().writeUTF("Về nhà");
@@ -78,6 +78,7 @@ public class ChangeMapService {
                         }
                         msg.writer().writeUTF(zone.map.planetName);
                     }
+                    break;
                 case ConstMap.CHANGE_BLACK_BALL:
                     list = (pl.mapBlackBall != null ? pl.mapBlackBall
                             : (pl.mapBlackBall = MapService.gI().getMapBlackBall()));

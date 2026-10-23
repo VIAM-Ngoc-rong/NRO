@@ -343,7 +343,30 @@ parameterizedCommands.put("henbaotri", (player, text) -> {
             PetService.gI().changeNamePet(player, text.replace("ten con la ", ""));
         }
 
-        switch (text.toLowerCase().trim()) {
+        String lowerText = text.toLowerCase().trim();
+        if (lowerText.matches("^(tab\\s*\\d+|t\\d+)$")) {
+            try {
+                int tabNum = Integer.parseInt(lowerText.replaceAll("[^0-9]", ""));
+                int totalTabs = player.inventory.getTotalBagTabs();
+                if (tabNum >= 1 && tabNum <= totalTabs) {
+                    player.inventory.switchBagTab(tabNum - 1);
+                    InventoryService.gI().sendItemBags(player);
+                    int startSlot = (tabNum - 1) * nro.models.player.Inventory.BAG_TAB_SIZE + 1;
+                    int endSlot = Math.min(player.inventory.itemsBag.size(), tabNum * nro.models.player.Inventory.BAG_TAB_SIZE);
+                    Service.gI().sendThongBao(player, "Đã chuyển sang Hành trang Tab " + tabNum + "/" + totalTabs + " (Ô " + startSlot + " - " + endSlot + ")!");
+                } else {
+                    Service.gI().sendThongBao(player, "Bạn hiện có " + totalTabs + " Tab Hành trang (Gõ 'tab 1' đến 'tab " + totalTabs + "')!");
+                }
+            } catch (Exception ignored) {
+            }
+            return true;
+        }
+
+        switch (lowerText) {
+            case "tab", "tui", "tuidong", "hanhtrang" -> {
+                nro.models.npc.NpcFactory.openMenuBagTab(player);
+                return true;
+            }
             case "autodau", "ad", "buffdau", "auto dau", "buff dau" -> {
                 player.isAutoBuffPea = !player.isAutoBuffPea;
                 Service.gI().sendThongBao(player, "Auto Buff Đậu (Sư phụ & Đệ tử): " + (player.isAutoBuffPea ? "[Bật]" : "[Tắt]"));

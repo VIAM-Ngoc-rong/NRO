@@ -395,6 +395,12 @@ public class MrBlue {
                 }
                 player.inventory.itemsBag.add(item);
             }
+            while (player.inventory.itemsBag.size() < Inventory.DEFAULT_ITEMS_BAG) {
+                player.inventory.itemsBag.add(ItemService.gI().createItemNull());
+            }
+            while (player.inventory.itemsBag.size() > Inventory.MAX_ITEMS_BAG) {
+                player.inventory.itemsBag.remove(player.inventory.itemsBag.size() - 1);
+            }
             dataArray.clear();
 
             //data box

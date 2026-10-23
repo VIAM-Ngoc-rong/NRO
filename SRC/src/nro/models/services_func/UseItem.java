@@ -1912,16 +1912,22 @@ public class UseItem {
             Service.gI().sendThongBao(pl, "Hiện tại không thể vào được khu!");
             return;
         }
-        if (index != 0 || zoneChose.map.mapId == 21
-                || zoneChose.map.mapId == 22
-                || zoneChose.map.mapId == 23) {
-            pl.mapBeforeCapsule = pl.zone;
-        } else {
-            zoneId = pl.mapBeforeCapsule != null ? pl.mapBeforeCapsule.zoneId : -1;
+        boolean isReturningToOldMap = (index == 0 && pl.mapBeforeCapsule != null
+                && zoneChose.map.mapId == pl.mapBeforeCapsule.map.mapId);
+        if (isReturningToOldMap) {
+            zoneId = pl.mapBeforeCapsule.zoneId;
             pl.mapBeforeCapsule = null;
+        } else {
+            if (pl.zone != null && !MapService.gI().isHome(pl.zone.map.mapId)
+                    && !MapService.gI().isMapPhoBan(pl.zone.map.mapId)
+                    && !MapService.gI().isMapMaBu(pl.zone.map.mapId)
+                    && !MapService.gI().isMapBlackBallWar(pl.zone.map.mapId)
+                    && !MapService.gI().isMapOffline(pl.zone.map.mapId)) {
+                pl.mapBeforeCapsule = pl.zone;
+            }
         }
         pl.changeMapVIP = true;
-        ChangeMapService.gI().changeMapBySpaceShip(pl, pl.mapCapsule.get(index).map.mapId, zoneId, -1);
+        ChangeMapService.gI().changeMapBySpaceShip(pl, zoneChose.map.mapId, zoneId, -1);
     }
 
     public void eatPea(Player player) {

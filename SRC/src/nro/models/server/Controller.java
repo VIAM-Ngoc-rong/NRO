@@ -640,6 +640,12 @@ public class Controller implements IMessageHandler {
                     break;
                 case -15: // về nhà
                     if (player != null) {
+                        if (player.zone != null && !MapService.gI().isHome(player.zone.map.mapId)
+                                && !MapService.gI().isMapPhoBan(player.zone.map.mapId)
+                                && !MapService.gI().isMapMaBu(player.zone.map.mapId)
+                                && !MapService.gI().isMapBlackBallWar(player.zone.map.mapId)) {
+                            player.mapBeforeCapsule = player.zone;
+                        }
                         int mapId = MapService.gI().isMapMaBu(player.zone.map.mapId) ? 114 : player.gender + 21;
                         ChangeMapService.gI().changeMapBySpaceShip(player, mapId, 0, -1);
                     }
@@ -664,18 +670,23 @@ public class Controller implements IMessageHandler {
                             }
                             default -> {
                                 Boss boss = BossManager.gI().getBoss(_id);
-                                if (player.isAdmin()) {
-                                    if (boss != null && boss.zone != null && !boss.isDie()) {
-                                        ChangeMapService.gI().changeMapYardrat(player, boss.zone, boss.location.x, boss.location.y);
+                                if (boss != null && boss.zone != null && !boss.isDie()) {
+                                    int targetMapId = boss.zone.map.mapId;
+                                    nro.models.map.Zone zone0 = MapService.gI().getZoneByMapIDAndZoneID(targetMapId, 0);
+                                    if (zone0 != null && ChangeMapService.gI().checkMapCanJoin(player, zone0) != null) {
+                                        if (player.zone != null && !MapService.gI().isHome(player.zone.map.mapId)
+                                                && !MapService.gI().isMapPhoBan(player.zone.map.mapId)
+                                                && !MapService.gI().isMapMaBu(player.zone.map.mapId)
+                                                && !MapService.gI().isMapBlackBallWar(player.zone.map.mapId)) {
+                                            player.mapBeforeCapsule = player.zone;
+                                        }
+                                        ChangeMapService.gI().changeMapBySpaceShip(player, targetMapId, 0, -1);
+                                        Service.gI().sendThongBao(player, "Đã dịch chuyển tới " + boss.zone.map.mapName + " (Khu 0). Hãy dò từ Khu 1 trở đi để tìm " + boss.name + "!");
                                     } else {
-                                        Service.gI().sendThongBao(player, "Boss này hiện chưa xuất hiện hoặc đã bị tiêu diệt!");
+                                        Service.gI().sendThongBao(player, "Bạn chưa đủ điều kiện nhiệm vụ để đến " + boss.zone.map.mapName + "!");
                                     }
                                 } else {
-                                    if (boss != null && boss.zone != null && !boss.isDie()) {
-                                        Service.gI().sendThongBao(player, "Boss " + boss.name + " đang xuất hiện tại " + boss.zone.map.mapName + ", hãy tự chạy đến map và dò khu để tiêu diệt!");
-                                    } else {
-                                        Service.gI().sendThongBao(player, "Boss này hiện chưa xuất hiện, vui lòng chờ hồi sinh!");
-                                    }
+                                    Service.gI().sendThongBao(player, "Boss này hiện chưa xuất hiện, vui lòng chờ hồi sinh!");
                                 }
                             }
                         }

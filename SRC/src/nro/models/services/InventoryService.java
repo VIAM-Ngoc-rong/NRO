@@ -217,24 +217,40 @@ public class InventoryService {
     }
 
     public void sortItems(List<Item> list) {
-        for (int i = 0; i < list.size() - 1; i++) {
-            Item current = list.get(i);
-            if (current == null || !current.isNotNullItem()) {
-                int indexSwap = -1;
-                for (int j = i + 1; j < list.size(); j++) {
-                    Item candidate = list.get(j);
-                    if (candidate != null && candidate.isNotNullItem()) {
-                        indexSwap = j;
+        int totalSize = list.size();
+        if (totalSize <= 1) {
+            return;
+        }
+        int firstChunk = totalSize;
+        if (list instanceof Inventory.BagList bagList) {
+            firstChunk = Math.min(totalSize, Math.max(1, bagList.getFirstChunkSize()));
+        } else if (totalSize > Inventory.BAG_TAB_SIZE) {
+            firstChunk = Inventory.BAG_TAB_SIZE;
+        }
+        int start = 0;
+        while (start < totalSize) {
+            int chunkLen = (start == 0) ? firstChunk : Inventory.BAG_TAB_SIZE;
+            int end = Math.min(start + chunkLen, totalSize);
+            for (int i = start; i < end - 1; i++) {
+                Item current = list.get(i);
+                if (current == null || !current.isNotNullItem()) {
+                    int indexSwap = -1;
+                    for (int j = i + 1; j < end; j++) {
+                        Item candidate = list.get(j);
+                        if (candidate != null && candidate.isNotNullItem()) {
+                            indexSwap = j;
+                            break;
+                        }
+                    }
+                    if (indexSwap != -1) {
+                        list.set(i, list.get(indexSwap));
+                        list.set(indexSwap, ItemService.gI().createItemNull());
+                    } else {
                         break;
                     }
                 }
-                if (indexSwap != -1) {
-                    list.set(i, list.get(indexSwap));
-                    list.set(indexSwap, ItemService.gI().createItemNull());
-                } else {
-                    break;
-                }
             }
+            start = end;
         }
     }
 
@@ -564,10 +580,11 @@ public class InventoryService {
         sortItems(player.inventory.itemsBag);
         Message msg;
         try {
+            int tabSize = player.inventory.getActiveTabSize();
             msg = new Message(-36);
             msg.writer().writeByte(0);
-            msg.writer().writeByte(player.inventory.itemsBag.size());
-            for (int i = 0; i < player.inventory.itemsBag.size(); i++) {
+            msg.writer().writeByte(tabSize);
+            for (int i = 0; i < tabSize; i++) {
                 Item item = player.inventory.itemsBag.get(i);
                 if (!item.isNotNullItem()) {
                     continue;
@@ -782,11 +799,14 @@ public class InventoryService {
         //mở rộng hành trang - rương đồ
         if (item.template.id == 517) {
             if (player.inventory.itemsBag.size() < Inventory.MAX_ITEMS_BAG) {
+                int savedTab = player.inventory.currentBagTab;
+                player.inventory.restoreBagLogicalOrder();
                 player.inventory.itemsBag.add(ItemService.gI().createItemNull());
-                Service.gI().sendThongBaoOK(player, "Hành trang của bạn đã được mở rộng thêm 1 ô");
+                player.inventory.switchBagTab(savedTab);
+                Service.gI().sendThongBaoOK(player, "Hành trang của bạn đã được mở rộng thêm 1 ô (" + player.inventory.itemsBag.size() + "/" + Inventory.MAX_ITEMS_BAG + ")");
                 return true;
             } else {
-                Service.gI().sendThongBaoOK(player, "Hành trang của bạn đã đạt tối đa");
+                Service.gI().sendThongBaoOK(player, "Hành trang của bạn đã đạt tối đa (" + Inventory.MAX_ITEMS_BAG + " ô)");
                 return false;
             }
         } else if (item.template.id == 518) {
@@ -925,9 +945,9 @@ public class InventoryService {
         return getCountEmptyListItem(player.inventory.itemsBag);
     }
 
-    public byte getCountEmptyListItem(List<Item> list) {
-        byte count = 0;
-        for (Item item : list) {
+    public int getCountEmptyBagTotal(Player player) {
+        int count = 0;
+        for (Item item : player.inventory.itemsBag) {
             if (!item.isNotNullItem()) {
                 count++;
             }
@@ -935,8 +955,19 @@ public class InventoryService {
         return count;
     }
 
+    public byte getCountEmptyListItem(List<Item> list) {
+        int count = 0;
+        for (Item item : list) {
+            if (!item.isNotNullItem()) {
+                count++;
+            }
+        }
+        return (byte) Math.min(count, Byte.MAX_VALUE);
+    }
+
     public byte getIndexBag(Player pl, Item it) {
-        for (byte i = 0; i < pl.inventory.itemsBag.size(); ++i) {
+        int limit = Math.min(pl.inventory.itemsBag.size(), Byte.MAX_VALUE);
+        for (byte i = 0; i < limit; ++i) {
             Item item = pl.inventory.itemsBag.get(i);
             if (item != null && it.equals(item)) {
                 return i;

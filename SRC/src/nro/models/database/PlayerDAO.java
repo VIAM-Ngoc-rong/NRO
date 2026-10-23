@@ -121,8 +121,8 @@ public class PlayerDAO {
             String itemsBody = dataArray.toJSONString();
             dataArray.clear();
 
-            for (int i = 0; i < 30; i++) {
-                if (i == 0) { //thỏi vàng
+            for (int i = 0; i < Inventory.DEFAULT_ITEMS_BAG; i++) {
+                if (i == 0) { //đậu thần
                     opt.add(2); //id option
                     opt.add(8); //param option
                     item.add(63); //id item
@@ -443,9 +443,10 @@ public class PlayerDAO {
                 dataArray.clear();
 
                 //data bag
-                for (Item item : player.inventory.itemsBag) {
+                for (int i = 0; i < player.inventory.itemsBag.size(); i++) {
+                    Item item = player.inventory.getBagItemInLogicalOrder(i);
                     JSONArray opt = new JSONArray();
-                    if (item.isNotNullItem()) {
+                    if (item != null && item.isNotNullItem()) {
                         dataItem.add(item.template.id);
                         dataItem.add(item.quantity);
                         JSONArray options = new JSONArray();
@@ -461,7 +462,7 @@ public class PlayerDAO {
                         dataItem.add(0);
                         dataItem.add(opt.toJSONString());
                     }
-                    dataItem.add(item.createTime);
+                    dataItem.add(item != null ? item.createTime : System.currentTimeMillis());
                     dataArray.add(dataItem.toJSONString());
                     dataItem.clear();
                 }

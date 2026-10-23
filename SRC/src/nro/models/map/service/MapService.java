@@ -392,26 +392,30 @@ public class MapService {
                 && pl.mapBeforeCapsule.map.mapId != 21
                 && pl.mapBeforeCapsule.map.mapId != 22
                 && pl.mapBeforeCapsule.map.mapId != 23
-                && !isMapTuongLai(pl.mapBeforeCapsule.map.mapId)) {
+                && !isMapPhoBan(pl.mapBeforeCapsule.map.mapId)
+                && !isMapMaBu(pl.mapBeforeCapsule.map.mapId)
+                && !isMapBlackBallWar(pl.mapBeforeCapsule.map.mapId)
+                && !isMapOffline(pl.mapBeforeCapsule.map.mapId)) {
             addListMapCapsule(pl, list, pl.mapBeforeCapsule);
         }
-        addListMapCapsule(pl, list, getMapCanJoin(pl, 21 + pl.gender, -1));
-        addListMapCapsule(pl, list, getMapCanJoin(pl, 47, -1));
-        addListMapCapsule(pl, list, getMapCanJoin(pl, 45, -1));
-        addListMapCapsule(pl, list, getMapCanJoin(pl, 0, -1));
-        addListMapCapsule(pl, list, getMapCanJoin(pl, 7, -1));
-        addListMapCapsule(pl, list, getMapCanJoin(pl, 14, -1));
-        addListMapCapsule(pl, list, getMapCanJoin(pl, 5, -1));
-        addListMapCapsule(pl, list, getMapCanJoin(pl, 20, -1));
-        addListMapCapsule(pl, list, getMapCanJoin(pl, 13, -1));
-        addListMapCapsule(pl, list, getMapCanJoin(pl, 24 + pl.gender, -1));
-        addListMapCapsule(pl, list, getMapCanJoin(pl, 27, -1));
-        addListMapCapsule(pl, list, getMapCanJoin(pl, 19, -1));
-        addListMapCapsule(pl, list, getMapCanJoin(pl, 79, -1));
-        addListMapCapsule(pl, list, getMapCanJoin(pl, 84, -1));
-        addListMapCapsule(pl, list, getMapCanJoin(pl, 154, -1));
-        addListMapCapsule(pl, list, getMapCanJoin(pl, 52, -1));
-        addListMapCapsule(pl, list, getMapCanJoin(pl, 122, -1));
+        addListMapCapsule(pl, list, getMapCanJoin(pl, 21 + pl.gender, 0));
+        addListMapCapsule(pl, list, getMapCanJoin(pl, 47, 0));
+        addListMapCapsule(pl, list, getMapCanJoin(pl, 45, 0));
+        addListMapCapsule(pl, list, getMapCanJoin(pl, 0, 0));
+        addListMapCapsule(pl, list, getMapCanJoin(pl, 7, 0));
+        addListMapCapsule(pl, list, getMapCanJoin(pl, 14, 0));
+        addListMapCapsule(pl, list, getMapCanJoin(pl, 5, 0));
+        addListMapCapsule(pl, list, getMapCanJoin(pl, 20, 0));
+        addListMapCapsule(pl, list, getMapCanJoin(pl, 13, 0));
+        addListMapCapsule(pl, list, getMapCanJoin(pl, 24 + pl.gender, 0));
+        addListMapCapsule(pl, list, getMapCanJoin(pl, 27, 0));
+        addListMapCapsule(pl, list, getMapCanJoin(pl, 19, 0));
+        addListMapCapsule(pl, list, getMapCanJoin(pl, 79, 0));
+        addListMapCapsule(pl, list, getMapCanJoin(pl, 84, 0));
+        addListMapCapsule(pl, list, getMapCanJoin(pl, 102, 0));
+        addListMapCapsule(pl, list, getMapCanJoin(pl, 154, 0));
+        addListMapCapsule(pl, list, getMapCanJoin(pl, 52, 0));
+        addListMapCapsule(pl, list, getMapCanJoin(pl, 122, 0));
         return list;
     }
 
