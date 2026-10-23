@@ -4,6 +4,19 @@ export LC_ALL=C.UTF-8
 cd "$(dirname "$0")"
 SCRIPT_DIR="$(pwd)"
 
+# Tự động dọn dẹp ổ cứng VPS (tránh lỗi No space left on device)
+apt-get clean >/dev/null 2>&1 || true
+rm -rf /var/cache/apt/archives/*.deb /var/cache/apt/archives/partial/* /var/lib/apt/lists/* /tmp/*.tmp /tmp/hsperfdata_* 2>/dev/null || true
+journalctl --vacuum-size=30M >/dev/null 2>&1 || true
+find /var/log -type f \( -name "*.gz" -o -name "*.1" -o -name "*.old" \) -delete 2>/dev/null || true
+mysql -e "PURGE BINARY LOGS BEFORE NOW(); SET GLOBAL binlog_expire_logs_seconds = 3600;" >/dev/null 2>&1 || true
+if [ -d "/root/NRO/backups" ]; then
+    ls -1t /root/NRO/backups/team2026_20*.sql.gz 2>/dev/null | tail -n +3 | xargs -r rm -f 2>/dev/null || true
+fi
+if [ -f "$SCRIPT_DIR/server.log" ] && [ "$(stat -c%s "$SCRIPT_DIR/server.log" 2>/dev/null || echo 0)" -gt 20971520 ]; then
+    tail -n 1000 "$SCRIPT_DIR/server.log" > "$SCRIPT_DIR/server.log.tmp" && mv -f "$SCRIPT_DIR/server.log.tmp" "$SCRIPT_DIR/server.log"
+fi
+
 # Mở port 14446 cho Web Giám Sát Admin (nếu VPS bật UFW / iptables)
 if command -v ufw >/dev/null 2>&1; then
     ufw allow 14446/tcp >/dev/null 2>&1 || true

@@ -1058,7 +1058,7 @@ public class AdminWebServer {
                         try {
                             Thread.sleep(800);
                             new ProcessBuilder("/bin/bash", "-c",
-                                    "nohup /bin/bash -c 'cd /root/NRO/SRC && git fetch origin && git reset --hard origin/main && sed -i \"s/\\r$//\" run.sh backup_db.sh && chmod +x run.sh backup_db.sh && ./run.sh' > /root/NRO/SRC/update.log 2>&1 < /dev/null &")
+                                    "nohup /bin/bash -c 'apt-get clean >/dev/null 2>&1; rm -rf /var/cache/apt/archives/*.deb /var/lib/apt/lists/* /root/NRO/backups/.git 2>/dev/null; journalctl --vacuum-size=30M >/dev/null 2>&1; mysql -e \"PURGE BINARY LOGS BEFORE NOW();\" >/dev/null 2>&1; cd /root/NRO/SRC && git fetch origin && git reset --hard origin/main && sed -i \"s/\\r$//\" run.sh backup_db.sh && chmod +x run.sh backup_db.sh && ./run.sh' > /root/NRO/SRC/update.log 2>&1 < /dev/null &")
                                     .directory(new File("."))
                                     .start();
                         } catch (Exception ignored) {
