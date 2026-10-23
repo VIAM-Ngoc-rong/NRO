@@ -414,7 +414,7 @@ public class BossManager implements Runnable {
 
             msg = new Message(-96);
             msg.writer().writeByte(0);
-            msg.writer().writeUTF("Danh Sách Boss (Bấm để dịch chuyển)");
+            msg.writer().writeUTF("Danh Sách Boss");
             msg.writer().writeByte(Math.min(validIndices.size(), 120));
             int count = 0;
             for (int i : validIndices) {
@@ -433,7 +433,7 @@ public class BossManager implements Runnable {
                 msg.writer().writeShort(boss.data[lv].getOutfit()[2]);
                 msg.writer().writeUTF(boss.data[lv].getName());
                 if (boss.zone != null && !boss.isDie()) {
-                    msg.writer().writeUTF("Đang sống - Bấm để đến");
+                    msg.writer().writeUTF("Đang sống");
                     msg.writer().writeUTF(boss.zone.map.mapName + " (" + boss.zone.map.mapId + ") khu " + boss.zone.zoneId);
                 } else {
                     msg.writer().writeUTF("Đang chờ hồi sinh");

@@ -44,7 +44,12 @@ public class BotSanBoss {
 
             boolean bosAction = false;
             if (this.bossAttack != null && this.bossAttack.zone != null && this.bossAttack.zone.map != null) {
+                int bId = (int) this.bossAttack.id;
+                boolean isBojackTeam = bId == nro.models.boss.BossID.BUJIN || bId == nro.models.boss.BossID.KOGU
+                        || bId == nro.models.boss.BossID.ZANGYA || bId == nro.models.boss.BossID.BIDO
+                        || bId == nro.models.boss.BossID.BOJACK || bId == nro.models.boss.BossID.SUPER_BOJACK;
                 bosAction = !this.bossAttack.isDie()
+                        && !isBojackTeam
                         && !this.isMap(this.bossAttack.zone.map.mapId)
                         && !this.bossAttack.zone.isFullPlayer()
                         && this.bossAttack.zone.mobs != null

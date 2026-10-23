@@ -54,6 +54,27 @@ public class BOJACK extends Boss {
     }
 
     @Override
+    public synchronized int injured(Player plAtt, long damage, boolean piercing, boolean isMobAttack) {
+        if (!this.isDie()) {
+            if (!piercing && Util.isTrue(this.nPoint.tlNeDon, 1000)) {
+                this.chat("Xí hụt");
+                return 0;
+            }
+            if (plAtt != null && plAtt.idNRNM != -1) {
+                return 1;
+            }
+            damage = Math.max(1, this.nPoint.hpMax / 100);
+            this.nPoint.subHP(damage);
+            if (isDie()) {
+                this.setDie(plAtt);
+                die(plAtt);
+            }
+            return (int) damage;
+        }
+        return 0;
+    }
+
+    @Override
     public void doneChatS() {
         if (this.currentLevel == 1) {
             return;

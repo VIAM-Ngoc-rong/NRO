@@ -1497,8 +1497,8 @@ public class BossesData {
             "Bujin", //name
             ConstPlayer.TRAI_DAT, //gender
             new short[]{341, 342, 343, -1, -1, -1}, //outfit {head, body, leg, bag, aura, eff}
-            170000, //dame
-            new int[]{20000000}, //hp
+            500, //dame
+            new int[]{10000}, //hp
             new int[]{3, 4, 5, 6, 27, 28, 29, 30}, //map join
             new int[][]{
                 {Skill.DEMON, 7, 1000},
@@ -1520,11 +1520,10 @@ public class BossesData {
             "Kogu", //name
             ConstPlayer.TRAI_DAT, //gender
             new short[]{329, 330, 331, -1, -1, -1}, //outfit {head, body, leg, bag, aura, eff}
-            180000, //dame
-            new int[]{40000000}, //hp
+            600, //dame
+            new int[]{10000}, //hp
             new int[]{3, 4, 5, 6, 27, 28, 29, 30}, //map join
             new int[][]{
-                {Skill.TAI_TAO_NANG_LUONG, 7, 100000},
                 {Skill.DRAGON, 7, 1000},
                 {Skill.TROI, 4, 50000},
                 {Skill.ANTOMIC, 4, 1000},},//skill
@@ -1540,11 +1539,10 @@ public class BossesData {
             "Zangya", //name
             ConstPlayer.TRAI_DAT, //gender
             new short[]{332, 333, 334, -1, -1, -1}, //outfit {head, body, leg, bag, aura, eff}
-            207200, //dame
-            new int[]{60000000}, //hp
+            700, //dame
+            new int[]{10000}, //hp
             new int[]{3, 4, 5, 6, 27, 28, 29, 30}, //map join
             new int[][]{
-                {Skill.TAI_TAO_NANG_LUONG, 7, 100000},
                 {Skill.GALICK, 7, 1000},
                 {Skill.TROI, 5, 50000},
                 {Skill.ANTOMIC, 3, 3000},},//skill//skill
@@ -1560,11 +1558,10 @@ public class BossesData {
             "Bido", //name
             ConstPlayer.TRAI_DAT, //gender
             new short[]{335, 336, 337, -1, -1, -1}, //outfit {head, body, leg, bag, aura, eff}
-            250200, //dame
-            new int[]{80000000}, //hp
+            800, //dame
+            new int[]{10000}, //hp
             new int[]{3, 4, 5, 6, 27, 28, 29, 30}, //map join
             new int[][]{
-                {Skill.TAI_TAO_NANG_LUONG, 7, 100000},
                 {Skill.DRAGON, 7, 1000},
                 {Skill.KAMEJOKO, 4, 10000},},//skill//skill
             new String[]{}, //text chat 1
@@ -1582,11 +1579,10 @@ public class BossesData {
             "Bojack", //name
             ConstPlayer.TRAI_DAT, //gender
             new short[]{323, 324, 325, -1, -1, -1}, //outfit {head, body, leg, bag, aura, eff}
-            300000, //dame
-            new int[]{100000000}, //hp
+            1000, //dame
+            new int[]{10000}, //hp
             new int[]{3, 4, 5, 6, 27, 28, 29, 30}, //map join
             new int[][]{
-                {Skill.TAI_TAO_NANG_LUONG, 7, 100000},
                 {Skill.TROI, 7, 120000},
                 {Skill.MASENKO, 7, 1000},
                 {Skill.GALICK, 7, 1000},},//skill
@@ -1603,11 +1599,10 @@ public class BossesData {
             "Siêu Bojack", //name
             ConstPlayer.TRAI_DAT, //gender
             new short[]{326, 327, 328, -1, -1, -1}, //outfit {head, body, leg, bag, aura, eff}
-            300000, //dame
-            new int[]{150000000}, //hp
+            1200, //dame
+            new int[]{10000}, //hp
             new int[]{3, 4, 5, 6, 27, 28, 29, 30}, //map join
             new int[][]{
-                {Skill.TAI_TAO_NANG_LUONG, 7, 100000},
                 {Skill.THOI_MIEN, 7, 100000},
                 {Skill.KHIEN_NANG_LUONG, 7, 100000},
                 {Skill.GALICK, 7, 1000},},//skill
@@ -1624,11 +1619,10 @@ public class BossesData {
             "Siêu Bojack", //name
             ConstPlayer.TRAI_DAT, //gender
             new short[]{326, 327, 328, -1, -1, -1}, //outfit {head, body, leg, bag, aura, eff}
-            300000, //dame
-            new int[]{500000000}, //hp
+            1200, //dame
+            new int[]{10000}, //hp
             new int[]{3, 4, 5, 6, 27, 28, 29, 30}, //map join
             new int[][]{
-                {Skill.TAI_TAO_NANG_LUONG, 7, 100000},
                 {Skill.TROI, 3, 60000},
                 {Skill.KAMEJOKO, 7, 1000},
                 {Skill.GALICK, 7, 1000},},//skill
