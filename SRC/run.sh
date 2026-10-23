@@ -59,7 +59,7 @@ if [ "$1" = "--fg" ]; then
       -XX:ActiveProcessorCount=2 \
       -XX:ParallelGCThreads=2 \
       -XX:ConcGCThreads=1 \
-      -Xms512M -Xmx1536M \
+      -Xms1024M -Xmx2560M \
       -XX:+UseG1GC \
       -XX:MaxGCPauseMillis=40 \
       -XX:+UseStringDeduplication \
@@ -69,12 +69,12 @@ if [ "$1" = "--fg" ]; then
       nro.models.server.ServerManager
 fi
 
-echo "Đang khởi động Ngọc Rồng VIAM (2 Cores CPU + 1.5GB Heap, ưu tiên nhường SmartLab x5)..."
+echo "Đang khởi động Ngọc Rồng VIAM (2 Cores CPU + 2.5GB Max Heap, chừa RAM cho MySQL & SmartLab x5)..."
 nohup nice -n 5 java -server \
   -XX:ActiveProcessorCount=2 \
   -XX:ParallelGCThreads=2 \
   -XX:ConcGCThreads=1 \
-  -Xms512M -Xmx1536M \
+  -Xms1024M -Xmx2560M \
   -XX:+UseG1GC \
   -XX:MaxGCPauseMillis=40 \
   -XX:+UseStringDeduplication \
