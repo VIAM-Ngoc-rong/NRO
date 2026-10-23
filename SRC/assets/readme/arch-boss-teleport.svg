@@ -36,7 +36,7 @@
     <line x1="550" y1="87" x2="590" y2="87" stroke="#fb7185" stroke-width="2.5" marker-end="url(#arrRed)"/>
 
     <rect x="595" y="48" width="245" height="78" rx="10" fill="#1e293b" stroke="#fb7185"/>
-    <text x="717" y="75" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="14" font-weight="800" fill="#fb7185">Quá 15 Phút Không Ai Đánh</text>
+    <text x="717" y="75" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="14" font-weight="800" fill="#fb7185">Quá 10 Phút Không Ai Đánh</text>
     <text x="717" y="98" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="12.5" fill="#cbd5e1">Khi có người chơi bước vào khu:</text>
     <text x="717" y="116" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="11.5" fill="#fde047">Boss tự biến mất ngay trước mặt!</text>
 
@@ -44,7 +44,7 @@
 
     <rect x="890" y="48" width="195" height="78" rx="10" fill="#1e293b" stroke="#4ade80"/>
     <text x="987" y="75" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="14" font-weight="800" fill="#4ade80">Canh Giờ Đợt Mới</text>
-    <text x="987" y="98" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="12.5" fill="#cbd5e1">Đếm ngược 10–15 phút</text>
+    <text x="987" y="98" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="12.5" fill="#cbd5e1">Đếm ngược 5–10 phút</text>
     <text x="987" y="116" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="11.5" fill="#86efac">Người chơi nắm chuẩn giờ!</text>
   </g>
 

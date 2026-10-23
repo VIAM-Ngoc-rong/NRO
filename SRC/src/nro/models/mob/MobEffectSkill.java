@@ -38,13 +38,18 @@ public class MobEffectSkill {
                 removeBinh();
             }
             if (Util.canDoWithTime(lastTimeMaPhongBa, 500) && !mob.isDie()) {
-                if (playerUseMafuba != null && playerUseMafuba.playerSkill != null) {
-                    double param = playerUseMafuba.playerSkill.getSkillbyId(Skill.MA_PHONG_BA).point;
-                    int subHp = (int) ((long) playerUseMafuba.nPoint.hpMax * param * (playerUseMafuba.effectSkill.typeBinh == 0 ? 1 : 2) / 100);
-                    if (subHp >= this.mob.point.hp) {
-                        subHp = this.mob.point.hp - 1;
+                if (playerUseMafuba != null && playerUseMafuba.playerSkill != null && playerUseMafuba.nPoint != null) {
+                    nro.models.skill.Skill skillMafuba = playerUseMafuba.playerSkill.getSkillbyId(Skill.MA_PHONG_BA);
+                    if (skillMafuba != null) {
+                        double param = skillMafuba.point;
+                        int subHp = (int) ((long) playerUseMafuba.nPoint.hpMax * param * (this.typeBinh == 0 ? 1 : 2) / 100);
+                        if (subHp >= this.mob.point.hp) {
+                            subHp = this.mob.point.hp - 1;
+                        }
+                        if (subHp > 0) {
+                            this.mob.injured(playerUseMafuba, subHp, false);
+                        }
                     }
-                    this.mob.injured(null, subHp, false);
                 }
                 this.lastTimeMaPhongBa = System.currentTimeMillis();
             }
@@ -52,7 +57,7 @@ public class MobEffectSkill {
     }
 
     public boolean isHaveEffectSkill() {
-        return isAnTroi || isBlindDCTT || isStun || isThoiMien;
+        return isAnTroi || isBlindDCTT || isStun || isThoiMien || isBinh;
     }
 
     public void startStun(long lastTimeStartBlind, int timeBlind) {

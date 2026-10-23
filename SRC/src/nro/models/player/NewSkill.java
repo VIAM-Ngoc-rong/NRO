@@ -95,12 +95,15 @@ public class NewSkill {
         if (player.itemTime != null && player.itemTime.isUseNCD) {
             typeItem = 2;
         } else {
-            typeItem = 0;
+            typeItem = getTypeItem();
         }
+        this.typePaint = getTypePaint();
         this.skillSelect = this.player.playerSkill.skillSelect;
-        if (this.player.isPl() && skillSelect.currLevel < 1000) {
+        if ((this.player.isPl() || this.player.isPet) && skillSelect.currLevel < 1000) {
             skillSelect.currLevel++;
-            SkillService.gI().sendCurrLevelSpecial(player, skillSelect);
+            if (this.player.isPl()) {
+                SkillService.gI().sendCurrLevelSpecial(player, skillSelect);
+            }
         }
         this.dir = dir;
         this._xPlayer = _xPlayer;

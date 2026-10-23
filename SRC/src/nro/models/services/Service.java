@@ -1099,8 +1099,12 @@ public class Service {
             return 17;
         } else if (sucmanh < 90010000000L) {
             return 18;
+        } else if (sucmanh < 100010000000L) {
+            return 19;
+        } else if (sucmanh < 120010000000L) {
+            return 20;
         }
-        return 19;
+        return 21;
     }
 
     public void hsChar(Player pl, int hp, int mp) {
@@ -1645,11 +1649,11 @@ public class Service {
                                 break;
                             case 4:
                                 msg.writer().writeShort(-1);
-                                msg.writer().writeUTF("Cần đạt sức mạnh 40tỷ để mở");
+                                msg.writer().writeUTF("Cần đạt sức mạnh 100tỷ để mở");
                                 break;
                             default:
                                 msg.writer().writeShort(-1);
-                                msg.writer().writeUTF("Cần đạt sức mạnh 60tỷ để mở");
+                                msg.writer().writeUTF("Cần đạt sức mạnh 100tỷ để mở");
                                 break;
                         }
                     }

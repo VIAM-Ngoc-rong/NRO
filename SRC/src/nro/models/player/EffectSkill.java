@@ -250,7 +250,7 @@ public class EffectSkill {
     }
 
     public boolean isHaveEffectSkill() {
-        return (isStun || isBlindDCTT || anTroi || isThoiMien || isStone || isMabuHold || isUseSkillMonkey) && !player.isDie();
+        return (isStun || isBlindDCTT || anTroi || isThoiMien || isStone || isMabuHold || isUseSkillMonkey || isBinh) && !player.isDie();
     }
 
     public void dispose() {

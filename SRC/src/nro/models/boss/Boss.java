@@ -145,7 +145,8 @@ public class Boss extends Player implements IBoss {
         }
         this.data = data;
         this.name = this.data[0].getName();
-        this.secondsRest = this.data[0].getSecondsRest();
+        int cfgRest = this.data[0].getSecondsRest();
+        this.secondsRest = (cfgRest >= 300 && cfgRest < 86400) ? Util.nextInt(300, 600) : cfgRest;
         this.bossStatus = BossStatus.REST;
         BossManager.gI().addBoss(this);
 
@@ -173,7 +174,8 @@ public class Boss extends Player implements IBoss {
         }
         this.data = data;
         this.name = this.data[0].getName();
-        this.secondsRest = this.data[0].getSecondsRest();
+        int cfgRest = this.data[0].getSecondsRest();
+        this.secondsRest = (cfgRest >= 300 && cfgRest < 86400) ? Util.nextInt(300, 600) : cfgRest;
         this.bossStatus = BossStatus.REST;
         switch (bossType) {
             case YARDART ->
@@ -460,7 +462,7 @@ public class Boss extends Player implements IBoss {
                 }
             }
         }
-        return maxHp > 100_000_000L ? 900_000L : 600_000L;
+        return 600_000L;
     }
 
     private int getSafeLevelIndex() {
@@ -622,7 +624,7 @@ public class Boss extends Player implements IBoss {
                     this.despawnIdleBossGroup();
                 }
                 return;
-            } else if (Util.canDoWithTime(this.getGroupLastTimeAttacked(), 900_000L) && this.hasRealPlayerInZone()) {
+            } else if (Util.canDoWithTime(this.getGroupLastTimeAttacked(), 600_000L) && this.hasRealPlayerInZone()) {
                 root.pendingIdleDespawn = true;
                 root.timeTriggerIdleDespawn = System.currentTimeMillis();
                 this.pendingIdleDespawn = true;
@@ -632,7 +634,7 @@ public class Boss extends Player implements IBoss {
                     for (int i = playersInZone.size() - 1; i >= 0; i--) {
                         Player pl = playersInZone.get(i);
                         if (pl != null && !pl.isBot && pl.isPl()) {
-                            Service.gI().sendThongBao(pl, "BOSS " + root.name + " đã rời đi vì quá 15 phút không ai đánh!");
+                            Service.gI().sendThongBao(pl, "BOSS " + root.name + " đã rời đi vì quá 10 phút không ai đánh!");
                         }
                     }
                 }
@@ -1248,6 +1250,10 @@ public class Boss extends Player implements IBoss {
         } else {
             ChangeMapService.gI().exitMap(this);
             this.lastZone = null;
+            int cfgRest = this.data[0].getSecondsRest();
+            if (cfgRest >= 300 && cfgRest < 86400) {
+                this.secondsRest = Util.nextInt(300, 600);
+            }
             this.lastTimeRest = System.currentTimeMillis();
             this.changeStatus(BossStatus.REST);
         }

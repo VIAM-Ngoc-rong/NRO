@@ -166,7 +166,7 @@ public class SkillUtil {
 
     public static Skill getSkillbyId(Player player, int id) {
         for (Skill skill : player.playerSkill.skills) {
-            if (skill.template.id == id) {
+            if (skill != null && skill.template != null && skill.template.id == id) {
                 return skill;
             }
         }
@@ -174,6 +174,11 @@ public class SkillUtil {
     }
 
     public static boolean upSkillPet(List<Skill> skills, int index) {
+        if (skills == null || index < 0 || index >= skills.size()
+                || skills.get(index) == null || skills.get(index).skillId == -1
+                || skills.get(index).template == null) {
+            return false;
+        }
         int tempId = skills.get(index).template.id;
         int level = skills.get(index).point + 1;
         if (level > 7) {

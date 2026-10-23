@@ -907,9 +907,10 @@ public class UseItem {
                             case 1758: {
                                 Player player = pl;
                                 if (player.pet != null) {
-                                    InventoryService.gI().subQuantityItemsBag(pl, item, 1);
                                     if (player.pet.playerSkill.skills.get(1).skillId != -1) {
+                                        InventoryService.gI().subQuantityItemsBag(pl, item, 1);
                                         player.pet.openSkill2();
+                                        Service.gI().showInfoPet(player);
                                     } else {
                                         Service.gI().sendThongBao(player, "Ít nhất đệ tử ngươi phải có chiêu 2 chứ!");
                                         return;
@@ -923,9 +924,10 @@ public class UseItem {
                             case 1759: {
                                 Player player = pl;
                                 if (player.pet != null) {
-                                    InventoryService.gI().subQuantityItemsBag(pl, item, 1);
                                     if (player.pet.playerSkill.skills.get(2).skillId != -1) {
+                                        InventoryService.gI().subQuantityItemsBag(pl, item, 1);
                                         player.pet.openSkill3();
+                                        Service.gI().showInfoPet(player);
                                     } else {
                                         Service.gI().sendThongBao(player, "Ít nhất đệ tử ngươi phải có chiêu 3 chứ!");
                                         return;
@@ -942,9 +944,10 @@ public class UseItem {
                             case 1760: {
                                 Player player = pl;
                                 if (player.pet != null) {
-                                    InventoryService.gI().subQuantityItemsBag(pl, item, 1);
                                     if (player.pet.playerSkill.skills.get(3).skillId != -1) {
+                                        InventoryService.gI().subQuantityItemsBag(pl, item, 1);
                                         player.pet.openSkill4();
+                                        Service.gI().showInfoPet(player);
                                     } else {
                                         Service.gI().sendThongBao(player, "Ít nhất đệ tử ngươi phải có chiêu 4 chứ!");
                                         return;
@@ -2043,10 +2046,12 @@ public class UseItem {
                         Service.gI().sendThongBao(pl, "Không thể thực hiện");
                     }
                     break;
-                case 759: //skill 4
-                    if (SkillUtil.upSkillPet(pl.pet.playerSkill.skills, 3)) {
+                case 759: //skill 4 & skill 5
+                    if (SkillUtil.upSkillPet(pl.pet.playerSkill.skills, 3)
+                            || SkillUtil.upSkillPet(pl.pet.playerSkill.skills, 4)) {
                         Service.gI().chatJustForMe(pl, pl.pet, "Cám ơn sư phụ");
                         InventoryService.gI().subQuantityItemsBag(pl, item, 1);
+                        Service.gI().showInfoPet(pl);
                     } else {
                         Service.gI().sendThongBao(pl, "Không thể thực hiện");
                     }

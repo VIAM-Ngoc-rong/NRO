@@ -34,7 +34,7 @@ import nro.models.utils.TimeUtil;
  */
 public class NPoint {
 
-    public static final byte MAX_LIMIT = 9;
+    public static final byte MAX_LIMIT = 11;
 
     @Setter
     private Player player;
@@ -1672,6 +1672,13 @@ public class NPoint {
                     dameAttack = 2_147_483_647;
                 }
                 return (int) dameAttack;
+            case Skill.SUPER_KAME:
+            case Skill.LIEN_HOAN_CHUONG:
+                percentDameSkill = skillSelect.damage;
+                if (this.tlDameChuong > 0) {
+                    percentXDame += this.tlDameChuong;
+                }
+                break;
         }
 
         if (intrinsic.id == 18 && this.player.effectSkill.isMonkey) {
@@ -1937,6 +1944,10 @@ public class NPoint {
                 return 80010000000L;
             case 9:
                 return 90010000000L;
+            case 10:
+                return 100010000000L;
+            case 11:
+                return 120010000000L;
             default:
                 return 0;
         }
@@ -1964,6 +1975,10 @@ public class NPoint {
                 return 80010000000L;
             case 9:
                 return 90010000000L;
+            case 10:
+                return 100010000000L;
+            case 11:
+                return 120010000000L;
             default:
                 return 0;
         }
@@ -1991,6 +2006,10 @@ public class NPoint {
                 return 550000;
             case 9:
                 return 575000;
+            case 10:
+                return 600000;
+            case 11:
+                return 650000;
             default:
                 return 0;
         }
@@ -2018,6 +2037,10 @@ public class NPoint {
                 return 25000;
             case 9:
                 return 26000;
+            case 10:
+                return 28000;
+            case 11:
+                return 30000;
             default:
                 return 0;
         }
@@ -2045,6 +2068,10 @@ public class NPoint {
                 return 1600;
             case 9:
                 return 1800;
+            case 10:
+                return 2000;
+            case 11:
+                return 2200;
             default:
                 return 0;
         }
@@ -2072,6 +2099,10 @@ public class NPoint {
                 return 9;
             case 9:
                 return 10;
+            case 10:
+                return 11;
+            case 11:
+                return 12;
             default:
                 return 0;
         }

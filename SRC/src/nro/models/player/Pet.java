@@ -467,9 +467,6 @@ public class Pet extends Player {
                                     if (SkillService.gI().canUseSkillWithMana(this)) {
                                         PlayerService.gI().playerMove(this, playerAttack.location.x + Util.nextInt(-60, 60), playerAttack.location.y);
                                         SkillService.gI().useSkill(this, playerAttack, null, -1, null);
-                                        if (getSkill(5) != null) {
-                                            useSkill5();
-                                        }
                                     } else {
                                         askPea();
                                     }
@@ -708,16 +705,13 @@ public class Pet extends Player {
                 return false;
             }
             Skill skill = getSkill(5);
-            if (skill == null || skill.skillId == -1) {
+            if (skill == null || skill.skillId == -1 || this.newSkill == null) {
                 return false;
             }
 
             this.playerSkill.skillSelect = skill;
 
-            boolean canUse = SkillService.gI().canUseSkillWithCooldown(this)
-                    && SkillService.gI().canUseSkillWithMana(this);
-
-            if (!canUse || this.newSkill == null) {
+            if (!SkillService.gI().canUseSkillWithCooldown(this)) {
                 return false;
             }
 
@@ -744,9 +738,15 @@ public class Pet extends Player {
                         return false;
                     }
 
-                    dir = (byte) (dx > x ? -1 : 1);
+                    if (!SkillService.gI().canUseSkillWithMana(this)) {
+                        askPea();
+                        return false;
+                    }
 
-                    this.newSkill.setSkillSpecial(dir, dx, dy, x, y);
+                    dir = (byte) (dx > x ? -1 : 1);
+                    short rangeY = (short) Math.max(75, Math.abs(dy - y) + 50);
+
+                    this.newSkill.setSkillSpecial(dir, dx, dy, x, rangeY);
 
                     SkillService.gI().newSkillNotFocus(this, 20);
                     SkillService.gI().affterUseSkill(this, skillId);
@@ -997,8 +997,10 @@ public class Pet extends Player {
             if (this.playerSkill.skills.get(3).skillId == -1 && this.nPoint.power >= 20_000_000_000L) {
                 openSkill4();
             }
-            if (this.playerSkill.skills.get(4).skillId == -1 && this.nPoint.power >= 40_000_000_000L) {
+            if (this.playerSkill.skills.get(4).skillId == -1 && this.nPoint.power >= 100_000_000_000L) {
                 openSkill5();
+            } else if (this.playerSkill.skills.get(4).skillId != -1 && this.nPoint.power < 100_000_000_000L) {
+                this.playerSkill.skills.set(4, SkillUtil.createEmptySkill());
             }
         }
     }
@@ -1122,7 +1124,7 @@ public class Pet extends Player {
             Service.gI().Send_Caitrang(this);
             Service.gI().chat(this, "Tao là thần");
         }
-        if (this.typePet == 2) {
+        if (this.typePet == 3) {
             this.isTransform = !this.isTransform;
             Service.gI().Send_Caitrang(this);
             Service.gI().chat(this, "Chúng mày quỳ xuống");

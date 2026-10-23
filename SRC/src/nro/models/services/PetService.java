@@ -157,35 +157,38 @@ public class PetService {
 
     public void changeUubPet(Player player) {
         byte limitPower = player.pet.nPoint.limitPower;
+        byte gender = player.pet.gender;
         if (player.fusion.typeFusion != ConstPlayer.NON_FUSION) {
             player.pet.unFusion();
         }
         ChangeMapService.gI().exitMap(player.pet);
         player.pet.dispose();
         player.pet = null;
-        createUubPet(player, player.pet.gender, limitPower);
+        createUubPet(player, gender, limitPower);
     }
 
     public void changeKidBeerPet(Player player) {
         byte limitPower = player.pet.nPoint.limitPower;
+        byte gender = player.pet.gender;
         if (player.fusion.typeFusion != ConstPlayer.NON_FUSION) {
             player.pet.unFusion();
         }
         ChangeMapService.gI().exitMap(player.pet);
         player.pet.dispose();
         player.pet = null;
-        createKidBeerPet(player, player.pet.gender, limitPower);
+        createKidBeerPet(player, gender, limitPower);
     }
     
     public void changeJirenPet(Player player) {
         byte limitPower = player.pet.nPoint.limitPower;
+        byte gender = player.pet.gender;
         if (player.fusion.typeFusion != ConstPlayer.NON_FUSION) {
             player.pet.unFusion();
         }
         ChangeMapService.gI().exitMap(player.pet);
         player.pet.dispose();
         player.pet = null;
-        createKidBeerPet(player, player.pet.gender, limitPower);
+        createJirenPet(player, gender, limitPower);
     }
 
     public void changeMabuPet(Player player, int gender) {
