@@ -560,6 +560,10 @@
             <h3>Trạng Thái Backup MySQL & GitHub Private</h3>
             <button class="btn-sm" onclick="loadSystemTab()">Làm mới Log</button>
           </div>
+          <div style="display:flex;gap:8px;margin-bottom:10px;align-items:center;flex-wrap:wrap;">
+            <input type="password" id="gitTokenInput" placeholder="Dán mã GitHub Token (ghp_...) nếu chưa lưu trên VPS" style="flex:1;min-width:220px;" />
+            <button class="btn-warning btn-sm" onclick="triggerBackupNow()">Lưu Token & Đẩy GitHub Ngay</button>
+          </div>
           <div id="backupFilesList" style="font-size:12.5px;margin-bottom:10px;color:var(--muted);">Đang tải danh sách bản sao lưu...</div>
           <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px;">Nhật ký Backup tự động (`/root/NRO/backups/backup.log`):</label>
           <pre id="backupLogBox" class="log-box">Chưa có log...</pre>
@@ -1174,9 +1178,11 @@
     }
 
     async function triggerBackupNow() {
+      const gitToken = (document.getElementById('gitTokenInput')?.value || '').trim();
       showToast('Đang chạy mysqldump và đẩy lên GitHub Private...');
-      const res = await postAction({ action: 'backup_now' });
+      const res = await postAction({ action: 'backup_now', gitToken });
       showToast(res.message, !res.ok);
+      if (gitToken) document.getElementById('gitTokenInput').value = '';
       if (currentTab === 'system') loadSystemTab();
     }
 

@@ -613,6 +613,8 @@ public class AdminWebServer {
             } catch (Exception ignored) {
             }
         }
+        boolean hasGitToken = new File("/root/.nro_git_token").exists() && new File("/root/.nro_git_token").length() > 5;
+        sb.append(",\"hasGitToken\":").append(hasGitToken);
         sb.append(",\"backupLog\":").append(jsonStr(logTail));
         sb.append("}");
         sendJson(exchange, 200, sb.toString());
@@ -933,13 +935,17 @@ public class AdminWebServer {
                     sendJson(exchange, 200, "{\"ok\":true,\"message\":" + jsonStr("Đã lưu thành công dữ liệu của " + savedCount + " người chơi, Bang hội & Ký gửi vào MySQL!") + "}");
                 }
                 case "backup_now" -> {
+                    String token = params.getOrDefault("gitToken", "").trim();
+                    if (!token.isEmpty()) {
+                        Files.writeString(new File("/root/.nro_git_token").toPath(), token + "\n", StandardCharsets.UTF_8);
+                    }
                     String os = System.getProperty("os.name").toLowerCase();
                     if (!os.contains("win") && new File("backup_db.sh").exists()) {
-                        Process p = new ProcessBuilder("/bin/bash", "./backup_db.sh")
+                        Process p = new ProcessBuilder("/bin/bash", "-c", "./backup_db.sh >> /root/NRO/backups/backup.log 2>&1")
                                 .directory(new File("."))
                                 .start();
                         p.waitFor(25, TimeUnit.SECONDS);
-                        sendJson(exchange, 200, "{\"ok\":true,\"message\":\"Đã tạo bản Backup MySQL mới nhất và đồng bộ lên GitHub Private!\"}");
+                        sendJson(exchange, 200, "{\"ok\":true,\"message\":\"Đã chạy Backup MySQL và đẩy lên GitHub Private! Hãy xem kết quả ở khung Nhật ký Backup.\"}");
                     } else {
                         sendJson(exchange, 200, "{\"ok\":false,\"message\":\"Chức năng chạy backup_db.sh chỉ hoạt động trên VPS Linux!\"}");
                     }
