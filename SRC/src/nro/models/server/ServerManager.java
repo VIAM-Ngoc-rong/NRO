@@ -62,7 +62,7 @@ public class ServerManager {
     public static int PORT = 14445;
     public static int EVENT_SEVER = 0;
     private static ServerManager instance;
-    public static boolean isRunning;
+    public static volatile boolean isRunning = true;
     private static volatile boolean isSavedOnClose = false;
     private ScheduledExecutorService topUpdater;
 

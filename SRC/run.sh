@@ -46,6 +46,12 @@ if [ -n "$OLD_PIDS" ]; then
     echo "Đang lưu dữ liệu và đóng tiến trình Server cũ (PID: $OLD_PIDS)..."
     kill -15 $OLD_PIDS 2>/dev/null || true
     sleep 4
+    REMAIN_PIDS=$(pgrep -f "java.*nro.models.server.ServerManager" || true)
+    if [ -n "$REMAIN_PIDS" ]; then
+        echo "Đang buộc đóng tiến trình bị treo (PID: $REMAIN_PIDS)..."
+        kill -9 $REMAIN_PIDS 2>/dev/null || true
+        sleep 1
+    fi
 fi
 
 if [ "$1" = "--fg" ]; then
@@ -53,9 +59,7 @@ if [ "$1" = "--fg" ]; then
       -XX:ActiveProcessorCount=2 \
       -XX:ParallelGCThreads=2 \
       -XX:ConcGCThreads=1 \
-      -Xms384M -Xmx640M \
-      -XX:MaxMetaspaceSize=96M \
-      -Xss256k \
+      -Xms512M -Xmx1536M \
       -XX:+UseG1GC \
       -XX:MaxGCPauseMillis=40 \
       -XX:+UseStringDeduplication \
@@ -65,14 +69,12 @@ if [ "$1" = "--fg" ]; then
       nro.models.server.ServerManager
 fi
 
-echo "Đang khởi động Ngọc Rồng VIAM (2 Cores CPU + 640MB Heap, ưu tiên nhường SmartLab x5)..."
+echo "Đang khởi động Ngọc Rồng VIAM (2 Cores CPU + 1.5GB Heap, ưu tiên nhường SmartLab x5)..."
 nohup nice -n 5 java -server \
   -XX:ActiveProcessorCount=2 \
   -XX:ParallelGCThreads=2 \
   -XX:ConcGCThreads=1 \
-  -Xms384M -Xmx640M \
-  -XX:MaxMetaspaceSize=96M \
-  -Xss256k \
+  -Xms512M -Xmx1536M \
   -XX:+UseG1GC \
   -XX:MaxGCPauseMillis=40 \
   -XX:+UseStringDeduplication \
