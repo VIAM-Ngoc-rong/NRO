@@ -36,12 +36,15 @@ if [ -n "$OLD_PIDS" ]; then
 fi
 
 if [ "$1" = "--fg" ]; then
-    exec java -server \
-      -Xms256M -Xmx512M \
+    exec nice -n 5 java -server \
+      -XX:ActiveProcessorCount=2 \
+      -XX:ParallelGCThreads=2 \
+      -XX:ConcGCThreads=1 \
+      -Xms384M -Xmx640M \
       -XX:MaxMetaspaceSize=96M \
       -Xss256k \
       -XX:+UseG1GC \
-      -XX:MaxGCPauseMillis=50 \
+      -XX:MaxGCPauseMillis=40 \
       -XX:+UseStringDeduplication \
       -Djava.awt.headless=true \
       -Dfile.encoding=UTF-8 \
@@ -49,13 +52,16 @@ if [ "$1" = "--fg" ]; then
       nro.models.server.ServerManager
 fi
 
-echo "Đang khởi động Ngọc Rồng VIAM ở chế độ chạy ngầm 24/7 (nohup)..."
-nohup java -server \
-  -Xms256M -Xmx512M \
+echo "Đang khởi động Ngọc Rồng VIAM (2 Cores CPU + 640MB Heap, ưu tiên nhường SmartLab x5)..."
+nohup nice -n 5 java -server \
+  -XX:ActiveProcessorCount=2 \
+  -XX:ParallelGCThreads=2 \
+  -XX:ConcGCThreads=1 \
+  -Xms384M -Xmx640M \
   -XX:MaxMetaspaceSize=96M \
   -Xss256k \
   -XX:+UseG1GC \
-  -XX:MaxGCPauseMillis=50 \
+  -XX:MaxGCPauseMillis=40 \
   -XX:+UseStringDeduplication \
   -Djava.awt.headless=true \
   -Dfile.encoding=UTF-8 \

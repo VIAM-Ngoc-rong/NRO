@@ -179,6 +179,7 @@ public class AdminWebServer {
         Runtime rt = Runtime.getRuntime();
         long usedRamMb = (rt.totalMemory() - rt.freeMemory()) / (1024 * 1024);
         long maxRamMb = rt.maxMemory() / (1024 * 1024);
+        int cpuCores = rt.availableProcessors();
         long uptimeSec = (System.currentTimeMillis() - START_TIME_MS) / 1000;
         int threadsCount = Thread.activeCount();
 
@@ -193,6 +194,7 @@ public class AdminWebServer {
         sb.append(",\"uptimeSec\":").append(uptimeSec);
         sb.append(",\"usedRamMb\":").append(usedRamMb);
         sb.append(",\"maxRamMb\":").append(maxRamMb);
+        sb.append(",\"cpuCores\":").append(cpuCores);
         sb.append(",\"threadsCount\":").append(threadsCount);
         sb.append(",\"onlineCount\":").append(onlinePlayers.size());
         sb.append(",\"expRate\":").append(Manager.RATE_EXP_SERVER);

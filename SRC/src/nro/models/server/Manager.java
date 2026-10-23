@@ -84,7 +84,7 @@ public final class Manager {
     public static boolean DAO_AUTO_UPDATER = false;
     public static MapTemplate[] MAP_TEMPLATES;
     public static final List<nro.models.map.Map> MAPS = new ArrayList<>();
-    private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(Math.max(2, Runtime.getRuntime().availableProcessors()));
+    private static final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
     private static final ExecutorService executor = Executors.newFixedThreadPool(Math.max(2, Runtime.getRuntime().availableProcessors()));
     public static final List<ItemOptionTemplate> ITEM_OPTION_TEMPLATES = new ArrayList<>();
     public static final List<ArrHead2Frames> ARR_HEAD_2_FRAMES = new ArrayList<>();
