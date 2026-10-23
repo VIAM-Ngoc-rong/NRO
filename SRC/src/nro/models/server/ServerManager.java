@@ -331,34 +331,44 @@ public class ServerManager {
     }
 
     private static void activeCommandLine() {
-        Scanner sc = new Scanner(System.in);
-        while (sc.hasNextLine()) {
-            String line = sc.nextLine();
-            switch (line) {
-                case "bt":
-                    Maintenance.gI().startSeconds(5);
-                    break;
-                case "bat":
-                    AutoMaintenance.AutoMaintenance = true;
-                    System.out.println("Đã bật chế độ bảo trì tự động.");
-                    break;
-                case "tat":
-                    AutoMaintenance.AutoMaintenance = false;
-                    System.out.println("Đã tắt chế độ bảo trì tự động.");
-                    break;
-                case "run":
-                try {
-                    ProcessBuilder pb = new ProcessBuilder("cmd", "/c", "run.bat");
-                    pb.inheritIO();
-                    pb.start();
-                    System.out.println("Đã chạy run.bat");
-                } catch (IOException e) {
-                    System.out.println("Lỗi khi chạy run.bat: " + e.getMessage());
+        try {
+            Scanner sc = new Scanner(System.in);
+            while (sc.hasNextLine()) {
+                String line = sc.nextLine();
+                switch (line) {
+                    case "bt":
+                        Maintenance.gI().startSeconds(5);
+                        break;
+                    case "bat":
+                        AutoMaintenance.AutoMaintenance = true;
+                        System.out.println("Đã bật chế độ bảo trì tự động.");
+                        break;
+                    case "tat":
+                        AutoMaintenance.AutoMaintenance = false;
+                        System.out.println("Đã tắt chế độ bảo trì tự động.");
+                        break;
+                    case "run":
+                        try {
+                            ProcessBuilder pb = new ProcessBuilder("cmd", "/c", "run.bat");
+                            pb.inheritIO();
+                            pb.start();
+                            System.out.println("Đã chạy run.bat");
+                        } catch (IOException e) {
+                            System.out.println("Lỗi khi chạy run.bat: " + e.getMessage());
+                        }
+                        break;
+                    default:
+                        System.out.println("Lệnh không hợp lệ.");
+                        break;
                 }
-                break;
-                default:
-                    System.out.println("Lệnh không hợp lệ.");
-                    break;
+            }
+        } catch (Exception ignored) {
+        }
+        // Khi chạy ngầm bằng nohup (stdin = /dev/null), giữ luồng main sống mãi mãi
+        while (isRunning) {
+            try {
+                Thread.sleep(60000L);
+            } catch (InterruptedException ignored) {
             }
         }
     }
