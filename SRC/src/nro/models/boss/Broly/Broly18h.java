@@ -155,7 +155,8 @@ public class Broly18h extends Boss {
         // Sau khi bị tiêu diệt, xuất hiện Siêu Broly ở 1 khu bất kỳ trong cùng Map
         if (currentZone != null && currentZone.map != null && !currentZone.map.zones.isEmpty()) {
             try {
-                int randIdx = Util.nextInt(0, currentZone.map.zones.size() - 1);
+                int minIdx = currentZone.map.zones.size() > 1 ? 1 : 0;
+                int randIdx = Util.nextInt(minIdx, currentZone.map.zones.size() - 1);
                 Zone randomZoneInMap = currentZone.map.zones.get(randIdx);
                 new SieuBroly18h(randomZoneInMap);
             } catch (Exception e) {

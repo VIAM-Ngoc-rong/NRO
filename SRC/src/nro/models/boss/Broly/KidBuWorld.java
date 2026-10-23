@@ -95,7 +95,8 @@ public class KidBuWorld extends Boss {
         // Khi bị giết, Kid Bư có tỷ lệ (50%) biến thành Mabư Mập ở khu bất kỳ trong map
         if (currentZone != null && currentZone.map != null && !currentZone.map.zones.isEmpty() && Util.isTrue(50, 100)) {
             try {
-                int randIdx = Util.nextInt(0, currentZone.map.zones.size() - 1);
+                int minIdx = currentZone.map.zones.size() > 1 ? 1 : 0;
+                int randIdx = Util.nextInt(minIdx, currentZone.map.zones.size() - 1);
                 Zone randomZoneInMap = currentZone.map.zones.get(randIdx);
                 new MabuMapWorld(randomZoneInMap);
             } catch (Exception e) {

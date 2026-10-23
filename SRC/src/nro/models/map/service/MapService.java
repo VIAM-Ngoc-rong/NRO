@@ -354,8 +354,12 @@ public class MapService {
         Map map = MapService.gI().getMapById(mapId);
         Zone zone = null;
         try {
-            if (map != null) {
-                zone = map.zones.get(Util.nextInt(map.zones.size()));
+            if (map != null && !map.zones.isEmpty()) {
+                if (map.zones.size() > 1) {
+                    zone = map.zones.get(Util.nextInt(1, map.zones.size() - 1));
+                } else {
+                    zone = map.zones.get(0);
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();

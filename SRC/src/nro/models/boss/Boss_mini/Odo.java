@@ -222,7 +222,8 @@ public class Odo extends Boss {
         }
         if (this.zone != null) {
             try {
-                int zoneid = 0;
+                int totalZones = this.zone.map.zones.size();
+                int zoneid = totalZones > 1 ? Util.nextInt(1, totalZones - 1) : 0;
                 this.zone = this.zone.map.zones.get(zoneid);
                 ChangeMapService.gI().changeMap(this, this.zone, -1, -1);
 

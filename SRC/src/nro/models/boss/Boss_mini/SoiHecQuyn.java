@@ -55,9 +55,11 @@ public class SoiHecQuyn extends Boss {
             try {
                 List<Zone> availableZones = new ArrayList<>();
 
-                // Lọc các zone thỏa mãn điều kiện: số lượng người chơi <= 10 và không có boss
+                // Lọc các zone thỏa mãn điều kiện: khác khu 0, số lượng người chơi <= 10 và không có boss
                 for (Zone zone : this.zone.map.zones) {
-                    if (zone.getNumOfPlayers() <= 10 && !BossManager.gI().checkBosses(zone, BossID.SOI_HEC_QUYN)) {
+                    if ((this.zone.map.zones.size() <= 1 || zone.zoneId > 0)
+                            && zone.getNumOfPlayers() <= 10
+                            && !BossManager.gI().checkBosses(zone, BossID.SOI_HEC_QUYN)) {
                         availableZones.add(zone);
                     }
                 }

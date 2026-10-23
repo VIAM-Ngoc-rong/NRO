@@ -754,36 +754,21 @@ public class Boss extends Player implements IBoss {
             try {
                 if (this.currentLevel == 0) {
                     if (this.parentBoss == null) {
-                        int zoneid = 0;
-                        //this.zone.map.mapId == 80 || this.zone.map.mapId == 103 || this.zone.map.mapId == 97 || this.zone.map.mapId == 102
-                        // Chỉ cho boss xuất hiện từ khu 2 trở lên ở map thường
-                        if (this.isZone01SpawnDisabled && this.zone.map.zones.size() > 2) {
-                            zoneid = Util.nextInt(2, this.zone.map.zones.size() - 1);
-                            int checked = 0;
-                            int totalZonesFrom2 = this.zone.map.zones.size() - 2;
-                            while (checked < totalZonesFrom2 && !this.zone.map.zones.get(zoneid).getBosses().isEmpty()) {
-                                zoneid++;
-                                if (zoneid >= this.zone.map.zones.size()) {
-                                    zoneid = 2;
-                                }
-                                checked++;
+                        int totalZones = this.zone.map.zones.size();
+                        int minZone = (this.isZone01SpawnDisabled && totalZones > 2) ? 2 : (totalZones > 1 ? 1 : 0);
+                        int zoneid = minZone < totalZones - 1 ? Util.nextInt(minZone, totalZones - 1) : minZone;
+                        int checked = 0;
+                        int candidateCount = Math.max(1, totalZones - minZone);
+                        while (checked < candidateCount
+                                && (!this.zone.map.zones.get(zoneid).getBosses().isEmpty()
+                                || this.zone.map.zones.get(zoneid).getNumOfPlayers() > 10)) {
+                            zoneid++;
+                            if (zoneid >= totalZones) {
+                                zoneid = minZone;
                             }
-                            this.zone = this.zone.map.zones.get(zoneid);
-                        } else {
-                            // Check trong khu lớn hơn 10 người chuyển sang khu n + 1
-                            while (zoneid < this.zone.map.zones.size() && this.zone.map.zones.get(zoneid).getNumOfPlayers() > 10) {
-                                zoneid++;
-                            }
-                            // Check trong khu có boss sẽ chuyển sang khu n + 1
-                            while (zoneid < this.zone.map.zones.size() && !this.zone.map.zones.get(zoneid).getBosses().isEmpty()) {
-                                zoneid++;
-                            }
-                            if (zoneid < this.zone.map.zones.size()) {
-                                this.zone = this.zone.map.zones.get(zoneid);
-                            } else {
-                                this.zone = this.zone.map.zones.get(0);
-                            }
+                            checked++;
                         }
+                        this.zone = this.zone.map.zones.get(zoneid);
                         int x = this.zone.map.mapWidth > 100 ? Util.nextInt(100, this.zone.map.mapWidth - 100) : Util.nextInt(100);
                         int y = this.zone.map.yPhysicInTop(x, 100);
                         ChangeMapService.gI().changeMap(this, this.zone, x, y);
