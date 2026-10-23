@@ -28,15 +28,17 @@ if [ -f "dist/NgocRongOnline.jar" ]; then
     cp -f "dist/NgocRongOnline.jar" "20.jar"
 fi
 
-mkdir -p build/classes
-if [ -f "build/classes/.compiled_stamp" ]; then
-    CHANGED_JAVA=$(find src -name "*.java" -newer build/classes/.compiled_stamp 2>/dev/null)
-else
-    CHANGED_JAVA=$(find src -name "*.java" 2>/dev/null)
-fi
-if [ -n "$CHANGED_JAVA" ]; then
-    echo "Đang biên dịch mã nguồn mới cập nhật..."
-    javac -encoding UTF-8 -cp "build/classes:lib/*:20.jar" -d build/classes $CHANGED_JAVA && touch build/classes/.compiled_stamp
+if command -v javac >/dev/null 2>&1; then
+    mkdir -p build/classes
+    if [ -f "build/classes/.compiled_stamp" ]; then
+        CHANGED_JAVA=$(find src -name "*.java" -newer build/classes/.compiled_stamp 2>/dev/null)
+    else
+        CHANGED_JAVA=$(find src -name "*.java" 2>/dev/null)
+    fi
+    if [ -n "$CHANGED_JAVA" ]; then
+        echo "Đang biên dịch mã nguồn mới cập nhật..."
+        javac -encoding UTF-8 -cp "build/classes:lib/*:20.jar" -d build/classes $CHANGED_JAVA && touch build/classes/.compiled_stamp
+    fi
 fi
 
 OLD_PIDS=$(pgrep -f "java.*nro.models.server.ServerManager" || true)
@@ -81,10 +83,10 @@ nohup nice -n 5 java -server \
 NEW_PID=$!
 disown $NEW_PID 2>/dev/null || true
 
-sleep 5
+sleep 8
 echo "=========================================================="
 echo "Server đã chạy ngầm thành công! (PID: $NEW_PID)"
 echo "Bạn có thể đóng cửa sổ SSH thoải mái, Server vẫn hoạt động 24/7."
 echo "Xem log trực tiếp: tail -f /root/NRO/SRC/server.log"
 echo "=========================================================="
-tail -n 20 "$SCRIPT_DIR/server.log" 2>/dev/null || true
+tail -n 30 "$SCRIPT_DIR/server.log" 2>/dev/null || true
