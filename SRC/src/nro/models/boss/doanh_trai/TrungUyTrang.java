@@ -106,10 +106,10 @@ public class TrungUyTrang extends Boss {
     public void attack() {
         try {
             Player playerAtt = getPlayerAttack();
-            if (playerAtt == null || playerAtt.isDie() || playerAtt.location.x < 755 || playerAtt.location.x > 1060) {
+            if (playerAtt == null || playerAtt.isDie()) {
                 return;
             }
-            if (this.location.x < 775) {
+            if (this.location.x < 775 && playerAtt.location.x >= 755 && playerAtt.location.x <= 1060) {
                 goToPlayer(playerAtt, true);
             }
             if (playerAtt.location != null && playerAtt != null && playerAtt.zone != null && this.zone != null && this.zone.equals(playerAtt.zone)) {
@@ -131,9 +131,25 @@ public class TrungUyTrang extends Boss {
         }
     }
 
+    private boolean isAnyBulonAlive() {
+        if (this.zone == null || this.zone.mobs == null) {
+            return false;
+        }
+        for (nro.models.mob.Mob mob : this.zone.mobs) {
+            if (mob != null && mob.tempId == nro.models.consts.ConstMob.BULON && !mob.isDie()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Override
     public synchronized int injured(Player plAtt, long damage, boolean piercing, boolean isMobAttack) {
-        if (!this.isDie() && !this.zone.isbulon1Alive && !this.zone.isbulon2Alive) {
+        if (!this.isDie()) {
+            if (isAnyBulonAlive()) {
+                this.chat("Bulon đâu tiêu diệt hết bọn chúng cho ta!");
+                return 0;
+            }
             if (!piercing && Util.isTrue(20, 100)) {
                 this.chat("Xí hụt");
                 return 0;

@@ -28,6 +28,17 @@ if [ -f "dist/NgocRongOnline.jar" ]; then
     cp -f "dist/NgocRongOnline.jar" "20.jar"
 fi
 
+mkdir -p build/classes
+if [ -f "build/classes/.compiled_stamp" ]; then
+    CHANGED_JAVA=$(find src -name "*.java" -newer build/classes/.compiled_stamp 2>/dev/null)
+else
+    CHANGED_JAVA=$(find src -name "*.java" 2>/dev/null)
+fi
+if [ -n "$CHANGED_JAVA" ]; then
+    echo "Đang biên dịch mã nguồn mới cập nhật..."
+    javac -encoding UTF-8 -cp "build/classes:lib/*:20.jar" -d build/classes $CHANGED_JAVA && touch build/classes/.compiled_stamp
+fi
+
 OLD_PIDS=$(pgrep -f "java.*nro.models.server.ServerManager" || true)
 if [ -n "$OLD_PIDS" ]; then
     echo "Đang lưu dữ liệu và đóng tiến trình Server cũ (PID: $OLD_PIDS)..."

@@ -24,20 +24,6 @@ public class LinhCanh extends Npc {
                         "Chỉ tiếp các bang hội, miễn tiếp khách vãng lai");
                 return;
             }
-            if (!player.getSession().actived) {
-                    Service.gI().sendThongBao(player, "Vui lòng mở thành viên trước");
-                return;
-            }
-            if (player.clan.getMembers().size() < RedRibbonHQ.N_PLAYER_CLAN) {
-                NpcService.gI().createTutorial(player, tempId, this.avartar,
-                        "Bang hội phải có ít nhất 5 thành viên mới có thể tham gia");
-                return;
-            }
-            if (player.clanMember.getNumDateFromJoinTimeToToday() < 1) {
-                NpcService.gI().createTutorial(player, tempId, this.avartar,
-                        "Gia nhập bang hội trên 1 ngày mới được tham gia");
-                return;
-            }
             if (player.clan.doanhTrai != null) {
                 createOtherMenu(player, ConstNpc.MENU_JOIN_DOANH_TRAI,
                         "Bang hội của ngươi đang đánh trại độc nhãn\nThời gian còn lại là "

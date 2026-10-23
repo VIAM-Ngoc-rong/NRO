@@ -60,6 +60,8 @@ public class ThuongDe extends Npc {
                             case 0 -> {
                                 if (player.clan != null && player.clan.ConDuongRanDoc != null && player.joinCDRD && player.clan.ConDuongRanDoc.allMobsDead && !player.talkToThuongDe) {
                                     player.talkToThuongDe = true;
+                                    ChangeMapService.gI().changeMapYardrat(player, ChangeMapService.gI().getMapCanJoin(player, 46), 420, 408);
+                                    Service.gI().sendThongBao(player, "Hãy nói chuyện với thần mèo Karin");
                                     return;
                                 }
                                 if (player.dangKyTapTuDong) {

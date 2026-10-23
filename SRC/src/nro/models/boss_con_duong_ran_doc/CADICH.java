@@ -56,17 +56,15 @@ public class CADICH extends Boss {
 
     @Override
     public void reward(Player plKill) {
-        if (Util.isTrue(50, 100)) {
-            ItemMap it = new ItemMap(this.zone, 459, 1, this.location.x, this.zone.map.yPhysicInTop(this.location.x,
-                    this.location.y - 24), plKill.id);
-            it.options.add(new Item.ItemOption(112, 80));
-            it.options.add(new Item.ItemOption(93, 90));
-            it.options.add(new Item.ItemOption(20, Util.nextInt(10000)));
-            Service.gI().dropItemMap(this.zone, it);
-            ItemMap it2 = new ItemMap(this.zone, 706, 1, this.location.x, this.zone.map.yPhysicInTop(this.location.x,
-                    this.location.y - 24), plKill.id);
-            Service.gI().dropItemMap(this.zone, it2);
-        }
+        ItemMap it = new ItemMap(this.zone, 459, 1, this.location.x, this.zone.map.yPhysicInTop(this.location.x,
+                this.location.y - 24), plKill.id);
+        it.options.add(new Item.ItemOption(112, 50));
+        it.options.add(new Item.ItemOption(93, 90));
+        it.options.add(new Item.ItemOption(30, 0));
+        Service.gI().dropItemMap(this.zone, it);
+        ItemMap it2 = new ItemMap(this.zone, 706, 1, this.location.x + 15, this.zone.map.yPhysicInTop(this.location.x,
+                this.location.y - 24), plKill.id);
+        Service.gI().dropItemMap(this.zone, it2);
     }
 
     @Override
@@ -128,8 +126,10 @@ public class CADICH extends Boss {
             if (damage >= this.nPoint.hp) {
                 this.effectSkill.removeSkillEffectWhenDie();
                 this.changeToTypeNonPK();
+                this.nPoint.subHP(damage);
+                this.setDie(plAtt);
                 die(plAtt);
-                return 0;
+                return (int) damage;
             }
             this.nPoint.subHP(damage);
             return (int) damage;
@@ -150,11 +150,8 @@ public class CADICH extends Boss {
                 if (this.nPoint.hp < this.nPoint.hpMax / 2 && !bienKhi) {
                     this.chat("Ha ha ha, ha ha ha");
                     this.bienKhi = true;
-                    this.gongBienKhi = true;
-                    EffectSkillService.gI().sendEffectMonkey(this);
-                    Functions.sleep(2000);
-                    this.chat("Thế nào " + pl.name + "? Mi đã thấy phép biến hình của người Xayda rồi chứ?");
                     this.gongBienKhi = false;
+                    this.chat("Thế nào " + pl.name + "? Mi đã thấy phép biến hình của người Xayda rồi chứ?");
                     int timeMonkey = 100000;
                     this.effectSkill.isMonkey = true;
                     this.effectSkill.timeMonkey = timeMonkey;

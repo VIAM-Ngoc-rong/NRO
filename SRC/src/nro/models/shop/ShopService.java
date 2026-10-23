@@ -510,6 +510,12 @@ public class ShopService {
             case COST_COUPON ->
                 coupon = is.cost;
         }
+        Item pGG = ruby > 0 ? InventoryService.gI().findItem(player.inventory.itemsBag, 459) : null;
+        boolean useCoupon50 = (pGG != null && pGG.isNotNullItem() && pGG.quantity >= 1);
+        int originalRuby = ruby;
+        if (useCoupon50) {
+            ruby = Math.max(1, ruby / 2);
+        }
         if (player.inventory.gold < gold) {
             Service.gI().sendThongBao(player, "Bạn không có đủ vàng");
             return false;
@@ -517,7 +523,11 @@ public class ShopService {
             Service.gI().sendThongBao(player, "Bạn không có đủ ngọc xanh");
             return false;
         } else if (player.inventory.ruby < ruby) {
-            Service.gI().sendThongBao(player, "Bạn không có đủ Hồng ngọc (cần " + ruby + " Hồng ngọc, hiện có " + player.inventory.ruby + ")");
+            if (useCoupon50) {
+                Service.gI().sendThongBao(player, "Bạn không có đủ Hồng ngọc (Đã giảm 50% bằng Phiếu giảm giá còn " + ruby + " Hồng ngọc, hiện có " + player.inventory.ruby + ")");
+            } else {
+                Service.gI().sendThongBao(player, "Bạn không có đủ Hồng ngọc (cần " + ruby + " Hồng ngọc, hiện có " + player.inventory.ruby + ")");
+            }
             return false;
         } else if (player.inventory.coupon < coupon) {
             Service.gI().sendThongBao(player, "Bạn không có đủ điểm");
@@ -527,6 +537,11 @@ public class ShopService {
         player.inventory.gem -= gem;
         player.inventory.ruby -= ruby;
         player.inventory.coupon -= coupon;
+        if (useCoupon50) {
+            InventoryService.gI().subQuantityItemsBag(player, pGG, 1);
+            InventoryService.gI().sendItemBags(player);
+            Service.gI().sendThongBao(player, "Đã dùng 1 Phiếu giảm giá (-50%): chỉ tốn " + ruby + " Hồng ngọc (Giá gốc: " + originalRuby + ")");
+        }
         Service.gI().sendMoney(player);
         return true;
     }
@@ -546,23 +561,34 @@ public class ShopService {
             case COST_COUPON ->
                 coupon = is.cost;
         }
+        Item pGG = ruby > 0 ? InventoryService.gI().findItem(player.inventory.itemsBag, 459) : null;
+        boolean useCoupon50 = (pGG != null && pGG.isNotNullItem() && pGG.quantity >= 1);
+        int originalRuby = ruby;
+        if (useCoupon50) {
+            ruby = Math.max(1, ruby / 2);
+        }
         if (player.inventory.gold < gold) {
-            Service.gI().sendThongBaoOK(player, "Bạn không đủ vàng, còn thiếu " + Util.numberToMoney(player.inventory.gold - gold));
+            Service.gI().sendThongBaoOK(player, "Bạn không đủ vàng, còn thiếu " + Util.numberToMoney(gold - player.inventory.gold));
             return false;
         } else if (player.inventory.gem < gem) {
-            Service.gI().sendThongBaoOK(player, "Bạn không đủ ngọc, còn thiếu " + Util.numberToMoney(player.inventory.gem - gem));
+            Service.gI().sendThongBaoOK(player, "Bạn không đủ ngọc, còn thiếu " + Util.numberToMoney(gem - player.inventory.gem));
             return false;
         } else if (player.inventory.ruby < ruby) {
-            Service.gI().sendThongBaoOK(player, "Bạn không đủ ngọc, còn thiếu " + Util.numberToMoney(player.inventory.ruby - ruby));
+            Service.gI().sendThongBaoOK(player, "Bạn không đủ Hồng ngọc, còn thiếu " + Util.numberToMoney(ruby - player.inventory.ruby));
             return false;
         } else if (player.inventory.coupon < coupon) {
-            Service.gI().sendThongBaoOK(player, "Bạn không đủ điểm, còn thiếu " + Util.numberToMoney(player.inventory.coupon - coupon));
+            Service.gI().sendThongBaoOK(player, "Bạn không đủ điểm, còn thiếu " + Util.numberToMoney(coupon - player.inventory.coupon));
             return false;
         }
         player.inventory.gold -= gold;
         player.inventory.gem -= gem;
         player.inventory.ruby -= ruby;
         player.inventory.coupon -= coupon;
+        if (useCoupon50) {
+            InventoryService.gI().subQuantityItemsBag(player, pGG, 1);
+            InventoryService.gI().sendItemBags(player);
+            Service.gI().sendThongBao(player, "Đã dùng 1 Phiếu giảm giá (-50%): chỉ tốn " + ruby + " Hồng ngọc (Giá gốc: " + originalRuby + ")");
+        }
         Service.gI().sendMoney(player);
         return true;
     }
@@ -668,17 +694,25 @@ public class ShopService {
             return;
         }
 
-        // Đổi bằng phiếu giảm giá
+        // Mua bằng phiếu giảm giá (-50% Hồng Ngọc)
         if (is.tabShop.id == 30) {
             Item pGG = InventoryService.gI().findItem(player.inventory.itemsBag, 459);
-            if (pGG != null) {
+            if (pGG != null && pGG.isNotNullItem() && pGG.quantity >= 1) {
+                int originalRuby = is.cost > 0 ? is.cost : 1000;
+                int discountedRuby = Math.max(1, originalRuby / 2);
+                if (player.inventory.ruby < discountedRuby) {
+                    Service.gI().sendThongBao(player, "Bạn không đủ Hồng ngọc (Đã giảm 50% còn " + discountedRuby + " Hồng ngọc, hiện có " + player.inventory.ruby + ")");
+                    return;
+                }
+                player.inventory.ruby -= discountedRuby;
                 Item item = ItemService.gI().createItemFromItemShop(is);
                 InventoryService.gI().subQuantityItemsBag(player, pGG, 1);
                 InventoryService.gI().addItemBag(player, item);
                 InventoryService.gI().sendItemBags(player);
-                Service.gI().sendThongBao(player, "Đổi thành công " + is.temp.name);
+                Service.gI().sendMoney(player);
+                Service.gI().sendThongBao(player, "Mua thành công " + is.temp.name + " (-" + discountedRuby + " Hồng ngọc, đã giảm 50%)" + formatRolledStatsSummary(item));
             } else {
-                Service.gI().sendThongBao(player, "Bạn không có phiếu giảm giá!");
+                Service.gI().sendThongBao(player, "Bạn không có Phiếu giảm giá!");
             }
             return;
         }
@@ -1028,16 +1062,32 @@ public class ShopService {
                     isBuy = false;
                 }
                 break;
-            case 861:
+            case 861: {
+                Item pGG = InventoryService.gI().findItem(pl.inventory.itemsBag, 459);
+                boolean useCoupon50 = (pGG != null && pGG.isNotNullItem() && pGG.quantity >= 1);
+                int originalRuby = buySpec;
+                if (useCoupon50) {
+                    buySpec = Math.max(1, buySpec / 2);
+                }
                 if (pl.inventory.ruby >= buySpec) {
                     pl.inventory.ruby -= buySpec;
+                    if (useCoupon50) {
+                        InventoryService.gI().subQuantityItemsBag(pl, pGG, 1);
+                        InventoryService.gI().sendItemBags(pl);
+                        Service.gI().sendThongBao(pl, "Đã dùng 1 Phiếu giảm giá (-50%): chỉ tốn " + buySpec + " Hồng ngọc (Giá gốc: " + originalRuby + ")");
+                    }
                     Service.gI().sendMoney(pl);
                     isBuy = true;
                 } else {
-                    Service.gI().sendThongBao(pl, "Bạn không có đủ Hồng ngọc (cần " + buySpec + " Hồng ngọc, hiện có " + pl.inventory.ruby + ")");
+                    if (useCoupon50) {
+                        Service.gI().sendThongBao(pl, "Bạn không có đủ Hồng ngọc (Đã giảm 50% còn " + buySpec + " Hồng ngọc, hiện có " + pl.inventory.ruby + ")");
+                    } else {
+                        Service.gI().sendThongBao(pl, "Bạn không có đủ Hồng ngọc (cần " + buySpec + " Hồng ngọc, hiện có " + pl.inventory.ruby + ")");
+                    }
                     isBuy = false;
                 }
                 break;
+            }
             default:
                 if (InventoryService.gI().findItemBag(pl, itSpec) == null || !InventoryService.gI().findItemBag(pl, itSpec).isNotNullItem()) {
                     Service.gI().sendThongBao(pl, "Không tìm thấy " + itS.template.name);

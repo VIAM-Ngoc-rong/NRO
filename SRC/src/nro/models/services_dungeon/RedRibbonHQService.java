@@ -48,9 +48,6 @@ public class RedRibbonHQService {
             Service.gI().sendThongBao(pl, "Vui lòng chờ đến ngày mai");
             return;
         }
-        if (pl.clanMember.getNumDateFromJoinTimeToToday() < 1) {
-            return;
-        }
         if (pl.clan.doanhTrai != null) {
             pl.lastTimeJoinDT = System.currentTimeMillis();
             pl.clan.doanhTrai.updateHPDame();

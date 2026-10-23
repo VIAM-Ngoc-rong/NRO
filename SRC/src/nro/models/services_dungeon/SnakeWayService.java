@@ -47,11 +47,8 @@ public class SnakeWayService {
         if (clan != null) {
             ClanMember cm = clan.getClanMember((int) player.id);
             if (cm != null) {
-                if (player.clanMember.getNumDateFromJoinTimeToToday() < 2) {
-                    return;
-                }
-                if (!player.joinCDRD && !Util.isTimeDifferenceGreaterThanNDays(player.lastTimeJoinCDRD, 7)) {
-                    Service.gI().sendThongBao(player, "Vui lòng đợi " + TimeUtil.getDateLeft(player.lastTimeJoinCDRD, 7 * 24 * 60 * 60) + " nữa");
+                if (!player.joinCDRD && !Util.isAfterMidnight(player.lastTimeJoinCDRD)) {
+                    Service.gI().sendThongBao(player, "Bạn đã vào con đường rắn độc hôm nay rồi, hãy quay lại vào ngày mai");
                     return;
                 } else if (!player.joinCDRD) {
                     player.talkToThuongDe = false;

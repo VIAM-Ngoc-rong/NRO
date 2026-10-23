@@ -462,7 +462,7 @@ public class ChangeMapService {
         if (player.zone.map.mapId == 45 || player.zone.map.mapId == 46) {
             int x = player.location.x;
             int y = player.location.y;
-            if (x >= 35 && x <= 685 && y >= 550 && y <= 560) {
+            if (x >= 35 && x <= 685 && y >= 500) {
                 xGo = player.zone.map.mapId == 45 ? 420 : 636;
                 yGo = 150;
                 zoneJoin = MapService.gI().getMapCanJoin(player, player.zone.map.mapId + 1, -1);
@@ -839,13 +839,14 @@ public class ChangeMapService {
         if (!player.idMark.isGoToBDKB()) {
             if (Util.isAfterMidnight(player.lastTimeJoinBDKB)) {
                 player.timesPerDayBDKB = 1;
-            } else if (player.lastTimeJoinBDKB != player.clan.lastTimeOpenBanDoKhoBau) {
                 player.lastTimeJoinBDKB = player.clan.lastTimeOpenBanDoKhoBau;
-                player.timesPerDayBDKB++;
-                if (player.timesPerDayBDKB > 3) {
+            } else if (player.lastTimeJoinBDKB != player.clan.lastTimeOpenBanDoKhoBau) {
+                if (player.timesPerDayBDKB >= 3) {
                     Service.gI().sendThongBao(player, "Bạn đã vào hang kho báu 3 lần trong hôm nay, hẹn gặp lại ngày mai");
                     return;
                 }
+                player.lastTimeJoinBDKB = player.clan.lastTimeOpenBanDoKhoBau;
+                player.timesPerDayBDKB++;
             }
             player.idMark.setLastTimeGoToBDKB(System.currentTimeMillis());
             player.idMark.setGoToBDKB(true);

@@ -417,7 +417,7 @@ public class QuyLaoKame extends Npc {
         if (select == 0) {
             Service.gI().showTopClanBDKB(player);
         } else if (select == 1) {
-            Service.gI().showTopClanBDKB(player);
+            Service.gI().showMyTopClanBDKB(player);
         } else if (select == 2) {
             if (player.clan == null) {
                 Service.gI().sendThongBao(player, "Hãy vào bang hội trước");

@@ -71,11 +71,39 @@ public class SAIBAMEN extends Boss {
             }
 
             this.changeToTypePK();
-            Functions.sleep(1500);
             this.changeStatus(BossStatus.ACTIVE);
         } else if (9 - this.clan.ConDuongRanDoc.getNumBossAlive() == this.idboss) {
             this.changeStatus(BossStatus.ACTIVE);
         }
+    }
+
+    private Player bomberKiller;
+
+    @Override
+    public void attack() {
+        if (this.playerSkill != null && this.playerSkill.prepareTuSat) {
+            if (Util.canDoWithTime(this.playerSkill.lastTimePrepareTuSat, 2000)) {
+                this.playerSkill.prepareTuSat = false;
+                Player killer = this.bomberKiller;
+                this.bomberKiller = null;
+                this.nPoint.hp = 0;
+                setDie(this);
+                die(killer);
+                long dame = (long) this.nPoint.hpMax * 100L;
+                List<Player> playersMap = this.zone != null ? this.zone.getNotBosses() : null;
+                if (playersMap != null && !MapService.gI().isMapOffline(this.zone.map.mapId)) {
+                    for (Player pl : new java.util.ArrayList<>(playersMap)) {
+                        if (pl != null && !this.equals(pl)) {
+                            pl.injured(this, dame, false, false);
+                            PlayerService.gI().sendInfoHpMpMoney(pl);
+                            Service.gI().Send_Info_NV(pl);
+                        }
+                    }
+                }
+            }
+            return;
+        }
+        super.attack();
     }
 
     @Override
@@ -105,6 +133,9 @@ public class SAIBAMEN extends Boss {
     @Override
     public synchronized int injured(Player plAtt, long damage, boolean piercing, boolean isMobAttack) {
         if (!this.isDie()) {
+            if (this.playerSkill != null && this.playerSkill.prepareTuSat) {
+                return 0;
+            }
             if (!piercing && Util.isTrue(this.nPoint.tlNeDon, 1000)) {
                 this.chat("Xí hụt");
                 return 0;
@@ -116,9 +147,15 @@ public class SAIBAMEN extends Boss {
                 }
                 damage = damage / 4;
             }
+            if (this.idboss == 1 && damage >= this.nPoint.hp) {
+                this.nPoint.hp = 1;
+                setBom(plAtt);
+                return (int) damage;
+            }
             this.nPoint.subHP(damage);
             if (isDie()) {
-                setBom(plAtt);
+                this.setDie(plAtt);
+                die(plAtt);
             }
             return (int) damage;
         } else {
@@ -132,8 +169,11 @@ public class SAIBAMEN extends Boss {
             for (Player pl : this.zone.getPlayers()) {
                 Service.gI().sendThongBao(pl, pl.name + " coi chừng đấy!");
             }
-            Service.gI().chat(plAtt, "Trời ơi muộn mất rồi");
-            EffectSkillService.gI().startStun(plAtt, System.currentTimeMillis(), 3500);
+            if (plAtt != null) {
+                Service.gI().chat(plAtt, "Trời ơi muộn mất rồi");
+                EffectSkillService.gI().startStun(plAtt, System.currentTimeMillis(), 2500);
+            }
+            this.bomberKiller = plAtt;
             //gồng tự sát
             this.playerSkill.prepareTuSat = true;
             this.playerSkill.lastTimePrepareTuSat = System.currentTimeMillis();
@@ -148,28 +188,7 @@ public class SAIBAMEN extends Boss {
                 msg.cleanup();
             } catch (Exception e) {
             }
-            this.nPoint.hp = 0;
-        }
-        Service.gI().chat(this, "He he he");
-        while (this.playerSkill.prepareTuSat) {
-            if (Util.canDoWithTime(this.playerSkill.lastTimePrepareTuSat, 2500)) {
-//                EffectSkillService.gI().removeStun(plAtt);
-                this.playerSkill.prepareTuSat = false;
-                setDie(this);
-                die(plAtt);
-                long dame = (long) this.nPoint.hpMax * 100L;
-                List<Player> playersMap = null;
-                playersMap = this.zone.getNotBosses();
-                if (!MapService.gI().isMapOffline(this.zone.map.mapId)) {
-                    for (Player pl : playersMap) {
-                        if (!this.equals(pl)) {
-                            pl.injured(this, dame, false, false);
-                            PlayerService.gI().sendInfoHpMpMoney(pl);
-                            Service.gI().Send_Info_NV(pl);
-                        }
-                    }
-                }
-            }
+            Service.gI().chat(this, "He he he");
         }
     }
 }

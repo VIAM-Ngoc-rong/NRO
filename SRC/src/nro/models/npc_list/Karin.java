@@ -80,13 +80,15 @@ public class Karin extends Npc {
                     return;
                 }
                 if (player.clan != null && player.clan.ConDuongRanDoc != null && player.joinCDRD && player.clan.ConDuongRanDoc.allMobsDead) {
-                    Service.gI().sendThongBao(player, "Hãy mau bay xuống chân tháp Karin");
+                    Service.gI().sendThongBao(player, "Hãy chuẩn bị chiến đấu với bọn Xayda!");
                     if (!player.talkToThanMeo) {
                         player.nPoint.hp = player.nPoint.hpMax;
                         player.nPoint.mp = player.nPoint.mpMax;
                         Service.gI().sendInfoPlayerEatPea(player);
                     }
                     player.talkToThanMeo = true;
+                    player.timeChangeMap144 = System.currentTimeMillis();
+                    nro.models.map.service.ChangeMapService.gI().changeMapYardrat(player, nro.models.map.service.ChangeMapService.gI().getMapCanJoin(player, 47), 636, 336);
                     return;
                 }
 

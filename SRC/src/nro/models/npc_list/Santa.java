@@ -36,7 +36,7 @@ public class Santa extends Npc {
                     "Danh\nhiệu"));
 
             if (soLuong >= 1) {
-                menu.add(2, "Giảm giá\n80%");
+                menu.add(2, "Giảm giá\n50%\n(Hồng Ngọc)");
             }
 
             String[] menus = menu.toArray(new String[0]);
@@ -67,7 +67,7 @@ public class Santa extends Npc {
                             break;
                         case 2:
                             if (soLuong >= 1) {
-                                ShopService.gI().opendShop(player, "SANTA_GIAM_GIA_1", false);
+                                ShopService.gI().opendShop(player, "SANTA_CAITRANG", false);
                             } else {
                                 ShopService.gI().opendShop(player, "SANTA_MO_RONG_HANH_TRANG", false);
                             }

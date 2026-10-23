@@ -27,9 +27,9 @@ import nro.models.utils.Util;
 public class RedRibbonHQ implements Runnable {
 
     //bang hội đủ số người mới đc mở
-    public static final int N_PLAYER_CLAN = 5;
+    public static final int N_PLAYER_CLAN = 1;
     //số người đứng cùng khu
-    public static final int N_PLAYER_MAP = 1;
+    public static final int N_PLAYER_MAP = 0;
     public static final int AVAILABLE = 50;
     public static final int TIME_DOANH_TRAI = 1800000;
     public static final int TIME_PICK_DOANH_TRAI = 300000;
@@ -105,7 +105,7 @@ public class RedRibbonHQ implements Runnable {
             }
         }
         for (Player pl : plJoinDT) {
-            if (pl.clanMember.getNumDateFromJoinTimeToToday() < 1 || pl.isDie()) {
+            if (pl.isDie()) {
                 continue;
             }
             pl.lastTimeJoinDT = System.currentTimeMillis();
@@ -125,16 +125,30 @@ public class RedRibbonHQ implements Runnable {
                 totalHp += player.nPoint.hpMax;
             }
         }
+        if (totalDamage < 1000) {
+            totalDamage = 1000;
+        }
+        if (totalHp < 10000) {
+            totalHp = 10000;
+        }
 
         // Hồi sinh quái
         for (Zone zone : this.zones) {
             for (Mob mob : zone.mobs) {
                 long mobTempId = mob.tempId;
-                mob.point.dame = (int) ((mobTempId != 0) ? Math.min(totalHp / mobTempId, 2_147_483_647L) : 0);
-                mob.point.maxHp = (int) ((mobTempId != 0) ? Math.min(totalDamage * mobTempId, 2_147_483_647) : 0);
+                mob.point.dame = (int) ((mobTempId != 0) ? Math.max(500L, Math.min(totalHp / mobTempId, 2_000_000_000L)) : 500);
+                mob.point.maxHp = (int) ((mobTempId != 0) ? Math.max(5000L, Math.min(totalDamage * mobTempId, 2_000_000_000L)) : 5000);
                 mob.lvMob = 0;
                 mob.hoiSinh();
                 mob.hoiSinhMobPhoBan();
+                if (zone.map.mapId == 59) {
+                    if (mob.id == 13) {
+                        zone.isbulon1Alive = true;
+                    }
+                    if (mob.id == 14) {
+                        zone.isbulon2Alive = true;
+                    }
+                }
             }
 
             long dame = totalHp / 20;
@@ -327,8 +341,9 @@ public class RedRibbonHQ implements Runnable {
                 if (mob.isDie()) {
                     continue;
                 }
-                mob.point.dame = (int) (totalHp / mob.tempId < 2_147_483_647 ? totalHp / mob.tempId : 2_147_483_647);
-                mob.point.maxHp = (int) (totalDame/3 * mob.tempId < 2_147_483_647 ? totalDame * mob.tempId : 2_147_483_647);
+                long mobTempId = Math.max(1, mob.tempId);
+                mob.point.dame = (int) Math.max(500L, Math.min(totalHp / mobTempId, 2_000_000_000L));
+                mob.point.maxHp = (int) Math.max(5000L, Math.min(totalDame * mobTempId, 2_000_000_000L));
                 mob.point.hp = mob.point.maxHp;
                 mob.setTiemNang();
             }

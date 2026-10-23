@@ -148,14 +148,14 @@ public class SnakeWay implements Runnable {
                 Mob mob = mobs.get(i);
                 if (i == 5) {
                     mob.lvMob = 1;
-                    mob.point.dame = (int) level * 100 * mob.tempId * 12;
-                    mob.point.maxHp = (int) level * 1000 * mob.tempId * 12;
+                    mob.point.dame = (int) Math.min((long) level * 100L * mob.tempId * 12L, 2_000_000_000L);
+                    mob.point.maxHp = (int) Math.min((long) level * 1000L * mob.tempId * 12L, 2_000_000_000L);
                     mob.hoiSinh();
                     mob.hoiSinhMobPhoBan();
                 } else {
                     mob.lvMob = 0;
-                    mob.point.dame = (int) level * 10 * mob.tempId;
-                    mob.point.maxHp = (int) level * 100 * mob.tempId;
+                    mob.point.dame = (int) Math.min((long) level * 10L * mob.tempId, 2_000_000_000L);
+                    mob.point.maxHp = (int) Math.min((long) level * 100L * mob.tempId, 2_000_000_000L);
                     mob.hoiSinh();
                     mob.hoiSinhMobPhoBan();
                 }

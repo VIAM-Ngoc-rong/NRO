@@ -152,11 +152,6 @@ public class ThanVuTru extends Npc {
                             if (player.clan == null) {
                                 return;
                             }
-                            if (player.clanMember.getNumDateFromJoinTimeToToday() < 1) {
-                                NpcService.gI().createTutorial(player, tempId, this.avartar,
-                                        "Gia nhập bang hội trên 1 ngày mới được tham gia");
-                                return;
-                            }
                             if (player.clan.ConDuongRanDoc == null) {
                                 Input.gI().createFormChooseLevelCDRD(player);
                             } else {

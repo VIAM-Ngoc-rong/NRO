@@ -123,6 +123,7 @@ public class BanDoKhoBau implements Runnable {
             this.lastTimeOpen = System.currentTimeMillis();
             this.clan = clan;
             this.clan.lastTimeOpenBanDoKhoBau = this.lastTimeOpen;
+            this.clan.timeOpenBanDoKhoBau = this.lastTimeOpen;
             this.clan.playerOpenBanDoKhoBau = plOpen;
             this.clan.BanDoKhoBau = this;
             this.kickoutbdkb = false;
@@ -134,6 +135,7 @@ public class BanDoKhoBau implements Runnable {
         } catch (Exception e) {
             e.printStackTrace();
             plOpen.clan.lastTimeOpenBanDoKhoBau = 0;
+            plOpen.clan.timeOpenBanDoKhoBau = 0;
             this.dispose();
         }
     }
@@ -143,7 +145,8 @@ public class BanDoKhoBau implements Runnable {
             return;
         }
 
-        long timeDone = System.currentTimeMillis() - pl.clan.timeOpenBanDoKhoBau;
+        long openTime = pl.clan.timeOpenBanDoKhoBau > 0 ? pl.clan.timeOpenBanDoKhoBau : this.lastTimeOpen;
+        long timeDone = Math.max(1000L, System.currentTimeMillis() - openTime);
         int levelDone = pl.clan.BanDoKhoBau.level;
         if (levelDone > pl.clan.levelDoneBanDoKhoBau) {
             pl.clan.levelDoneBanDoKhoBau = levelDone;
@@ -193,10 +196,10 @@ public class BanDoKhoBau implements Runnable {
 
             if (zone.map.mapId == 137) {
                 try {
-                    long bossDamage = (200000 * level);
-                    long bossMaxHealth = (20000000 * level);
-                    bossDamage = Math.min(bossDamage, 200000000L);
-                    bossMaxHealth = Math.min(bossMaxHealth, 2000000000L);
+                    long bossDamage = 200_000L * level;
+                    long bossMaxHealth = 20_000_000L * level;
+                    bossDamage = Math.min(bossDamage, 200_000_000L);
+                    bossMaxHealth = Math.min(bossMaxHealth, 2_000_000_000L);
                     boss = new TrungUyXanhLo(
                             zone,
                             level,
