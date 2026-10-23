@@ -43,18 +43,21 @@ public class OngGohan extends Npc {
                 "Set Songoku\n(Kamejoko)",
                 "Set T.Xin Hăng\n(Thái Dương HS)",
                 "Set Krillin\n(Quả Cầu KK)",
+                "Set Kaio\n(Kaioken)",
                 "Đóng"
             };
             case 1 -> new String[]{
-                "Set Daimao\n(Liên Hoàn)",
-                "Set Ốc Tiêu\n(Đẻ Trứng)",
-                "Set Picolo\n(+100% KI)",
+                "Set Ốc Tiêu\n(Liên Hoàn)",
+                "Set Daimao\n(Đẻ Trứng)",
+                "Set Picolo\n(Laze +50%)",
+                "Set CB Nail\n(Masenko)",
                 "Đóng"
             };
             default -> new String[]{
                 "Set Kakarot\n(Galick)",
-                "Set Cadic\n(x2 Biến Khỉ)",
+                "Set Cadic\n(x5 Biến Khỉ)",
                 "Set Nappa\n(+80% HP)",
+                "Set Cadic M\n(Tự Phát Nổ)",
                 "Đóng"
             };
         };
@@ -67,7 +70,7 @@ public class OngGohan extends Npc {
     }
 
     protected void claimStarterSKHSet(Player player, int select) {
-        if (select < 0 || select > 2) {
+        if (select < 0 || select > 3) {
             return;
         }
         if (InventoryService.gI().getCountEmptyBag(player) < 5) {
@@ -100,14 +103,14 @@ public class OngGohan extends Npc {
 
             int gender = player.gender < 0 || player.gender > 2 ? 0 : player.gender;
             int[][] skhTable = {
-                {129, 127, 128}, // Trái Đất: Songoku, Thiên Xin Hăng, Krillin
-                {132, 131, 130}, // Namek: Daimao, Ốc Tiêu, Picolo
-                {133, 134, 135}  // Xayda: Kakarot, Cadic, Nappa
+                {129, 127, 128, 245}, // Trái Đất: Songoku, Thiên Xin Hăng, Krillin, Thần Vũ Trụ Kaio
+                {131, 132, 130, 237}, // Namek: Ốc Tiêu, Pikkoro Daimao, Picolo, Chiến Binh Nail
+                {133, 134, 135, 241}  // Xayda: Kakarot, Cadic, Nappa, Cadic M
             };
             String[][] skhNames = {
-                {"Set Songoku", "Set Thiên Xin Hăng", "Set Krillin"},
-                {"Set Pikkoro Daimao", "Set Ốc Tiêu", "Set Picolo"},
-                {"Set Kakarot", "Set Cadic", "Set Nappa"}
+                {"Set Songoku", "Set Thiên Xin Hăng", "Set Krillin", "Set Thần Vũ Trụ Kaio"},
+                {"Set Ốc Tiêu", "Set Pikkoro Daimao", "Set Picolo", "Set Chiến Binh Nail"},
+                {"Set Kakarot", "Set Cadic", "Set Nappa", "Set Cadic M"}
             };
             short[][] basicEquipIds = {
                 {0, 6, 21, 27, 12}, // Trái Đất: Áo vải 3 lỗ, Quần vải đen, Găng vải đen, Giày nhựa, Rada cấp 1
@@ -123,13 +126,13 @@ public class OngGohan extends Npc {
             };
 
             int skhId = skhTable[gender][select];
-            int subSkhId = ItemService.gI().ID(skhId);
+            int[] subSkhIds = ItemService.gI().getOptionIdsBySKH(skhId);
             for (int i = 0; i < 5; i++) {
                 Item it = ItemService.gI().createNewItem(basicEquipIds[gender][i], 1);
                 it.itemOptions.clear();
                 it.itemOptions.add(new Item.ItemOption(baseOptionTable[i][0], baseOptionTable[i][1]));
                 it.itemOptions.add(new Item.ItemOption(skhId, 1));
-                if (subSkhId > 0) {
+                for (int subSkhId : subSkhIds) {
                     it.itemOptions.add(new Item.ItemOption(subSkhId, 1));
                 }
                 it.itemOptions.add(new Item.ItemOption(30, 1)); // Không thể giao dịch
