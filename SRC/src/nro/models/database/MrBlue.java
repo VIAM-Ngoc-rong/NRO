@@ -361,6 +361,8 @@ public class MrBlue {
                     item.createTime = Long.parseLong(String.valueOf(dataItem.get(3)));
                     if (ItemService.gI().isOutOfDateTime(item)) {
                         item = ItemService.gI().createItemNull();
+                    } else {
+                        ItemService.gI().upgradeFlatCostumeIfNeeded(item);
                     }
                 } else {
                     item = ItemService.gI().createItemNull();
@@ -389,6 +391,8 @@ public class MrBlue {
                     item.createTime = Long.parseLong(String.valueOf(dataItem.get(3)));
                     if (ItemService.gI().isOutOfDateTime(item)) {
                         item = ItemService.gI().createItemNull();
+                    } else {
+                        ItemService.gI().upgradeFlatCostumeIfNeeded(item);
                     }
                 } else {
                     item = ItemService.gI().createItemNull();
@@ -434,6 +438,8 @@ public class MrBlue {
                     }
                     if (ItemService.gI().isOutOfDateTime(item)) {
                         item = ItemService.gI().createItemNull();
+                    } else {
+                        ItemService.gI().upgradeFlatCostumeIfNeeded(item);
                     }
                 } else {
                     item = ItemService.gI().createItemNull();
@@ -873,6 +879,8 @@ public class MrBlue {
                         }
                         if (ItemService.gI().isOutOfDateTime(item)) {
                             item = ItemService.gI().createItemNull();
+                        } else {
+                            ItemService.gI().upgradeFlatCostumeIfNeeded(item);
                         }
                     } else {
                         item = ItemService.gI().createItemNull();

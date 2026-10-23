@@ -684,6 +684,14 @@ public final class Manager {
                         itemTemp.gender = rs.getByte("gender");
                         itemTemp.name = rs.getString("name");
                         itemTemp.description = rs.getString("description");
+                        if (itemTemp.description == null) {
+                            itemTemp.description = "";
+                        }
+                        if ((itemTemp.type == 5 || itemTemp.type == 11) && !itemTemp.description.contains("Random")) {
+                            itemTemp.description = itemTemp.description.isEmpty()
+                                    ? "(Random chỉ số & dòng phụ ngẫu nhiên khi mua/mở)"
+                                    : itemTemp.description + " (Random chỉ số & dòng phụ khi mua/mở)";
+                        }
                         itemTemp.level = rs.getByte("level");
                         itemTemp.iconID = rs.getShort("icon_id");
                         itemTemp.part = rs.getShort("part");

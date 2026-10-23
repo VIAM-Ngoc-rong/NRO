@@ -101,6 +101,10 @@ public class ItemService {
             item.itemOptions.add(new Item.ItemOption(30, 0));
             return item;
         }
+        if (item.template != null && item.template.type == 5) {
+            randomizeCostumeStats(item, itemShop.options);
+            return item;
+        }
         boolean isBoughtWithRuby = itemShop.typeSell == 3
                 || (itemShop.iconSpec > 0 && getItemIdByIcon((short) itemShop.iconSpec) == 861)
                 || (itemShop.tabShop != null && (itemShop.tabShop.id == 18 || itemShop.tabShop.id == 1801 || itemShop.tabShop.id == 590));
@@ -129,6 +133,149 @@ public class ItemService {
             item.itemOptions.add(copyOpt);
         }
         return item;
+    }
+
+    public void randomizeCostumeStats(Item item, List<Item.ItemOption> baseOptions) {
+        if (item == null || baseOptions == null) {
+            return;
+        }
+        item.itemOptions.clear();
+        boolean hasMainStat = false;
+        int maxMainCap = 25;
+        for (Item.ItemOption io : baseOptions) {
+            if (io != null && io.optionTemplate != null) {
+                int id = io.optionTemplate.id;
+                if ((id == 50 || id == 77 || id == 103) && io.param > 1) {
+                    hasMainStat = true;
+                    if (io.param > maxMainCap) {
+                        maxMainCap = io.param;
+                    }
+                }
+            }
+        }
+
+        List<Item.ItemOption> mainAndSubOpts = new ArrayList<>();
+        List<Item.ItemOption> tailOpts = new ArrayList<>();
+        List<Integer> existingOptIds = new ArrayList<>();
+        int combatSubCount = 0;
+
+        for (Item.ItemOption io : baseOptions) {
+            if (io == null || io.optionTemplate == null) {
+                continue;
+            }
+            Item.ItemOption copyOpt = new Item.ItemOption(io);
+            int optId = copyOpt.optionTemplate.id;
+            existingOptIds.add(optId);
+            switch (optId) {
+                case 50, 77, 103 -> {
+                    if (copyOpt.param > 1) {
+                        int minMain = Math.max(10, (copyOpt.param * 70) / 100);
+                        int maxMain = Math.max(copyOpt.param, minMain + 4);
+                        copyOpt.param = Util.nextInt(minMain, maxMain);
+                    }
+                    mainAndSubOpts.add(copyOpt);
+                }
+                case 159 -> {
+                    copyOpt.param = Util.nextInt(50, 150);
+                    mainAndSubOpts.add(copyOpt);
+                    combatSubCount++;
+                }
+                case 153 -> {
+                    copyOpt.param = Util.nextInt(25, 75);
+                    mainAndSubOpts.add(copyOpt);
+                    combatSubCount++;
+                }
+                case 66 -> {
+                    copyOpt.param = Util.nextInt(25, 75);
+                    mainAndSubOpts.add(copyOpt);
+                    combatSubCount++;
+                }
+                case 0, 5, 6, 7, 8, 14, 19, 22, 23, 27, 28, 47, 79, 80, 81, 94, 95, 96, 97, 98, 99, 100, 101, 108, 114, 117, 160, 162, 170, 210, 236 -> {
+                    if (copyOpt.param > 1) {
+                        int minSub = Math.max(1, (copyOpt.param * 60) / 100);
+                        copyOpt.param = Util.nextInt(minSub, copyOpt.param);
+                    }
+                    mainAndSubOpts.add(copyOpt);
+                    combatSubCount++;
+                }
+                case 30, 73, 93 -> tailOpts.add(copyOpt);
+                default -> {
+                    mainAndSubOpts.add(copyOpt);
+                    combatSubCount++;
+                }
+            }
+        }
+
+        if (hasMainStat) {
+            Item.ItemOption opt50 = null, opt77 = null, opt103 = null;
+            for (Item.ItemOption io : mainAndSubOpts) {
+                if (io.optionTemplate.id == 50) opt50 = io;
+                else if (io.optionTemplate.id == 77) opt77 = io;
+                else if (io.optionTemplate.id == 103) opt103 = io;
+            }
+            if (opt50 != null && opt77 != null && opt103 != null
+                    && opt50.param == opt77.param && opt77.param == opt103.param) {
+                opt77.param = Math.max(10, opt77.param - Util.nextInt(1, 3));
+                opt103.param = Math.max(10, opt103.param - Util.nextInt(0, 4));
+                if (opt50.param == opt77.param && opt77.param == opt103.param) {
+                    opt50.param += 1;
+                }
+            }
+
+            int extraBonusCount = (combatSubCount == 0) ? Util.nextInt(2, 3) : 1;
+            int[][] costumeBonusPool = {
+                {5, 8, Math.max(12, (maxMainCap * 2) / 3)},   // +#% sức đánh chí mạng
+                {14, 5, Math.max(8, maxMainCap / 2)},         // Chí mạng +#%
+                {95, 8, Math.max(12, maxMainCap / 2 + 2)},    // Hút HP +#%
+                {96, 8, Math.max(12, maxMainCap / 2 + 2)},    // Hút KI +#%
+                {94, 8, Math.max(12, maxMainCap / 2 + 2)},    // Giáp +#%
+                {108, 8, Math.max(12, maxMainCap / 2 + 2)},   // Né đòn +#%
+                {101, 15, Math.max(25, maxMainCap + 10)},     // +#% TNSM
+                {98, 8, Math.max(12, maxMainCap / 2)},        // Xuyên giáp #% chưởng
+                {99, 8, Math.max(12, maxMainCap / 2)},        // Xuyên giáp #% cận chiến
+                {117, 8, Math.max(12, maxMainCap / 2)}        // Đẹp +#% SĐ xung quanh
+            };
+            int added = 0;
+            for (int attempt = 0; attempt < 12 && added < extraBonusCount; attempt++) {
+                int[] bp = costumeBonusPool[Util.nextInt(0, costumeBonusPool.length - 1)];
+                if (!existingOptIds.contains(bp[0])) {
+                    existingOptIds.add(bp[0]);
+                    mainAndSubOpts.add(new Item.ItemOption(bp[0], Util.nextInt(bp[1], bp[2])));
+                    added++;
+                }
+            }
+        }
+
+        item.itemOptions.addAll(mainAndSubOpts);
+        item.itemOptions.addAll(tailOpts);
+    }
+
+    public void upgradeFlatCostumeIfNeeded(Item item) {
+        if (item == null || !item.isNotNullItem() || item.template == null || item.template.type != 5
+                || item.itemOptions == null || item.itemOptions.isEmpty()) {
+            return;
+        }
+        int p50 = -1, p77 = -1, p103 = -1;
+        int combatSubCount = 0;
+        for (Item.ItemOption io : item.itemOptions) {
+            if (io == null || io.optionTemplate == null) {
+                continue;
+            }
+            int id = io.optionTemplate.id;
+            if (id == 50) p50 = io.param;
+            else if (id == 77) p77 = io.param;
+            else if (id == 103) p103 = io.param;
+            else if (id != 30 && id != 73 && id != 93) {
+                combatSubCount++;
+            }
+        }
+        if (p50 > 0 && p77 > 0 && p103 > 0 && (combatSubCount == 0 || (p50 == p77 && p77 == p103 && combatSubCount <= 1))) {
+            List<Item.ItemOption> snapshot = new ArrayList<>();
+            for (Item.ItemOption io : item.itemOptions) {
+                snapshot.add(new Item.ItemOption(io));
+            }
+            randomizeCostumeStats(item, snapshot);
+        }
     }
 
     public Item copyItem(Item item) {

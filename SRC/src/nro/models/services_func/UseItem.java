@@ -2140,11 +2140,12 @@ public class UseItem {
             if (randomOption >= 1) {
                 newItem.itemOptions.add(new ItemOption(93, 3));
             }
+            ItemService.gI().randomizeCostumeStats(newItem, new ArrayList<>(newItem.itemOptions));
 
             InventoryService.gI().addItemBag(player, newItem);
             InventoryService.gI().subQuantityItemsBag(player, itemused, 1);
             InventoryService.gI().sendItemBags(player);
-            Service.gI().sendThongBao(player, "Bạn đã nhận được item ngẫu nhiên");
+            Service.gI().sendThongBao(player, "Bạn đã nhận được " + newItem.template.name + " (chỉ số ngẫu nhiên)!");
         } else {
             Service.gI().sendThongBao(player, "Yêu cầu có 5 ô trống trong hành trang.");
         }
@@ -2206,20 +2207,21 @@ public class UseItem {
             Item newItem = ItemService.gI().createNewItem(randomItemId);
             RewardService.gI().initChiSoItem(newItem);
 
-            newItem.itemOptions.add(new ItemOption(50, 25));   // HP
-            newItem.itemOptions.add(new ItemOption(77, 25));   // KI
-            newItem.itemOptions.add(new ItemOption(103, 25)); // Sức đánh
+            newItem.itemOptions.add(new ItemOption(50, 28));   // SĐ
+            newItem.itemOptions.add(new ItemOption(77, 28));   // HP
+            newItem.itemOptions.add(new ItemOption(103, 28));  // KI
             newItem.itemOptions.add(new ItemOption(236, 10));  // May mắn
 
             int randomOption = (int) (Math.random() * 100);
             if (randomOption >= 1) {
                 newItem.itemOptions.add(new ItemOption(93, 3));
             }
+            ItemService.gI().randomizeCostumeStats(newItem, new ArrayList<>(newItem.itemOptions));
 
             InventoryService.gI().addItemBag(player, newItem);
             InventoryService.gI().subQuantityItemsBag(player, itemused, 1);
             InventoryService.gI().sendItemBags(player);
-            Service.gI().sendThongBao(player, "Bạn đã nhận được item ngẫu nhiên");
+            Service.gI().sendThongBao(player, "Bạn đã nhận được " + newItem.template.name + " (chỉ số ngẫu nhiên)!");
         } else {
             Service.gI().sendThongBao(player, "Yêu cầu có 5 ô trống trong hành trang.");
         }
@@ -2245,11 +2247,12 @@ public class UseItem {
             if (randomOption >= 1) {
                 newItem.itemOptions.add(new ItemOption(93, 3));
             }
+            ItemService.gI().randomizeCostumeStats(newItem, new ArrayList<>(newItem.itemOptions));
 
             InventoryService.gI().addItemBag(player, newItem);
             InventoryService.gI().subQuantityItemsBag(player, itemused, 1);
             InventoryService.gI().sendItemBags(player);
-            Service.gI().sendThongBao(player, "Bạn đã nhận được item ngẫu nhiên");
+            Service.gI().sendThongBao(player, "Bạn đã nhận được " + newItem.template.name + " (chỉ số ngẫu nhiên)!");
         } else {
             Service.gI().sendThongBao(player, "Yêu cầu có 5 ô trống trong hành trang.");
         }
@@ -2275,11 +2278,12 @@ public class UseItem {
             if (randomOption >= 1) {
                 newItem.itemOptions.add(new ItemOption(93, 3));
             }
+            ItemService.gI().randomizeCostumeStats(newItem, new ArrayList<>(newItem.itemOptions));
 
             InventoryService.gI().addItemBag(player, newItem);
             InventoryService.gI().subQuantityItemsBag(player, itemused, 1);
             InventoryService.gI().sendItemBags(player);
-            Service.gI().sendThongBao(player, "Bạn đã nhận được item ngẫu nhiên");
+            Service.gI().sendThongBao(player, "Bạn đã nhận được " + newItem.template.name + " (chỉ số ngẫu nhiên)!");
         } else {
             Service.gI().sendThongBao(player, "Yêu cầu có 5 ô trống trong hành trang.");
         }
@@ -2311,13 +2315,14 @@ public class UseItem {
             if (randomOption >= 50) {
                 newItem.itemOptions.add(new ItemOption(93, 3));
             }
+            ItemService.gI().randomizeCostumeStats(newItem, new ArrayList<>(newItem.itemOptions));
 
             // Thêm vào túi và cập nhật
             InventoryService.gI().addItemBag(player, newItem);
             InventoryService.gI().subQuantityItemsBag(player, itemUsed, 1);
             InventoryService.gI().sendItemBags(player);
 
-            Service.gI().sendThongBao(player, "Bạn đã nhận được " + newItem.template.name + "!");
+            Service.gI().sendThongBao(player, "Bạn đã nhận được " + newItem.template.name + " (chỉ số ngẫu nhiên)!");
         } else {
             Service.gI().sendThongBao(player, "Yêu cầu có ít nhất 5 ô trống trong hành trang.");
         }
@@ -2343,11 +2348,12 @@ public class UseItem {
             if (randomOption >= 1) {
                 newItem.itemOptions.add(new ItemOption(93, 3));
             }
+            ItemService.gI().randomizeCostumeStats(newItem, new ArrayList<>(newItem.itemOptions));
 
             InventoryService.gI().addItemBag(player, newItem);
             InventoryService.gI().subQuantityItemsBag(player, itemused, 1);
             InventoryService.gI().sendItemBags(player);
-            Service.gI().sendThongBao(player, "Bạn đã nhận được item ngẫu nhiên");
+            Service.gI().sendThongBao(player, "Bạn đã nhận được " + newItem.template.name + " (chỉ số ngẫu nhiên)!");
         } else {
             Service.gI().sendThongBao(player, "Yêu cầu có 5 ô trống trong hành trang.");
         }

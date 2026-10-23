@@ -912,7 +912,8 @@ public class ShopService {
         String extraRollMsg = "";
         boolean isRubyBuy = is.typeSell == COST_RUBY
                 || (is.iconSpec > 0 && ItemService.gI().getItemIdByIcon((short) is.iconSpec) == 861)
-                || (is.tabShop != null && (is.tabShop.id == 18 || is.tabShop.id == 1801 || is.tabShop.id == 590));
+                || (is.tabShop != null && (is.tabShop.id == 18 || is.tabShop.id == 1801 || is.tabShop.id == 590))
+                || (item.template != null && (item.template.type == 5 || item.template.type == 11));
         if (isRubyBuy) {
             extraRollMsg = formatRolledStatsSummary(item);
         } else if (item.itemOptions != null) {
@@ -957,8 +958,12 @@ public class ShopService {
                 case 159 -> sb.append("ST Chưởng +").append(p).append("%, ");
                 case 153 -> sb.append("ST Nổ +").append(p).append("%, ");
                 case 66 -> sb.append("ST Laze +").append(p).append("%, ");
+                case 94 -> sb.append("Giáp +").append(p).append("%, ");
                 case 95 -> sb.append("Hút HP +").append(p).append("%, ");
                 case 96 -> sb.append("Hút KI +").append(p).append("%, ");
+                case 98, 99 -> sb.append("XG +").append(p).append("%, ");
+                case 101 -> sb.append("TNSM +").append(p).append("%, ");
+                case 108 -> sb.append("Né +").append(p).append("%, ");
                 case 14 -> sb.append("CM +").append(p).append("%, ");
                 case 5 -> sb.append("SĐCM +").append(p).append("%, ");
             }

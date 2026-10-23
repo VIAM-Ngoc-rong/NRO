@@ -826,6 +826,31 @@ public class ShopDAO {
                 itemShop.iconSpec = rs.getInt("icon_spec");
                 itemShop.typeSell = rs.getByte("type_sell");
                 loadItemShopOption(con, itemShop);
+                if (itemShop.temp != null && itemShop.temp.type == 5) {
+                    boolean hasMainStat = false;
+                    boolean hasSubStat = false;
+                    int expiryDays = 0;
+                    for (Item.ItemOption io : itemShop.options) {
+                        if (io != null && io.optionTemplate != null) {
+                            int oid = io.optionTemplate.id;
+                            if (oid == 50 || oid == 77 || oid == 103) {
+                                hasMainStat = true;
+                            } else if (oid == 93) {
+                                expiryDays = io.param;
+                            } else if (oid != 30 && oid != 73) {
+                                hasSubStat = true;
+                            }
+                        }
+                    }
+                    if (hasMainStat && !hasSubStat) {
+                        itemShop.options.clear();
+                        applyClassicCostumeOptions(itemShop, itemShop.temp);
+                        if (expiryDays > 0) {
+                            itemShop.options.add(new Item.ItemOption(93, expiryDays));
+                        }
+                        itemShop.options.add(new Item.ItemOption(30, 0));
+                    }
+                }
                 if (itemShop.temp != null && itemShop.temp.type == 11) {
                     itemShop.options.removeIf(io -> io.optionTemplate != null && io.optionTemplate.id == 93);
                     boolean isRubyPerm = (itemShop.typeSell == 3 && tabShop.id != 59);
