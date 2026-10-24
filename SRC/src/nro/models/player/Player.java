@@ -90,6 +90,14 @@ public class Player implements Runnable {
     @Setter
     @Getter
     public MySession session;
+
+    public MySession getSession() {
+        return this.session;
+    }
+
+    public void setSession(MySession session) {
+        this.session = session;
+    }
     public long id;
     public String name;
     public byte gender;

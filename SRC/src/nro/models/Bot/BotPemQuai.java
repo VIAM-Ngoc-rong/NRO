@@ -122,7 +122,7 @@ public class BotPemQuai {
         }
 
         int skillId = bot.playerSkill.skillSelect.template.id;
-        byte skillType = bot.playerSkill.skillSelect.template.type;
+        int skillType = bot.playerSkill.skillSelect.template.type;
         if (skillId == Skill.KAMEJOKO || skillId == Skill.MASENKO || skillId == Skill.ANTOMIC) {
             if (this.bot.UseLastTimeSkill()) {
                 SkillService.gI().useSkillAttack(bot, null, mAttack);

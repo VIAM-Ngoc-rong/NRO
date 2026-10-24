@@ -81,6 +81,34 @@ public class Zone {
     public int mapId;
     private int nextMobId = 1000;
 
+    public List<Player> getNonInteractiveNPCs() {
+        return this.nonInteractiveNPCs;
+    }
+
+    public List<Player> getHumanoids() {
+        return this.humanoids;
+    }
+
+    public List<Player> getNotBosses() {
+        return this.notBosses;
+    }
+
+    public List<Player> getPlayers() {
+        return this.players;
+    }
+
+    public List<Player> getBosses() {
+        return this.bosses;
+    }
+
+    public Player getNpc() {
+        return this.Npc;
+    }
+
+    public void setNpc(Player Npc) {
+        this.Npc = Npc;
+    }
+
     public boolean isFullPlayer() {
         return this.players.size() >= this.maxPlayer;
     }
