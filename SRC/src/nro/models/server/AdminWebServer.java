@@ -1698,8 +1698,13 @@ public class AdminWebServer {
                     }
 
                     long nowMs = System.currentTimeMillis();
-                    Timestamp tsCreate = new Timestamp(nowMs);
-                    Timestamp tsExpire = new Timestamp(nowMs + daysValid * 86400_000L);
+                    long maxTimestampMs = 2145888000_000L; // 2037-12-31 safely within MySQL 32-bit TIMESTAMP
+                    long expireMs = Math.min(nowMs + daysValid * 86400_000L, maxTimestampMs);
+                    if (expireMs <= nowMs) {
+                        expireMs = maxTimestampMs;
+                    }
+                    Timestamp tsCreate = new Timestamp(Math.min(nowMs, maxTimestampMs - 86400_000L));
+                    Timestamp tsExpire = new Timestamp(expireMs);
                     int dbId = -1;
 
                     try (Connection con = LocalManager.getConnection()) {
@@ -1729,20 +1734,22 @@ public class AdminWebServer {
                             existing.datecreate = tsCreate;
                             existing.dateexpired = tsExpire;
                         } else {
-                            try (PreparedStatement ps = con.prepareStatement(
-                                    "INSERT INTO giftcode (code, count_left, detail, datecreate, expired) VALUES (?, ?, ?, ?, ?)",
-                                     java.sql.Statement.RETURN_GENERATED_KEYS)) {
-                                ps.setString(1, rawCode);
-                                ps.setInt(2, countLeft);
-                                ps.setString(3, detailDbJson.toString());
-                                ps.setTimestamp(4, tsCreate);
-                                ps.setTimestamp(5, tsExpire);
-                                ps.executeUpdate();
-                                try (ResultSet rs = ps.getGeneratedKeys()) {
-                                    if (rs.next()) {
-                                        dbId = rs.getInt(1);
-                                    }
+                            dbId = 1;
+                            try (PreparedStatement psMax = con.prepareStatement("SELECT COALESCE(MAX(id), 0) + 1 FROM giftcode");
+                                 ResultSet rsMax = psMax.executeQuery()) {
+                                if (rsMax.next()) {
+                                    dbId = rsMax.getInt(1);
                                 }
+                            }
+                            try (PreparedStatement ps = con.prepareStatement(
+                                    "INSERT INTO giftcode (id, code, count_left, detail, datecreate, expired) VALUES (?, ?, ?, ?, ?, ?)")) {
+                                ps.setInt(1, dbId);
+                                ps.setString(2, rawCode);
+                                ps.setInt(3, countLeft);
+                                ps.setString(4, detailDbJson.toString());
+                                ps.setTimestamp(5, tsCreate);
+                                ps.setTimestamp(6, tsExpire);
+                                ps.executeUpdate();
                             }
                             GiftCode newGc = new GiftCode();
                             newGc.id = dbId;

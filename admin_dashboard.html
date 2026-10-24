@@ -1989,7 +1989,9 @@
 
     async function clearBossKillHistory() {
       if (!confirm('Bạn có chắc muốn xóa toàn bộ lịch sử tiêu diệt Boss không?')) return;
-      await postAction({ action: 'clear_boss_kill_history' });
+      const res = await postAction({ action: 'clear_boss_kill_history' });
+      showToast(res.message || 'Đã xóa lịch sử tiêu diệt Boss!', !res.ok);
+      if (res.ok) fetchStatus();
     }
 
     let cachedGiftcodes = [];
@@ -2008,7 +2010,7 @@
         { id: -4, name: 'Rương SKH Tân Thủ', quantity: 5, options: [] }
       ];
       renderDraftGiftcodeItems();
-      showToast('Đã nạp gói quà mẫu: x50 Thỏi vàng + x999 Trang/Bìa sách cũ + x5 Rương SKH!', true);
+      showToast('Đã nạp gói quà mẫu: x50 Thỏi vàng + x999 Trang/Bìa sách cũ + x5 Rương SKH!', false);
     }
 
     function addDraftGiftItem(id, name, qty, options) {
@@ -2121,7 +2123,7 @@
       const qtyVal = Math.max(1, parseInt(document.getElementById('gcCustomItemQty').value, 10) || 1);
       const optsRaw = (document.getElementById('gcCustomItemOpts').value || '').trim();
       if (isNaN(idVal) || idVal < -4) {
-        showToast('Vui lòng chọn hoặc nhập ID vật phẩm hợp lệ!', false);
+        showToast('Vui lòng chọn hoặc nhập ID vật phẩm hợp lệ!', true);
         return;
       }
       const found = allItemsCache.find(x => Number(x.id) === idVal);
@@ -2134,6 +2136,7 @@
         }
       }
       addDraftGiftItem(idVal, itemName, qtyVal, opts);
+      showToast(`Đã thêm x${qtyVal} ${itemName} vào mã Giftcode đang soạn!`, false);
     }
 
     async function saveGiftcode() {
@@ -2142,14 +2145,15 @@
       const daysValid = Math.max(1, parseInt(document.getElementById('gcDaysInput').value, 10) || 365);
       const announce = document.getElementById('gcAnnounceCheck').checked ? '1' : '0';
       if (!code) {
-        showToast('Vui lòng nhập tên Mã Giftcode!', false);
+        showToast('Vui lòng nhập tên Mã Giftcode!', true);
         return;
       }
       if (draftGiftcodeItems.length === 0) {
-        showToast('Vui lòng thêm ít nhất 1 vật phẩm vào Giftcode!', false);
+        showToast('Vui lòng thêm ít nhất 1 vật phẩm vào Giftcode!', true);
         return;
       }
-      await postAction({
+      showToast('Đang lưu và kích hoạt mã Giftcode trên Server...', false);
+      const res = await postAction({
         action: 'save_giftcode',
         code,
         countLeft,
@@ -2157,6 +2161,14 @@
         announce,
         itemsJson: JSON.stringify(draftGiftcodeItems)
       });
+      if (!res.ok && res.message && res.message.includes('save_giftcode')) {
+        showToast('Server VPS chưa cập nhật bản mới! Hãy bấm nút [Cập Nhật & Khởi Động Lại] ở thanh trên cùng trước!', true);
+        return;
+      }
+      showToast(res.message || (res.ok ? 'Đã lưu & kích hoạt Giftcode thành công!' : 'Lỗi khi lưu Giftcode!'), !res.ok);
+      if (res.ok) {
+        fetchStatus();
+      }
     }
 
     function renderGiftcodesTable() {
@@ -2213,17 +2225,21 @@
       }));
       renderDraftGiftcodeItems();
       window.scrollTo({ top: 0, behavior: 'smooth' });
-      showToast(`Đã nạp mã [${gc.code}] lên khung chỉnh sửa!`, true);
+      showToast(`Đã nạp mã [${gc.code}] lên khung chỉnh sửa!`, false);
     }
 
     async function resetGiftcodeUsage(code) {
       if (!confirm(`Cho phép toàn bộ người chơi đã từng nhập mã [${code}] có thể nhập lại mã này?`)) return;
-      await postAction({ action: 'reset_giftcode_usage', code });
+      const res = await postAction({ action: 'reset_giftcode_usage', code });
+      showToast(res.message || 'Đã reset lượt nhận!', !res.ok);
+      if (res.ok) fetchStatus();
     }
 
     async function deleteGiftcode(code, id) {
       if (!confirm(`Bạn có chắc chắn muốn xóa mã Giftcode [${code}] không?`)) return;
-      await postAction({ action: 'delete_giftcode', code, id });
+      const res = await postAction({ action: 'delete_giftcode', code, id });
+      showToast(res.message || 'Đã xóa Giftcode!', !res.ok);
+      if (res.ok) fetchStatus();
     }
 
     async function searchItemsDb() {
