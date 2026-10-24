@@ -6,50 +6,70 @@
   <title>Ngọc Rồng VIAM — Trung Tâm Quản Trị Server</title>
   <style>
     :root {
-      --bg: #f1f5f9;
+      --bg: #f8fafc;
       --panel: #ffffff;
-      --panel-hover: #f8fafc;
+      --panel-hover: #f1f5f9;
+      --panel-subtle: #f8fafc;
       --table-head: #f8fafc;
       --input-bg: #ffffff;
-      --border: #cbd5e1;
+      --border: #e2e8f0;
+      --border-strong: #cbd5e1;
       --text: #0f172a;
+      --text-secondary: #334155;
       --muted: #64748b;
-      --primary: #2563eb;
-      --primary-hover: #1d4ed8;
-      --success: #059669;
+      --primary: #0f172a;
+      --primary-hover: #1e293b;
+      --accent: #2563eb;
+      --success: #10b981;
+      --success-bg: #ecfdf5;
+      --success-border: #a7f3d0;
+      --success-text: #065f46;
       --warning: #d97706;
       --danger: #dc2626;
-      --purple: #7c3aed;
-      --teal: #0d9488;
-      --shadow: 0 2px 10px rgba(15, 23, 42, 0.06);
+      --danger-bg: #fef2f2;
+      --danger-border: #fecaca;
+      --purple: #475569;
+      --teal: #334155;
+      --shadow: 0 1px 3px rgba(15, 23, 42, 0.04), 0 1px 2px rgba(15, 23, 42, 0.02);
     }
     body.dark-mode {
-      --bg: #0f172a;
-      --panel: #1e293b;
-      --panel-hover: #263449;
+      --bg: #090d16;
+      --panel: #111827;
+      --panel-hover: #1e293b;
+      --panel-subtle: #0f172a;
       --table-head: #0f172a;
       --input-bg: #0f172a;
-      --border: #334155;
+      --border: #1f2937;
+      --border-strong: #334155;
       --text: #f8fafc;
+      --text-secondary: #cbd5e1;
       --muted: #94a3b8;
-      --primary: #3b82f6;
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --accent: #3b82f6;
       --success: #10b981;
+      --success-bg: rgba(16, 185, 129, 0.1);
+      --success-border: rgba(16, 185, 129, 0.35);
+      --success-text: #34d399;
       --warning: #f59e0b;
       --danger: #ef4444;
-      --purple: #8b5cf6;
-      --teal: #14b8a6;
-      --shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+      --danger-bg: rgba(239, 68, 68, 0.12);
+      --danger-border: rgba(239, 68, 68, 0.3);
+      --purple: #94a3b8;
+      --teal: #94a3b8;
+      --shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
       background: var(--bg);
       color: var(--text);
       line-height: 1.5;
-      padding: 18px;
-      transition: background 0.2s, color 0.2s;
+      padding: 16px 20px;
+      transition: background 0.15s, color 0.15s;
+      -webkit-font-smoothing: antialiased;
     }
-    .container { max-width: 1460px; margin: 0 auto; }
+    .container { max-width: 1480px; margin: 0 auto; }
 
     header {
       display: flex;
@@ -60,25 +80,25 @@
       background: var(--panel);
       border: 1px solid var(--border);
       box-shadow: var(--shadow);
-      padding: 15px 20px;
-      border-radius: 12px;
-      margin-bottom: 16px;
+      padding: 14px 20px;
+      border-radius: 10px;
+      margin-bottom: 14px;
     }
     .brand { display: flex; align-items: center; gap: 12px; }
     .status-dot {
-      width: 14px;
-      height: 14px;
+      width: 10px;
+      height: 10px;
       border-radius: 50%;
       background: var(--danger);
-      box-shadow: 0 0 10px var(--danger);
+      box-shadow: 0 0 0 3px var(--danger-bg);
       transition: all 0.3s;
     }
     .status-dot.online {
       background: var(--success);
-      box-shadow: 0 0 12px var(--success);
+      box-shadow: 0 0 0 3px var(--success-bg);
     }
-    .brand h1 { font-size: 19px; font-weight: 800; color: var(--text); }
-    .brand span { font-size: 12.5px; color: var(--muted); font-weight: 500; }
+    .brand h1 { font-size: 17px; font-weight: 700; color: var(--text); letter-spacing: -0.01em; }
+    .brand span { font-size: 12px; color: var(--muted); font-weight: 500; }
 
     .conn-bar {
       display: flex;
@@ -90,69 +110,127 @@
       background: var(--input-bg);
       border: 1px solid var(--border);
       color: var(--text);
-      padding: 8px 11px;
-      border-radius: 8px;
+      padding: 7px 11px;
+      border-radius: 7px;
       font-size: 13px;
       outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
     }
-    input:focus, select:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15); }
+    input:focus, select:focus {
+      border-color: var(--border-strong);
+      box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.06);
+    }
+    body.dark-mode input:focus, body.dark-mode select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+    }
+
+    /* Hệ thống nút bấm tối giản, đồng nhất, ít màu */
     button {
       background: var(--primary);
-      color: #fff;
-      border: none;
-      padding: 8px 14px;
-      border-radius: 8px;
-      font-size: 13px;
+      color: #ffffff;
+      border: 1px solid var(--primary);
+      padding: 7px 13px;
+      border-radius: 7px;
+      font-size: 12.5px;
       font-weight: 600;
       cursor: pointer;
-      transition: opacity 0.18s, transform 0.1s;
+      transition: all 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
     }
-    button:hover { opacity: 0.92; }
-    button:active { transform: scale(0.98); }
-    .btn-success { background: var(--success); color: #fff; }
-    .btn-warning { background: var(--warning); color: #fff; }
-    .btn-danger { background: var(--danger); color: #fff; }
-    .btn-purple { background: var(--purple); color: #fff; }
-    .btn-teal { background: var(--teal); color: #fff; }
-    .btn-muted { background: #64748b; color: #fff; }
-    .btn-sm { padding: 5px 10px; font-size: 12px; border-radius: 6px; }
+    button:hover { background: var(--primary-hover); border-color: var(--primary-hover); }
+    button:active { transform: translateY(0.5px); }
+
+    /* Các nút chức năng phụ chuyển về dạng Outline trung tính, sạch sẽ */
+    .btn-warning,
+    .btn-purple,
+    .btn-teal,
+    .btn-muted {
+      background: var(--panel);
+      color: var(--text-secondary);
+      border: 1px solid var(--border);
+    }
+    .btn-warning:hover,
+    .btn-purple:hover,
+    .btn-teal:hover,
+    .btn-muted:hover {
+      background: var(--panel-hover);
+      border-color: var(--border-strong);
+      color: var(--text);
+    }
+
+    /* Nút xác nhận chính */
+    .btn-success {
+      background: var(--primary);
+      color: #ffffff;
+      border: 1px solid var(--primary);
+    }
+    .btn-success:hover {
+      background: var(--primary-hover);
+      border-color: var(--primary-hover);
+    }
+
+    /* Nút cảnh báo / xóa / tắt: nền nhạt tinh tế, chỉ đỏ đậm khi di chuột */
+    .btn-danger {
+      background: var(--danger-bg);
+      color: var(--danger);
+      border: 1px solid var(--danger-border);
+    }
+    .btn-danger:hover {
+      background: var(--danger);
+      border-color: var(--danger);
+      color: #ffffff;
+    }
+
+    .btn-sm { padding: 5px 10px; font-size: 12px; border-radius: 6px; font-weight: 500; }
 
     .stats-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 14px;
-      margin-bottom: 16px;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 12px;
+      margin-bottom: 14px;
     }
     .stat-card {
       background: var(--panel);
       border: 1px solid var(--border);
       box-shadow: var(--shadow);
-      border-radius: 12px;
-      padding: 15px 18px;
+      border-radius: 10px;
+      padding: 14px 16px;
     }
-    .stat-label { font-size: 12.5px; color: var(--muted); font-weight: 600; margin-bottom: 4px; }
-    .stat-value { font-size: 25px; font-weight: 800; }
-    .stat-sub { font-size: 12px; color: var(--muted); margin-top: 5px; }
+    .stat-label { font-size: 12px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em; margin-bottom: 6px; }
+    .stat-value { font-size: 24px; font-weight: 700; color: var(--text); font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
+    .stat-sub { font-size: 12px; color: var(--muted); margin-top: 4px; }
+    .stat-sub a { color: var(--text-secondary); text-decoration: underline; text-underline-offset: 2px; font-weight: 600; }
+    .stat-sub a:hover { color: var(--text); }
 
     .actions-bar {
       display: flex;
       flex-wrap: wrap;
-      gap: 9px;
+      gap: 8px;
       background: var(--panel);
       border: 1px solid var(--border);
       box-shadow: var(--shadow);
-      padding: 12px 16px;
-      border-radius: 12px;
+      padding: 10px 14px;
+      border-radius: 10px;
       margin-bottom: 16px;
       align-items: center;
     }
     .announce-box {
       display: flex;
       flex: 1;
-      min-width: 250px;
+      min-width: 260px;
       gap: 8px;
     }
     .announce-box input { flex: 1; }
+    .toolbar-divider {
+      width: 1px;
+      height: 24px;
+      background: var(--border);
+      margin: 0 4px;
+    }
 
     .workspace-layout {
       display: flex;
@@ -162,25 +240,29 @@
     .tabs {
       display: flex;
       flex-direction: column;
-      gap: 8px;
-      width: 265px;
+      gap: 4px;
+      width: 245px;
       flex-shrink: 0;
       position: sticky;
       top: 14px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      padding: 8px;
+      border-radius: 10px;
     }
     .tab-content-area {
       flex: 1;
       min-width: 0;
     }
     .tab-btn {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      color: var(--muted);
-      padding: 12px 15px;
-      border-radius: 10px;
-      font-size: 13.5px;
-      font-weight: 700;
-      box-shadow: var(--shadow);
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text-secondary);
+      padding: 9px 12px;
+      border-radius: 7px;
+      font-size: 13px;
+      font-weight: 600;
       text-align: left;
       width: 100%;
       display: flex;
@@ -188,10 +270,20 @@
       justify-content: space-between;
       gap: 8px;
     }
+    .tab-btn:hover {
+      background: var(--panel-hover);
+      border-color: transparent;
+      color: var(--text);
+    }
     .tab-btn.active {
       background: var(--primary);
       border-color: var(--primary);
-      color: #fff;
+      color: #ffffff;
+    }
+    .tab-btn.active .badge {
+      background: rgba(255, 255, 255, 0.16);
+      color: #ffffff;
+      border-color: transparent;
     }
     @media (max-width: 960px) {
       .workspace-layout {
@@ -200,31 +292,41 @@
       .tabs {
         width: 100%;
         position: static;
+        flex-direction: row;
+        flex-wrap: wrap;
       }
+      .tab-btn {
+        width: auto;
+        flex: 1 1 160px;
+      }
+      .toolbar-divider { display: none; }
     }
 
     .card {
       background: var(--panel);
       border: 1px solid var(--border);
       box-shadow: var(--shadow);
-      border-radius: 12px;
-      padding: 16px 18px;
-      margin-bottom: 18px;
+      border-radius: 10px;
+      padding: 18px 20px;
+      margin-bottom: 16px;
     }
     .card-header {
       display: flex;
       flex-wrap: wrap;
       align-items: center;
       justify-content: space-between;
-      gap: 10px;
-      margin-bottom: 12px;
+      gap: 12px;
+      margin-bottom: 14px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
     }
+    .card-header h3 { font-size: 15px; font-weight: 700; color: var(--text); }
     .grid-2 {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(430px, 1fr));
       gap: 16px;
     }
-    .table-wrap { overflow-x: auto; max-height: 600px; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px; }
+    .table-wrap { overflow-x: auto; max-height: 620px; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px; }
     table {
       width: 100%;
       border-collapse: collapse;
@@ -232,57 +334,55 @@
     }
     th, td {
       text-align: left;
-      padding: 9px 12px;
+      padding: 10px 12px;
       border-bottom: 1px solid var(--border);
       white-space: nowrap;
+      vertical-align: middle;
     }
     th {
       color: var(--muted);
-      font-weight: 700;
+      font-size: 11.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      font-weight: 600;
       background: var(--table-head);
       position: sticky;
       top: 0;
       z-index: 2;
     }
+    tr:last-child td { border-bottom: none; }
     tr:hover td { background: var(--panel-hover); }
-    .badge {
-      display: inline-block;
-      padding: 3px 9px;
-      border-radius: 999px;
-      font-size: 11px;
-      font-weight: 700;
-    }
-    .badge-alive { background: #d1fae5; color: #065f46; }
-    .badge-dead { background: #e2e8f0; color: #475569; }
-    .badge-ban { background: #fee2e2; color: #991b1b; }
-    .badge-admin { background: #fef3c7; color: #92400e; }
-    body.dark-mode .badge-alive { background: rgba(16, 185, 129, 0.22); color: #34d399; }
-    body.dark-mode .badge-dead { background: rgba(148, 163, 184, 0.18); color: #cbd5e1; }
-    body.dark-mode .badge-ban { background: rgba(239, 68, 68, 0.22); color: #f87171; }
-    body.dark-mode .badge-admin { background: rgba(245, 158, 11, 0.22); color: #fbbf24; }
 
-    .text-name { color: var(--primary); font-weight: 700; }
-    .text-power { color: #d97706; font-weight: 700; }
-    .text-gold { color: #b45309; font-weight: 600; }
-    .text-gem { color: #059669; font-weight: 600; }
-    .text-ruby { color: #e11d48; font-weight: 600; }
-    .text-vnd { color: #7c3aed; font-weight: 700; }
-    body.dark-mode .text-name { color: #60a5fa; }
-    body.dark-mode .text-power { color: #fbbf24; }
-    body.dark-mode .text-gold { color: #fcd34d; }
-    body.dark-mode .text-gem { color: #34d399; }
-    body.dark-mode .text-ruby { color: #fb7185; }
-    body.dark-mode .text-vnd { color: #a78bfa; }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      border: 1px solid transparent;
+    }
+    .badge-alive { background: var(--success-bg); color: var(--success-text); border-color: var(--success-border); }
+    .badge-dead { background: var(--panel-hover); color: var(--muted); border-color: var(--border); }
+    .badge-ban { background: var(--danger-bg); color: var(--danger); border-color: var(--danger-border); }
+    .badge-admin { background: var(--panel-hover); color: var(--text-secondary); border-color: var(--border-strong); }
+
+    /* Bảng chữ đơn sắc, rõ nét, không lòe loẹt */
+    .text-name { color: var(--text); font-weight: 600; }
+    .text-power { color: var(--text); font-weight: 600; font-variant-numeric: tabular-nums; }
+    .text-gold { color: var(--text-secondary); font-weight: 500; font-variant-numeric: tabular-nums; }
+    .text-gem { color: var(--text-secondary); font-weight: 500; font-variant-numeric: tabular-nums; }
+    .text-ruby { color: var(--text-secondary); font-weight: 500; font-variant-numeric: tabular-nums; }
+    .text-vnd { color: var(--text); font-weight: 600; font-variant-numeric: tabular-nums; }
 
     .hp-bar-bg {
       width: 110px;
-      height: 7px;
-      background: #cbd5e1;
+      height: 6px;
+      background: var(--border);
       border-radius: 999px;
       overflow: hidden;
-      margin-top: 4px;
+      margin-top: 5px;
     }
-    body.dark-mode .hp-bar-bg { background: #0f172a; }
     .hp-bar-fill {
       height: 100%;
       background: var(--success);
@@ -294,7 +394,7 @@
       align-items: center;
       justify-content: space-between;
       gap: 8px;
-      padding: 10px 4px 2px;
+      padding: 8px 2px 10px;
       font-size: 12.5px;
       color: var(--muted);
     }
@@ -303,7 +403,8 @@
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(15, 23, 42, 0.6);
+      background: rgba(15, 23, 42, 0.5);
+      backdrop-filter: blur(2px);
       align-items: center;
       justify-content: center;
       z-index: 999;
@@ -313,26 +414,33 @@
     .modal {
       background: var(--panel);
       border: 1px solid var(--border);
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
-      border-radius: 12px;
-      padding: 20px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+      border-radius: 10px;
+      padding: 20px 22px;
       width: 100%;
       max-width: 540px;
       max-height: 90vh;
       overflow-y: auto;
     }
-    .modal h3 { margin-bottom: 14px; }
-    .form-group { margin-bottom: 11px; }
-    .form-group label { display: block; font-size: 12px; font-weight: 600; color: var(--muted); margin-bottom: 4px; }
+    .modal h3 { font-size: 16px; font-weight: 700; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+    .form-group { margin-bottom: 12px; }
+    .form-group label { display: block; font-size: 12px; font-weight: 600; color: var(--text-secondary); margin-bottom: 5px; }
     .form-group input, .form-group select { width: 100%; }
-    .modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
+    .modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 18px; padding-top: 12px; border-top: 1px solid var(--border); }
+    .modal-box-subtle {
+      background: var(--panel-subtle);
+      padding: 11px 13px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      margin-bottom: 12px;
+    }
 
     pre.log-box {
       background: #0f172a;
       border: 1px solid var(--border);
       padding: 12px;
       border-radius: 8px;
-      color: #a7f3d0;
+      color: #e2e8f0;
       font-family: Consolas, monospace;
       font-size: 12px;
       max-height: 220px;
@@ -345,11 +453,12 @@
       bottom: 20px;
       right: 20px;
       background: #0f172a;
+      border: 1px solid #334155;
       border-left: 4px solid var(--success);
-      color: #fff;
-      padding: 12px 18px;
+      color: #f8fafc;
+      padding: 12px 16px;
       border-radius: 8px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.25);
       display: none;
       z-index: 1000;
       font-size: 13px;
@@ -363,74 +472,75 @@
       <div class="brand">
         <div id="statusDot" class="status-dot"></div>
         <div>
-          <h1 id="serverTitle">Ngọc Rồng VIAM — Trung Tâm Quản Trị Server</h1>
+          <h1 id="serverTitle">Ngọc Rồng VIAM — Quản Trị Hệ Thống</h1>
           <span id="connStatusText">Đang kết nối tới máy chủ...</span>
         </div>
       </div>
       <div class="conn-bar">
-        <button class="btn-muted btn-sm" onclick="toggleTheme()" id="themeBtn" title="Đổi giao diện Sáng / Tối">🌙 Giao diện Tối</button>
+        <button class="btn-muted btn-sm" onclick="toggleTheme()" id="themeBtn" title="Đổi giao diện Sáng / Tối">Giao diện Tối</button>
         <select id="presetHost" onchange="applyPresetHost()">
           <option value="http://103.179.190.242:14445">VPS (103.179.190.242:14445)</option>
           <option value="http://103.179.190.242:14446">VPS Port Phụ (103.179.190.242:14446)</option>
           <option value="http://127.0.0.1:14445">Máy Local (127.0.0.1:14445)</option>
         </select>
-        <input type="text" id="apiHost" value="http://103.179.190.242:14445" style="width: 205px;" placeholder="http://IP:14445" />
-        <input type="password" id="adminKey" value="viam2026" style="width: 100px;" placeholder="Mã Admin" />
-        <button onclick="fetchStatus()">Làm mới</button>
+        <input type="text" id="apiHost" value="http://103.179.190.242:14445" style="width: 200px;" placeholder="http://IP:14445" />
+        <input type="password" id="adminKey" value="viam2026" style="width: 95px;" placeholder="Mã Admin" />
+        <button class="btn-sm" onclick="fetchStatus()">Làm mới</button>
       </div>
     </header>
 
     <div class="stats-grid">
       <div class="stat-card">
-        <div class="stat-label">Người chơi Online / Bot</div>
-        <div class="stat-value"><span id="statOnline" style="color: var(--success);">0</span> <span style="font-size:15px;color:var(--muted);">(+<span id="statBotCount">0</span> Bot)</span></div>
+        <div class="stat-label">Người chơi trực tuyến</div>
+        <div class="stat-value"><span id="statOnline">0</span> <span style="font-size:14px;font-weight:500;color:var(--muted);">/ <span id="statBotCount">0</span> Bot</span></div>
         <div class="stat-sub" id="statStartTime">Khởi chạy: --</div>
       </div>
       <div class="stat-card">
-        <div class="stat-label">Boss đang xuất hiện</div>
-        <div class="stat-value" id="statBoss" style="color: var(--warning);">0 / 0</div>
-        <div class="stat-sub">Bấm tab Giám Sát Boss để xem khu & gọi Boss</div>
+        <div class="stat-label">Boss đang hoạt động</div>
+        <div class="stat-value" id="statBoss">0 / 0</div>
+        <div class="stat-sub">Xem chi tiết tại mục Giám Sát Boss</div>
       </div>
       <div class="stat-card">
-        <div class="stat-label">Tỷ lệ EXP Server hiện tại</div>
-        <div class="stat-value" id="statExpRate" style="color: var(--purple);">x1</div>
+        <div class="stat-label">Tỷ lệ EXP Server</div>
+        <div class="stat-value" id="statExpRate">x1</div>
         <div class="stat-sub">
-          Đổi nhanh:
-          <a href="javascript:void(0)" onclick="quickSetExp(1)" style="color:var(--primary);font-weight:600;">x1</a> ·
-          <a href="javascript:void(0)" onclick="quickSetExp(2)" style="color:var(--primary);font-weight:600;">x2</a> ·
-          <a href="javascript:void(0)" onclick="quickSetExp(5)" style="color:var(--primary);font-weight:600;">x5</a> ·
-          <a href="javascript:void(0)" onclick="quickSetExp(10)" style="color:var(--primary);font-weight:600;">x10</a>
+          Đặt nhanh:
+          <a href="javascript:void(0)" onclick="quickSetExp(1)">x1</a> ·
+          <a href="javascript:void(0)" onclick="quickSetExp(2)">x2</a> ·
+          <a href="javascript:void(0)" onclick="quickSetExp(5)">x5</a> ·
+          <a href="javascript:void(0)" onclick="quickSetExp(10)">x10</a>
         </div>
       </div>
       <div class="stat-card">
-        <div class="stat-label">Bộ nhớ RAM Server (JVM)</div>
-        <div class="stat-value" id="statRam" style="color: var(--primary);">0 / 0 MB</div>
+        <div class="stat-label">Bộ nhớ RAM (JVM)</div>
+        <div class="stat-value" id="statRam">0 / 0 MB</div>
         <div class="stat-sub" id="statThreads">Số luồng xử lý: --</div>
       </div>
       <div class="stat-card">
-        <div class="stat-label">Thời gian hoạt động (Uptime)</div>
+        <div class="stat-label">Thời gian Uptime</div>
         <div class="stat-value" id="statUptime">00:00:00</div>
-        <div class="stat-sub">Tự động cập nhật mỗi 3 giây</div>
+        <div class="stat-sub">Tự động đồng bộ mỗi 3 giây</div>
       </div>
     </div>
 
     <div class="actions-bar">
       <div class="announce-box">
         <input type="text" id="announceText" placeholder="Nhập thông báo gửi toàn bộ người chơi đang online..." onkeydown="if(event.key==='Enter') sendAnnounce()" />
-        <button onclick="sendAnnounce()">📢 Gửi Thông Báo</button>
+        <button onclick="sendAnnounce()">Gửi Thông Báo</button>
       </div>
-      <button class="btn-warning" onclick="openIntrinsicModal('', 0, 0, -1, 0, 0)" title="Tặng hoặc chỉnh sửa chỉ số Nội tại (%) cho người chơi Online & Offline">⚡ Buff Nội Tại</button>
-      <button class="btn-success" onclick="saveAllData()">💾 Lưu Dữ Liệu</button>
-      <button class="btn-teal" onclick="updateAndRestartServer()" title="Tự động kéo code mới từ GitHub (git pull) và khởi động lại Server không cần mở SSH">🔄 Cập Nhật Code & Khởi Động Lại Server</button>
-      <button class="btn-warning" onclick="triggerBackupNow()">☁️ Backup & Đẩy GitHub</button>
-      <button class="btn-purple" onclick="downloadBackup()">⬇️ Tải File Backup (.sql.gz)</button>
+      <div class="toolbar-divider"></div>
+      <button class="btn-warning" onclick="openIntrinsicModal('', 0, 0, -1, 0, 0)" title="Tặng hoặc chỉnh sửa chỉ số Nội tại (%) cho người chơi Online & Offline">Buff Nội Tại</button>
+      <button class="btn-teal" onclick="saveAllData()">Lưu Dữ Liệu</button>
+      <button class="btn-teal" onclick="updateAndRestartServer()" title="Tự động kéo code mới từ GitHub (git pull) và khởi động lại Server">Cập Nhật & Khởi Động Lại</button>
+      <button class="btn-warning" onclick="triggerBackupNow()">Backup GitHub</button>
+      <button class="btn-purple" onclick="downloadBackup()">Tải Backup (.sql.gz)</button>
     </div>
 
     <div class="workspace-layout">
       <div class="tabs">
         <button id="tabBtnPlayers" class="tab-btn active" onclick="switchTab('players')">
           <span>1. Người Chơi Online</span>
-          <span class="badge badge-alive" id="countPlayersTab">0</span>
+          <span class="badge badge-dead" id="countPlayersTab">0</span>
         </button>
         <button id="tabBtnAccounts" class="tab-btn" onclick="switchTab('accounts')">
           <span>2. Tài Khoản & NV DB</span>
@@ -438,18 +548,18 @@
         </button>
         <button id="tabBtnBosses" class="tab-btn" onclick="switchTab('bosses')">
           <span>3. Giám Sát & Gọi Boss</span>
-          <span class="badge badge-admin" id="countBossesTab">0</span>
+          <span class="badge badge-dead" id="countBossesTab">0</span>
         </button>
         <button id="tabBtnItems" class="tab-btn" onclick="switchTab('items')">
-          <span>4. Kho Vật Phẩm & Option</span>
+          <span>4. Kho Vật Phẩm</span>
           <span class="badge badge-dead" id="countItemsTab">Tất cả</span>
         </button>
         <button id="tabBtnEvents" class="tab-btn" onclick="switchTab('events')">
-          <span>5. 🎉 Quản Lý Sự Kiện</span>
+          <span>5. Quản Lý Sự Kiện</span>
           <span class="badge badge-alive">Live</span>
         </button>
         <button id="tabBtnSystem" class="tab-btn" onclick="switchTab('system')">
-          <span>6. ⚙️ Hệ Thống, Bot & BXH</span>
+          <span>6. Hệ Thống & BXH</span>
         </button>
       </div>
 
@@ -459,9 +569,9 @@
       <div class="card-header">
         <div>
           <h3>Danh sách Nhân vật đang trực tuyến (Real-time)</h3>
-          <span style="font-size:12.5px;color:var(--muted);">Nếu người chơi đang Offline, hãy bấm sang Tab <b>2. Tài Khoản & Nhân Vật Database</b> để xem và chỉnh sửa!</span>
+          <span style="font-size:12.5px;color:var(--muted);">Nếu người chơi đang Offline, hãy chuyển sang mục <b>2. Tài Khoản & NV DB</b> để tra cứu và chỉnh sửa.</span>
         </div>
-        <input type="text" id="searchPlayer" placeholder="Tìm tên nhân vật hoặc map..." oninput="renderPlayers()" style="width: 250px;" />
+        <input type="text" id="searchPlayer" placeholder="Tìm tên nhân vật hoặc bản đồ..." oninput="renderPlayers()" style="width: 250px;" />
       </div>
       <div class="table-wrap">
         <table>
@@ -472,10 +582,10 @@
               <th>Hệ</th>
               <th>Sức mạnh</th>
               <th>Chỉ số (HP / KI / SĐ)</th>
-              <th>Tài sản (Vàng / Ngọc / Hồng Ngọc / VNĐ)</th>
+              <th>Tài sản (Vàng / Ngọc / HN / VNĐ)</th>
               <th>Vị trí hiện tại</th>
               <th>Đệ tử</th>
-              <th>Thao tác nhanh</th>
+              <th>Thao tác</th>
             </tr>
           </thead>
           <tbody id="playersTableBody">
@@ -489,13 +599,13 @@
     <div id="tabAccounts" class="card" style="display: none;">
       <div class="card-header">
         <div>
-          <h3>Toàn bộ Tài Khoản & Nhân Vật trong MySQL (Cả Online & Offline)</h3>
-          <span style="font-size:12.5px;color:var(--muted);">Cộng VNĐ, Mở Thành Viên, Cấp quyền Admin, Đổi mật khẩu hoặc Khóa tài khoản ngay cả khi người chơi đang Offline.</span>
+          <h3>Toàn bộ Tài Khoản & Nhân Vật trong MySQL (Online & Offline)</h3>
+          <span style="font-size:12.5px;color:var(--muted);">Cộng VNĐ, Mở Thành Viên, Cấp quyền Admin, Đổi mật khẩu hoặc Khóa tài khoản.</span>
         </div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;">
-          <input type="text" id="searchAccountDb" placeholder="Tìm tài khoản, tên nhân vật, ID..." onkeydown="if(event.key==='Enter') loadAccountsDb()" style="width: 250px;" />
-          <button onclick="loadAccountsDb()">Tìm kiếm DB</button>
-          <button class="btn-success" onclick="openCreateAccModal()">+ Tạo Tài Khoản Mới</button>
+          <input type="text" id="searchAccountDb" placeholder="Tìm tài khoản, tên nhân vật, ID..." onkeydown="if(event.key==='Enter') loadAccountsDb()" style="width: 240px;" />
+          <button class="btn-muted" onclick="loadAccountsDb()">Tìm kiếm</button>
+          <button class="btn-success" onclick="openCreateAccModal()">+ Tạo Tài Khoản</button>
         </div>
       </div>
       <div class="table-wrap">
@@ -503,7 +613,7 @@
           <thead>
             <tr>
               <th>ID TK</th>
-              <th>Tài khoản (Username)</th>
+              <th>Tài khoản</th>
               <th>Mật khẩu</th>
               <th>Tên Nhân Vật</th>
               <th>Trạng thái</th>
@@ -511,7 +621,7 @@
               <th>Thành Viên / Quyền</th>
               <th>Sức mạnh</th>
               <th>Tài sản (Vàng / Ngọc / HN)</th>
-              <th>Thao tác quản trị</th>
+              <th>Thao tác</th>
             </tr>
           </thead>
           <tbody id="accountsTableBody">
@@ -524,15 +634,18 @@
     <!-- TAB 3: BOSS -->
     <div id="tabBosses" class="card" style="display: none;">
       <div class="card-header">
-        <h3>Danh sách toàn bộ Boss trong Server (Hiện rõ Khu cho Admin)</h3>
+        <div>
+          <h3>Giám sát & Điều khiển Boss Toàn Server</h3>
+          <span style="font-size:12.5px;color:var(--muted);">Theo dõi vị trí bản đồ, khu vực, % HP và triệu hồi hoặc thu hồi Boss trực tiếp.</span>
+        </div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;">
           <select id="filterBossStatus" onchange="renderBosses()">
             <option value="all">Tất cả Boss</option>
             <option value="alive">Chỉ Boss Đang Sống</option>
             <option value="dead">Chỉ Boss Đã Chết / Chờ</option>
           </select>
-          <input type="text" id="searchBoss" placeholder="Tìm tên Boss hoặc tên Map..." oninput="renderBosses()" style="width: 240px;" />
-          <button class="btn-success" onclick="spawnAllBosses()">⚡ Hồi Sinh Tất Cả Boss Đã Chết</button>
+          <input type="text" id="searchBoss" placeholder="Tìm tên Boss hoặc tên Map..." oninput="renderBosses()" style="width: 220px;" />
+          <button class="btn-success" onclick="spawnAllBosses()">Hồi Sinh Tất Cả Boss</button>
         </div>
       </div>
       <div class="table-wrap">
@@ -544,9 +657,9 @@
               <th>Trạng thái</th>
               <th>Máu hiện tại (HP)</th>
               <th>Bản đồ (Map)</th>
-              <th>Khu vực (Zone)</th>
-              <th>Thời gian xuất hiện</th>
-              <th>Thời gian hồi sinh</th>
+              <th>Khu vực</th>
+              <th>Xuất hiện</th>
+              <th>Chu kỳ / Hồi sinh</th>
               <th>Điều khiển</th>
             </tr>
           </thead>
@@ -561,8 +674,8 @@
     <div id="tabItems" class="card" style="display: none;">
       <div class="card-header">
         <div>
-          <h3>Kho Vật Phẩm (Item) & Chỉ Số (Option) Toàn Server</h3>
-          <span id="itemsSubInfo" style="font-size:12.5px;color:var(--muted);">Gõ tên tiếng Việt có dấu hoặc không dấu (VD: "thoi vang", "da ngu sac", "cai trang", "suc danh") hoặc duyệt qua toàn bộ các trang bên dưới.</span>
+          <h3>Kho Vật Phẩm (Item) & Chỉ Số (Option)</h3>
+          <span id="itemsSubInfo" style="font-size:12.5px;color:var(--muted);">Gõ tên tiếng Việt có dấu hoặc không dấu (VD: "thoi vang", "da ngu sac", "cai trang") để lọc nhanh.</span>
         </div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
           <select id="filterItemType" onchange="onFilterItemsLocal()">
@@ -575,29 +688,29 @@
             <option value="5">5 - Cải trang / Tóc</option>
             <option value="6">6 - Đậu thần</option>
             <option value="7">7 - Sách võ công</option>
-            <option value="11">11 - Vật phẩm đeo lưng / Phụ kiện</option>
+            <option value="11">11 - Phụ kiện đeo lưng</option>
             <option value="12">12 - Ngọc Rồng</option>
-            <option value="14">14 - Đá nâng cấp / Sao pha lê</option>
-            <option value="21">21 - Thú cưỡi / Pet mới</option>
-            <option value="27">27 - Vật phẩm tạp hóa / Sự kiện</option>
+            <option value="14">14 - Đá nâng cấp / SPL</option>
+            <option value="21">21 - Thú cưỡi / Pet</option>
+            <option value="27">27 - Vật phẩm sự kiện / Tạp hóa</option>
           </select>
           <select id="itemPageSize" onchange="onFilterItemsLocal()">
-            <option value="150">Hiện 150 Item / trang</option>
-            <option value="400">Hiện 400 Item / trang</option>
-            <option value="5000">Hiện TẤT CẢ (Không chia trang)</option>
+            <option value="150">150 Item / trang</option>
+            <option value="400">400 Item / trang</option>
+            <option value="5000">Hiện tất cả</option>
           </select>
-          <input type="text" id="searchItemInput" placeholder="Gõ tên Item, Option hoặc ID để lọc ngay..." oninput="onFilterItemsLocal()" style="width: 260px;" />
-          <button onclick="searchItemsDb()">Tải lại từ Server</button>
+          <input type="text" id="searchItemInput" placeholder="Tìm tên Item, Option hoặc ID..." oninput="onFilterItemsLocal()" style="width: 240px;" />
+          <button class="btn-muted" onclick="searchItemsDb()">Tải lại</button>
         </div>
       </div>
       <div class="grid-2">
         <div>
           <div class="pagination-bar">
-            <b id="itemsCountLabel" style="color:var(--primary);">Danh sách Vật Phẩm</b>
+            <b id="itemsCountLabel" style="color:var(--text);">Danh sách Vật Phẩm</b>
             <div style="display:flex;gap:6px;align-items:center;">
-              <button class="btn-muted btn-sm" onclick="changeItemPage(-1)">◀ Trang trước</button>
-              <span id="itemPageInfo" style="font-weight:700;">1 / 1</span>
-              <button class="btn-muted btn-sm" onclick="changeItemPage(1)">Trang sau ▶</button>
+              <button class="btn-muted btn-sm" onclick="changeItemPage(-1)">◀ Trước</button>
+              <span id="itemPageInfo" style="font-weight:600;color:var(--text);">1 / 1</span>
+              <button class="btn-muted btn-sm" onclick="changeItemPage(1)">Sau ▶</button>
             </div>
           </div>
           <div class="table-wrap">
@@ -612,22 +725,22 @@
                 </tr>
               </thead>
               <tbody id="itemsResultBody">
-                <tr><td colspan="5" style="text-align:center;color:var(--muted);">Đang tải toàn bộ danh sách Vật Phẩm...</td></tr>
+                <tr><td colspan="5" style="text-align:center;color:var(--muted);">Đang tải danh sách Vật Phẩm...</td></tr>
               </tbody>
             </table>
           </div>
         </div>
         <div>
           <div class="pagination-bar">
-            <b id="optionsCountLabel" style="color:var(--warning);">Danh sách Chỉ Số (Item Options)</b>
+            <b id="optionsCountLabel" style="color:var(--text);">Danh sách Chỉ Số (Item Options)</b>
           </div>
           <div class="table-wrap">
             <table>
               <thead>
                 <tr>
-                  <th>Mã Option</th>
+                  <th>Mã</th>
                   <th>Tên Chỉ Số (# là giá trị)</th>
-                  <th>Ghép vào Quà</th>
+                  <th>Thao tác</th>
                 </tr>
               </thead>
               <tbody id="optionsResultBody">
@@ -644,22 +757,22 @@
       <div class="card">
         <div class="card-header">
           <div>
-            <h3>🎉 Quản Lý Sự Kiện Game (Live — Bật / Tắt Không Cần Khởi Động Lại)</h3>
-            <span style="font-size:12.5px;color:var(--muted);">Bật/tắt rơi vật phẩm sự kiện khi đánh quái, nhân đôi vàng rơi, triệu hồi Boss sự kiện và tặng Điểm Sự Kiện trực tiếp cho người chơi.</span>
+            <h3>Quản Lý Sự Kiện Game (Bật / Tắt Trực Tiếp)</h3>
+            <span style="font-size:12.5px;color:var(--muted);">Điều khiển sự kiện đang diễn ra, tỷ lệ rơi vật phẩm sự kiện, gọi Boss sự kiện và cộng điểm sự kiện.</span>
           </div>
-          <button class="btn-sm" onclick="loadSystemTab()">🔄 Làm mới trạng thái Sự kiện</button>
+          <button class="btn-muted btn-sm" onclick="loadSystemTab()">Làm mới trạng thái</button>
         </div>
 
-        <div id="eventsToggleGrid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px;margin-bottom:14px;">
+        <div id="eventsToggleGrid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin-bottom:16px;">
           <!-- Sẽ được render tự động từ data.events -->
         </div>
 
-        <div class="grid-2" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; border-top: 1px solid var(--border); padding-top: 12px;">
+        <div class="grid-2" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; border-top: 1px solid var(--border); padding-top: 16px;">
           <div class="form-group" style="margin-bottom:0;">
-            <label>🎯 Tỷ lệ rơi Vật Phẩm Sự Kiện khi đánh quái (%):</label>
-            <div style="display:flex;gap:8px;align-items:center;margin-top:4px;">
-              <input type="number" id="eventDropRateInput" value="15" min="0" max="100" style="width:90px;" />
-              <button class="btn-success btn-sm" onclick="saveEventDropRate()">Lưu Tỷ Lệ (%)</button>
+            <label>Tỷ lệ rơi Vật Phẩm Sự Kiện khi đánh quái (%):</label>
+            <div style="display:flex;gap:6px;align-items:center;margin-top:6px;">
+              <input type="number" id="eventDropRateInput" value="15" min="0" max="100" style="width:85px;" />
+              <button class="btn-success btn-sm" onclick="saveEventDropRate()">Lưu (%)</button>
               <button class="btn-muted btn-sm" onclick="document.getElementById('eventDropRateInput').value=15;saveEventDropRate()">15%</button>
               <button class="btn-muted btn-sm" onclick="document.getElementById('eventDropRateInput').value=50;saveEventDropRate()">50%</button>
               <button class="btn-muted btn-sm" onclick="document.getElementById('eventDropRateInput').value=100;saveEventDropRate()">100%</button>
@@ -667,22 +780,22 @@
           </div>
 
           <div class="form-group" style="margin-bottom:0;">
-            <label>👹 Triệu hồi nhanh Boss Sự Kiện:</label>
-            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px;">
-              <button class="btn-warning btn-sm" onclick="spawnEventBoss('halloween')">🎃 Boss Halloween (Bí Ma / Ma Trơi / Dơi)</button>
-              <button class="btn-teal btn-sm" onclick="spawnEventBoss('christmas')">🎄 Boss Giáng Sinh (Ông Già Noel)</button>
-              <button class="btn-danger btn-sm" onclick="spawnEventBoss('tet')">🧧 Boss Tết (Lân Con)</button>
-              <button class="btn-sm" onclick="spawnEventBoss('trung_thu')">🥮 Boss Trung Thu (Khỉ Đột / Nguyệt Thần)</button>
-              <button class="btn-purple btn-sm" onclick="spawnEventBoss('hung_vuong')">⚔️ Boss Hùng Vương (Sơn Tinh - Thủy Tinh)</button>
+            <label>Triệu hồi nhanh Boss Sự Kiện:</label>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;">
+              <button class="btn-muted btn-sm" onclick="spawnEventBoss('halloween')">Boss Halloween</button>
+              <button class="btn-muted btn-sm" onclick="spawnEventBoss('christmas')">Boss Giáng Sinh</button>
+              <button class="btn-muted btn-sm" onclick="spawnEventBoss('tet')">Boss Tết (Lân Con)</button>
+              <button class="btn-muted btn-sm" onclick="spawnEventBoss('trung_thu')">Boss Trung Thu</button>
+              <button class="btn-muted btn-sm" onclick="spawnEventBoss('hung_vuong')">Boss Hùng Vương</button>
             </div>
           </div>
 
           <div class="form-group" style="margin-bottom:0;">
-            <label>🎁 Tặng Điểm Sự Kiện (Event Point) cho người chơi:</label>
-            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px;">
-              <input type="text" id="eventPointTarget" placeholder="Tên NV / ID hoặc ALL (Toàn Server)" style="flex:1;min-width:140px;" />
-              <input type="number" id="eventPointAmount" value="100" step="10" style="width:90px;" title="Số điểm sự kiện" />
-              <button class="btn-success btn-sm" onclick="giveEventPoints()">+ Cộng Điểm SK</button>
+            <label>Tặng Điểm Sự Kiện (Event Point) cho người chơi:</label>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;">
+              <input type="text" id="eventPointTarget" placeholder="Tên NV / ID hoặc ALL" style="flex:1;min-width:130px;" />
+              <input type="number" id="eventPointAmount" value="100" step="10" style="width:85px;" title="Số điểm sự kiện" />
+              <button class="btn-success btn-sm" onclick="giveEventPoints()">+ Cộng Điểm</button>
             </div>
           </div>
         </div>
@@ -693,61 +806,63 @@
     <div id="tabSystem" style="display: none;">
       <div class="grid-2">
         <div class="card">
-          <h3 style="margin-bottom:12px;">Điều Khiển Server, Tỷ Lệ EXP & Hệ Thống Bot</h3>
+          <div class="card-header">
+            <h3>Điều Khiển Server, Tỷ Lệ EXP & Hệ Thống Bot</h3>
+          </div>
           <div class="form-group">
-            <label>Cập nhật Code mới từ GitHub & Khởi động lại Server (Không cần mở SSH):</label>
+            <label>Cập nhật mã nguồn từ GitHub & Lưu dữ liệu:</label>
             <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;">
-              <button class="btn-teal" onclick="updateAndRestartServer()">🔄 Kéo Code Mới (Git Pull) & Khởi Động Lại Server</button>
-              <button class="btn-success" onclick="saveAllData()">💾 Lưu Toàn Bộ Dữ Liệu Ngay</button>
+              <button class="btn-success" onclick="updateAndRestartServer()">Cập Nhật Code (Git Pull) & Khởi Động Lại</button>
+              <button class="btn-muted" onclick="saveAllData()">Lưu Toàn Bộ Dữ Liệu</button>
             </div>
           </div>
           <hr style="border:none;border-top:1px solid var(--border);margin:14px 0;" />
           <div class="form-group">
-            <label>Tỷ lệ Sức Mạnh / Tiềm Năng toàn Server (Hiện tại: <b id="sysExpLabel" style="color:var(--purple);">x1</b>):</label>
-            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;">
-              <button class="btn-sm" onclick="quickSetExp(1)">x1 Mặc định</button>
-              <button class="btn-sm" onclick="quickSetExp(2)">x2 Sự kiện</button>
-              <button class="btn-sm" onclick="quickSetExp(3)">x3</button>
-              <button class="btn-sm" onclick="quickSetExp(5)">x5</button>
-              <button class="btn-sm" onclick="quickSetExp(10)">x10</button>
-              <button class="btn-sm" onclick="quickSetExp(20)">x20</button>
-              <input type="number" id="customExpInput" value="2" min="1" max="127" style="width:75px;" />
-              <button class="btn-success btn-sm" onclick="quickSetExp(document.getElementById('customExpInput').value)">Áp dụng EXP</button>
+            <label>Tỷ lệ Sức Mạnh / Tiềm Năng toàn Server (Hiện tại: <b id="sysExpLabel" style="color:var(--text);">x1</b>):</label>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;">
+              <button class="btn-muted btn-sm" onclick="quickSetExp(1)">x1</button>
+              <button class="btn-muted btn-sm" onclick="quickSetExp(2)">x2</button>
+              <button class="btn-muted btn-sm" onclick="quickSetExp(3)">x3</button>
+              <button class="btn-muted btn-sm" onclick="quickSetExp(5)">x5</button>
+              <button class="btn-muted btn-sm" onclick="quickSetExp(10)">x10</button>
+              <button class="btn-muted btn-sm" onclick="quickSetExp(20)">x20</button>
+              <input type="number" id="customExpInput" value="2" min="1" max="127" style="width:70px;" />
+              <button class="btn-success btn-sm" onclick="quickSetExp(document.getElementById('customExpInput').value)">Áp dụng</button>
             </div>
           </div>
           <hr style="border:none;border-top:1px solid var(--border);margin:14px 0;" />
-          <div class="form-group">
-            <label>Quản lý Bot Người Chơi Ảo (Đang hoạt động: <b id="sysBotLabel">0</b> Bot):</label>
-            <p style="font-size:12px;color:var(--muted);margin-bottom:8px;">Gọi Bot vào các bản đồ để đi săn quái, săn Boss hoặc PK giúp Server luôn đông vui nhộn nhịp.</p>
-            <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
-              <input type="number" id="botSpawnCount" value="10" min="1" max="50" style="width:75px;" title="Số lượng Bot" />
-              <button class="btn-success btn-sm" onclick="spawnBots(0)">+ Gọi Bot Train Quái</button>
-              <button class="btn-warning btn-sm" onclick="spawnBots(2)">+ Gọi Bot Săn Boss</button>
-              <button class="btn-purple btn-sm" onclick="spawnBots(3)">+ Gọi Bot PK</button>
-              <button class="btn-danger btn-sm" onclick="clearAllBots()">Xóa Toàn Bộ Bot</button>
+          <div class="form-group" style="margin-bottom:0;">
+            <label>Quản lý Bot Người Chơi (Đang hoạt động: <b id="sysBotLabel">0</b> Bot):</label>
+            <p style="font-size:12px;color:var(--muted);margin-bottom:8px;">Triệu hồi Bot vào các bản đồ để đi săn quái, săn Boss hoặc PK.</p>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">
+              <input type="number" id="botSpawnCount" value="10" min="1" max="50" style="width:70px;" title="Số lượng Bot" />
+              <button class="btn-muted btn-sm" onclick="spawnBots(0)">+ Bot Train Quái</button>
+              <button class="btn-muted btn-sm" onclick="spawnBots(2)">+ Bot Săn Boss</button>
+              <button class="btn-muted btn-sm" onclick="spawnBots(3)">+ Bot PK</button>
+              <button class="btn-danger btn-sm" onclick="clearAllBots()">Xóa Tất Cả Bot</button>
             </div>
           </div>
         </div>
 
         <div class="card">
           <div class="card-header">
-            <h3>Sao Lưu MySQL, GitHub Private & Log Server</h3>
-            <button class="btn-sm" onclick="loadSystemTab()">Làm mới Log</button>
+            <h3>Sao Lưu MySQL, GitHub & Nhật Ký Hệ Thống</h3>
+            <button class="btn-muted btn-sm" onclick="loadSystemTab()">Làm mới Log</button>
           </div>
           <div style="display:flex;gap:8px;margin-bottom:10px;align-items:center;flex-wrap:wrap;">
-            <input type="password" id="gitTokenInput" placeholder="Dán mã GitHub Token (ghp_...) nếu muốn cập nhật Token Backup" style="flex:1;min-width:220px;" />
-            <button class="btn-warning btn-sm" onclick="triggerBackupNow()">Lưu Token & Đẩy GitHub Ngay</button>
+            <input type="password" id="gitTokenInput" placeholder="GitHub Token (ghp_...) nếu muốn cập nhật Token Backup" style="flex:1;min-width:220px;" />
+            <button class="btn-muted btn-sm" onclick="triggerBackupNow()">Sao Lưu & Đẩy GitHub</button>
           </div>
           <div id="backupFilesList" style="font-size:12.5px;margin-bottom:10px;color:var(--muted);">Đang tải danh sách bản sao lưu...</div>
-          <label style="font-size:12px;font-weight:600;color:var(--muted);display:block;margin-bottom:4px;">Nhật ký Backup (`backup.log`) & Console (`server.log`):</label>
+          <label style="font-size:12px;font-weight:600;color:var(--muted);display:block;margin-bottom:4px;">Nhật ký hệ thống (`backup.log` & `server.log`):</label>
           <pre id="backupLogBox" class="log-box">Chưa có log...</pre>
         </div>
       </div>
 
       <div class="card">
         <div class="card-header">
-          <h3>Bảng Xếp Hạng Top 20 Cao Thủ Server (Từ Database)</h3>
-          <button class="btn-sm" onclick="loadSystemTab()">Cập nhật BXH</button>
+          <h3>Bảng Xếp Hạng Top 20 Cao Thủ Server</h3>
+          <button class="btn-muted btn-sm" onclick="loadSystemTab()">Cập nhật BXH</button>
         </div>
         <div class="table-wrap">
           <table>
@@ -779,16 +894,16 @@
   <div id="giftModal" class="modal-backdrop">
     <div class="modal">
       <h3 id="giftModalTitle">Trao Thưởng Cho Người Chơi</h3>
-      <div class="grid-2" style="grid-template-columns: 1.2fr 1fr; gap: 10px; background: #f1f5f9; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--border); margin-bottom: 12px;">
+      <div class="grid-2 modal-box-subtle" style="grid-template-columns: 1.2fr 1fr; gap: 10px;">
         <div class="form-group" style="margin-bottom: 0;">
-          <label style="color: var(--primary); font-weight: 700;">👤 Chọn Người Nhận Quà (Đang Online):</label>
-          <select id="giftPlayerSelect" onchange="onChangeGiftPlayerSelect()" style="width: 100%; border-color: #93c5fd;">
+          <label>Chọn Người Nhận (Đang Online):</label>
+          <select id="giftPlayerSelect" onchange="onChangeGiftPlayerSelect()" style="width: 100%;">
             <option value="">-- Chọn người chơi đang Online --</option>
           </select>
         </div>
         <div class="form-group" style="margin-bottom: 0;">
-          <label style="color: var(--text); font-weight: 700;">✍️ Hoặc nhập Tên Nhân Vật / Mã ID:</label>
-          <input type="text" id="giftPlayerId" placeholder="Nhập Tên NV, ID hoặc ALL (Toàn Server)..." />
+          <label>Hoặc nhập Tên Nhân Vật / ID:</label>
+          <input type="text" id="giftPlayerId" placeholder="Nhập Tên NV, ID hoặc ALL..." />
         </div>
       </div>
       <div class="grid-2" style="grid-template-columns: 1fr 1fr; gap: 10px;">
@@ -807,8 +922,8 @@
           <input type="number" id="giftRuby" value="0" min="0" step="100" />
         </div>
         <div class="form-group">
-          <label style="color: var(--purple); font-weight: 700;">🎁 Tặng Rương SKH:</label>
-          <input type="number" id="giftRuongSkh" value="0" min="0" step="1" title="Số Rương SKH cộng thêm (Mở tại Ông Gohan/Moori/Paragus)" />
+          <label>Tặng Rương SKH:</label>
+          <input type="number" id="giftRuongSkh" value="0" min="0" step="1" title="Số Rương SKH cộng thêm" />
         </div>
         <div class="form-group">
           <label>Số lượng Vật Phẩm:</label>
@@ -817,29 +932,29 @@
       </div>
       <div class="form-group">
         <label>Tặng Vật Phẩm theo Mã ID (Để 0 nếu chỉ tặng tiền):</label>
-        <input type="number" id="giftItemId" value="0" placeholder="VD: 457 (Thỏi vàng), 674 (Đá ngũ sắc), 1833 (NR 7s tím)..." />
+        <input type="number" id="giftItemId" value="0" placeholder="VD: 457 (Thỏi vàng), 674 (Đá ngũ sắc)..." />
       </div>
       <div class="form-group">
-        <label>Tuỳ chỉnh Chỉ Số Option (Định dạng: <code>ID:ChỉSố,ID:ChỉSố</code> — để trống sẽ lấy Option mặc định):</label>
+        <label>Tuỳ chỉnh Chỉ Số Option (<code>ID:ChỉSố,ID:ChỉSố</code> — để trống lấy mặc định):</label>
         <input type="text" id="giftOptions" placeholder="VD: 50:30,77:30,103:30 (SĐ +30%, HP +30%, KI +30%)" />
         <div style="margin-top:6px;display:flex;gap:5px;flex-wrap:wrap;">
           <button type="button" class="btn-muted btn-sm" onclick="appendGiftOption('50:25')">+25% SĐ (50)</button>
           <button type="button" class="btn-muted btn-sm" onclick="appendGiftOption('77:25')">+25% HP (77)</button>
           <button type="button" class="btn-muted btn-sm" onclick="appendGiftOption('103:25')">+25% KI (103)</button>
-          <button type="button" class="btn-muted btn-sm" onclick="appendGiftOption('108:15')">+15% Né đòn (108)</button>
-          <button type="button" class="btn-muted btn-sm" onclick="appendGiftOption('107:8')">8 Sao Pha Lê (107)</button>
+          <button type="button" class="btn-muted btn-sm" onclick="appendGiftOption('108:15')">+15% Né (108)</button>
+          <button type="button" class="btn-muted btn-sm" onclick="appendGiftOption('107:8')">8 Sao PL (107)</button>
           <button type="button" class="btn-muted btn-sm" onclick="appendGiftOption('30:1')">Không GD (30)</button>
         </div>
       </div>
-      <div class="grid-2" style="grid-template-columns: 1.5fr 1fr; gap: 10px; background: rgba(245, 158, 11, 0.08); padding: 10px 12px; border-radius: 10px; border: 1px dashed var(--warning); margin-bottom: 6px;">
+      <div class="grid-2 modal-box-subtle" style="grid-template-columns: 1.5fr 1fr; gap: 10px; margin-bottom: 4px;">
         <div class="form-group" style="margin-bottom: 0;">
-          <label style="color: var(--warning); font-weight: 700;">⚡ Tặng Kèm / Buff Nội Tại (Tuỳ chọn):</label>
+          <label>Tặng Kèm / Buff Nội Tại (Tuỳ chọn):</label>
           <select id="giftIntrinsicId" onchange="onChangeGiftIntrinsic()" style="width: 100%;">
             <option value="0">-- Không thay đổi Nội tại --</option>
           </select>
         </div>
         <div class="form-group" style="margin-bottom: 0;">
-          <label style="color: var(--warning); font-weight: 700;">Chỉ số % Nội Tại (param1):</label>
+          <label>Chỉ số % Nội Tại (param1):</label>
           <input type="number" id="giftIntrinsicParam1" value="150" min="1" max="32000" placeholder="VD: 150" />
         </div>
       </div>
@@ -865,7 +980,7 @@
           <input type="number" id="editAccAddTongnap" value="0" step="10000" />
         </div>
         <div class="form-group">
-          <label style="color: var(--purple); font-weight: 700;">🎁 Cộng / Trừ Rương SKH:</label>
+          <label>Cộng / Trừ Rương SKH:</label>
           <input type="number" id="editAccAddRuongSkh" value="0" step="1" />
         </div>
       </div>
@@ -898,7 +1013,7 @@
       </div>
       <div class="modal-actions">
         <button class="btn-muted" onclick="document.getElementById('accModal').classList.remove('show')">Hủy</button>
-        <button class="btn-success" onclick="submitAccountUpdate()">Lưu Thay Đổi DB</button>
+        <button class="btn-success" onclick="submitAccountUpdate()">Lưu Thay Đổi</button>
       </div>
     </div>
   </div>
@@ -949,17 +1064,17 @@
   <!-- MODAL 5: BUFF / TẶNG NỘI TẠI CHO NGƯỜI CHƠI (CẢ ONLINE & OFFLINE) -->
   <div id="intrinsicModal" class="modal-backdrop">
     <div class="modal" style="max-width: 600px;">
-      <h3 id="intrinsicModalTitle">⚡ Buff / Tặng Nội Tại Cho Người Chơi</h3>
+      <h3 id="intrinsicModalTitle">Buff / Chỉnh Sửa Nội Tại Nhân Vật</h3>
       <input type="hidden" id="intrinsicAccId" value="0" />
-      <div class="grid-2" style="grid-template-columns: 1.2fr 1fr; gap: 10px; background: rgba(245, 158, 11, 0.08); padding: 10px 12px; border-radius: 10px; border: 1px solid var(--border); margin-bottom: 12px;">
+      <div class="grid-2 modal-box-subtle" style="grid-template-columns: 1.2fr 1fr; gap: 10px;">
         <div class="form-group" style="margin-bottom: 0;">
-          <label style="color: var(--primary); font-weight: 700;">👤 Chọn Người Nhận (Online / Toàn Server):</label>
-          <select id="intrinsicPlayerSelect" onchange="onChangeIntrinsicPlayerSelect()" style="width: 100%; border-color: #93c5fd;">
+          <label>Chọn Người Nhận (Online / Toàn Server):</label>
+          <select id="intrinsicPlayerSelect" onchange="onChangeIntrinsicPlayerSelect()" style="width: 100%;">
             <option value="">-- Chọn người chơi --</option>
           </select>
         </div>
         <div class="form-group" style="margin-bottom: 0;">
-          <label style="color: var(--text); font-weight: 700;">✍️ Hoặc nhập Tên Nhân Vật / ID (Cả Offline):</label>
+          <label>Hoặc nhập Tên Nhân Vật / ID (Cả Offline):</label>
           <input type="text" id="intrinsicPlayerTarget" placeholder="Nhập Tên NV, ID hoặc ALL..." />
         </div>
       </div>
@@ -975,7 +1090,7 @@
           </select>
         </div>
         <div class="form-group">
-          <label style="color: var(--warning); font-weight: 700;">⚡ Chọn Nội Tại muốn tặng:</label>
+          <label>Chọn Nội Tại muốn áp dụng:</label>
           <select id="intrinsicSelectId" onchange="onSelectIntrinsicChange()" style="width: 100%; font-weight: 600;">
           </select>
         </div>
@@ -983,7 +1098,7 @@
 
       <div class="grid-2" style="grid-template-columns: 1fr 1fr; gap: 10px;">
         <div class="form-group">
-          <label style="color: var(--success); font-weight: 700;">Chỉ số % Chính (param1 — Mặc định Max):</label>
+          <label>Chỉ số % Chính (param1):</label>
           <input type="number" id="intrinsicParam1" value="150" min="1" max="32000" />
         </div>
         <div class="form-group">
@@ -993,19 +1108,19 @@
       </div>
 
       <div class="form-group">
-        <label>🔥 Chọn nhanh Nội Tại VIP phổ biến nhất:</label>
+        <label>Chọn nhanh Nội Tại phổ biến:</label>
         <div style="display:flex;gap:5px;flex-wrap:wrap;margin-top:4px;">
-          <button type="button" class="btn-sm" style="background:#2563eb;" onclick="quickPickIntrinsic('dich chuyen', 0, 150)">TĐ: Dịch Chuyển +150%</button>
-          <button type="button" class="btn-sm" style="background:#2563eb;" onclick="quickPickIntrinsic('thoi mien', 0, 150)">TĐ: Thôi Miên +150%</button>
-          <button type="button" class="btn-sm" style="background:#2563eb;" onclick="quickPickIntrinsic('kamejoko', 0, 25)">TĐ: Kamejoko +25%</button>
-          <button type="button" class="btn-sm" style="background:#059669;" onclick="quickPickIntrinsic('socola', 1, 150)">NM: Biến Sôcôla +150%</button>
-          <button type="button" class="btn-sm" style="background:#059669;" onclick="quickPickIntrinsic('lien hoan', 1, 25)">NM: Liên Hoàn +25%</button>
-          <button type="button" class="btn-sm" style="background:#059669;" onclick="quickPickIntrinsic('de trung', 1, 65)">NM: Đẻ Trứng +65%</button>
-          <button type="button" class="btn-sm" style="background:#d97706;" onclick="quickPickIntrinsic('troi', 2, 150)">XD: Trói +150%</button>
-          <button type="button" class="btn-sm" style="background:#d97706;" onclick="quickPickIntrinsic('galick', 2, 25)">XD: Galick +25%</button>
-          <button type="button" class="btn-sm" style="background:#d97706;" onclick="quickPickIntrinsic('bien hinh', 2, 25)">XD: Biến Hình +25%</button>
-          <button type="button" class="btn-sm" style="background:#7c3aed;" onclick="quickPickIntrinsic('vang roi', -1, 300)">Chung: Vàng Rơi +300%</button>
-          <button type="button" class="btn-sm" style="background:#7c3aed;" onclick="quickPickIntrinsic('suc manh', -1, 35)">Chung: TNSM +35%</button>
+          <button type="button" class="btn-muted btn-sm" onclick="quickPickIntrinsic('dich chuyen', 0, 150)">TĐ: Dịch Chuyển +150%</button>
+          <button type="button" class="btn-muted btn-sm" onclick="quickPickIntrinsic('thoi mien', 0, 150)">TĐ: Thôi Miên +150%</button>
+          <button type="button" class="btn-muted btn-sm" onclick="quickPickIntrinsic('kamejoko', 0, 25)">TĐ: Kamejoko +25%</button>
+          <button type="button" class="btn-muted btn-sm" onclick="quickPickIntrinsic('socola', 1, 150)">NM: Sôcôla +150%</button>
+          <button type="button" class="btn-muted btn-sm" onclick="quickPickIntrinsic('lien hoan', 1, 25)">NM: Liên Hoàn +25%</button>
+          <button type="button" class="btn-muted btn-sm" onclick="quickPickIntrinsic('de trung', 1, 65)">NM: Đẻ Trứng +65%</button>
+          <button type="button" class="btn-muted btn-sm" onclick="quickPickIntrinsic('troi', 2, 150)">XD: Trói +150%</button>
+          <button type="button" class="btn-muted btn-sm" onclick="quickPickIntrinsic('galick', 2, 25)">XD: Galick +25%</button>
+          <button type="button" class="btn-muted btn-sm" onclick="quickPickIntrinsic('bien hinh', 2, 25)">XD: Biến Hình +25%</button>
+          <button type="button" class="btn-muted btn-sm" onclick="quickPickIntrinsic('vang roi', -1, 300)">Chung: Vàng +300%</button>
+          <button type="button" class="btn-muted btn-sm" onclick="quickPickIntrinsic('suc manh', -1, 35)">Chung: TNSM +35%</button>
         </div>
         <div style="display:flex;gap:5px;flex-wrap:wrap;margin-top:6px;">
           <span style="font-size:12px;color:var(--muted);align-self:center;">Đặt nhanh %:</span>
@@ -1021,7 +1136,7 @@
 
       <div class="modal-actions">
         <button class="btn-muted" onclick="closeIntrinsicModal()">Đóng</button>
-        <button class="btn-warning" onclick="submitIntrinsicBuff()">⚡ Buff Nội Tại Ngay</button>
+        <button class="btn-success" onclick="submitIntrinsicBuff()">Áp Dụng Nội Tại</button>
       </div>
     </div>
   </div>
@@ -1068,13 +1183,13 @@
 
     if (localStorage.getItem('nro_admin_theme') === 'dark') {
       document.body.classList.add('dark-mode');
-      document.getElementById('themeBtn').textContent = '☀️ Giao diện Sáng';
+      document.getElementById('themeBtn').textContent = 'Giao diện Sáng';
     }
 
     function toggleTheme() {
       const isDark = document.body.classList.toggle('dark-mode');
       localStorage.setItem('nro_admin_theme', isDark ? 'dark' : 'light');
-      document.getElementById('themeBtn').textContent = isDark ? '☀️ Giao diện Sáng' : '🌙 Giao diện Tối';
+      document.getElementById('themeBtn').textContent = isDark ? 'Giao diện Sáng' : 'Giao diện Tối';
     }
 
     if (window.location.protocol.startsWith('http') && (window.location.port === '14445' || window.location.port === '14446')) {
@@ -1209,34 +1324,33 @@
       if (filtered.length === 0) {
         tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;color:var(--muted);padding:22px;">
           Hiện không có người chơi nào đang trực tuyến.<br/>
-          <button class="btn-sm" style="margin-top:8px;" onclick="switchTab('accounts')">👉 Bấm vào đây để xem & chỉnh sửa Toàn bộ Tài khoản trong Database (Cả Offline)</button>
+          <button class="btn-muted btn-sm" style="margin-top:8px;" onclick="switchTab('accounts')">Chuyển sang Quản lý Tài khoản & Nhân vật Database (Cả Offline)</button>
         </td></tr>`;
         return;
       }
       tbody.innerHTML = filtered.map(p => `
         <tr>
-          <td>#${p.id}</td>
+          <td style="color:var(--muted);">#${p.id}</td>
           <td class="text-name">${escapeHtml(p.name)}</td>
           <td>${escapeHtml(p.gender)}</td>
           <td class="text-power">${formatNum(p.power)}</td>
           <td>
-            HP: ${formatNum(p.hp)}/${formatNum(p.hpMax)}<br/>
-            <span style="color:var(--muted);">KI: ${formatNum(p.mp)} • SĐ: ${formatNum(p.dame)}</span><br/>
-            <span style="font-size:11.5px;color:var(--warning);font-weight:600;">⚡ ${escapeHtml(p.intrinsicName || 'Chưa mở nội tại')}</span>
+            <span style="font-weight:500;">HP: ${formatNum(p.hp)}/${formatNum(p.hpMax)}</span><br/>
+            <span style="font-size:12px;color:var(--muted);">KI: ${formatNum(p.mp)} · SĐ: ${formatNum(p.dame)}</span><br/>
+            <span style="font-size:11.5px;color:var(--text-secondary);">Nội tại: ${escapeHtml(p.intrinsicName || 'Chưa mở')}</span>
           </td>
           <td>
-            <span class="text-gold">${formatNum(p.gold)} Vàng</span><br/>
-            <span class="text-gem">${formatNum(p.gem)} Ngọc</span> • <span class="text-ruby">${formatNum(p.ruby)} HN</span> • <span class="text-vnd">${formatNum(p.vnd)}đ</span><br/>
-            <span style="font-size:11.5px;color:var(--purple);font-weight:700;">🎁 Rương SKH: ${formatNum(p.ruongSkh ?? 5)}</span>
+            <span class="text-gold">${formatNum(p.gold)} Vàng</span> · <span class="text-vnd">${formatNum(p.vnd)} đ</span><br/>
+            <span style="font-size:12px;color:var(--muted);">${formatNum(p.gem)} Ngọc · ${formatNum(p.ruby)} HN · Rương SKH: <b style="color:var(--text-secondary);">${formatNum(p.ruongSkh ?? 5)}</b></span>
           </td>
-          <td><b>${escapeHtml(p.mapName)}</b> <span class="badge badge-alive">Khu ${p.zoneId}</span></td>
+          <td><b>${escapeHtml(p.mapName)}</b> <span class="badge badge-dead">Khu ${p.zoneId}</span></td>
           <td>${p.hasPet ? `Có (${formatNum(p.petPower)})` : '<span style="color:var(--muted)">Không</span>'}</td>
           <td style="display:flex;gap:5px;flex-wrap:wrap;">
             <button class="btn-success btn-sm" onclick="openGiftModal(${p.id}, '${escapeJs(p.name)}')">Trao Quà</button>
-            <button class="btn-teal btn-sm" onclick="promptGiveSkhBox('${escapeJs(p.name)}', ${p.id}, 0, ${p.ruongSkh ?? 5})">🎁 +Rương SKH</button>
-            <button class="btn-warning btn-sm" onclick="openIntrinsicModal('${escapeJs(p.name)}', ${p.id}, 0, ${p.genderId ?? -1}, ${p.intrinsicId || 0}, ${p.intrinsicParam1 || 0})">⚡ Nội Tại</button>
-            <button class="btn-purple btn-sm" onclick="inspectPlayer(${p.id})">Xem Đồ</button>
-            <button class="btn-sm" onclick="healPlayer(${p.id})">Hồi HP/KI</button>
+            <button class="btn-muted btn-sm" onclick="promptGiveSkhBox('${escapeJs(p.name)}', ${p.id}, 0, ${p.ruongSkh ?? 5})">+Rương SKH</button>
+            <button class="btn-muted btn-sm" onclick="openIntrinsicModal('${escapeJs(p.name)}', ${p.id}, 0, ${p.genderId ?? -1}, ${p.intrinsicId || 0}, ${p.intrinsicParam1 || 0})">Nội Tại</button>
+            <button class="btn-muted btn-sm" onclick="inspectPlayer(${p.id})">Xem Đồ</button>
+            <button class="btn-muted btn-sm" onclick="healPlayer(${p.id})">Hồi HP/KI</button>
             <button class="btn-danger btn-sm" onclick="kickPlayer(${p.id}, '${escapeJs(p.name)}')">Kick</button>
           </td>
         </tr>
@@ -1251,7 +1365,7 @@
         const res = await fetch(`${getBaseUrl()}/api/accounts?key=${getKey()}&q=${encodeURIComponent(q)}`);
         const data = await res.json();
         if (!data.ok) {
-          tbody.innerHTML = `<tr><td colspan="10" style="text-align:center;color:#ef4444;">${escapeHtml(data.message)}</td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="10" style="text-align:center;color:var(--danger);">${escapeHtml(data.message)}</td></tr>`;
           return;
         }
         cachedAccounts = data.accounts || [];
@@ -1262,43 +1376,42 @@
         }
         tbody.innerHTML = cachedAccounts.map(a => `
           <tr>
-            <td>#${a.accId}</td>
-            <td style="font-weight:700;">${escapeHtml(a.username)}</td>
+            <td style="color:var(--muted);">#${a.accId}</td>
+            <td style="font-weight:600;">${escapeHtml(a.username)}</td>
             <td style="color:var(--muted);font-family:monospace;">${escapeHtml(a.password)}</td>
             <td class="text-name">
-              ${escapeHtml(a.playerName)} <span style="font-size:11px;color:var(--muted);font-weight:400;">(${escapeHtml(a.gender)})</span>
-              ${a.playerId > 0 ? `<br/><span style="font-size:11px;color:var(--warning);font-weight:600;">⚡ ${escapeHtml(a.intrinsicName || 'Chưa mở')}</span>` : ''}
+              ${escapeHtml(a.playerName)} <span style="font-size:11.5px;color:var(--muted);font-weight:400;">(${escapeHtml(a.gender)})</span>
+              ${a.playerId > 0 ? `<br/><span style="font-size:11.5px;color:var(--muted);font-weight:400;">Nội tại: ${escapeHtml(a.intrinsicName || 'Chưa mở')}</span>` : ''}
             </td>
             <td>
-              ${a.online ? '<span class="badge badge-alive">Đang Online</span>' : '<span class="badge badge-dead">Offline</span>'}
-              ${a.ban ? '<span class="badge badge-ban">Đang Khóa</span>' : ''}
+              ${a.online ? '<span class="badge badge-alive">Online</span>' : '<span class="badge badge-dead">Offline</span>'}
+              ${a.ban ? '<span class="badge badge-ban">Khóa</span>' : ''}
             </td>
             <td>
               <span class="text-vnd">${formatNum(a.vnd)} đ</span><br/>
-              <span style="font-size:11px;color:var(--muted);">Tổng nạp: ${formatNum(a.tongnap)} đ</span>
+              <span style="font-size:11.5px;color:var(--muted);">Tổng nạp: ${formatNum(a.tongnap)} đ</span>
             </td>
             <td>
               ${a.active ? '<span class="badge badge-alive">Đã Mở TV</span>' : '<span class="badge badge-dead">Chưa Mở TV</span>'}
-              ${a.isAdmin ? '<span class="badge badge-admin">ADMIN</span>' : ''}
+              ${a.isAdmin ? '<span class="badge badge-admin">Admin</span>' : ''}
             </td>
             <td class="text-power">${formatNum(a.power)}</td>
             <td>
               <span class="text-gold">${formatNum(a.gold)} Vàng</span><br/>
-              <span class="text-gem">${formatNum(a.gem)} Ngọc</span> • <span class="text-ruby">${formatNum(a.ruby)} HN</span><br/>
-              <span style="font-size:11.5px;color:var(--purple);font-weight:700;">🎁 Rương SKH: ${formatNum(a.ruongSkh ?? 5)}</span>
+              <span style="font-size:12px;color:var(--muted);">${formatNum(a.gem)} Ngọc · ${formatNum(a.ruby)} HN · SKH: <b style="color:var(--text-secondary);">${formatNum(a.ruongSkh ?? 5)}</b></span>
             </td>
             <td style="display:flex;gap:5px;flex-wrap:wrap;">
-              <button class="btn-sm" onclick="openEditAccount(${a.accId})">Cộng VNĐ / Sửa</button>
-              <button class="btn-teal btn-sm" onclick="promptGiveSkhBox('${escapeJs(a.playerName)}', ${a.playerId || 0}, ${a.accId}, ${a.ruongSkh ?? 5})">🎁 +Rương SKH</button>
-              ${a.playerId > 0 ? `<button class="btn-warning btn-sm" onclick="openIntrinsicModal('${escapeJs(a.playerName)}', ${a.playerId}, ${a.accId}, ${a.genderId ?? -1}, ${a.intrinsicId || 0}, ${a.intrinsicParam1 || 0})">⚡ Nội Tại</button>` : ''}
-              ${!a.active ? `<button class="btn-success btn-sm" onclick="quickToggleAccount(${a.accId}, 'active', 1)">Mở TV</button>` : ''}
-              ${a.online && a.playerId > 0 ? `<button class="btn-purple btn-sm" onclick="openGiftModal(${a.playerId}, '${escapeJs(a.playerName)}')">Tặng Đồ</button>` : ''}
-              <button class="${a.ban ? 'btn-warning' : 'btn-danger'} btn-sm" onclick="quickToggleAccount(${a.accId}, 'ban', ${a.ban ? 0 : 1})">${a.ban ? 'Mở Khóa' : 'Khóa'}</button>
+              <button class="btn-success btn-sm" onclick="openEditAccount(${a.accId})">Sửa / +VNĐ</button>
+              <button class="btn-muted btn-sm" onclick="promptGiveSkhBox('${escapeJs(a.playerName)}', ${a.playerId || 0}, ${a.accId}, ${a.ruongSkh ?? 5})">+Rương SKH</button>
+              ${a.playerId > 0 ? `<button class="btn-muted btn-sm" onclick="openIntrinsicModal('${escapeJs(a.playerName)}', ${a.playerId}, ${a.accId}, ${a.genderId ?? -1}, ${a.intrinsicId || 0}, ${a.intrinsicParam1 || 0})">Nội Tại</button>` : ''}
+              ${!a.active ? `<button class="btn-muted btn-sm" onclick="quickToggleAccount(${a.accId}, 'active', 1)">Mở TV</button>` : ''}
+              ${a.online && a.playerId > 0 ? `<button class="btn-muted btn-sm" onclick="openGiftModal(${a.playerId}, '${escapeJs(a.playerName)}')">Trao Quà</button>` : ''}
+              <button class="${a.ban ? 'btn-muted' : 'btn-danger'} btn-sm" onclick="quickToggleAccount(${a.accId}, 'ban', ${a.ban ? 0 : 1})">${a.ban ? 'Mở Khóa' : 'Khóa'}</button>
             </td>
           </tr>
         `).join('');
       } catch (e) {
-        tbody.innerHTML = `<tr><td colspan="10" style="text-align:center;color:#ef4444;">Không thể tải danh sách tài khoản!</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="10" style="text-align:center;color:var(--danger);">Không thể tải danh sách tài khoản!</td></tr>`;
       }
     }
 
@@ -1398,7 +1511,7 @@
         if (b.alive) {
           const timeStr = b.spawnTimeMs > 0 ? new Date(b.spawnTimeMs).toLocaleTimeString('vi-VN') : 'Vừa xuất hiện';
           const aliveDur = b.aliveSec > 0 ? formatDurationShort(b.aliveSec) : 'Vừa ra';
-          spawnInfoHtml = `<span style="color:var(--success);font-weight:700;">🕒 ${timeStr}</span><br/><span style="font-size:11.5px;color:var(--muted);">Đã sống: <b>${aliveDur}</b></span>`;
+          spawnInfoHtml = `<span style="color:var(--text);font-weight:600;">${timeStr}</span><br/><span style="font-size:11.5px;color:var(--muted);">Đã sống: <b>${aliveDur}</b></span>`;
         }
 
         let respawnInfoHtml = '<span style="color:var(--muted);">--</span>';
@@ -1408,11 +1521,11 @@
         if (!b.alive) {
           if (b.respawnRemainSec > 0) {
             const etaStr = new Date(Date.now() + b.respawnRemainSec * 1000).toLocaleTimeString('vi-VN');
-            respawnInfoHtml = `<span class="badge" style="background:rgba(245,158,11,0.15);color:#d97706;">⏳ Còn ${formatDurationShort(b.respawnRemainSec)}</span><br/><span style="font-size:11px;color:var(--muted);">Dự kiến: ${etaStr} (${cycleLabel})</span>`;
+            respawnInfoHtml = `<span class="badge badge-dead">Còn ${formatDurationShort(b.respawnRemainSec)}</span><br/><span style="font-size:11px;color:var(--muted);">Dự kiến: ${etaStr} (${cycleLabel})</span>`;
           } else if (b.hasParent) {
-            respawnInfoHtml = `<span style="font-size:12px;color:var(--primary);font-weight:600;">🔗 Ra cùng Boss chính</span>`;
+            respawnInfoHtml = `<span style="font-size:12px;color:var(--text-secondary);">Ra cùng Boss chính</span>`;
           } else if (b.secondsRest > 0) {
-            respawnInfoHtml = `<span style="font-size:12px;color:var(--success);font-weight:600;">⚡ Sắp xuất hiện</span><br/><span style="font-size:11px;color:var(--muted);">${cycleLabel}</span>`;
+            respawnInfoHtml = `<span style="font-size:12px;color:var(--text);font-weight:600;">Sắp xuất hiện</span><br/><span style="font-size:11px;color:var(--muted);">${cycleLabel}</span>`;
           } else {
             respawnInfoHtml = `<span style="font-size:12px;color:var(--muted);">${cycleLabel}</span>`;
           }
@@ -1422,8 +1535,8 @@
 
         return `
           <tr>
-            <td>#${b.index}</td>
-            <td style="font-weight:700;color:${b.alive ? 'var(--warning)' : 'var(--muted)'};">${escapeHtml(b.name)}</td>
+            <td style="color:var(--muted);">#${b.index}</td>
+            <td style="font-weight:600;color:${b.alive ? 'var(--text)' : 'var(--muted)'};">${escapeHtml(b.name)}</td>
             <td>
               <span class="badge ${b.alive ? 'badge-alive' : 'badge-dead'}">
                 ${b.alive ? 'Đang Sống' : ('Chờ (' + b.status + ')')}
@@ -1434,13 +1547,13 @@
               <div class="hp-bar-bg"><div class="hp-bar-fill" style="width:${b.alive ? pct : 0}%"></div></div>
             </td>
             <td><b>${escapeHtml(b.mapName)}</b></td>
-            <td>${b.alive ? `<span class="badge badge-alive">Khu ${b.zoneId}</span>` : '--'}</td>
+            <td>${b.alive ? `<span class="badge badge-dead">Khu ${b.zoneId}</span>` : '--'}</td>
             <td>${spawnInfoHtml}</td>
             <td>${respawnInfoHtml}</td>
             <td style="display:flex;gap:6px;">
               ${b.alive
-                ? `<button class="btn-danger btn-sm" onclick="killBoss(${b.index})">Thu Hồi / Diệt</button>`
-                : `<button class="btn-warning btn-sm" onclick="spawnBoss(${b.index})">Hồi Sinh Ngay</button>`
+                ? `<button class="btn-danger btn-sm" onclick="killBoss(${b.index})">Thu Hồi</button>`
+                : `<button class="btn-muted btn-sm" onclick="spawnBoss(${b.index})">Gọi Boss</button>`
               }
             </td>
           </tr>
@@ -1642,18 +1755,18 @@
     }
 
     const EVENT_DEFINITIONS = [
-      { key: 'halloween', altKey: 'halloween', label: '🎃 Sự Kiện Halloween', desc: 'Rơi Bí Ngô 1-7 Sao (gọi Rồng Xương), Boss Bí Ma / Ma Trơi / Dơi' },
-      { key: 'christmas', altKey: 'christmas', label: '🎄 Sự Kiện Giáng Sinh (Noel)', desc: 'Rơi Tất Vớ, Hộp Quà Giáng Sinh & Boss Ông Già Noel' },
-      { key: 'lunnar_new_year', altKey: 'lunarNewYear', label: '🧧 Sự Kiện Tết Nguyên Đán', desc: 'Rơi Bao Lì Xì, NPC Tết & Boss Lân Con' },
-      { key: 'trung_thu', altKey: 'trungThu', label: '🥮 Sự Kiện Tết Trung Thu', desc: 'Rơi Hộp Quà Trung Thu & Boss Khỉ Đột / Nguyệt Thần' },
-      { key: 'hung_vuong', altKey: 'hungVuong', label: '⚔️ Sự Kiện Giỗ Tổ Hùng Vương', desc: 'Rơi Ngà Voi, Cựa Gà, Hồng Mao, Dưa Hấu, Tem (Dâng sính lễ Vua Hùng)' },
-      { key: 'summer_nuoc_mia', altKey: 'summerNuocMia', label: '🍹 Sự Kiện Mùa Hè (Nước Mía & Kem)', desc: 'Rơi Khúc Mía, Nước Đá, Kem Trái Cây (Đua Top tại NPC Xe Nước Mía & ChiChi)' },
-      { key: 'children_day', altKey: 'childrenDay', label: '🎈 Sự Kiện Thiếu Nhi 1/6', desc: 'Rơi Hộp Quà Thiếu Nhi (Mở Cải trang VIP & Đua Top tại NPC ChiChi)' },
-      { key: 'cooking_banh', altKey: 'cookingBanh', label: '🍲 Sự Kiện Nấu Bánh Chưng & Bánh Dầy', desc: 'Rơi Cơm Nếp, Đậu Xanh, Thịt Tươi, Chả Lụa... nấu bánh tại NPC Nồi Bánh' },
-      { key: 'firework', altKey: 'firework', label: '🎆 Sự Kiện Pháo Hoa Lễ Hội', desc: 'Rơi Pháo Bông & Pháo Bông VIP khi đánh quái (Bắn pháo hoa nhận Vàng)' },
-      { key: 'womans_day', altKey: 'womensDay', label: '🌹 Sự Kiện Quốc Tế Phụ Nữ 8/3', desc: 'Rơi Hoa Hồng khi đánh quái & Buff chỉ số sự kiện' },
-      { key: 'top_up', altKey: 'topUp', label: '💎 Sự Kiện Khuyến Mãi Nạp', desc: 'Kích hoạt mốc thưởng sự kiện nạp' },
-      { key: 'double_gold', altKey: 'doubleGold', label: '💰 Sự Kiện X2 Vàng Rơi Toàn Server', desc: 'Nhân đôi lượng Vàng rơi ra khi tiêu diệt quái' }
+      { key: 'halloween', altKey: 'halloween', label: 'Sự Kiện Halloween', desc: 'Rơi Bí Ngô 1-7 Sao (gọi Rồng Xương), Boss Bí Ma / Ma Trơi / Dơi' },
+      { key: 'christmas', altKey: 'christmas', label: 'Sự Kiện Giáng Sinh (Noel)', desc: 'Rơi Tất Vớ, Hộp Quà Giáng Sinh & Boss Ông Già Noel' },
+      { key: 'lunnar_new_year', altKey: 'lunarNewYear', label: 'Sự Kiện Tết Nguyên Đán', desc: 'Rơi Bao Lì Xì, NPC Tết & Boss Lân Con' },
+      { key: 'trung_thu', altKey: 'trungThu', label: 'Sự Kiện Tết Trung Thu', desc: 'Rơi Hộp Quà Trung Thu & Boss Khỉ Đột / Nguyệt Thần' },
+      { key: 'hung_vuong', altKey: 'hungVuong', label: 'Sự Kiện Giỗ Tổ Hùng Vương', desc: 'Rơi Ngà Voi, Cựa Gà, Hồng Mao, Dưa Hấu, Tem (Dâng sính lễ Vua Hùng)' },
+      { key: 'summer_nuoc_mia', altKey: 'summerNuocMia', label: 'Sự Kiện Mùa Hè (Nước Mía & Kem)', desc: 'Rơi Khúc Mía, Nước Đá, Kem Trái Cây (Đua Top tại NPC Xe Nước Mía & ChiChi)' },
+      { key: 'children_day', altKey: 'childrenDay', label: 'Sự Kiện Thiếu Nhi 1/6', desc: 'Rơi Hộp Quà Thiếu Nhi (Mở Cải trang VIP & Đua Top tại NPC ChiChi)' },
+      { key: 'cooking_banh', altKey: 'cookingBanh', label: 'Sự Kiện Nấu Bánh Chưng & Bánh Dầy', desc: 'Rơi Cơm Nếp, Đậu Xanh, Thịt Tươi, Chả Lụa... nấu bánh tại NPC Nồi Bánh' },
+      { key: 'firework', altKey: 'firework', label: 'Sự Kiện Pháo Hoa Lễ Hội', desc: 'Rơi Pháo Bông & Pháo Bông VIP khi đánh quái (Bắn pháo hoa nhận Vàng)' },
+      { key: 'womans_day', altKey: 'womensDay', label: 'Sự Kiện Quốc Tế Phụ Nữ 8/3', desc: 'Rơi Hoa Hồng khi đánh quái & Buff chỉ số sự kiện' },
+      { key: 'top_up', altKey: 'topUp', label: 'Sự Kiện Khuyến Mãi Nạp', desc: 'Kích hoạt mốc thưởng sự kiện nạp' },
+      { key: 'double_gold', altKey: 'doubleGold', label: 'Sự Kiện X2 Vàng Rơi Toàn Server', desc: 'Nhân đôi lượng Vàng rơi ra khi tiêu diệt quái' }
     ];
 
     let currentEventsState = { halloween: true, drop_rate: 5, dropRate: 5 };
@@ -1673,17 +1786,17 @@
       grid.innerHTML = EVENT_DEFINITIONS.map(def => {
         const isOn = Boolean(stateObj && (stateObj[def.key] || stateObj[def.altKey]));
         return `
-          <div style="border:1px solid ${isOn ? 'var(--success)' : 'var(--border)'};background:${isOn ? 'rgba(16,185,129,0.08)' : 'var(--bg)'};border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;justify-content:space-between;gap:8px;">
+          <div style="border:1px solid ${isOn ? 'var(--success-border)' : 'var(--border)'};background:${isOn ? 'var(--success-bg)' : 'var(--panel)'};border-radius:8px;padding:12px 14px;display:flex;flex-direction:column;justify-content:space-between;gap:10px;">
             <div>
               <div style="display:flex;justify-content:space-between;align-items:center;gap:6px;">
-                <b style="font-size:13px;">${def.label}</b>
+                <b style="font-size:13px;color:var(--text);">${def.label}</b>
                 <span class="badge ${isOn ? 'badge-alive' : 'badge-dead'}">${isOn ? 'ĐANG BẬT' : 'ĐANG TẮT'}</span>
               </div>
-              <div style="font-size:11.5px;color:var(--muted);margin-top:4px;">${def.desc}</div>
+              <div style="font-size:12px;color:var(--muted);margin-top:4px;line-height:1.4;">${def.desc}</div>
             </div>
             <div style="display:flex;gap:6px;">
-              <button class="${isOn ? 'btn-danger' : 'btn-success'} btn-sm" style="width:100%;" onclick="toggleGameEvent('${def.altKey}', ${isOn ? 0 : 1})">
-                ${isOn ? '⏹ Tắt Sự Kiện' : '▶ Bật Sự Kiện Ngay'}
+              <button class="${isOn ? 'btn-danger' : 'btn-muted'} btn-sm" style="width:100%;" onclick="toggleGameEvent('${def.altKey}', ${isOn ? 0 : 1})">
+                ${isOn ? 'Tắt Sự Kiện' : 'Bật Sự Kiện'}
               </button>
             </div>
           </div>
@@ -1857,11 +1970,11 @@
           `</tbody></table>`;
 
       document.getElementById('inspectContent').innerHTML = `
-        <h4 style="margin:8px 0;color:var(--success);">1. Trang Bị Đang Mặc (${res.body.length})</h4>
+        <h4 style="margin:8px 0;color:var(--text);font-size:13.5px;">1. Trang Bị Đang Mặc (${res.body.length})</h4>
         ${renderSlots(res.body)}
-        <h4 style="margin:14px 0 8px;color:var(--warning);">2. Hành Trang Túi Đồ (${res.bag.length})</h4>
+        <h4 style="margin:14px 0 8px;color:var(--text);font-size:13.5px;">2. Hành Trang Túi Đồ (${res.bag.length})</h4>
         ${renderSlots(res.bag)}
-        <h4 style="margin:14px 0 8px;color:var(--purple);">3. Rương Đồ (${res.box.length})</h4>
+        <h4 style="margin:14px 0 8px;color:var(--text);font-size:13.5px;">3. Rương Đồ (${res.box.length})</h4>
         ${renderSlots(res.box)}
       `;
       document.getElementById('inspectModal').classList.add('show');
