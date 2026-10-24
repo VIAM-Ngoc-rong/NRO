@@ -702,6 +702,13 @@ public final class Manager {
             } catch (Exception ignored) {
             }
 
+            try (PreparedStatement psUpdateBagSwitch = ConnectionDatabase.prepareStatement(
+                    "UPDATE item_template SET TYPE = 27, gender = 3, NAME = 'Chuyển Trang Hành Trang', "
+                    + "description = 'Bấm Sử dụng để chuyển sang Trang Hành Trang khác hoặc mở thêm Trang', level = 1, icon_id = 4340, part = -1, is_up_to_up = 0 WHERE id = 1998")) {
+                psUpdateBagSwitch.executeUpdate();
+            } catch (Exception ignored) {
+            }
+
             try (PreparedStatement psUpdateNameCard = ConnectionDatabase.prepareStatement(
                     "UPDATE item_template SET TYPE = 27, gender = 3, NAME = 'Thẻ đổi tên', "
                     + "description = 'Sử dụng để đổi tên nhân vật', level = 1, icon_id = 4030, part = -1, is_up_to_up = 1 WHERE id IN (1999, 2006)")) {

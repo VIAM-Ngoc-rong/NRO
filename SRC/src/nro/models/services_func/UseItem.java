@@ -165,8 +165,16 @@ public class UseItem {
                             if (index < 0) {
                                 return;
                             }
+                            if (index >= player.inventory.itemsBag.size() || !player.inventory.itemsBag.get(index).isNotNullItem()) {
+                                nro.models.npc.NpcFactory.openMenuBagTab(player);
+                                return;
+                            }
                             Item item = player.inventory.itemsBag.get(index);
                             if (item.isNotNullItem()) {
+                                if (item.template.id == 1998) {
+                                    nro.models.npc.NpcFactory.openMenuBagTab(player);
+                                    return;
+                                }
                                 if (item.template.type == 7) {
                                     msg = new Message(-43);
                                     msg.writer().writeByte(type);
@@ -202,6 +210,10 @@ public class UseItem {
                             }
                         } else {
                             int iditem = _msg.reader().readShort();
+                            if (iditem == 1998) {
+                                nro.models.npc.NpcFactory.openMenuBagTab(player);
+                                return;
+                            }
                             Item item = finditem(player, iditem);
                             UseItem.gI().useItem(player, item, index);
                         }
@@ -214,8 +226,14 @@ public class UseItem {
                             return;
                         }
                         if (where == 0) {
+                            if (index >= player.inventory.itemsBody.size()) {
+                                return;
+                            }
                             item = player.inventory.itemsBody.get(index);
                         } else {
+                            if (index >= player.inventory.itemsBag.size()) {
+                                return;
+                            }
                             item = player.inventory.itemsBag.get(index);
                         }
 

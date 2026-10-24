@@ -574,9 +574,16 @@ public class InventoryService {
         Message msg;
         try {
             int tabSize = player.inventory.getActiveTabSize();
+            int nonNullCount = 0;
+            for (int i = 0; i < tabSize; i++) {
+                if (player.inventory.itemsBag.get(i).isNotNullItem()) {
+                    nonNullCount++;
+                }
+            }
+            int displaySlots = Math.min(125, Math.max(tabSize, nonNullCount + 1));
             msg = new Message(-36);
             msg.writer().writeByte(0);
-            msg.writer().writeByte(tabSize);
+            msg.writer().writeByte(displaySlots);
             for (int i = 0; i < tabSize; i++) {
                 Item item = player.inventory.itemsBag.get(i);
                 if (!item.isNotNullItem()) {
@@ -606,6 +613,17 @@ public class InventoryService {
                     }
                 }
             }
+
+            // Ô nút bấm ảo ngay trong Hành Trang để chuyển Trang Hành Trang tức thì
+            int curTab = player.inventory.currentBagTab + 1;
+            int totalTabs = player.inventory.getTotalBagTabs();
+            msg.writer().writeShort(1998);
+            msg.writer().writeInt(curTab);
+            msg.writer().writeUTF("Đang mở: Trang " + curTab + "/" + totalTabs);
+            msg.writer().writeUTF("Bấm Sử dụng để chuyển sang Trang Hành Trang khác hoặc mở thêm Trang mới");
+            msg.writer().writeByte(1);
+            msg.writer().writeByte(30);
+            msg.writer().writeShort(0);
 
             player.sendMessage(msg);
             msg.cleanup();
