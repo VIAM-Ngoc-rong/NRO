@@ -887,6 +887,40 @@ public class UseItem {
                             case 648:
                                 UseItem.gI().NoelItemBox(pl, item);
                                 break;
+                            case 649:
+                                UseItem.gI().useTatVoGiangSinh(pl, item);
+                                break;
+                            case 717:
+                                UseItem.gI().useBaoLiXi(pl, item);
+                                break;
+                            case 589:
+                                UseItem.gI().useBongHoa(pl, item);
+                                break;
+                            case 1542:
+                            case 1556:
+                                UseItem.gI().useBanhChungBanhDay(pl, item);
+                                break;
+                            case 1544:
+                            case 1545:
+                            case 1546:
+                            case 1547:
+                            case 1548:
+                            case 1549:
+                                UseItem.gI().useNguyenLieuNauBanh(pl);
+                                break;
+                            case 1612:
+                            case 1613:
+                                UseItem.gI().useNguyenLieuNuocMia(pl);
+                                break;
+                            case 569:
+                            case 1558:
+                                UseItem.gI().useDuaHauTem(pl);
+                                break;
+                            case 1220:
+                            case 1221:
+                            case 1222:
+                                UseItem.gI().useSinhLeHungVuong(pl);
+                                break;
                             case 1171:
                                 UseItem.gI().ChuLunBox(pl, item);
                                 break;
@@ -2602,6 +2636,235 @@ public class UseItem {
             InventoryService.gI().sendItemBags(pl);
         }
 
+    }
+
+    public void useTatVoGiangSinh(Player pl, Item item) {
+        Item hopQuaNoel = InventoryService.gI().findItemBag(pl, 648);
+        if (hopQuaNoel != null && hopQuaNoel.quantity >= 1) {
+            NoelItemBox(pl, hopQuaNoel);
+            return;
+        }
+        if (item.quantity >= 10) {
+            if (InventoryService.gI().getCountEmptyBag(pl) <= 0) {
+                Service.gI().sendThongBao(pl, "Cần ít nhất 1 ô trống trong hành trang!");
+                return;
+            }
+            InventoryService.gI().subQuantityItemsBag(pl, item, 10);
+            Item hopQua = ItemService.gI().createNewItem((short) 648, 1);
+            InventoryService.gI().addItemBag(pl, hopQua);
+            InventoryService.gI().sendItemBags(pl);
+            Service.gI().sendThongBao(pl, "Đã ghép 10 Tất, vớ giáng sinh thành 1 Hộp quà giáng sinh!");
+        } else {
+            Service.gI().sendThongBao(pl, "Giữ Tất, vớ giáng sinh trong túi để nhặt Hộp quà giáng sinh, hoặc gom đủ 10 Tất vớ để đổi 1 Hộp quà!");
+        }
+    }
+
+    public void useBaoLiXi(Player pl, Item item) {
+        if (InventoryService.gI().getCountEmptyBag(pl) <= 0) {
+            Service.gI().sendThongBao(pl, "Cần ít nhất 1 ô trống trong hành trang!");
+            return;
+        }
+        InventoryService.gI().subQuantityItemsBag(pl, item, 1);
+        Service.gI().LogicEffect(pl, 62, 1, -1, 1, 1, 5000);
+        Service.gI().LogicEffect(pl, 64, 1, -1, 1, 1, 5000);
+
+        int roll = Util.nextInt(1, 100);
+        if (roll <= 35) {
+            int gold = Util.nextInt(2_000_000, 10_000_000);
+            pl.inventory.addGold(gold);
+            PlayerService.gI().sendInfoHpMpMoney(pl);
+            Service.gI().sendThongBao(pl, "Mở Bao Lì Xì nhận được " + Util.formatNumber(gold) + " Vàng!");
+        } else if (roll <= 65) {
+            int gem = Util.nextInt(10, 50);
+            pl.inventory.gem += gem;
+            PlayerService.gI().sendInfoHpMpMoney(pl);
+            Service.gI().sendThongBao(pl, "Mở Bao Lì Xì nhận được " + gem + " Ngọc Xanh!");
+        } else if (roll <= 85) {
+            int ruby = Util.nextInt(5, 25);
+            pl.inventory.ruby += ruby;
+            PlayerService.gI().sendInfoHpMpMoney(pl);
+            Service.gI().sendThongBao(pl, "Mở Bao Lì Xì nhận được " + ruby + " Hồng Ngọc!");
+        } else {
+            short[] tetRewards = {457, 1635, 1150, 1151, 1152, 1153, 1154, 674};
+            short rwId = tetRewards[Util.nextInt(0, tetRewards.length - 1)];
+            Item rw = ItemService.gI().createNewItem(rwId, 1);
+            InventoryService.gI().addItemBag(pl, rw);
+            Service.gI().sendThongBao(pl, "Mở Bao Lì Xì nhận được " + rw.template.name + "!");
+        }
+        pl.point_sukien += 1;
+        Manager.isTopSukienChanged = true;
+        InventoryService.gI().sendItemBags(pl);
+    }
+
+    public void useBongHoa(Player pl, Item item) {
+        if (InventoryService.gI().getCountEmptyBag(pl) <= 0) {
+            Service.gI().sendThongBao(pl, "Cần ít nhất 1 ô trống trong hành trang!");
+            return;
+        }
+        if (item.quantity >= 10) {
+            InventoryService.gI().subQuantityItemsBag(pl, item, 10);
+            int roll = Util.nextInt(1, 100);
+            if (roll <= 30) {
+                int gem = Util.nextInt(20, 60);
+                pl.inventory.gem += gem;
+                PlayerService.gI().sendInfoHpMpMoney(pl);
+                Service.gI().sendThongBao(pl, "Kết bó 10 Bông hoa nhận được " + gem + " Ngọc Xanh!");
+            } else if (roll <= 55) {
+                int ruby = Util.nextInt(10, 30);
+                pl.inventory.ruby += ruby;
+                PlayerService.gI().sendInfoHpMpMoney(pl);
+                Service.gI().sendThongBao(pl, "Kết bó 10 Bông hoa nhận được " + ruby + " Hồng Ngọc!");
+            } else if (roll <= 85) {
+                short[] rewards = {1635, 1150, 1151, 1152, 1153, 1776};
+                short rwId = rewards[Util.nextInt(0, rewards.length - 1)];
+                Item rw = ItemService.gI().createNewItem(rwId, 1);
+                InventoryService.gI().addItemBag(pl, rw);
+                Service.gI().sendThongBao(pl, "Kết bó 10 Bông hoa nhận được " + rw.template.name + "!");
+            } else {
+                Item rw = ItemService.gI().createNewItem((short) 1777, 1);
+                InventoryService.gI().addItemBag(pl, rw);
+                Service.gI().sendThongBao(pl, "Kết bó 10 Bông hoa nhận được " + rw.template.name + "!");
+            }
+            pl.point_sukien += 1;
+            Manager.isTopSukienChanged = true;
+        } else {
+            InventoryService.gI().subQuantityItemsBag(pl, item, 1);
+            int gold = Util.nextInt(1_000_000, 3_000_000);
+            pl.inventory.addGold(gold);
+            PlayerService.gI().sendInfoHpMpMoney(pl);
+            Service.gI().sendThongBao(pl, "Bạn nhận được " + Util.formatNumber(gold) + " Vàng! (Gom đủ 10 Bông hoa khi dùng sẽ nhận quà lớn hơn)");
+        }
+        InventoryService.gI().sendItemBags(pl);
+    }
+
+    public void useBanhChungBanhDay(Player pl, Item item) {
+        if (InventoryService.gI().getCountEmptyBag(pl) <= 0) {
+            Service.gI().sendThongBao(pl, "Cần ít nhất 1 ô trống trong hành trang!");
+            return;
+        }
+        boolean isBanhChung = item.template.id == 1556;
+        InventoryService.gI().subQuantityItemsBag(pl, item, 1);
+        int[] possibleItems = isBanhChung
+                ? new int[]{1150, 1151, 1152, 1153, 1635, 1154, 457, 674}
+                : new int[]{381, 382, 383, 384, 385, 1635};
+        short rwId = (short) possibleItems[Util.nextInt(0, possibleItems.length - 1)];
+        Item rw = ItemService.gI().createNewItem(rwId, 1);
+        InventoryService.gI().addItemBag(pl, rw);
+        pl.point_sukien += 1;
+        Manager.isTopSukienChanged = true;
+        InventoryService.gI().sendItemBags(pl);
+        Service.gI().sendThongBao(pl, "Thưởng thức " + item.template.name + " nhận được " + rw.template.name + "!");
+    }
+
+    public void useNguyenLieuNauBanh(Player pl) {
+        if (InventoryService.gI().getCountEmptyBag(pl) <= 0) {
+            Service.gI().sendThongBao(pl, "Cần ít nhất 1 ô trống trong hành trang!");
+            return;
+        }
+        Item comnep = InventoryService.gI().findItemBag(pl, 1546);
+        Item dauxanh = InventoryService.gI().findItemBag(pl, 1548);
+        Item thittuoi = InventoryService.gI().findItemBag(pl, 1549);
+        if (comnep != null && comnep.quantity >= 10
+                && dauxanh != null && dauxanh.quantity >= 10
+                && thittuoi != null && thittuoi.quantity >= 10) {
+            InventoryService.gI().subQuantityItemsBag(pl, comnep, 10);
+            InventoryService.gI().subQuantityItemsBag(pl, dauxanh, 10);
+            InventoryService.gI().subQuantityItemsBag(pl, thittuoi, 10);
+            Item banhChung = ItemService.gI().createNewItem((short) 1556, 1);
+            banhChung.itemOptions.add(new ItemOption(93, 30));
+            InventoryService.gI().addItemBag(pl, banhChung);
+            InventoryService.gI().sendItemBags(pl);
+            Service.gI().sendThongBao(pl, "Đã nấu thành công 1 Bánh Chưng! Bấm Sử dụng Bánh Chưng hoặc dâng Vua Hùng để nhận quà.");
+            return;
+        }
+        Item botgao = InventoryService.gI().findItemBag(pl, 1547);
+        Item muoitieu = InventoryService.gI().findItemBag(pl, 1545);
+        Item chalua = InventoryService.gI().findItemBag(pl, 1544);
+        if (comnep != null && comnep.quantity >= 10
+                && botgao != null && botgao.quantity >= 5
+                && muoitieu != null && muoitieu.quantity >= 5
+                && chalua != null && chalua.quantity >= 1) {
+            InventoryService.gI().subQuantityItemsBag(pl, comnep, 10);
+            InventoryService.gI().subQuantityItemsBag(pl, botgao, 5);
+            InventoryService.gI().subQuantityItemsBag(pl, muoitieu, 5);
+            InventoryService.gI().subQuantityItemsBag(pl, chalua, 1);
+            Item banhDay = ItemService.gI().createNewItem((short) 1542, 1);
+            banhDay.itemOptions.add(new ItemOption(93, 30));
+            InventoryService.gI().addItemBag(pl, banhDay);
+            InventoryService.gI().sendItemBags(pl);
+            Service.gI().sendThongBao(pl, "Đã nấu thành công 1 Bánh Dầy! Bấm Sử dụng Bánh Dầy hoặc dâng Vua Hùng để nhận quà.");
+            return;
+        }
+        Service.gI().sendThongBao(pl, "Nấu Bánh Chưng cần: 10 Cơm nếp + 10 Đậu xanh + 10 Thịt tươi.\nNấu Bánh Dầy cần: 10 Cơm nếp + 5 Bột gạo + 5 Muối tiêu + 1 Chả lụa.");
+    }
+
+    public void useNguyenLieuNuocMia(Player pl) {
+        if (InventoryService.gI().getCountEmptyBag(pl) <= 0) {
+            Service.gI().sendThongBao(pl, "Cần ít nhất 1 ô trống trong hành trang!");
+            return;
+        }
+        Item khucMia = InventoryService.gI().findItemBag(pl, 1612);
+        Item nuocDa = InventoryService.gI().findItemBag(pl, 1613);
+        if (khucMia != null && khucMia.quantity >= 5 && nuocDa != null && nuocDa.quantity >= 2 && pl.inventory.gold >= 5_000_000) {
+            InventoryService.gI().subQuantityItemsBag(pl, khucMia, 5);
+            InventoryService.gI().subQuantityItemsBag(pl, nuocDa, 2);
+            pl.inventory.gold -= 5_000_000;
+            short[] waterItems = {1614, 1615, 1616};
+            Item itemRandom = ItemService.gI().createNewItem(waterItems[Util.nextInt(0, waterItems.length - 1)], 1);
+            InventoryService.gI().addItemBag(pl, itemRandom);
+            pl.point_sukien1 += 1;
+            Manager.isTopSukien1Changed = true;
+            Service.gI().sendMoney(pl);
+            InventoryService.gI().sendItemBags(pl);
+            Service.gI().sendThongBao(pl, "Đã ép thành công 1 " + itemRandom.template.name + " (+1 điểm sự kiện Nước Mía)!");
+        } else {
+            Service.gI().sendThongBao(pl, "Cần 5 Khúc mía + 2 Nước đá + 5.000.000 Vàng để ép 1 Ly Nước Mía (hoặc gặp Xe Nước Mía)!");
+        }
+    }
+
+    public void useDuaHauTem(Player pl) {
+        Item duaHau = InventoryService.gI().findItemBag(pl, 569);
+        Item tem = InventoryService.gI().findItemBag(pl, 1558);
+        if (duaHau != null && duaHau.quantity >= 1 && tem != null && tem.quantity >= 1) {
+            InventoryService.gI().subQuantityItemsBag(pl, duaHau, 1);
+            InventoryService.gI().subQuantityItemsBag(pl, tem, 1);
+            int gem = Util.nextInt(10, 25);
+            pl.inventory.gem += gem;
+            pl.point_sukien += 1;
+            Manager.isTopSukienChanged = true;
+            PlayerService.gI().sendInfoHpMpMoney(pl);
+            InventoryService.gI().sendItemBags(pl);
+            Service.gI().sendThongBao(pl, "Đổi 1 Dưa Hấu + 1 Tem nhận được " + gem + " Ngọc Xanh!");
+        } else {
+            Service.gI().sendThongBao(pl, "Cần 1 Dưa Hấu + 1 Tem để đổi Ngọc Xanh (hoặc gặp Vua Hùng tại Làng Aru)!");
+        }
+    }
+
+    public void useSinhLeHungVuong(Player pl) {
+        if (InventoryService.gI().getCountEmptyBag(pl) <= 0) {
+            Service.gI().sendThongBao(pl, "Cần ít nhất 1 ô trống trong hành trang!");
+            return;
+        }
+        Item ngaVoi = InventoryService.gI().findItemBag(pl, 1220);
+        Item cuaGa = InventoryService.gI().findItemBag(pl, 1221);
+        Item hongMao = InventoryService.gI().findItemBag(pl, 1222);
+        if (ngaVoi != null && ngaVoi.quantity >= 9
+                && cuaGa != null && cuaGa.quantity >= 9
+                && hongMao != null && hongMao.quantity >= 9
+                && pl.inventory.gold >= 1_000_000) {
+            InventoryService.gI().subQuantityItemsBag(pl, ngaVoi, 9);
+            InventoryService.gI().subQuantityItemsBag(pl, cuaGa, 9);
+            InventoryService.gI().subQuantityItemsBag(pl, hongMao, 9);
+            pl.inventory.gold -= 1_000_000;
+            short boxId = (short) (Util.isTrue(30, 100) ? 1777 : 1776);
+            Item hopQua = ItemService.gI().createNewItem(boxId, 1);
+            InventoryService.gI().addItemBag(pl, hopQua);
+            Service.gI().sendMoney(pl);
+            InventoryService.gI().sendItemBags(pl);
+            Service.gI().sendThongBao(pl, "Dâng sính lễ thành công! Nhận được 1 " + hopQua.template.name + "!");
+        } else {
+            Service.gI().sendThongBao(pl, "Cần đủ bộ Sính Lễ: 9 Ngà Voi + 9 Cựa Gà + 9 Hồng Mao + 1.000.000 Vàng để đổi Hộp Quà Hùng Vương!");
+        }
     }
 
     public void NoelItemBox(Player pl, Item item) {

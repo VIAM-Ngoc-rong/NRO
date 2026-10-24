@@ -45,35 +45,40 @@ public class NoiBanh extends Npc {
                             Item botgao = InventoryService.gI().findItemBag(pl, 1547);// ga
                             Item muoitieu = InventoryService.gI().findItemBag(pl, 1545);// trung
                             Item chalua = InventoryService.gI().findItemBag(pl, 1544);// botmy
-                            if (comnep != null && botgao != null && muoitieu != null && chalua != null) {
-                                InventoryService.gI().subQuantityItemsBag(pl, comnep, 99);
-                                InventoryService.gI().subQuantityItemsBag(pl, botgao, 10);
-                                InventoryService.gI().subQuantityItemsBag(pl, muoitieu, 10);
+                            if (comnep != null && comnep.quantity >= 10
+                                    && botgao != null && botgao.quantity >= 5
+                                    && muoitieu != null && muoitieu.quantity >= 5
+                                    && chalua != null && chalua.quantity >= 1) {
+                                InventoryService.gI().subQuantityItemsBag(pl, comnep, 10);
+                                InventoryService.gI().subQuantityItemsBag(pl, botgao, 5);
+                                InventoryService.gI().subQuantityItemsBag(pl, muoitieu, 5);
                                 InventoryService.gI().subQuantityItemsBag(pl, chalua, 1);
                                 Item banh_day = ItemService.gI().createNewItem((short) 1542);
                                 banh_day.itemOptions.add(new ItemOption(93, 30));
                                 InventoryService.gI().addItemBag(pl, banh_day);
                                 InventoryService.gI().sendItemBags(pl);
-                                Service.gI().sendThongBao(pl, "Bạn nhận được Bánh dày");
+                                Service.gI().sendThongBao(pl, "Bạn nhận được Bánh Dầy!");
                             } else {
-                                Service.gI().sendThongBao(pl, "Không đủ nguyên liệu");
+                                Service.gI().sendThongBao(pl, "Cần 10 Cơm nếp, 5 Bột gạo, 5 Muối tiêu và 1 Chả lụa!");
                             }
                             break;
                         case 1:// banh chung
                             Item comnep1 = InventoryService.gI().findItemBag(pl, 1546);
                             Item dauxanh = InventoryService.gI().findItemBag(pl, 1548);// ga
                             Item thittuoi = InventoryService.gI().findItemBag(pl, 1549);// trung
-                            if (comnep1 != null && dauxanh != null && thittuoi != null) {
-                                InventoryService.gI().subQuantityItemsBag(pl, comnep1, 99);
-                                InventoryService.gI().subQuantityItemsBag(pl, dauxanh, 99);
-                                InventoryService.gI().subQuantityItemsBag(pl, thittuoi, 99);
+                            if (comnep1 != null && comnep1.quantity >= 10
+                                    && dauxanh != null && dauxanh.quantity >= 10
+                                    && thittuoi != null && thittuoi.quantity >= 10) {
+                                InventoryService.gI().subQuantityItemsBag(pl, comnep1, 10);
+                                InventoryService.gI().subQuantityItemsBag(pl, dauxanh, 10);
+                                InventoryService.gI().subQuantityItemsBag(pl, thittuoi, 10);
                                 Item banh_chung = ItemService.gI().createNewItem((short) 1556);
                                 banh_chung.itemOptions.add(new ItemOption(93, 30));
                                 InventoryService.gI().addItemBag(pl, banh_chung);
                                 InventoryService.gI().sendItemBags(pl);
-                                Service.gI().sendThongBao(pl, "Bạn nhận được Bánh chưng");
+                                Service.gI().sendThongBao(pl, "Bạn nhận được Bánh Chưng!");
                             } else {
-                                Service.gI().sendThongBao(pl, "Không đủ nguyên liệu");
+                                Service.gI().sendThongBao(pl, "Cần 10 Cơm nếp, 10 Đậu xanh và 10 Thịt tươi!");
                             }
                             break;
                     }
