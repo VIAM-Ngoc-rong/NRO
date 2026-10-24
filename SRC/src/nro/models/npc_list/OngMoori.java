@@ -21,7 +21,8 @@ public class OngMoori extends OngGohan {
                         "Nhận Quà\nTân Thủ",
                         "Rương SKH\nTân Thủ",
                         "Đi Ngũ\nHành Sơn",
-                        "Tiện ích\nTự động");
+                        "Tiện ích\nTự động",
+                        "Nhập\nGiftcode");
             }
         }
     }

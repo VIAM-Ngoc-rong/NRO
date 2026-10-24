@@ -14,9 +14,11 @@ import java.nio.file.Files;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Timestamp;
 import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -40,9 +42,11 @@ import nro.models.database.PlayerDAO;
 import nro.models.event.EventManager;
 import nro.models.intrinsic.Intrinsic;
 import nro.models.item.Item;
+import nro.models.managers.GiftCodeManager;
 import nro.models.map.service.ChangeMapService;
 import nro.models.player.Inventory;
 import nro.models.player.Player;
+import nro.models.player_system.GiftCode;
 import nro.models.player_system.Template;
 import nro.models.services.ClanService;
 import nro.models.services.IntrinsicService;
@@ -56,6 +60,7 @@ import nro.models.task.SubTaskMain;
 import nro.models.task.TaskMain;
 import nro.models.utils.Logger;
 import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
 /**
@@ -116,7 +121,7 @@ public class AdminWebServer {
     }
 
     public static void loadBossKillHistoryFromDb() {
-        try (Connection con = DBConnecter.getConnectionServer()) {
+        try (Connection con = LocalManager.getConnection()) {
             ensureBossKillTable(con);
             List<BossKillRecord> loaded = new ArrayList<>();
             try (PreparedStatement ps = con.prepareStatement(
@@ -182,7 +187,7 @@ public class AdminWebServer {
             }
         }
         Thread.startVirtualThread(() -> {
-            try (Connection con = DBConnecter.getConnectionServer()) {
+            try (Connection con = LocalManager.getConnection()) {
                 ensureBossKillTable(con);
                 try (PreparedStatement ps = con.prepareStatement(
                         "INSERT INTO boss_kill_history (time_ms, boss_id, boss_name, hp_max, killer_name, is_bot, map_name, map_id, zone_id) "
@@ -513,12 +518,91 @@ public class AdminWebServer {
         sb.append(",\"aliveBossCount\":").append(aliveBossCount);
         sb.append(",\"totalBossCount\":").append(visibleBossCount);
         sb.append(",\"bossKillHistory\":").append(serializeBossKillHistory());
+        sb.append(",\"giftcodes\":").append(serializeGiftCodes());
         sb.append(",\"intrinsics\":").append(serializeIntrinsics());
         sb.append(",\"tasks\":").append(serializeTasks());
         sb.append(",\"events\":").append(serializeEvents());
         sb.append("}");
 
         sendJson(exchange, 200, sb.toString());
+    }
+
+    private static String getGiftItemDisplayName(int itemId) {
+        return switch (itemId) {
+            case -1 -> "Vàng";
+            case -2 -> "Ngọc xanh";
+            case -3 -> "Hồng ngọc";
+            case -4 -> "Rương SKH Tân Thủ";
+            default -> {
+                Template.ItemTemplate tpl = ItemService.gI().getTemplate(itemId);
+                yield tpl != null && tpl.name != null ? tpl.name : ("Item #" + itemId);
+            }
+        };
+    }
+
+    private static String serializeGiftCodes() {
+        List<GiftCode> list = new ArrayList<>(GiftCodeManager.gI().listGiftCode);
+        StringBuilder sb = new StringBuilder("[");
+        boolean first = true;
+        for (GiftCode gc : list) {
+            if (gc == null || gc.code == null) {
+                continue;
+            }
+            if (!first) {
+                sb.append(",");
+            }
+            first = false;
+            long createMs = gc.datecreate != null ? gc.datecreate.getTime() : 0L;
+            long expMs = gc.dateexpired != null ? gc.dateexpired.getTime() : 0L;
+            sb.append("{")
+                    .append("\"id\":").append(gc.id)
+                    .append(",\"code\":").append(jsonStr(gc.code))
+                    .append(",\"countLeft\":").append(gc.countLeft)
+                    .append(",\"dateCreateMs\":").append(createMs)
+                    .append(",\"dateExpiredMs\":").append(expMs)
+                    .append(",\"expired\":").append(gc.timeCode())
+                    .append(",\"items\":[");
+            boolean firstItem = true;
+            if (gc.detail != null) {
+                for (Map.Entry<Integer, Integer> entry : gc.detail.entrySet()) {
+                    Integer itemId = entry.getKey();
+                    Integer qty = entry.getValue();
+                    if (itemId == null || qty == null) {
+                        continue;
+                    }
+                    if (!firstItem) {
+                        sb.append(",");
+                    }
+                    firstItem = false;
+                    sb.append("{")
+                            .append("\"id\":").append(itemId)
+                            .append(",\"name\":").append(jsonStr(getGiftItemDisplayName(itemId)))
+                            .append(",\"quantity\":").append(qty)
+                            .append(",\"options\":[");
+                    ArrayList<Item.ItemOption> opts = gc.option != null ? gc.option.get(itemId) : null;
+                    if (opts != null) {
+                        for (int k = 0; k < opts.size(); k++) {
+                            Item.ItemOption opt = opts.get(k);
+                            if (opt == null || opt.optionTemplate == null) {
+                                continue;
+                            }
+                            if (k > 0) {
+                                sb.append(",");
+                            }
+                            sb.append("{")
+                                    .append("\"id\":").append(opt.optionTemplate.id)
+                                    .append(",\"name\":").append(jsonStr(opt.optionTemplate.name != null ? opt.optionTemplate.name : ""))
+                                    .append(",\"param\":").append(opt.param)
+                                    .append("}");
+                        }
+                    }
+                    sb.append("]}");
+                }
+            }
+            sb.append("]}");
+        }
+        sb.append("]");
+        return sb.toString();
     }
 
     private static String serializeEvents() {
@@ -1527,13 +1611,209 @@ public class AdminWebServer {
                         }
                     }
                     Thread.startVirtualThread(() -> {
-                        try (Connection con = DBConnecter.getConnectionServer();
+                        try (Connection con = LocalManager.getConnection();
                              PreparedStatement ps = con.prepareStatement("TRUNCATE TABLE boss_kill_history")) {
                             ps.executeUpdate();
                         } catch (Exception ignored) {
                         }
                     });
                     sendJson(exchange, 200, "{\"ok\":true,\"message\":\"Đã xóa toàn bộ lịch sử tiêu diệt Boss!\"}");
+                }
+                case "save_giftcode" -> {
+                    String rawCode = params.getOrDefault("code", "").trim();
+                    if (rawCode.isEmpty()) {
+                        sendJson(exchange, 400, "{\"ok\":false,\"message\":\"Vui lòng nhập tên mã Giftcode!\"}");
+                        return;
+                    }
+                    int countLeft = (int) Math.max(1, Math.min(999_999_999L, parseLongSafe(params.get("countLeft"), 999999)));
+                    long daysValid = Math.max(1L, Math.min(3650L, parseLongSafe(params.get("daysValid"), 365)));
+                    boolean announce = "1".equals(params.get("announce")) || "true".equalsIgnoreCase(params.get("announce"));
+                    String itemsJsonRaw = params.getOrDefault("itemsJson", "[]").trim();
+
+                    JSONArray parsedItems = (JSONArray) JSONValue.parse(itemsJsonRaw);
+                    if (parsedItems == null || parsedItems.isEmpty()) {
+                        sendJson(exchange, 400, "{\"ok\":false,\"message\":\"Danh sách vật phẩm trong Giftcode không được để trống!\"}");
+                        return;
+                    }
+
+                    HashMap<Integer, Integer> detailMap = new HashMap<>();
+                    HashMap<Integer, ArrayList<Item.ItemOption>> optionMap = new HashMap<>();
+                    StringBuilder detailDbJson = new StringBuilder("[");
+                    List<String> summaryParts = new ArrayList<>();
+                    boolean firstDetail = true;
+
+                    for (Object obj : parsedItems) {
+                        if (!(obj instanceof JSONObject jObj)) {
+                            continue;
+                        }
+                        int itemId = (int) parseLongSafe(jObj.get("id") != null ? jObj.get("id").toString() : "", -999);
+                        int qty = (int) Math.max(1, Math.min(999_999_999L, parseLongSafe(jObj.get("quantity") != null ? jObj.get("quantity").toString() : "1", 1)));
+                        if (itemId < -4) {
+                            continue;
+                        }
+                        if (itemId >= 0 && ItemService.gI().getTemplate(itemId) == null) {
+                            sendJson(exchange, 400, "{\"ok\":false,\"message\":" + jsonStr("Không tìm thấy vật phẩm có ID #" + itemId + " trong dữ liệu Server!") + "}");
+                            return;
+                        }
+                        ArrayList<Item.ItemOption> optList = new ArrayList<>();
+                        Object optsRaw = jObj.get("options");
+                        if (optsRaw instanceof JSONArray optArr) {
+                            for (Object oObj : optArr) {
+                                if (oObj instanceof JSONObject oJson) {
+                                    int optId = (int) parseLongSafe(oJson.get("id") != null ? oJson.get("id").toString() : "-1", -1);
+                                    int optParam = (int) parseLongSafe(oJson.get("param") != null ? oJson.get("param").toString() : "0", 0);
+                                    if (optId >= 0) {
+                                        optList.add(new Item.ItemOption(optId, optParam));
+                                    }
+                                }
+                            }
+                        }
+                        if (itemId >= 0 && optList.isEmpty()) {
+                            optList.add(new Item.ItemOption(30, 0));
+                        }
+                        detailMap.put(itemId, qty);
+                        optionMap.put(itemId, optList);
+
+                        if (!firstDetail) {
+                            detailDbJson.append(",");
+                        }
+                        firstDetail = false;
+                        detailDbJson.append("{\"id\":").append(itemId).append(",\"quantity\":").append(qty).append(",\"options\":[");
+                        for (int k = 0; k < optList.size(); k++) {
+                            if (k > 0) {
+                                detailDbJson.append(",");
+                            }
+                            Item.ItemOption io = optList.get(k);
+                            int oId = io.optionTemplate != null ? io.optionTemplate.id : 30;
+                            detailDbJson.append("{\"id\":").append(oId).append(",\"param\":").append(io.param).append("}");
+                        }
+                        detailDbJson.append("]}");
+                        summaryParts.add("x" + qty + " " + getGiftItemDisplayName(itemId));
+                    }
+                    detailDbJson.append("]");
+
+                    if (detailMap.isEmpty()) {
+                        sendJson(exchange, 400, "{\"ok\":false,\"message\":\"Không có vật phẩm hợp lệ nào trong Giftcode!\"}");
+                        return;
+                    }
+
+                    long nowMs = System.currentTimeMillis();
+                    Timestamp tsCreate = new Timestamp(nowMs);
+                    Timestamp tsExpire = new Timestamp(nowMs + daysValid * 86400_000L);
+                    int dbId = -1;
+
+                    try (Connection con = LocalManager.getConnection()) {
+                        GiftCode existing = null;
+                        for (GiftCode gc : GiftCodeManager.gI().listGiftCode) {
+                            if (gc != null && gc.code != null && gc.code.equalsIgnoreCase(rawCode)) {
+                                existing = gc;
+                                break;
+                            }
+                        }
+                        if (existing != null) {
+                            dbId = existing.id;
+                            try (PreparedStatement ps = con.prepareStatement(
+                                    "UPDATE giftcode SET code = ?, count_left = ?, detail = ?, datecreate = ?, expired = ? WHERE id = ?")) {
+                                ps.setString(1, rawCode);
+                                ps.setInt(2, countLeft);
+                                ps.setString(3, detailDbJson.toString());
+                                ps.setTimestamp(4, tsCreate);
+                                ps.setTimestamp(5, tsExpire);
+                                ps.setInt(6, dbId);
+                                ps.executeUpdate();
+                            }
+                            existing.code = rawCode;
+                            existing.countLeft = countLeft;
+                            existing.detail = detailMap;
+                            existing.option = optionMap;
+                            existing.datecreate = tsCreate;
+                            existing.dateexpired = tsExpire;
+                        } else {
+                            try (PreparedStatement ps = con.prepareStatement(
+                                    "INSERT INTO giftcode (code, count_left, detail, datecreate, expired) VALUES (?, ?, ?, ?, ?)",
+                                     java.sql.Statement.RETURN_GENERATED_KEYS)) {
+                                ps.setString(1, rawCode);
+                                ps.setInt(2, countLeft);
+                                ps.setString(3, detailDbJson.toString());
+                                ps.setTimestamp(4, tsCreate);
+                                ps.setTimestamp(5, tsExpire);
+                                ps.executeUpdate();
+                                try (ResultSet rs = ps.getGeneratedKeys()) {
+                                    if (rs.next()) {
+                                        dbId = rs.getInt(1);
+                                    }
+                                }
+                            }
+                            GiftCode newGc = new GiftCode();
+                            newGc.id = dbId;
+                            newGc.code = rawCode;
+                            newGc.countLeft = countLeft;
+                            newGc.detail = detailMap;
+                            newGc.option = optionMap;
+                            newGc.datecreate = tsCreate;
+                            newGc.dateexpired = tsExpire;
+                            GiftCodeManager.gI().listGiftCode.add(0, newGc);
+                        }
+                    } catch (Exception e) {
+                        sendJson(exchange, 500, "{\"ok\":false,\"message\":" + jsonStr("Lỗi lưu Giftcode vào MySQL: " + e.getMessage()) + "}");
+                        return;
+                    }
+
+                    String giftSummary = String.join(", ", summaryParts);
+                    if (announce) {
+                        Service.gI().sendThongBaoAllPlayer("[MÃ QUÀ TẶNG MỚI] Nhập ngay Giftcode [" + rawCode + "] tại Ông Gôhan/Moori/Paragus hoặc Santa để nhận: " + giftSummary + "!");
+                    }
+                    sendJson(exchange, 200, "{\"ok\":true,\"message\":" + jsonStr("Đã lưu & kích hoạt Giftcode [" + rawCode + "] (" + giftSummary + ") thành công!") + "}");
+                }
+                case "delete_giftcode" -> {
+                    String targetCode = params.getOrDefault("code", "").trim();
+                    int targetId = (int) parseLongSafe(params.get("id"), -1);
+                    GiftCode removed = null;
+                    for (int i = GiftCodeManager.gI().listGiftCode.size() - 1; i >= 0; i--) {
+                        GiftCode gc = GiftCodeManager.gI().listGiftCode.get(i);
+                        if (gc != null && ((targetId > 0 && gc.id == targetId) || (!targetCode.isEmpty() && gc.code != null && gc.code.equalsIgnoreCase(targetCode)))) {
+                            removed = GiftCodeManager.gI().listGiftCode.remove(i);
+                            break;
+                        }
+                    }
+                    try (Connection con = LocalManager.getConnection()) {
+                        if (targetId > 0) {
+                            try (PreparedStatement ps = con.prepareStatement("DELETE FROM giftcode WHERE id = ?")) {
+                                ps.setInt(1, targetId);
+                                ps.executeUpdate();
+                            }
+                        } else if (!targetCode.isEmpty()) {
+                            try (PreparedStatement ps = con.prepareStatement("DELETE FROM giftcode WHERE code = ?")) {
+                                ps.setString(1, targetCode);
+                                ps.executeUpdate();
+                            }
+                        }
+                    } catch (Exception e) {
+                        sendJson(exchange, 500, "{\"ok\":false,\"message\":" + jsonStr("Lỗi xóa Giftcode khỏi MySQL: " + e.getMessage()) + "}");
+                        return;
+                    }
+                    String codeLabel = removed != null ? removed.code : targetCode;
+                    sendJson(exchange, 200, "{\"ok\":true,\"message\":" + jsonStr("Đã xóa mã Giftcode [" + codeLabel + "] thành công!") + "}");
+                }
+                case "reset_giftcode_usage" -> {
+                    String targetCode = params.getOrDefault("code", "").trim();
+                    if (targetCode.isEmpty()) {
+                        sendJson(exchange, 400, "{\"ok\":false,\"message\":\"Thiếu mã Giftcode cần làm mới lượt nhận!\"}");
+                        return;
+                    }
+                    for (Player pl : new ArrayList<>(Client.gI().getPlayers())) {
+                        if (pl != null && pl.giftCode != null && pl.giftCode.rewards != null) {
+                            pl.giftCode.rewards.removeIf(c -> c != null && c.equalsIgnoreCase(targetCode));
+                        }
+                    }
+                    try (Connection con = LocalManager.getConnection();
+                         PreparedStatement ps = con.prepareStatement("UPDATE player SET giftcode = REPLACE(giftcode, ?, '') WHERE giftcode LIKE ?")) {
+                        ps.setString(1, "\"" + targetCode + "\"");
+                        ps.setString(2, "%" + targetCode + "%");
+                        ps.executeUpdate();
+                    } catch (Exception ignored) {
+                    }
+                    sendJson(exchange, 200, "{\"ok\":true,\"message\":" + jsonStr("Đã làm mới lượt nhận mã [" + targetCode + "] — toàn bộ người chơi có thể nhập lại mã này!") + "}");
                 }
                 case "set_exp_rate" -> {
                     int rate = (int) Math.max(1, Math.min(127, parseLongSafe(params.get("rate"), 1)));

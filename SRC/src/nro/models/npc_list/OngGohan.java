@@ -32,7 +32,8 @@ public class OngGohan extends Npc {
                         "Nhận Quà\nTân Thủ",
                         "Rương SKH\nTân Thủ",
                         "Đi Ngũ\nHành Sơn",
-                        "Tiện ích\nTự động");
+                        "Tiện ích\nTự động",
+                        "Nhập\nGiftcode");
             }
         }
     }
@@ -173,6 +174,9 @@ public class OngGohan extends Npc {
             }
             if (player.idMark.isBaseMenu()) {
                 switch (select) {
+                    case 6 -> {
+                        nro.models.services_func.Input.gI().createFormGiftCode(player);
+                    }
                     case 5 -> {
                         nro.models.npc.NpcFactory.openMenuTienIch(player);
                     }

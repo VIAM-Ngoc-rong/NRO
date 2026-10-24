@@ -22,25 +22,42 @@ public class GiftCodeManager {
     }
 
     public GiftCode checkUseGiftCode(Player player, String code) {
+        if (code == null || code.trim().isEmpty()) {
+            Service.gI().sendThongBaoOK(player, "Vui lòng nhập mã Giftcode!");
+            return null;
+        }
+        String cleanCode = code.trim();
         for (GiftCode giftCode : listGiftCode) {
-            if (giftCode.code.equals(code)) {
-                if (giftCode.countLeft <= 0) {
-                    Service.gI().sendThongBaoOK(player, "Giftcode đã hết");
-                    return null;
-                } else if (giftCode.isUsedGiftCode(player)) {
-                    Service.gI().sendThongBaoOK(player, "Tham lam!");
+            if (giftCode != null && giftCode.code != null && giftCode.code.equalsIgnoreCase(cleanCode)) {
+                if (giftCode.timeCode()) {
+                    Service.gI().sendThongBaoOK(player, "Giftcode này đã hết hạn sử dụng!");
                     return null;
                 }
-                if (InventoryService.gI().getCountEmptyBag(player) < giftCode.detail.size()) {
-                    Service.gI().sendThongBaoOK(player, "Cần tối thiểu " + giftCode.detail.size() + " ô hành trang trống");
+                if (giftCode.countLeft <= 0) {
+                    Service.gI().sendThongBaoOK(player, "Giftcode đã hết lượt sử dụng!");
+                    return null;
+                }
+                if (giftCode.isUsedGiftCode(player) || player.giftCode.isUsedGiftCode(giftCode.code.toLowerCase()) || player.giftCode.isUsedGiftCode(giftCode.code.toUpperCase())) {
+                    Service.gI().sendThongBaoOK(player, "Bạn đã nhận mã quà tặng [" + giftCode.code + "] trước đó rồi!");
+                    return null;
+                }
+                int bagSlotsNeeded = 0;
+                for (Integer itemId : giftCode.detail.keySet()) {
+                    if (itemId != null && itemId >= 0) {
+                        bagSlotsNeeded++;
+                    }
+                }
+                if (bagSlotsNeeded > 0 && InventoryService.gI().getCountEmptyBag(player) < bagSlotsNeeded) {
+                    Service.gI().sendThongBaoOK(player, "Cần tối thiểu " + bagSlotsNeeded + " ô hành trang trống để nhận quà!");
                     return null;
                 }
                 giftCode.countLeft -= 1;
-                player.giftCode.add(code);
+                player.giftCode.add(giftCode.code);
                 updateGiftCode(giftCode);
                 return giftCode;
             }
         }
+        Service.gI().sendThongBaoOK(player, "Mã Giftcode không chính xác hoặc không tồn tại!");
         return null;
     }
 
