@@ -1770,6 +1770,7 @@ public class AdminWebServer {
                     if (announce) {
                         Service.gI().sendThongBaoAllPlayer("[MÃ QUÀ TẶNG MỚI] Nhập ngay Giftcode [" + rawCode + "] tại Ông Gôhan/Moori/Paragus hoặc Santa để nhận: " + giftSummary + "!");
                     }
+                    ServerNotify.gI().broadcastNotifyTab();
                     sendJson(exchange, 200, "{\"ok\":true,\"message\":" + jsonStr("Đã lưu & kích hoạt Giftcode [" + rawCode + "] (" + giftSummary + ") thành công!") + "}");
                 }
                 case "delete_giftcode" -> {
@@ -1799,6 +1800,7 @@ public class AdminWebServer {
                         sendJson(exchange, 500, "{\"ok\":false,\"message\":" + jsonStr("Lỗi xóa Giftcode khỏi MySQL: " + e.getMessage()) + "}");
                         return;
                     }
+                    ServerNotify.gI().broadcastNotifyTab();
                     String codeLabel = removed != null ? removed.code : targetCode;
                     sendJson(exchange, 200, "{\"ok\":true,\"message\":" + jsonStr("Đã xóa mã Giftcode [" + codeLabel + "] thành công!") + "}");
                 }
@@ -1827,6 +1829,7 @@ public class AdminWebServer {
                     Manager.RATE_EXP_SERVER = (byte) rate;
                     EventManager.saveRuntimeConfig();
                     Service.gI().sendThongBaoAllPlayer("[THÔNG BÁO] Admin vừa điều chỉnh tỷ lệ Sức Mạnh / Tiềm Năng toàn Server lên x" + rate + "!");
+                    ServerNotify.gI().broadcastNotifyTab();
                     sendJson(exchange, 200, "{\"ok\":true,\"message\":" + jsonStr("Đã cập nhật Tỷ lệ EXP toàn Server thành x" + rate + " (đã lưu cố định vào MySQL)!") + "}");
                 }
                 case "spawn_bot" -> {
@@ -2086,12 +2089,14 @@ public class AdminWebServer {
                     EventManager.saveRuntimeConfig();
                     String statusStr = state ? "BẬT" : "TẮT";
                     Service.gI().sendThongBaoAllPlayer("[SỰ KIỆN] Admin vừa " + statusStr + " " + evLabel + "!");
+                    ServerNotify.gI().broadcastNotifyTab();
                     sendJson(exchange, 200, "{\"ok\":true,\"message\":" + jsonStr("Đã " + statusStr + " " + evLabel + " (đã lưu cố định vào MySQL)!") + ",\"events\":" + serializeEvents() + "}");
                 }
                 case "event_drop_rate" -> {
                     int rate = (int) Math.max(1, Math.min(100, parseLongSafe(params.get("rate"), 5)));
                     EventManager.EVENT_DROP_RATE = rate;
                     EventManager.saveRuntimeConfig();
+                    ServerNotify.gI().broadcastNotifyTab();
                     sendJson(exchange, 200, "{\"ok\":true,\"message\":" + jsonStr("Đã cập nhật tỷ lệ rơi Vật phẩm Sự kiện từ quái thành " + rate + "% (đã lưu vào MySQL)!") + ",\"events\":" + serializeEvents() + "}");
                 }
                 case "event_spawn_boss" -> {
