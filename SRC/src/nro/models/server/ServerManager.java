@@ -123,6 +123,7 @@ public class ServerManager {
             BossManager.gI().loadBoss();
             Manager.MAPS.forEach(nro.models.map.Map::initBoss);
             EventManager.gI().init();
+            BossManager.gI().staggerInitialBossSpawns();
 
             new Thread(BossManager.gI(), "Update boss").start();
             new Thread(YardartManager.gI(), "Update yardart boss").start();

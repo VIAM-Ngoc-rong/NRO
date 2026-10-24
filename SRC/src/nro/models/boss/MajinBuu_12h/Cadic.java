@@ -64,6 +64,9 @@ public class Cadic extends Boss {
 
     @Override
     public void active() {
+        if (this.typePk == nro.models.consts.ConstPlayer.NON_PK) {
+            this.changeToTypePK();
+        }
         this.attack();
     }
 
@@ -284,7 +287,7 @@ public class Cadic extends Boss {
     @Override
     public synchronized int injured(Player plAtt, long damage, boolean piercing, boolean isMobAttack) {
         if (!this.isDie()) {
-            if (!piercing && Util.isTrue(this.nPoint.tlNeDon, 1)) {
+            if (!piercing && Util.isTrue(this.nPoint.tlNeDon, 1000)) {
                 this.chat("Xí hụt");
                 return 0;
             }

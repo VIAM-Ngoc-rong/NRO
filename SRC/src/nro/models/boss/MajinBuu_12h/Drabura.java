@@ -47,11 +47,15 @@ public class Drabura extends Boss {
         }
         ChangeMapService.gI().changeMap(this, this.zone, -1, -1);
         this.changeStatus(BossStatus.ACTIVE);
+        this.changeToTypePK();
         Service.gI().changeFlag(this, 10);
     }
 
     @Override
     public void active() {
+        if (this.typePk == nro.models.consts.ConstPlayer.NON_PK) {
+            this.changeToTypePK();
+        }
         this.attack();
     }
 
@@ -61,6 +65,13 @@ public class Drabura extends Boss {
         for (Player pl : this.zone.getNotBosses()) {
             if ((pl.effectSkin == null || !pl.effectSkin.isVoHinh) && pl.cFlag != this.cFlag) {
                 plNotVoHinh.add(pl);
+            }
+        }
+        if (plNotVoHinh.isEmpty()) {
+            for (Player pl : this.zone.getNotBosses()) {
+                if (pl != null && !pl.isDie() && (pl.effectSkin == null || !pl.effectSkin.isVoHinh)) {
+                    plNotVoHinh.add(pl);
+                }
             }
         }
         if (!plNotVoHinh.isEmpty()) {

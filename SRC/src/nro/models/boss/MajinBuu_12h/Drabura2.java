@@ -36,6 +36,14 @@ public class Drabura2 extends Boss {
         }
         this.lastTimeJoin = System.currentTimeMillis();
         this.callBoss = false;
+        if (this.bossAppearTogether != null && this.currentLevel < this.bossAppearTogether.length
+                && this.bossAppearTogether[this.currentLevel] != null) {
+            for (Boss boss : this.bossAppearTogether[this.currentLevel]) {
+                if (boss != null && boss.zone != null) {
+                    boss.leaveMap();
+                }
+            }
+        }
         ChangeMapService.gI().changeMap(this, this.zone, Util.nextInt(300, 400), 336);
         this.changeStatus(BossStatus.CHAT_S);
     }
@@ -108,21 +116,19 @@ public class Drabura2 extends Boss {
                 return 0;
             }
 
-            if (plAtt != null) {
-                switch (plAtt.playerSkill.skillSelect.template.id) {
-                    case Skill.KAMEJOKO:
-                    case Skill.MASENKO:
-                    case Skill.ANTOMIC:
-                    case Skill.LIEN_HOAN:
-                        return 0;
-                }
-            }
-
             if (plAtt.isPl() && Util.isTrue(1, 5)) {
                 plAtt.fightMabu.changePercentPoint((byte) 1);
             }
             if (damage >= this.nPoint.hp) {
-                this.changeStatus(BossStatus.AFK);
+                if (this.bossStatus != BossStatus.AFK && this.bossStatus != BossStatus.DIE
+                        && this.bossStatus != BossStatus.CHAT_E && this.bossStatus != BossStatus.LEAVE_MAP
+                        && this.bossStatus != BossStatus.REST) {
+                    this.changeToTypeNonPK();
+                    this.changeStatus(BossStatus.AFK);
+                    if (plAtt != null) {
+                        reward(plAtt);
+                    }
+                }
                 damage = 0;
             }
 

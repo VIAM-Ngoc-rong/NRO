@@ -202,16 +202,6 @@ public class BuiBui2 extends Boss {
                 return 0;
             }
 
-            if (plAtt != null) {
-                switch (plAtt.playerSkill.skillSelect.template.id) {
-                    case Skill.KAMEJOKO:
-                    case Skill.MASENKO:
-                    case Skill.ANTOMIC:
-                    case Skill.LIEN_HOAN:
-                        return 0;
-                }
-            }
-
             if (plAtt.isPl() && Util.isTrue(1, 5)) {
                 plAtt.fightMabu.changePercentPoint((byte) 1);
             }

@@ -47,11 +47,11 @@ public class Osin extends Npc {
                         if (hasEnergyJar) {
                             this.createOtherMenu(player, ConstNpc.MENU_OPEN_MMB_WITH_JAR,
                                     "Mabư đã thoát khỏi vỏ bọc\nmau đi cùng ta ngăn chặn hắn lại\ntrước khi hắn tàn phá trái đất này",
-                                    "OK", "Bình hút năng lượng", "Từ chối");
+                                    "Đi theo Osin\n(Nhiệm vụ)", "Mabư 14h", "Bình hút năng lượng", "Từ chối");
                         } else {
                             this.createOtherMenu(player, ConstNpc.MENU_OPEN_MMB_NO_JAR,
                                     "Mabư đã thoát khỏi vỏ bọc\nmau đi cùng ta ngăn chặn hắn lại\ntrước khi hắn tàn phá trái đất này",
-                                    "OK", "Từ chối");
+                                    "Đi theo Osin\n(Nhiệm vụ)", "Mabư 14h", "Từ chối");
                         }
                     } else if (TimeUtil.isMabuOpen()) {
                         if (hasEnergyJar) {
@@ -77,8 +77,7 @@ public class Osin extends Npc {
                 }
                 case 114, 115, 117, 118, 119, 120 -> {
                     if (player.cFlag != 9) {
-                        NpcService.gI().createTutorial(player, tempId, avartar, "Ngươi hãy về phe của mình mà thể hiện");
-                        return;
+                        Service.gI().changeFlag(player, 9);
                     }
                     String npcSay = "Đừng vội xem thường Babiđây, ngay đến cha hắn là thần ma đạo sĩ Bibiđây khi còn sống cũng phải sợ hắn đấy!";
                     ArrayList<String> menuAL = new ArrayList<>();
@@ -86,9 +85,10 @@ public class Osin extends Npc {
                     if (!player.itemTime.isUseGTPT) {
                         menuAL.add("Giải trừ\nphép thuật\n1 Tr vàng");
                     }
-                    if (player.fightMabu.pointMabu >= player.fightMabu.POINT_MAX && this.mapId != 120) {
+                    if (this.mapId != 120) {
                         menuAL.add("Xuống\nTầng dưới");
                     }
+                    menuAL.add("Về\nĐại Hội\nVõ Thuật");
                     String[] menus = menuAL.toArray(new String[0]);
                     this.createOtherMenu(player, ConstNpc.GO_UPSTAIRS_MENU, npcSay, menus);
                 }
@@ -149,24 +149,36 @@ public class Osin extends Npc {
             case 52 -> {
                 switch (indexMenu) {
                     case ConstNpc.MENU_OPEN_MMB_WITH_JAR -> {
-                        if (select == 0) {
-                            if (TimeUtil.isMabu14HOpen()) {
-                                MajinBuu14HService.gI().joinMaBu2H(player);
-                            } else if (TimeUtil.isMabuOpen()) {
+                        if (TimeUtil.isMabu14HOpen()) {
+                            if (select == 0) {
                                 ChangeMapService.gI().changeMap(player, 114, -1, Util.nextInt(100, 500), 312);
+                            } else if (select == 1) {
+                                MajinBuu14HService.gI().joinMaBu2H(player);
+                            } else if (select == 2) {
+                                createOtherMenu(player, ConstNpc.BINH_HUT_NANG_LUONG,
+                                        "Cadic đã bị phù thủy Babidi thôi miên\nhãy mang bình hút năng lượng đến đây\nhút cạn năng lượng tà ác trong cậu ấy",
+                                        "Ok", "Từ chối");
                             }
-                        } else if (select == 1) {
-                            createOtherMenu(player, ConstNpc.BINH_HUT_NANG_LUONG,
-                                    "Cadic đã bị phù thủy Babidi thôi miên\nhãy mang bình hút năng lượng đến đây\nhút cạn năng lượng tà ác trong cậu ấy",
-                                    "Ok", "Từ chối");
+                        } else {
+                            if (select == 0) {
+                                ChangeMapService.gI().changeMap(player, 114, -1, Util.nextInt(100, 500), 312);
+                            } else if (select == 1) {
+                                createOtherMenu(player, ConstNpc.BINH_HUT_NANG_LUONG,
+                                        "Cadic đã bị phù thủy Babidi thôi miên\nhãy mang bình hút năng lượng đến đây\nhút cạn năng lượng tà ác trong cậu ấy",
+                                        "Ok", "Từ chối");
+                            }
                         }
                     }
 
                     case ConstNpc.MENU_OPEN_MMB_NO_JAR -> {
-                        if (select == 0) {
-                            if (TimeUtil.isMabu14HOpen()) {
+                        if (TimeUtil.isMabu14HOpen()) {
+                            if (select == 0) {
+                                ChangeMapService.gI().changeMap(player, 114, -1, Util.nextInt(100, 500), 336);
+                            } else if (select == 1) {
                                 MajinBuu14HService.gI().joinMaBu2H(player);
-                            } else if (TimeUtil.isMabuOpen()) {
+                            }
+                        } else {
+                            if (select == 0) {
                                 ChangeMapService.gI().changeMap(player, 114, -1, Util.nextInt(100, 500), 336);
                             }
                         }
@@ -185,62 +197,69 @@ public class Osin extends Npc {
                             ChangeMapService.gI().changeMap(player, 165, -1, Util.nextInt(100, 500), 312);
                         }
                     }
+                }
+            }
 
-                    case 114, 115, 117, 118, 119, 120 -> {
-                        if (player.cFlag != 9) {
-                            return;
-                        }
-
-                        switch (select) {
-                            case 0 ->
-                                NpcService.gI().createTutorial(player, tempId, 4388, ConstNpc.HUONG_DAN_MAP_MA_BU);
-                            case 1 -> {
-                                if (!player.itemTime.isUseGTPT) {
-                                    player.itemTime.lastTimeUseGTPT = System.currentTimeMillis();
-                                    player.itemTime.isUseGTPT = true;
-                                    ItemTimeService.gI().sendAllItemTime(player);
-                                    Service.gI().sendThongBao(player, "Phép thuật đã được giải trừ, sức đánh của bạn đã tăng theo điểm tích lũy");
-                                } else if (player.fightMabu.pointMabu >= player.fightMabu.POINT_MAX && mapId != 120) {
-                                    ChangeMapService.gI().changeMap(player, map.mapIdNextMabu((short) mapId), -1, cx, cy);
-                                }
+            case 114, 115, 117, 118, 119, 120 -> {
+                if (indexMenu == ConstNpc.GO_UPSTAIRS_MENU) {
+                    if (player.cFlag != 9) {
+                        Service.gI().changeFlag(player, 9);
+                    }
+                    switch (select) {
+                        case 0 ->
+                            NpcService.gI().createTutorial(player, tempId, 4388, ConstNpc.HUONG_DAN_MAP_MA_BU);
+                        case 1 -> {
+                            if (!player.itemTime.isUseGTPT) {
+                                player.itemTime.lastTimeUseGTPT = System.currentTimeMillis();
+                                player.itemTime.isUseGTPT = true;
+                                ItemTimeService.gI().sendAllItemTime(player);
+                                Service.gI().sendThongBao(player, "Phép thuật đã được giải trừ, sức đánh của bạn đã tăng theo điểm tích lũy");
+                            } else if (mapId != 120) {
+                                ChangeMapService.gI().changeMap(player, map.mapIdNextMabu((short) mapId), -1, cx, cy);
+                            } else {
+                                ChangeMapService.gI().changeMap(player, 52, -1, Util.nextInt(100, 300), 336);
                             }
-                            case 2 -> {
-                                if (!player.itemTime.isUseGTPT && player.fightMabu.pointMabu >= player.fightMabu.POINT_MAX && mapId != 120) {
-                                    ChangeMapService.gI().changeMap(player, map.mapIdNextMabu((short) mapId), -1, cx, cy);
-                                }
+                        }
+                        case 2 -> {
+                            if (!player.itemTime.isUseGTPT && mapId != 120) {
+                                ChangeMapService.gI().changeMap(player, map.mapIdNextMabu((short) mapId), -1, cx, cy);
+                            } else {
+                                ChangeMapService.gI().changeMap(player, 52, -1, Util.nextInt(100, 300), 336);
+                            }
+                        }
+                        case 3 ->
+                            ChangeMapService.gI().changeMap(player, 52, -1, Util.nextInt(100, 300), 336);
+                    }
+                }
+            }
+
+            case 127 -> {
+                switch (select) {
+                    case 0 -> {
+                        if (!player.isPhuHoMapMabu) {
+                            if (player.inventory.gold < 10_000_000) {
+                                Service.gI().sendThongBao(player, "Bạn không có đủ 10 triệu vàng");
+                            } else {
+                                player.inventory.subGold(10_000_000);
+                                Service.gI().sendMoney(player);
+                                player.isPhuHoMapMabu = true;
+                                player.nPoint.calPoint();
+                                player.nPoint.setHp((int) player.nPoint.hpMax);
+                                player.nPoint.setMp((int) player.nPoint.mpMax);
+                                Service.gI().point(player);
+                                Service.gI().Send_Info_NV(player);
+                                Service.gI().Send_Caitrang(player);
                             }
                         }
                     }
-
-                    case 127 -> {
-                        switch (select) {
-                            case 0 -> {
-                                if (!player.isPhuHoMapMabu) {
-                                    if (player.inventory.gold < 10_000_000) {
-                                        Service.gI().sendThongBao(player, "Bạn không có đủ 10 triệu vàng");
-                                    } else {
-                                        player.inventory.subGold(10_000_000);
-                                        Service.gI().sendMoney(player);
-                                        player.isPhuHoMapMabu = true;
-                                        player.nPoint.calPoint();
-                                        player.nPoint.setHp((int) player.nPoint.hpMax);
-                                        player.nPoint.setMp((int) player.nPoint.mpMax);
-                                        Service.gI().point(player);
-                                        Service.gI().Send_Info_NV(player);
-                                        Service.gI().Send_Caitrang(player);
-                                    }
-                                }
-                            }
-                            case 1 -> {
-                                if (player.isPhuHoMapMabu) {
-                                    ChangeMapService.gI().changeMap(player, 52, -1, Util.nextInt(100, 300), 336);
-                                }
-                            }
-                            case 2 -> {
-                                if (!player.isPhuHoMapMabu) {
-                                    ChangeMapService.gI().changeMap(player, 52, -1, Util.nextInt(100, 300), 336);
-                                }
-                            }
+                    case 1 -> {
+                        if (player.isPhuHoMapMabu) {
+                            ChangeMapService.gI().changeMap(player, 52, -1, Util.nextInt(100, 300), 336);
+                        }
+                    }
+                    case 2 -> {
+                        if (!player.isPhuHoMapMabu) {
+                            ChangeMapService.gI().changeMap(player, 52, -1, Util.nextInt(100, 300), 336);
                         }
                     }
                 }

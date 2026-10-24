@@ -344,7 +344,13 @@ public class Boss extends Player implements IBoss {
         }
         if (this.zone != null && this.zone.map != null) {
             int mapId = this.zone.map.mapId;
-            if (MapService.gI().isMapOffline(mapId) || MapService.gI().isMapPhoBan(mapId) || mapId == 113 || mapId == 112 || mapId == 129) {
+            if (MapService.gI().isMapOffline(mapId)
+                    || MapService.gI().isMapPhoBan(mapId)
+                    || MapService.gI().isMapMaBu(mapId)
+                    || MapService.gI().isMapMabu2H(mapId)
+                    || MapService.gI().isMapYardart(mapId)
+                    || MapService.gI().isMapBossFinal(mapId)
+                    || mapId == 113 || mapId == 112 || mapId == 129) {
                 return true;
             }
         }
@@ -732,7 +738,7 @@ public class Boss extends Player implements IBoss {
             nextLevel = 0;
         }
         if (this.data[nextLevel].getTypeAppear() == AppearType.DEFAULT_APPEAR
-                && Util.canDoWithTime(lastTimeRest, secondsRest * 1000)) {
+                && Util.canDoWithTime(lastTimeRest, secondsRest * 1000L)) {
             this.changeStatus(BossStatus.RESPAWN);
         }
     }

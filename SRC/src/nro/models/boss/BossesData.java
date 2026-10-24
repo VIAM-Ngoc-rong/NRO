@@ -1191,7 +1191,7 @@ public class BossesData {
                 "|-1|Mà ta sẽ để cho các ngươi tự thanh toán lẫn nhau, xin chào",
                 "|-2|Hắn nói sẽ để chúng ta tự tiêu diệt lẫn nhau",
                 "|-2|Nghĩa là sao nhỉ?"}, //text chat 3
-            REST_5_M,
+            REST_1_M,
             new int[]{BossID.GOKU, BossID.CADIC}
     );
 

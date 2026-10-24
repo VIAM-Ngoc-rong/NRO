@@ -341,8 +341,9 @@ public class Map implements Runnable {
                 if (boss != null) {
                     boss.zoneFinal = zone;
                     boss.respawn();
-                    boss.joinMapByZone(zone);
+                    boss.joinMap();
                     boss.changeStatus(nro.models.consts.BossStatus.ACTIVE);
+                    boss.changeToTypePK();
                 }
             }
         }

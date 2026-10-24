@@ -173,6 +173,28 @@ public class BossManager implements Runnable {
         this.createBoss(BossID.AN_TROM, 1);
     }
 
+    public void staggerInitialBossSpawns() {
+        long now = System.currentTimeMillis();
+        long delaySec = 10L;
+        for (int i = 0; i < this.bosses.size(); i++) {
+            Boss b = this.bosses.get(i);
+            if (b == null || b.data == null || b.data.length == 0) {
+                continue;
+            }
+            if (b.zone != null || b.zoneFinal != null || b.parentBoss != null) {
+                continue;
+            }
+            if (b.data[0].getTypeAppear() != nro.models.consts.AppearType.DEFAULT_APPEAR) {
+                continue;
+            }
+            if (b.secondsRest <= 0) {
+                b.secondsRest = 60;
+            }
+            b.lastTimeRest = now - (b.secondsRest * 1000L) + (delaySec * 1000L);
+            delaySec += nro.models.utils.Util.nextInt(15, 25);
+        }
+    }
+
     public void createBoss(int bossID, int total) {
         for (int i = 0; i < total; i++) {
             createBoss(bossID);

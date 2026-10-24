@@ -414,10 +414,11 @@ public class ChangeMapService {
                     Service.gI().sendThongBao(pl, "Đây là không gian cao trọng lực, hãy cẩn thận");
                 }
                 if (!sameZone) {
+                    boolean hadEnoughPoint = pl.fightMabu.pointMabu >= pl.fightMabu.POINT_MAX;
                     if (zoneJoin.map.mapId != 114) {
                         pl.fightMabu.clear();
                     }
-                    if (zoneJoin.map.mapId != 114) {
+                    if (zoneJoin.map.mapId != 114 && hadEnoughPoint) {
                         int param = zoneJoin.map.mapId - 114;
                         param = (zoneJoin.map.mapId > 116) ? param - 1 : param;
                         Item item = ItemService.gI().createNewItem(((short) 521));

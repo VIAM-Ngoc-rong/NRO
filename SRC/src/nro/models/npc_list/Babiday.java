@@ -24,8 +24,7 @@ public class Babiday extends Npc {
     public void openBaseMenu(Player player) {
         if (canOpenNpc(player)) {
             if (player.cFlag != 10) {
-                NpcService.gI().createTutorial(player, tempId, avartar, "Ngươi hãy về phe của mình mà thể hiện");
-                return;
+                Service.gI().changeFlag(player, 10);
             }
             String npcSay = "Bọn Kaiô do con nhóc Ôsin cầm đầu đã có mặt tại đây...Hãy chuẩn bị 'Tiếp khách' nhé!";
             ArrayList<String> menuAL = new ArrayList<>();
@@ -35,7 +34,7 @@ public class Babiday extends Npc {
                     if (!player.itemTime.isUseGTPT) {
                         menuAL.add("Giải trừ\nphép thuật\n1 ngọc");
                     }
-                    if (player.fightMabu.pointMabu >= player.fightMabu.POINT_MAX && this.mapId != 120) {
+                    if (this.mapId != 120) {
                         menuAL.add("Xuống\nTầng dưới");
                     }
                     menuAL.add("Về nhà");
@@ -54,7 +53,7 @@ public class Babiday extends Npc {
         if (canOpenNpc(player)) {
             if (player.idMark.getIndexMenu() == ConstNpc.GO_UPSTAIRS_MENU) {
                 if (player.cFlag != 10) {
-                    return;
+                    Service.gI().changeFlag(player, 10);
                 }
                 switch (select) {
                     case 0 ->
@@ -65,14 +64,14 @@ public class Babiday extends Npc {
                             player.itemTime.isUseGTPT = true;
                             ItemTimeService.gI().sendAllItemTime(player);
                             Service.gI().sendThongBao(player, "Phép thuật đã được giải trừ, sức đánh của bạn đã tăng theo điểm tích lũy");
-                        } else if (player.fightMabu.pointMabu >= player.fightMabu.POINT_MAX && this.mapId != 120) {
+                        } else if (this.mapId != 120) {
                             ChangeMapService.gI().changeMap(player, this.map.mapIdNextMabu((short) this.mapId), -1, this.cx, this.cy);
                         } else {
                             ChangeMapService.gI().changeMapBySpaceShip(player, player.gender + 21, 0, -1);
                         }
                     }
                     case 2 -> {
-                        if (!player.itemTime.isUseGTPT && player.fightMabu.pointMabu >= player.fightMabu.POINT_MAX && this.mapId != 120) {
+                        if (!player.itemTime.isUseGTPT && this.mapId != 120) {
                             ChangeMapService.gI().changeMap(player, this.map.mapIdNextMabu((short) this.mapId), -1, this.cx, this.cy);
                         } else {
                             ChangeMapService.gI().changeMapBySpaceShip(player, player.gender + 21, 0, -1);
