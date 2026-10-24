@@ -244,13 +244,8 @@ public class Boss extends Player implements IBoss {
         long rawHp = data.getHp()[Util.nextInt(0, data.getHp().length - 1)];
         if (isWorldBossForHpBoost() && rawHp >= 500_000L) {
             long boostedHp = rawHp * 3L;
-            if (boostedHp <= 2_100_000_000L) {
-                this.nPoint.hpg = (int) boostedHp;
-                this.bossDamageReductionFactor = 1;
-            } else {
-                this.nPoint.hpg = 2_100_000_000;
-                this.bossDamageReductionFactor = (int) Math.max(2L, Math.round((double) boostedHp / 2_000_000_000.0));
-            }
+            this.nPoint.hpg = (int) Math.min(2_100_000_000L, boostedHp);
+            this.bossDamageReductionFactor = 1;
         } else {
             this.nPoint.hpg = (int) Math.min(2_100_000_000L, rawHp);
             this.bossDamageReductionFactor = 1;

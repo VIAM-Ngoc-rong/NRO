@@ -88,9 +88,9 @@ public class Cumber extends Boss {
                 return 0;
             }
             if (this.currentLevel != 0) {
-                damage /= 2;
+
             }
-            damage = this.nPoint.subDameInjureWithDeff(damage - Util.nextInt(100000));
+            damage = this.nPoint.subDameInjureWithDeff(damage);
             if (!piercing && effectSkill.isShielding) {
                 if (damage > nPoint.hpMax) {
                     EffectSkillService.gI().breakShield(this);

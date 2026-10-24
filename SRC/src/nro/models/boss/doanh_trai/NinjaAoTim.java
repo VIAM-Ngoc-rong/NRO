@@ -113,7 +113,7 @@ public class NinjaAoTim extends Boss {
                 this.chat("Xí hụt");
                 return 0;
             }
-            damage = this.nPoint.subDameInjureWithDeff(damage / 2);
+            damage = this.nPoint.subDameInjureWithDeff(damage);
             if (!piercing && effectSkill.isShielding) {
                 if (damage > nPoint.hpMax) {
                     EffectSkillService.gI().breakShield(this);

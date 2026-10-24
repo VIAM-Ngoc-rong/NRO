@@ -133,7 +133,7 @@ public class SieuBoHung extends Boss {
                 return 0;
             }
 
-            damage = this.nPoint.subDameInjureWithDeff(damage / 3);
+            damage = this.nPoint.subDameInjureWithDeff(damage);
 
             if (!piercing && effectSkill.isShielding) {
                 if (damage > nPoint.hpMax) {

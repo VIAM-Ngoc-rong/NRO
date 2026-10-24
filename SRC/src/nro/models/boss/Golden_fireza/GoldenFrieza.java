@@ -68,7 +68,6 @@ public class GoldenFrieza extends Boss {
             damage = 1;
         }
 
-        damage = Math.min(damage, 50_000_000);
         this.nPoint.subHP(damage);
 
         if (isDie()) {

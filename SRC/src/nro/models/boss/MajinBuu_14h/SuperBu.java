@@ -92,10 +92,6 @@ public class SuperBu extends Boss {
                 this.chat("Xí hụt");
                 return 0;
             }
-            if (damage >= 30000000) {
-                damage = 30000000 + Util.nextInt(-10000, 10000);
-            }
-
             this.nPoint.subHP(damage);
 
             if (isDie()) {

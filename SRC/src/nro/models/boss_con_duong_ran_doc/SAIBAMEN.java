@@ -140,7 +140,7 @@ public class SAIBAMEN extends Boss {
                 this.chat("Xí hụt");
                 return 0;
             }
-            damage = this.nPoint.subDameInjureWithDeff(damage / 7);
+            damage = this.nPoint.subDameInjureWithDeff(damage);
             if (!piercing && effectSkill.isShielding) {
                 if (damage > nPoint.hpMax) {
                     EffectSkillService.gI().breakShield(this);

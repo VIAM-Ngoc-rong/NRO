@@ -292,10 +292,6 @@ public class Goku extends Boss {
             if (plAtt.isPl() && Util.isTrue(1, 5)) {
                 plAtt.fightMabu.changePoint((byte) 1);
             }
-            if (damage >= 20000000) {
-                damage = 20000000;
-            }
-
             this.nPoint.subHP(damage);
 
             if (isDie()) {

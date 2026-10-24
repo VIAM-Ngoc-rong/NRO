@@ -130,10 +130,6 @@ public class Drabura3 extends Boss {
                 this.chat("Xí hụt");
                 return 0;
             }
-            if (damage >= 20000000) {
-                damage = 20000000;
-            }
-
             this.nPoint.subHP(damage);
 
             if (isDie()) {

@@ -1752,9 +1752,6 @@ public class NPoint {
     }
 
     public void subHP(long sub) {
-        if (sub > 0 && this.player != null && this.player.isBoss && this.player instanceof nro.models.boss.Boss boss && boss.bossDamageReductionFactor > 1) {
-            sub = Math.max(1L, sub / boss.bossDamageReductionFactor);
-        }
         this.hp -= sub;
         if (this.hp <= 0) {
             this.hp = 0;

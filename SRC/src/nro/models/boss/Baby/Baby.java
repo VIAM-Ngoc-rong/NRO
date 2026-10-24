@@ -43,9 +43,7 @@ public class Baby extends Boss {
                 return 0;
             }
 
-            damage = (long) (damage * 0.7);
-
-            damage = this.nPoint.subDameInjureWithDeff(damage / 2);
+            damage = this.nPoint.subDameInjureWithDeff(damage);
 
             if (!piercing && effectSkill.isShielding) {
                 if (damage > nPoint.hpMax) {

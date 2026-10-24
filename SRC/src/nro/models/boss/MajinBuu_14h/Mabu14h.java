@@ -96,9 +96,6 @@ public class Mabu14h extends Boss {
                 return 1;
             }
             damage = this.nPoint.subDameInjureWithDeff(damage);
-            if (this.bossDamageReductionFactor > 1) {
-                damage = Math.max(1L, damage / this.bossDamageReductionFactor);
-            }
             if (!piercing && effectSkill.isShielding) {
                 if (damage > nPoint.hpMax) {
                     EffectSkillService.gI().breakShield(this);

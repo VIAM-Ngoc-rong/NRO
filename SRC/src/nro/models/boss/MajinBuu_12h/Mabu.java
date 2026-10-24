@@ -185,10 +185,6 @@ public class Mabu extends Boss {
             if (plAtt.isPl() && Util.isTrue(1, 5)) {
                 plAtt.fightMabu.changePercentPoint((byte) 1);
             }
-            if (damage >= 50000000) {
-                damage = 50000000 + Util.nextInt(-10000, 10000);
-            }
-
             this.nPoint.subHP(damage);
 
             if (isDie()) {
