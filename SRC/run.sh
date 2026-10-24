@@ -99,20 +99,15 @@ if [ -n "$OLD_PIDS" ]; then
     fi
 fi
 
-# Tối ưu Kernel Linux cho phép JVM lấy tối đa cả RAM vật lý lẫn toàn bộ Swap (3GB Swap + 1.5GB RAM)
-sysctl -w vm.swappiness=100 >/dev/null 2>&1 || true
+# Tối ưu Kernel Linux: ưu tiên giữ Game & MySQL trên RAM vật lý tốc độ cao (swappiness=20), chỉ đẩy sang 3GB Swap khi tràn RAM (tránh nghẽn I/O đĩa gây lag)
+sysctl -w vm.swappiness=20 >/dev/null 2>&1 || true
 sysctl -w vm.overcommit_memory=1 >/dev/null 2>&1 || true
 sysctl -w vm.overcommit_ratio=100 >/dev/null 2>&1 || true
 
-# Tự động tính tổng bộ nhớ (RAM vật lý + Swap) để cấp tối đa Heap cho NRO
+# Cấp phát Heap tối ưu (1536MB) để JVM gom rác (GC) cực nhanh trong RAM vật lý + tận dụng mượt 3GB Swap khi tải cao
 TOTAL_RAM_MB=$(awk '/MemTotal/ {printf "%d", $2/1024}' /proc/meminfo 2>/dev/null || echo 1536)
 TOTAL_SWAP_MB=$(awk '/SwapTotal/ {printf "%d", $2/1024}' /proc/meminfo 2>/dev/null || echo 3072)
-TOTAL_COMBINED_MB=$((TOTAL_RAM_MB + TOTAL_SWAP_MB))
-# Chừa ~650MB cho OS + MySQL + JVM Metaspace, toàn bộ phần còn lại (RAM + Swap, khoảng ~3800MB-3900MB) cấp hết cho NRO Heap
-MAX_HEAP_MB=$((TOTAL_COMBINED_MB - 650))
-if [ "$MAX_HEAP_MB" -lt 2048 ]; then
-    MAX_HEAP_MB=3072
-fi
+MAX_HEAP_MB=1536
 
 if [ "$1" = "--fg" ]; then
     exec java -server \

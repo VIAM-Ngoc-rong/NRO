@@ -12,8 +12,14 @@ public class ItemData {
     public static void updateItem(MySession session) {
         updateItemOptionItemplate(session);
         updateItemArrHead2FTemplate(session);
-        updateItemTemplate(session, 750);
-        updateItemTemplate(session, 750, Manager.ITEM_TEMPLATES.size());
+        int total = Manager.ITEM_TEMPLATES.size();
+        int firstBatch = Math.min(650, total);
+        updateItemTemplate(session, firstBatch);
+        int step = 650;
+        for (int start = firstBatch; start < total; start += step) {
+            int end = Math.min(start + step, total);
+            updateItemTemplate(session, start, end);
+        }
     }
 
     private static void updateItemOptionItemplate(MySession session) {
