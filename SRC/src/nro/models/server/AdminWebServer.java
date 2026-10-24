@@ -69,8 +69,170 @@ public class AdminWebServer {
     private static final long START_TIME_MS = System.currentTimeMillis();
     private static HttpServer server;
 
+    private static final int MAX_BOSS_KILL_HISTORY = 150;
+    private static final List<BossKillRecord> BOSS_KILL_HISTORY = Collections.synchronizedList(new ArrayList<>());
+    private static volatile boolean bossKillStatsHydrated = false;
+
+    public static class BossKillRecord {
+        public final long timeMs;
+        public final int bossId;
+        public final String bossName;
+        public final long hpMax;
+        public final String killerName;
+        public final boolean isBot;
+        public final String mapName;
+        public final int mapId;
+        public final int zoneId;
+
+        public BossKillRecord(long timeMs, int bossId, String bossName, long hpMax, String killerName, boolean isBot, String mapName, int mapId, int zoneId) {
+            this.timeMs = timeMs;
+            this.bossId = bossId;
+            this.bossName = bossName != null ? bossName : "";
+            this.hpMax = hpMax;
+            this.killerName = killerName != null ? killerName : "";
+            this.isBot = isBot;
+            this.mapName = mapName != null ? mapName : "";
+            this.mapId = mapId;
+            this.zoneId = zoneId;
+        }
+    }
+
+    private static void ensureBossKillTable(Connection con) throws Exception {
+        try (PreparedStatement ps = con.prepareStatement(
+                "CREATE TABLE IF NOT EXISTS boss_kill_history ("
+                + "id INT AUTO_INCREMENT PRIMARY KEY, "
+                + "time_ms BIGINT NOT NULL, "
+                + "boss_id INT NOT NULL, "
+                + "boss_name VARCHAR(128) NOT NULL, "
+                + "hp_max BIGINT NOT NULL, "
+                + "killer_name VARCHAR(128) NOT NULL, "
+                + "is_bot TINYINT(1) NOT NULL DEFAULT 0, "
+                + "map_name VARCHAR(128) NOT NULL, "
+                + "map_id INT NOT NULL DEFAULT -1, "
+                + "zone_id INT NOT NULL DEFAULT -1"
+                + ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4")) {
+            ps.executeUpdate();
+        }
+    }
+
+    public static void loadBossKillHistoryFromDb() {
+        try (Connection con = DBConnecter.getConnectionServer()) {
+            ensureBossKillTable(con);
+            List<BossKillRecord> loaded = new ArrayList<>();
+            try (PreparedStatement ps = con.prepareStatement(
+                    "SELECT time_ms, boss_id, boss_name, hp_max, killer_name, is_bot, map_name, map_id, zone_id "
+                    + "FROM boss_kill_history ORDER BY id DESC LIMIT " + MAX_BOSS_KILL_HISTORY);
+                 ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    loaded.add(new BossKillRecord(
+                            rs.getLong("time_ms"),
+                            rs.getInt("boss_id"),
+                            rs.getString("boss_name"),
+                            rs.getLong("hp_max"),
+                            rs.getString("killer_name"),
+                            rs.getInt("is_bot") == 1,
+                            rs.getString("map_name"),
+                            rs.getInt("map_id"),
+                            rs.getInt("zone_id")
+                    ));
+                }
+            }
+            synchronized (BOSS_KILL_HISTORY) {
+                BOSS_KILL_HISTORY.clear();
+                BOSS_KILL_HISTORY.addAll(loaded);
+            }
+        } catch (Exception e) {
+            Logger.error("Không thể tải lịch sử tiêu diệt Boss từ MySQL: " + e.getMessage() + "\n");
+        }
+    }
+
+    private static void hydrateBossKillStatsIfNeeded(List<Boss> allBosses) {
+        if (bossKillStatsHydrated || allBosses == null || allBosses.isEmpty()) {
+            return;
+        }
+        bossKillStatsHydrated = true;
+        List<BossKillRecord> snapshot;
+        synchronized (BOSS_KILL_HISTORY) {
+            snapshot = new ArrayList<>(BOSS_KILL_HISTORY);
+        }
+        for (int i = snapshot.size() - 1; i >= 0; i--) {
+            BossKillRecord rec = snapshot.get(i);
+            for (Boss b : allBosses) {
+                if (b != null && (int) b.id == rec.bossId) {
+                    if (rec.timeMs >= b.lastKilledTimeMs) {
+                        b.lastKilledTimeMs = rec.timeMs;
+                        b.lastKillerName = rec.killerName;
+                        b.lastKilledMapName = rec.mapName;
+                        b.lastKilledZoneId = rec.zoneId;
+                    }
+                    b.totalKilledCount++;
+                    break;
+                }
+            }
+        }
+    }
+
+    public static void recordBossKillHistory(long timeMs, int bossId, String bossName, long hpMax,
+            String killerName, boolean isBot, String mapName, int mapId, int zoneId) {
+        BossKillRecord rec = new BossKillRecord(timeMs, bossId, bossName, hpMax, killerName, isBot, mapName, mapId, zoneId);
+        synchronized (BOSS_KILL_HISTORY) {
+            BOSS_KILL_HISTORY.add(0, rec);
+            while (BOSS_KILL_HISTORY.size() > MAX_BOSS_KILL_HISTORY) {
+                BOSS_KILL_HISTORY.remove(BOSS_KILL_HISTORY.size() - 1);
+            }
+        }
+        Thread.startVirtualThread(() -> {
+            try (Connection con = DBConnecter.getConnectionServer()) {
+                ensureBossKillTable(con);
+                try (PreparedStatement ps = con.prepareStatement(
+                        "INSERT INTO boss_kill_history (time_ms, boss_id, boss_name, hp_max, killer_name, is_bot, map_name, map_id, zone_id) "
+                        + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
+                    ps.setLong(1, rec.timeMs);
+                    ps.setInt(2, rec.bossId);
+                    ps.setString(3, rec.bossName.length() > 120 ? rec.bossName.substring(0, 120) : rec.bossName);
+                    ps.setLong(4, rec.hpMax);
+                    ps.setString(5, rec.killerName.length() > 120 ? rec.killerName.substring(0, 120) : rec.killerName);
+                    ps.setInt(6, rec.isBot ? 1 : 0);
+                    ps.setString(7, rec.mapName.length() > 120 ? rec.mapName.substring(0, 120) : rec.mapName);
+                    ps.setInt(8, rec.mapId);
+                    ps.setInt(9, rec.zoneId);
+                    ps.executeUpdate();
+                }
+            } catch (Exception ignored) {
+            }
+        });
+    }
+
+    private static String serializeBossKillHistory() {
+        List<BossKillRecord> snapshot;
+        synchronized (BOSS_KILL_HISTORY) {
+            snapshot = new ArrayList<>(BOSS_KILL_HISTORY);
+        }
+        StringBuilder sb = new StringBuilder("[");
+        for (int i = 0; i < snapshot.size(); i++) {
+            if (i > 0) {
+                sb.append(",");
+            }
+            BossKillRecord r = snapshot.get(i);
+            sb.append("{")
+                    .append("\"timeMs\":").append(r.timeMs)
+                    .append(",\"bossId\":").append(r.bossId)
+                    .append(",\"bossName\":").append(jsonStr(r.bossName))
+                    .append(",\"hpMax\":").append(r.hpMax)
+                    .append(",\"killerName\":").append(jsonStr(r.killerName))
+                    .append(",\"isBot\":").append(r.isBot)
+                    .append(",\"mapName\":").append(jsonStr(r.mapName))
+                    .append(",\"mapId\":").append(r.mapId)
+                    .append(",\"zoneId\":").append(r.zoneId)
+                    .append("}");
+        }
+        sb.append("]");
+        return sb.toString();
+    }
+
     public static void start() {
         try {
+            loadBossKillHistoryFromDb();
             server = HttpServer.create(new InetSocketAddress("0.0.0.0", WEB_PORT), 0);
             server.createContext("/", AdminWebServer::handleDashboardHtml);
             server.createContext("/api/status", AdminWebServer::handleStatus);
@@ -271,6 +433,7 @@ public class AdminWebServer {
         sb.append("]");
 
         // Bosses array
+        hydrateBossKillStatsIfNeeded(allBosses);
         sb.append(",\"bosses\":[");
         boolean firstBoss = true;
         int aliveBossCount = 0;
@@ -339,11 +502,17 @@ public class AdminWebServer {
             sb.append(",\"respawnRemainSec\":").append(respawnRemainSec);
             sb.append(",\"secondsRest\":").append(secondsRest);
             sb.append(",\"hasParent\":").append(b.parentBoss != null);
+            sb.append(",\"lastKilledTimeMs\":").append(b.lastKilledTimeMs);
+            sb.append(",\"lastKillerName\":").append(jsonStr(b.lastKillerName != null ? b.lastKillerName : ""));
+            sb.append(",\"lastKilledMapName\":").append(jsonStr(b.lastKilledMapName != null ? b.lastKilledMapName : ""));
+            sb.append(",\"lastKilledZoneId\":").append(b.lastKilledZoneId);
+            sb.append(",\"totalKilledCount\":").append(b.totalKilledCount);
             sb.append("}");
         }
         sb.append("]");
         sb.append(",\"aliveBossCount\":").append(aliveBossCount);
         sb.append(",\"totalBossCount\":").append(visibleBossCount);
+        sb.append(",\"bossKillHistory\":").append(serializeBossKillHistory());
         sb.append(",\"intrinsics\":").append(serializeIntrinsics());
         sb.append(",\"tasks\":").append(serializeTasks());
         sb.append(",\"events\":").append(serializeEvents());
@@ -1343,6 +1512,28 @@ public class AdminWebServer {
                         }
                     }
                     sendJson(exchange, 200, "{\"ok\":true,\"message\":" + jsonStr("Đã kích hoạt hồi sinh toàn bộ " + count + " Boss đang chờ!") + "}");
+                }
+                case "clear_boss_kill_history" -> {
+                    synchronized (BOSS_KILL_HISTORY) {
+                        BOSS_KILL_HISTORY.clear();
+                    }
+                    for (Boss b : new ArrayList<>(BossManager.gI().getBosses())) {
+                        if (b != null) {
+                            b.lastKilledTimeMs = 0L;
+                            b.lastKillerName = "";
+                            b.lastKilledMapName = "";
+                            b.lastKilledZoneId = -1;
+                            b.totalKilledCount = 0;
+                        }
+                    }
+                    Thread.startVirtualThread(() -> {
+                        try (Connection con = DBConnecter.getConnectionServer();
+                             PreparedStatement ps = con.prepareStatement("TRUNCATE TABLE boss_kill_history")) {
+                            ps.executeUpdate();
+                        } catch (Exception ignored) {
+                        }
+                    });
+                    sendJson(exchange, 200, "{\"ok\":true,\"message\":\"Đã xóa toàn bộ lịch sử tiêu diệt Boss!\"}");
                 }
                 case "set_exp_rate" -> {
                     int rate = (int) Math.max(1, Math.min(127, parseLongSafe(params.get("rate"), 1)));

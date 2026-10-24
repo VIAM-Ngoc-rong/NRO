@@ -699,19 +699,25 @@
       <div class="card-header">
         <div>
           <h3>Giám sát & Điều khiển Boss Toàn Server</h3>
-          <span style="font-size:12.5px;color:var(--muted);">Theo dõi vị trí bản đồ, khu vực, % HP và triệu hồi hoặc thu hồi Boss trực tiếp.</span>
+          <span style="font-size:12.5px;color:var(--muted);">Theo dõi vị trí bản đồ, khu vực, % HP, lịch sử người tiêu diệt và triệu hồi / thu hồi Boss trực tiếp.</span>
         </div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+          <div style="display:inline-flex;border:1px solid var(--border);border-radius:8px;overflow:hidden;">
+            <button id="btnBossSubAll" class="btn-muted btn-sm" style="border:none;border-radius:0;background:var(--primary);color:var(--primary-text);" onclick="setBossSubView('both')">Tất Cả</button>
+            <button id="btnBossSubLive" class="btn-muted btn-sm" style="border:none;border-radius:0;border-left:1px solid var(--border);" onclick="setBossSubView('live')">Danh Sách Boss</button>
+            <button id="btnBossSubHistory" class="btn-muted btn-sm" style="border:none;border-radius:0;border-left:1px solid var(--border);" onclick="setBossSubView('history')">Lịch Sử Tiêu Diệt (<span id="countBossKillHistoryBadge">0</span>)</button>
+          </div>
           <select id="filterBossStatus" onchange="renderBosses()">
             <option value="all">Tất cả Boss</option>
             <option value="alive">Chỉ Boss Đang Sống</option>
             <option value="dead">Chỉ Boss Đã Chết / Chờ</option>
           </select>
-          <input type="text" id="searchBoss" placeholder="Tìm tên Boss hoặc tên Map..." oninput="renderBosses()" style="width: 220px;" />
+          <input type="text" id="searchBoss" placeholder="Tìm tên Boss hoặc tên Map..." oninput="renderBosses()" style="width: 210px;" />
           <button class="btn-success" onclick="spawnAllBosses()">Hồi Sinh Tất Cả Boss</button>
         </div>
       </div>
-      <div class="table-wrap">
+
+      <div id="bossLiveSection" class="table-wrap">
         <table>
           <thead>
             <tr>
@@ -721,7 +727,7 @@
               <th>Máu hiện tại (HP)</th>
               <th>Bản đồ (Map)</th>
               <th>Khu vực</th>
-              <th>Xuất hiện</th>
+              <th>Xuất hiện / Hạ gục gần nhất</th>
               <th>Chu kỳ / Hồi sinh</th>
               <th>Điều khiển</th>
             </tr>
@@ -730,6 +736,41 @@
             <tr><td colspan="9" style="text-align:center;color:var(--muted);">Chưa có dữ liệu...</td></tr>
           </tbody>
         </table>
+      </div>
+
+      <div id="bossHistorySection" style="border-top:1px solid var(--border);padding-top:14px;margin-top:14px;">
+        <div class="card-header" style="padding:0 16px 12px 16px;border-bottom:1px solid var(--border);">
+          <div>
+            <h3 style="font-size:14.5px;">Lịch Sử Tiêu Diệt Boss Gần Đây</h3>
+            <span style="font-size:12px;color:var(--muted);">Ghi nhận thời gian thực người chơi, đệ tử hoặc Bot vừa kết liễu Boss trên toàn máy chủ (lưu cố định vào MySQL).</span>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+            <select id="filterBossKillActor" onchange="renderBossKillHistory()">
+              <option value="all">Tất cả người hạ</option>
+              <option value="player">Chỉ Người Chơi Thật</option>
+              <option value="bot">Chỉ Bot Săn Boss</option>
+            </select>
+            <input type="text" id="searchBossKillHistory" placeholder="Tìm tên Boss, người hạ hoặc Map..." oninput="renderBossKillHistory()" style="width: 230px;" />
+            <button class="btn-danger btn-sm" onclick="clearBossKillHistory()">Xóa Lịch Sử</button>
+          </div>
+        </div>
+        <div class="table-wrap" style="max-height: 420px;">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Thời gian hạ gục</th>
+                <th>Tên Boss</th>
+                <th>Máu Boss (HP)</th>
+                <th>Người tiêu diệt</th>
+                <th>Bản đồ & Khu vực</th>
+              </tr>
+            </thead>
+            <tbody id="bossKillHistoryTableBody">
+              <tr><td colspan="6" style="text-align:center;color:var(--muted);">Chưa có lịch sử tiêu diệt Boss...</td></tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
 
@@ -1459,6 +1500,7 @@
 
         cachedPlayers = data.players || [];
         cachedBosses = data.bosses || [];
+        cachedBossKillHistory = data.bossKillHistory || [];
         if (Array.isArray(data.intrinsics) && data.intrinsics.length > 0) {
           allIntrinsicsCache = data.intrinsics;
         }
@@ -1470,9 +1512,12 @@
         }
         document.getElementById('countPlayersTab').textContent = cachedPlayers.length;
         document.getElementById('countBossesTab').textContent = `${data.aliveBossCount}/${cachedBosses.length}`;
+        const histBadge = document.getElementById('countBossKillHistoryBadge');
+        if (histBadge) histBadge.textContent = cachedBossKillHistory.length;
 
         renderPlayers();
         renderBosses();
+        renderBossKillHistory();
       } catch (err) {
         dot.classList.remove('online');
         statusText.textContent = 'Mất kết nối hoặc Server đang khởi động lại...';
@@ -1660,6 +1705,32 @@
       return `${s}s`;
     }
 
+    let cachedBossKillHistory = [];
+
+    function setBossSubView(mode) {
+      const liveSec = document.getElementById('bossLiveSection');
+      const histSec = document.getElementById('bossHistorySection');
+      const btnAll = document.getElementById('btnBossSubAll');
+      const btnLive = document.getElementById('btnBossSubLive');
+      const btnHist = document.getElementById('btnBossSubHistory');
+      if (liveSec) liveSec.style.display = (mode === 'history') ? 'none' : 'block';
+      if (histSec) {
+        histSec.style.display = (mode === 'live') ? 'none' : 'block';
+        histSec.style.borderTop = (mode === 'history') ? 'none' : '1px solid var(--border)';
+        histSec.style.marginTop = (mode === 'history') ? '0' : '14px';
+        histSec.style.paddingTop = (mode === 'history') ? '0' : '14px';
+      }
+      [
+        [btnAll, mode === 'both'],
+        [btnLive, mode === 'live'],
+        [btnHist, mode === 'history']
+      ].forEach(([btn, active]) => {
+        if (!btn) return;
+        btn.style.background = active ? 'var(--primary)' : '';
+        btn.style.color = active ? 'var(--primary-text)' : '';
+      });
+    }
+
     function renderBosses() {
       const tbody = document.getElementById('bossesTableBody');
       const q = document.getElementById('searchBoss').value.toLowerCase().trim();
@@ -1667,7 +1738,10 @@
       const filtered = cachedBosses.filter(b => {
         if (statusFilter === 'alive' && !b.alive) return false;
         if (statusFilter === 'dead' && b.alive) return false;
-        return !q || b.name.toLowerCase().includes(q) || b.mapName.toLowerCase().includes(q);
+        return !q
+          || b.name.toLowerCase().includes(q)
+          || b.mapName.toLowerCase().includes(q)
+          || (b.lastKillerName && b.lastKillerName.toLowerCase().includes(q));
       });
       if (filtered.length === 0) {
         tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;color:var(--muted);">Không tìm thấy Boss phù hợp.</td></tr>`;
@@ -1676,10 +1750,17 @@
       tbody.innerHTML = filtered.map(b => {
         const pct = b.hpMax > 0 ? Math.max(0, Math.min(100, Math.round((b.hp / b.hpMax) * 100))) : 0;
         let spawnInfoHtml = '<span style="color:var(--muted);">--</span>';
+        const lastKillNote = (b.lastKilledTimeMs > 0 && b.lastKillerName)
+          ? `<div style="font-size:11px;color:var(--muted);margin-top:2px;">Hạ gần nhất: <b>${escapeHtml(b.lastKillerName)}</b> (${new Date(b.lastKilledTimeMs).toLocaleTimeString('vi-VN')}${b.totalKilledCount > 0 ? ` • ${b.totalKilledCount} lần` : ''})</div>`
+          : '';
         if (b.alive) {
           const timeStr = b.spawnTimeMs > 0 ? new Date(b.spawnTimeMs).toLocaleTimeString('vi-VN') : 'Vừa xuất hiện';
           const aliveDur = b.aliveSec > 0 ? formatDurationShort(b.aliveSec) : 'Vừa ra';
-          spawnInfoHtml = `<span style="color:var(--text);font-weight:600;">${timeStr}</span><br/><span style="font-size:11.5px;color:var(--muted);">Đã sống: <b>${aliveDur}</b></span>`;
+          spawnInfoHtml = `<span style="color:var(--text);font-weight:600;">${timeStr}</span><br/><span style="font-size:11.5px;color:var(--muted);">Đã sống: <b>${aliveDur}</b></span>${lastKillNote}`;
+        } else if (b.lastKilledTimeMs > 0 && b.lastKillerName) {
+          const killTimeStr = new Date(b.lastKilledTimeMs).toLocaleTimeString('vi-VN');
+          const agoSec = Math.max(0, Math.floor((Date.now() - b.lastKilledTimeMs) / 1000));
+          spawnInfoHtml = `<span style="font-size:12px;color:var(--text);">Hạ bởi: <b>${escapeHtml(b.lastKillerName)}</b></span><br/><span style="font-size:11px;color:var(--muted);">Lúc ${killTimeStr} (${formatDurationShort(agoSec)} trước${b.totalKilledCount > 0 ? ` • Tổng: ${b.totalKilledCount} lần` : ''})</span>`;
         }
 
         let respawnInfoHtml = '<span style="color:var(--muted);">--</span>';
@@ -1727,6 +1808,66 @@
           </tr>
         `;
       }).join('');
+    }
+
+    function renderBossKillHistory() {
+      const tbody = document.getElementById('bossKillHistoryTableBody');
+      if (!tbody) return;
+      const actorFilterEl = document.getElementById('filterBossKillActor');
+      const searchEl = document.getElementById('searchBossKillHistory');
+      const actorFilter = actorFilterEl ? actorFilterEl.value : 'all';
+      const q = searchEl ? searchEl.value.toLowerCase().trim() : '';
+
+      const filtered = (cachedBossKillHistory || []).filter(item => {
+        if (actorFilter === 'player' && item.isBot) return false;
+        if (actorFilter === 'bot' && !item.isBot) return false;
+        if (!q) return true;
+        return (item.bossName && item.bossName.toLowerCase().includes(q))
+          || (item.killerName && item.killerName.toLowerCase().includes(q))
+          || (item.mapName && item.mapName.toLowerCase().includes(q));
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:18px;">Chưa có lịch sử tiêu diệt Boss phù hợp.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map((item, idx) => {
+        const dt = item.timeMs > 0 ? new Date(item.timeMs) : null;
+        const timeStr = dt ? dt.toLocaleTimeString('vi-VN') : '--';
+        const dateStr = dt ? dt.toLocaleDateString('vi-VN') : '';
+        const agoSec = item.timeMs > 0 ? Math.max(0, Math.floor((Date.now() - item.timeMs) / 1000)) : 0;
+        const actorBadge = item.isBot
+          ? `<span class="badge badge-dead" style="margin-left:6px;">Bot</span>`
+          : `<span class="badge badge-alive" style="margin-left:6px;">Người chơi</span>`;
+        const zoneHtml = item.zoneId >= 0 ? `<span class="badge badge-dead" style="margin-left:6px;">Khu ${item.zoneId}</span>` : '';
+
+        return `
+          <tr>
+            <td style="color:var(--muted);">#${idx + 1}</td>
+            <td>
+              <span style="font-weight:600;color:var(--text);">${timeStr}</span>
+              <span style="font-size:11.5px;color:var(--muted);margin-left:4px;">(${dateStr})</span><br/>
+              <span style="font-size:11px;color:var(--muted);">Cách đây ${formatDurationShort(agoSec)}</span>
+            </td>
+            <td style="font-weight:600;color:var(--text);">${escapeHtml(item.bossName || ('Boss #' + item.bossId))}</td>
+            <td>${item.hpMax > 0 ? formatNum(item.hpMax) : '--'}</td>
+            <td>
+              <b style="color:var(--text);">${escapeHtml(item.killerName || 'Ẩn danh')}</b>
+              ${actorBadge}
+            </td>
+            <td>
+              <b>${escapeHtml(item.mapName || 'Không rõ')}</b>
+              ${zoneHtml}
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    async function clearBossKillHistory() {
+      if (!confirm('Bạn có chắc muốn xóa toàn bộ lịch sử tiêu diệt Boss không?')) return;
+      await postAction({ action: 'clear_boss_kill_history' });
     }
 
     async function searchItemsDb() {

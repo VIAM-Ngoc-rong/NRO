@@ -111,6 +111,11 @@ public class Boss extends Player implements IBoss {
     public boolean isZone01SpawnDisabled;
 
     public long lastTimeSpawnOnMap;
+    public volatile long lastKilledTimeMs;
+    public volatile String lastKillerName = "";
+    public volatile String lastKilledMapName = "";
+    public volatile int lastKilledZoneId = -1;
+    public volatile int totalKilledCount = 0;
     public boolean droppedBelow50Hp;
     public boolean usedTTNL;
     public boolean isUsingTTNL;
@@ -963,9 +968,61 @@ public class Boss extends Player implements IBoss {
     }
 
     @Override
+    protected void setDie(Player plAtt) {
+        super.setDie(plAtt);
+        recordBossKill(plAtt);
+    }
+
+    public void recordBossKill(Player plKill) {
+        try {
+            if (plKill == null || plKill == this) {
+                return;
+            }
+            long now = System.currentTimeMillis();
+            if (now - this.lastKilledTimeMs < 2000L) {
+                return;
+            }
+            if (this.id == BossID.DEATH_BEAM_1 || this.id == BossID.DEATH_BEAM_2
+                    || this.id == BossID.DEATH_BEAM_3 || this.id == BossID.DEATH_BEAM_4
+                    || this.id == BossID.DEATH_BEAM_5 || "$".equals(this.name)) {
+                return;
+            }
+            int mapId = (this.zone != null && this.zone.map != null) ? this.zone.map.mapId : -1;
+            if (mapId != -1 && MapService.gI().isMapOffline(mapId)) {
+                return;
+            }
+            String mapName = (this.zone != null && this.zone.map != null) ? this.zone.map.mapName : "Không rõ";
+            int zoneId = (this.zone != null) ? this.zone.zoneId : -1;
+            long hpMax = (this.nPoint != null) ? this.nPoint.hpMax : 0L;
+
+            Player killerOwner = (plKill.isPet && ((Pet) plKill).master != null) ? ((Pet) plKill).master : plKill;
+            boolean killedByBot = killerOwner.isBot;
+            boolean killedByPet = plKill.isPet;
+            String killerDisplay = killerOwner.name != null ? killerOwner.name : "Ẩn danh";
+            if (killedByPet) {
+                killerDisplay = killerDisplay + " (Đệ tử)";
+            }
+
+            this.lastKilledTimeMs = now;
+            this.lastKillerName = killerDisplay;
+            this.lastKilledMapName = mapName;
+            this.lastKilledZoneId = zoneId;
+            this.totalKilledCount++;
+
+            String bName = this.name != null ? this.name
+                    : (this.data != null && this.data.length > 0 ? this.data[0].getName() : ("Boss #" + this.id));
+            nro.models.server.AdminWebServer.recordBossKillHistory(
+                    now, (int) this.id, bName, hpMax, killerDisplay, killedByBot, mapName, mapId, zoneId
+            );
+        } catch (Exception ignored) {
+        }
+    }
+
+    @Override
     public void die(Player plKill) {
         this.pendingNotifyJoinMap = false;
         this.recordBossAttacked();
+        this.recordBossKill(plKill);
         Player plOwner = plKill != null && plKill.isPet ? ((Pet) plKill).master : plKill;
         if (plOwner != null && !plOwner.isBot && plOwner.isPl()) {
             plOwner.pointSanBoss++;
