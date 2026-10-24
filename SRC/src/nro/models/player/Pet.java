@@ -87,6 +87,9 @@ public class Pet extends Player {
             this.location.y = master.location.y;
             if (MapService.gI().isMapOffline(this.master.zone.map.mapId) || this.master.zone.map.mapId == 113) {
                 ChangeMapService.gI().goToMap(this, MapService.gI().getMapCanJoin(this, master.gender + 21, -1));
+                if (this.zone != null && this.zone == this.master.zone) {
+                    this.zone.load_Me_To_Another(this);
+                }
                 return;
             }
             ChangeMapService.gI().goToMap(this, master.zone);
@@ -269,6 +272,8 @@ public class Pet extends Player {
         fusionEffect(master.fusion.typeFusion);
         Service.gI().Send_Caitrang(master);
         Service.gI().point(master);
+        Service.gI().showInfoPet(master);
+        Service.gI().chatJustForMe(master, this, getTextStatus(PROTECT));
         this.lastTimeUnfusion = System.currentTimeMillis();
     }
 
