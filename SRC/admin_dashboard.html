@@ -1589,13 +1589,27 @@
       inp.value = cur ? `${cur},${pair}` : pair;
     }
 
+    async function parseJsonSafe(res) {
+      const raw = await res.text();
+      try {
+        return JSON.parse(raw);
+      } catch (e) {
+        const clean = raw
+          .replace(/\x1b\[[0-9;]*[ -/]*[@-~]/g, '')
+          .replace(/[\x00-\x1f]/g, c => (c === '\t' ? '\\t' : ''));
+        return JSON.parse(clean);
+      }
+    }
+
     async function loadSystemTab() {
       try {
-        const res = await fetch(`${getBaseUrl()}/api/system?key=${getKey()}`);
-        const data = await res.json();
+        const res = await fetch(`${getBaseUrl()}/api/system?key=${getKey()}&_t=${Date.now()}`, { cache: 'no-store' });
+        const data = await parseJsonSafe(res);
         if (!data.ok) return;
 
-        renderEventsAdmin(data.events || {});
+        if (data.events) {
+          renderEventsAdmin(data.events);
+        }
 
         const backups = data.backups || [];
         const bDiv = document.getElementById('backupFilesList');
@@ -1642,16 +1656,22 @@
       { key: 'double_gold', altKey: 'doubleGold', label: '💰 Sự Kiện X2 Vàng Rơi Toàn Server', desc: 'Nhân đôi lượng Vàng rơi ra khi tiêu diệt quái' }
     ];
 
+    let currentEventsState = { halloween: true, drop_rate: 5, dropRate: 5 };
+
     function renderEventsAdmin(evObj) {
       const grid = document.getElementById('eventsToggleGrid');
       if (!grid) return;
-      const rateVal = evObj ? (typeof evObj.drop_rate === 'number' ? evObj.drop_rate : evObj.dropRate) : undefined;
+      if (evObj && typeof evObj === 'object') {
+        currentEventsState = { ...currentEventsState, ...evObj };
+      }
+      const stateObj = currentEventsState;
+      const rateVal = stateObj ? (typeof stateObj.drop_rate === 'number' ? stateObj.drop_rate : stateObj.dropRate) : undefined;
       if (typeof rateVal === 'number') {
         const dropInp = document.getElementById('eventDropRateInput');
         if (dropInp && document.activeElement !== dropInp) dropInp.value = rateVal;
       }
       grid.innerHTML = EVENT_DEFINITIONS.map(def => {
-        const isOn = Boolean(evObj && (evObj[def.key] || evObj[def.altKey]));
+        const isOn = Boolean(stateObj && (stateObj[def.key] || stateObj[def.altKey]));
         return `
           <div style="border:1px solid ${isOn ? 'var(--success)' : 'var(--border)'};background:${isOn ? 'rgba(16,185,129,0.08)' : 'var(--bg)'};border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;justify-content:space-between;gap:8px;">
             <div>
@@ -1675,16 +1695,33 @@
       const res = await postAction({ action: 'event_toggle', event: eventKey, state: enabled, enabled });
       showToast(res.message, !res.ok);
       if (res.ok) {
+        const boolState = Boolean(enabled);
+        currentEventsState[eventKey] = boolState;
+        const def = EVENT_DEFINITIONS.find(d => d.key === eventKey || d.altKey === eventKey);
+        if (def) {
+          currentEventsState[def.key] = boolState;
+          currentEventsState[def.altKey] = boolState;
+        }
+        if (res.events && typeof res.events === 'object') {
+          currentEventsState = { ...currentEventsState, ...res.events };
+        }
+        renderEventsAdmin(currentEventsState);
         fetchStatus();
         loadSystemTab();
       }
     }
 
     async function saveEventDropRate() {
-      const rate = document.getElementById('eventDropRateInput').value || 5;
+      const rate = Number(document.getElementById('eventDropRateInput').value || 5);
       const res = await postAction({ action: 'event_drop_rate', rate });
       showToast(res.message, !res.ok);
       if (res.ok) {
+        currentEventsState.dropRate = rate;
+        currentEventsState.drop_rate = rate;
+        if (res.events && typeof res.events === 'object') {
+          currentEventsState = { ...currentEventsState, ...res.events };
+        }
+        renderEventsAdmin(currentEventsState);
         fetchStatus();
         loadSystemTab();
       }
@@ -2111,9 +2148,15 @@
       return String(s || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
     }
 
-    renderEventsAdmin({ halloween: true, drop_rate: 5, dropRate: 5 });
+    renderEventsAdmin(currentEventsState);
     fetchStatus();
-    setInterval(fetchStatus, 3000);
+    loadSystemTab();
+    setInterval(() => {
+      fetchStatus();
+      if (currentTab === 'events') {
+        loadSystemTab();
+      }
+    }, 3000);
   </script>
 </body>
 </html>

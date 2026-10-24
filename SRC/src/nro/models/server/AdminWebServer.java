@@ -29,6 +29,11 @@ import nro.models.Bot.NewBot;
 import nro.models.boss.Boss;
 import nro.models.boss.BossID;
 import nro.models.boss.Boss_Manager.BossManager;
+import nro.models.boss.Boss_Manager.ChristmasEventManager;
+import nro.models.boss.Boss_Manager.HalloweenEventManager;
+import nro.models.boss.Boss_Manager.HungVuongEventManager;
+import nro.models.boss.Boss_Manager.LunarNewYearEventManager;
+import nro.models.boss.Boss_Manager.TrungThuEventManager;
 import nro.models.consts.BossStatus;
 import nro.models.data.LocalManager;
 import nro.models.database.PlayerDAO;
@@ -1365,40 +1370,60 @@ public class AdminWebServer {
                         case "halloween" -> {
                             EventManager.HALLOWEEN = state;
                             evLabel = "Sự kiện Halloween (Rơi Bí Ngô 1-7 Sao & Boss Bí Ma/Ma Trơi/Dơi)";
-                            if (state && BossManager.gI().getBossById(BossID.BIMA) == null) {
-                                BossManager.gI().createBoss(BossID.BIMA, 5);
-                                BossManager.gI().createBoss(BossID.MATROI, 5);
-                                BossManager.gI().createBoss(BossID.DOI, 5);
+                            if (state) {
+                                if (BossManager.gI().getBossById(BossID.BIMA) == null) {
+                                    BossManager.gI().createBoss(BossID.BIMA, 5);
+                                    BossManager.gI().createBoss(BossID.MATROI, 5);
+                                    BossManager.gI().createBoss(BossID.DOI, 5);
+                                }
+                            } else {
+                                removeEventBosses(HalloweenEventManager.gI(), BossID.BIMA, BossID.MATROI, BossID.DOI);
                             }
                         }
                         case "christmas" -> {
                             EventManager.CHRISTMAS = state;
                             evLabel = "Sự kiện Giáng Sinh Noel (Rơi Tất Vớ/Hộp Quà & Boss Ông Già Noel)";
-                            if (state && BossManager.gI().getBossById(BossID.ONG_GIA_NOEL) == null) {
-                                BossManager.gI().createBoss(BossID.ONG_GIA_NOEL, 10);
+                            if (state) {
+                                if (BossManager.gI().getBossById(BossID.ONG_GIA_NOEL) == null) {
+                                    BossManager.gI().createBoss(BossID.ONG_GIA_NOEL, 10);
+                                }
+                            } else {
+                                removeEventBosses(ChristmasEventManager.gI(), BossID.ONG_GIA_NOEL);
                             }
                         }
                         case "lunarNewYear", "lunnar_new_year", "tet" -> {
                             EventManager.LUNNAR_NEW_YEAR = state;
                             evLabel = "Sự kiện Tết Nguyên Đán (Rơi Bao Lì Xì & Boss Lân Con)";
-                            if (state && BossManager.gI().getBossById(BossID.LAN_CON) == null) {
-                                BossManager.gI().createBoss(BossID.LAN_CON, 10);
+                            if (state) {
+                                if (BossManager.gI().getBossById(BossID.LAN_CON) == null) {
+                                    BossManager.gI().createBoss(BossID.LAN_CON, 10);
+                                }
+                            } else {
+                                removeEventBosses(LunarNewYearEventManager.gI(), BossID.LAN_CON);
                             }
                         }
                         case "trungThu", "trung_thu" -> {
                             EventManager.TRUNG_THU = state;
                             evLabel = "Sự kiện Trung Thu (Rơi Hộp Quà Trung Thu & Boss Khỉ Đột/Nguyệt Thần)";
-                            if (state && BossManager.gI().getBossById(BossID.KHIDOT) == null) {
-                                BossManager.gI().createBoss(BossID.KHIDOT, 5);
-                                BossManager.gI().createBoss(BossID.NGUYETTHAN, 5);
+                            if (state) {
+                                if (BossManager.gI().getBossById(BossID.KHIDOT) == null) {
+                                    BossManager.gI().createBoss(BossID.KHIDOT, 5);
+                                    BossManager.gI().createBoss(BossID.NGUYETTHAN, 5);
+                                }
+                            } else {
+                                removeEventBosses(TrungThuEventManager.gI(), BossID.KHIDOT, BossID.NGUYETTHAN, BossID.NHATTHAN);
                             }
                         }
                         case "hungVuong", "hung_vuong" -> {
                             EventManager.HUNG_VUONG = state;
                             evLabel = "Sự kiện Giỗ Tổ Hùng Vương (Rơi Dưa Hấu & Boss Thủy Tinh/Sơn Tinh)";
-                            if (state && BossManager.gI().getBossById(BossID.THUY_TINH) == null) {
-                                BossManager.gI().createBoss(BossID.THUY_TINH, 5);
-                                BossManager.gI().createBoss(BossID.SON_TINH, 5);
+                            if (state) {
+                                if (BossManager.gI().getBossById(BossID.THUY_TINH) == null) {
+                                    BossManager.gI().createBoss(BossID.THUY_TINH, 5);
+                                    BossManager.gI().createBoss(BossID.SON_TINH, 5);
+                                }
+                            } else {
+                                removeEventBosses(HungVuongEventManager.gI(), BossID.THUY_TINH, BossID.SON_TINH);
                             }
                         }
                         case "womensDay", "womans_day" -> {
@@ -1436,12 +1461,12 @@ public class AdminWebServer {
                     }
                     String statusStr = state ? "BẬT" : "TẮT";
                     Service.gI().sendThongBaoAllPlayer("[SỰ KIỆN] Admin vừa " + statusStr + " " + evLabel + "!");
-                    sendJson(exchange, 200, "{\"ok\":true,\"message\":" + jsonStr("Đã " + statusStr + " " + evLabel + " thành công!") + "}");
+                    sendJson(exchange, 200, "{\"ok\":true,\"message\":" + jsonStr("Đã " + statusStr + " " + evLabel + " thành công!") + ",\"events\":" + serializeEvents() + "}");
                 }
                 case "event_drop_rate" -> {
                     int rate = (int) Math.max(1, Math.min(100, parseLongSafe(params.get("rate"), 5)));
                     EventManager.EVENT_DROP_RATE = rate;
-                    sendJson(exchange, 200, "{\"ok\":true,\"message\":" + jsonStr("Đã cập nhật tỷ lệ rơi Vật phẩm Sự kiện từ quái thành " + rate + "%!") + "}");
+                    sendJson(exchange, 200, "{\"ok\":true,\"message\":" + jsonStr("Đã cập nhật tỷ lệ rơi Vật phẩm Sự kiện từ quái thành " + rate + "%!") + ",\"events\":" + serializeEvents() + "}");
                 }
                 case "event_spawn_boss" -> {
                     String type = params.getOrDefault("type", params.getOrDefault("event", "")).trim();
@@ -1732,9 +1757,38 @@ public class AdminWebServer {
         }
     }
 
+    private static void removeEventBosses(BossManager specificMgr, int... bossIds) {
+        if (specificMgr != null) {
+            for (Boss b : new ArrayList<>(specificMgr.getBosses())) {
+                if (b != null) {
+                    try {
+                        ChangeMapService.gI().exitMap(b);
+                    } catch (Exception ignored) {
+                    }
+                    specificMgr.removeBoss(b);
+                }
+            }
+        }
+        for (Boss b : new ArrayList<>(BossManager.gI().getBosses())) {
+            if (b != null) {
+                for (int id : bossIds) {
+                    if (b.id == id) {
+                        try {
+                            ChangeMapService.gI().exitMap(b);
+                        } catch (Exception ignored) {
+                        }
+                        BossManager.gI().removeBoss(b);
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
     private static void sendJson(HttpExchange exchange, int statusCode, String json) throws IOException {
         byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
         exchange.getResponseHeaders().set("Content-Type", "application/json; charset=UTF-8");
+        exchange.getResponseHeaders().set("Cache-Control", "no-store, no-cache, must-revalidate");
         exchange.sendResponseHeaders(statusCode, bytes.length);
         try (OutputStream os = exchange.getResponseBody()) {
             os.write(bytes);
@@ -1772,9 +1826,27 @@ public class AdminWebServer {
         if (s == null) {
             return "\"\"";
         }
-        return "\"" + s.replace("\\", "\\\\")
-                .replace("\"", "\\\"")
-                .replace("\n", "\\n")
-                .replace("\r", "") + "\"";
+        String clean = s.replaceAll("\u001B\\[[;\\d]*[ -/]*[@-~]", "");
+        StringBuilder sb = new StringBuilder(clean.length() + 16);
+        sb.append('"');
+        for (int i = 0; i < clean.length(); i++) {
+            char c = clean.charAt(i);
+            switch (c) {
+                case '\\' -> sb.append("\\\\");
+                case '"' -> sb.append("\\\"");
+                case '\n' -> sb.append("\\n");
+                case '\r' -> {}
+                case '\t' -> sb.append("\\t");
+                case '\b' -> sb.append("\\b");
+                case '\f' -> sb.append("\\f");
+                default -> {
+                    if (c >= 0x20) {
+                        sb.append(c);
+                    }
+                }
+            }
+        }
+        sb.append('"');
+        return sb.toString();
     }
 }

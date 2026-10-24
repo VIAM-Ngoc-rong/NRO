@@ -196,16 +196,26 @@ public class Boss extends Player implements IBoss {
                 SnakeWayManager.gI().addBoss(this);
             case PHOBANKGHD ->
                 GasDestroyManager.gI().addBoss(this);
-            case TRUNGTHU_EVENT ->
+            case TRUNGTHU_EVENT -> {
                 TrungThuEventManager.gI().addBoss(this);
-            case HALLOWEEN_EVENT ->
+                BossManager.gI().addBoss(this);
+            }
+            case HALLOWEEN_EVENT -> {
                 HalloweenEventManager.gI().addBoss(this);
-            case CHRISTMAS_EVENT ->
+                BossManager.gI().addBoss(this);
+            }
+            case CHRISTMAS_EVENT -> {
                 ChristmasEventManager.gI().addBoss(this);
-            case HUNGVUONG_EVENT ->
+                BossManager.gI().addBoss(this);
+            }
+            case HUNGVUONG_EVENT -> {
                 HungVuongEventManager.gI().addBoss(this);
-            case TET_EVENT ->
+                BossManager.gI().addBoss(this);
+            }
+            case TET_EVENT -> {
                 LunarNewYearEventManager.gI().addBoss(this);
+                BossManager.gI().addBoss(this);
+            }
         }
 
         this.bossAppearTogether = new Boss[this.data.length][];
