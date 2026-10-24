@@ -27,6 +27,10 @@ public class EventManager {
 
     public static boolean TOP_UP = false;
 
+    public static boolean DOUBLE_GOLD = false;
+
+    public static int EVENT_DROP_RATE = 5;
+
     public static EventManager gI() {
         if (instance == null) {
             instance = new EventManager();

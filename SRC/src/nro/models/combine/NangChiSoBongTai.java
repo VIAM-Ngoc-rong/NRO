@@ -43,18 +43,19 @@ public class NangChiSoBongTai {
                 player.combineNew.goldCombine = GOLD_NANG_BT;
                 player.combineNew.ratioCombine = RATIO_NANG_CAP;
 
-                // Lấy số lượng Mảnh hồn bông tai từ param (option 31)
+                // Lấy số lượng Mảnh hồn bông tai và Đá xanh lam từ param (option 31) hoặc quantity
                 int currentHonSoLuong = InventoryService.gI().getParam(player, ITEM_PARAM_INDEX, HON_BONG_TAI_ID);
+                int currentDaXanh = InventoryService.gI().getParam(player, ITEM_PARAM_INDEX, DA_XANH_LAM_ID);
 
                 String npcSay = "|2|Mở chỉ số Bông tai Porata [+2]" + "\n\n";
                 npcSay += "|2|Tỉ lệ thành công: " + player.combineNew.ratioCombine + "%" + "\n";
                 
-                if (daXanhLam.quantity < 1) {
+                if (currentDaXanh < 1) {
                     npcSay += "|2|Cần " + REQUIRED_HON_BONG_TAI + " " + honBongTai.template.name + "\n";
                     npcSay += "|7|Cần 1 " + daXanhLam.template.name + "\n";
                     npcSay += "|2|Cần: " + Util.numberToMoney(player.combineNew.goldCombine) + " vàng\n";
                     npcSay += "|1|+1 Chỉ số ngẫu nhiên\n";
-                    npcSay += "|2|Còn thiếu " + (1 - daXanhLam.quantity) + " " + daXanhLam.template.name;
+                    npcSay += "|2|Còn thiếu " + (1 - currentDaXanh) + " " + daXanhLam.template.name;
                     CombineService.gI().baHatMit.createOtherMenu(player, ConstNpc.IGNORE_MENU, npcSay, "Đóng");
                 } else if (currentHonSoLuong < REQUIRED_HON_BONG_TAI) {
                     npcSay += "|7|Cần " + REQUIRED_HON_BONG_TAI + " " + honBongTai.template.name + "\n";
@@ -91,9 +92,9 @@ public class NangChiSoBongTai {
     public static void nangChiSoBongTai(Player player) {
         try {
             int currentHonSoLuong = InventoryService.gI().getParam(player, ITEM_PARAM_INDEX, HON_BONG_TAI_ID);
-            Item daXanhLam = InventoryService.gI().findItemBag(player, DA_XANH_LAM_ID);
+            int currentDaXanh = InventoryService.gI().getParam(player, ITEM_PARAM_INDEX, DA_XANH_LAM_ID);
 
-            if (currentHonSoLuong < REQUIRED_HON_BONG_TAI || daXanhLam == null) {
+            if (currentHonSoLuong < REQUIRED_HON_BONG_TAI || currentDaXanh < 1) {
                 Service.gI().sendThongBao(player, "Không đủ vật phẩm để thực hiện.");
                 return;
             }
@@ -123,7 +124,7 @@ public class NangChiSoBongTai {
             
             // Trừ vật phẩm
             InventoryService.gI().subParamItemsBag(player, HON_BONG_TAI_ID, ITEM_PARAM_INDEX, REQUIRED_HON_BONG_TAI);
-            InventoryService.gI().subQuantityItemsBag(player, daXanhLam, 1);
+            InventoryService.gI().subParamItemsBag(player, DA_XANH_LAM_ID, ITEM_PARAM_INDEX, 1);
             
             Service.gI().sendMoney(player);
             InventoryService.gI().sendItemBags(player);

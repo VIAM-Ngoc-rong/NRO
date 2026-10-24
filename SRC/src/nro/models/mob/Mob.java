@@ -680,7 +680,7 @@ public class Mob {
         int finalGoldDropRate = Math.min(90, baseDropGoldRate + (totalTlGold > 0 ? Math.min(25, totalTlGold / 4) : 0));
         if (Util.isTrue(finalGoldDropRate, 100)) {
             long vangLong = (long) baseVang * (100L + totalTlGold) / 100L;
-            if (TimeUtil.isWeekend()) {
+            if (TimeUtil.isWeekend() || EventManager.DOUBLE_GOLD) {
                 vangLong *= 2L;
             }
             int vang = (int) Math.min(vangLong, Integer.MAX_VALUE);
@@ -814,12 +814,28 @@ public class Mob {
             }
         }
 
-        //========================Sự kiện Halloween========================
-        if (EventManager.HALLOWEEN && MapService.gI().AllMap(mapid)) {
-            if (Util.isTrue(5, 100)) {
+        //========================Sự kiện Game (Điều khiển trực tiếp trên Web Admin)========================
+        int evDropRate = Math.max(1, Math.min(100, EventManager.EVENT_DROP_RATE));
+        if (MapService.gI().AllMap(mapid)) {
+            if (EventManager.HALLOWEEN && Util.isTrue(evDropRate, 100)) {
                 int biNgoId = Util.nextInt(702, 708); // Bí ngô 1 sao -> 7 sao (Ngọc rồng Halloween)
-                ItemMap it = new ItemMap(zone, biNgoId, 1, x, yEnd, player.id);
-                candidateItems.add(it);
+                candidateItems.add(new ItemMap(zone, biNgoId, 1, x, yEnd, player.id));
+            }
+            if (EventManager.CHRISTMAS && Util.isTrue(evDropRate, 100)) {
+                int noelItemId = Util.isTrue(70, 100) ? 649 : 648; // Tất vớ giáng sinh (649) hoặc Hộp quà giáng sinh (648)
+                candidateItems.add(new ItemMap(zone, noelItemId, 1, x, yEnd, player.id));
+            }
+            if (EventManager.LUNNAR_NEW_YEAR && Util.isTrue(evDropRate, 100)) {
+                candidateItems.add(new ItemMap(zone, 717, 1, x, yEnd, player.id)); // Bao Lì Xì
+            }
+            if (EventManager.TRUNG_THU && Util.isTrue(evDropRate, 100)) {
+                candidateItems.add(new ItemMap(zone, 736, 1, x, yEnd, player.id)); // Hộp quà Trung Thu
+            }
+            if (EventManager.HUNG_VUONG && Util.isTrue(evDropRate, 100)) {
+                candidateItems.add(new ItemMap(zone, 569, 1, x, yEnd, player.id)); // Dưa hấu
+            }
+            if (EventManager.INTERNATIONAL_WOMANS_DAY && Util.isTrue(evDropRate, 100)) {
+                candidateItems.add(new ItemMap(zone, 589, 1, x, yEnd, player.id)); // Bông hoa
             }
         }
 

@@ -384,6 +384,40 @@ public class ShopDAO {
                 }
             } else {
                 if (!addedCskb) {
+                    oldTab.itemShops.removeIf(item -> item != null && item.temp != null
+                            && (item.temp.id == 2006 || item.temp.id == 454 || item.temp.id == 933
+                            || item.temp.id == 934 || item.temp.id == 935 || item.temp.id == 1820));
+
+                    int[][] santaUpgradeItems = {
+                        // {tempId, costGold, opt31Count}
+                        {1820, 200_000_000, 999}, // Mảnh vỡ bông tai cấp 3 (x999)
+                        {935,   50_000_000,  10}, // Đá xanh lam (x10)
+                        {934,   50_000_000,  99}, // Mảnh hồn bông tai (x99)
+                        {933,  100_000_000, 999}, // Mảnh vỡ bông tai (x999)
+                        {454,  200_000_000,   0}, // Bông tai Porata cấp 1
+                        {2006, 200_000_000,   0}  // Thẻ đổi tên
+                    };
+                    for (int[] sItem : santaUpgradeItems) {
+                        ItemTemplate sTemp = ItemService.gI().getTemplate((short) sItem[0]);
+                        if (sTemp != null) {
+                            ItemShop sShop = new ItemShop();
+                            sShop.id = autoId++;
+                            sShop.tabShop = oldTab;
+                            sShop.temp = sTemp;
+                            sShop.isNew = true;
+                            sShop.typeSell = 0; // Bán bằng Vàng
+                            sShop.cost = sItem[1];
+                            sShop.iconSpec = 0;
+                            if (sItem[2] > 0) {
+                                sShop.options.add(new Item.ItemOption(31, sItem[2]));
+                            } else {
+                                sShop.options.add(new Item.ItemOption(73, 0));
+                            }
+                            sShop.options.add(new Item.ItemOption(30, 0));
+                            oldTab.itemShops.add(0, sShop);
+                        }
+                    }
+
                     ItemTemplate cskbTemp = ItemService.gI().getTemplate(380);
                     if (cskbTemp != null) {
                         ItemShop cskbShop = new ItemShop();

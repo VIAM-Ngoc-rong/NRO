@@ -643,6 +643,11 @@ public final class Manager {
                 psAlterSkh.executeUpdate();
             } catch (Exception ignored) {
             }
+            try (PreparedStatement psAlterEmail = ConnectionDatabase.prepareStatement(
+                    "ALTER TABLE account MODIFY COLUMN email VARCHAR(255) NOT NULL DEFAULT ''")) {
+                psAlterEmail.executeUpdate();
+            } catch (Exception ignored) {
+            }
 
             // Điều chỉnh phần thưởng Thành Tích Bò Mộng hợp lý (Thưởng bằng Thỏi Vàng)
             int[][] balancedAchievements = {
@@ -697,8 +702,15 @@ public final class Manager {
             } catch (Exception ignored) {
             }
 
+            try (PreparedStatement psUpdateNameCard = ConnectionDatabase.prepareStatement(
+                    "UPDATE item_template SET TYPE = 27, gender = 3, NAME = 'Thẻ đổi tên', "
+                    + "description = 'Sử dụng để đổi tên nhân vật', is_up_to_up = 1 WHERE id = 2006")) {
+                psUpdateNameCard.executeUpdate();
+            } catch (Exception ignored) {
+            }
+
             try (PreparedStatement psUpdateStackable = ConnectionDatabase.prepareStatement(
-                    "UPDATE item_template SET is_up_to_up = 1 WHERE id IN (1655, 1664, 1665, 1666, 1671, 1672, 1775, 1823) "
+                    "UPDATE item_template SET is_up_to_up = 1 WHERE id IN (933, 934, 935, 1655, 1664, 1665, 1666, 1671, 1672, 1775, 1820, 1823, 2006) "
                     + "OR TYPE IN (6, 12, 14, 29, 31, 33)")) {
                 psUpdateStackable.executeUpdate();
             } catch (Exception ignored) {

@@ -428,6 +428,7 @@ public class Input {
                                 Service.gI().sendThongBao(player, "Không tìm thấy thẻ đổi tên");
                             } else {
                                 InventoryService.gI().subQuantityItemsBag(player, theDoiTen, 1);
+                                InventoryService.gI().sendItemBags(player);
                                 player.name = text[0].toLowerCase();
                                 LocalManager.executeUpdate("update player set name = ? where id = ?", player.name, player.id);
                                 Service.gI().player(player);

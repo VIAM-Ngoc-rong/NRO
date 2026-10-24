@@ -859,13 +859,22 @@ public class InventoryService {
         if (idParam[0] != -1) {
             for (Item it : items) {
                 if (it.isNotNullItem() && it.template.id == itemAdd.template.id) {
+                    boolean foundOpt = false;
                     for (Item.ItemOption io : it.itemOptions) {
                         if (io.optionTemplate.id == idParam[0]) {
-                            io.param += idParam[1];
+                            foundOpt = true;
+                            if (io.param + idParam[1] <= 30000) {
+                                io.param += idParam[1];
+                                itemAdd.quantity = 0;
+                                return true;
+                            }
                         }
                     }
-                    itemAdd.quantity = 0;
-                    return true;
+                    if (!foundOpt && idParam[0] == 31 && it.quantity + idParam[1] <= 30000) {
+                        it.itemOptions.add(new Item.ItemOption(31, it.quantity + idParam[1]));
+                        itemAdd.quantity = 0;
+                        return true;
+                    }
                 }
             }
         }

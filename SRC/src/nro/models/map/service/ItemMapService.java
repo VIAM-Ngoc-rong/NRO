@@ -20,7 +20,7 @@ public class ItemMapService {
 
     public void pickItem(Player player, int itemMapId, boolean isThuHut) {
         if (player != null && player.zone != null && player.idMark != null) {
-            if (isThuHut || player.isBot || Util.canDoWithTime(player.idMark.getLastTimePickItem(), 1000)) {
+            if (isThuHut || player.isBot || Util.canDoWithTime(player.idMark.getLastTimePickItem(), 100)) {
                 player.zone.pickItem(player, itemMapId);
                 player.idMark.setLastTimePickItem(System.currentTimeMillis());
             }

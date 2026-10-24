@@ -684,25 +684,23 @@ public class Service {
     }
 
     public void chat(Player player, String text) {
-        if (text.equals("part")) {
+        if (player.isAdmin() && text.equals("part")) {
             Manager.loadPart();
             DataGame.updateData(player.getSession());
             return;
         }
         if (isMessageContainsThang(text)) {
-
             player.setLastChatMessage(text);
-        } else {
-            Message msg;
-            try {
-                msg = new Message(44);
-                msg.writer().writeInt((int) player.id);
-                msg.writer().writeUTF(text);
-                sendMessAllPlayerInMap(player, msg);
-                msg.cleanup();
-            } catch (Exception e) {
-                Logger.logException(Service.class, e);
-            }
+        }
+        Message msg;
+        try {
+            msg = new Message(44);
+            msg.writer().writeInt((int) player.id);
+            msg.writer().writeUTF(text);
+            sendMessAllPlayerInMap(player, msg);
+            msg.cleanup();
+        } catch (Exception e) {
+            Logger.logException(Service.class, e);
         }
     }
 

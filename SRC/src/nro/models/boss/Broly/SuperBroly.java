@@ -7,9 +7,12 @@ import nro.models.boss.BossID;
 import nro.models.consts.BossStatus;
 import static nro.models.consts.BossType.BROLY;
 import nro.models.consts.ConstPlayer;
+import nro.models.map.ItemMap;
 import nro.models.map.Zone;
+import nro.models.player.Pet;
 import nro.models.player.Player;
 import nro.models.services.PetService;
+import nro.models.services.Service;
 import nro.models.services.SkillService;
 import nro.models.map.service.ChangeMapService;
 import nro.models.skill.Skill;
@@ -22,7 +25,7 @@ public class SuperBroly extends Boss {
     public SuperBroly(Zone zone, int x, int y) throws Exception {
 
         super(BROLY, BossID.SUPER_BROLY, false, false, new BossData(
-                "Super SSJ Broly", //name
+                "SSJ Broly", //name
                 ConstPlayer.XAYDA, //gender
                 new short[]{294, 295, 296, -1, -1, -1}, //outfit {head, body, leg, bag, aura, eff}
                 100, //dame
@@ -50,8 +53,21 @@ public class SuperBroly extends Boss {
 
     @Override
     public void reward(Player plKill) {
-        if (plKill.pet == null) {
-            PetService.gI().createNormalPet(plKill);
+        if (plKill == null || this.zone == null) {
+            return;
+        }
+        Player plOwner = plKill.isPet ? ((Pet) plKill).master : plKill;
+        if (plOwner == null) {
+            plOwner = plKill;
+        }
+        if (plOwner.pet == null) {
+            PetService.gI().createNormalPet(plOwner);
+        }
+        int x = this.location.x;
+        int y = this.zone.map.yPhysicInTop(x, this.location.y - 24);
+        if (Util.isTrue(15, 100)) {
+            ItemMap eggMap = new ItemMap(this.zone, 1826, 1, x, y, plOwner.id);
+            Service.gI().dropItemMap(this.zone, eggMap);
         }
     }
 
@@ -62,7 +78,7 @@ public class SuperBroly extends Boss {
 
     @Override
     public void joinMap() {
-        this.name = "Super SSJ Broly " + Util.nextInt(10, 100);
+        this.name = "SSJ Broly " + Util.nextInt(10, 100);
         this.nPoint.hpMax = Util.nextInt(1_500_000, 16_070_777);
         this.nPoint.hp = this.nPoint.hpMax;
         this.nPoint.dame = this.nPoint.hpMax / 100;
@@ -82,12 +98,8 @@ public class SuperBroly extends Boss {
 
     @Override
     public void autoLeaveMap() {
-        if (Util.canDoWithTime(st, 300_000)) {
-            this.leaveMap();
-        }
-        if (this.zone != null && this.zone.getNumOfPlayers() > 0) {
-            st = System.currentTimeMillis();
-        }
+        // Không tự biến mất theo thời gian
+        st = System.currentTimeMillis();
     }
 
     @Override

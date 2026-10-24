@@ -334,6 +334,9 @@ public class Boss extends Player implements IBoss {
     }
 
     public boolean isExcludedFrom5MinReset() {
+        if (this.isBrolyBoss()) {
+            return true;
+        }
         if (this.zone != null && this.zone.map != null) {
             int mapId = this.zone.map.mapId;
             if (MapService.gI().isMapOffline(mapId) || MapService.gI().isMapPhoBan(mapId) || mapId == 113 || mapId == 112 || mapId == 129) {

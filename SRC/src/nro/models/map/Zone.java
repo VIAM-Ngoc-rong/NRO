@@ -271,7 +271,7 @@ public class Zone {
 
     public ItemMap getItemMapByItemMapId(int itemId) {
         for (ItemMap item : this.items) {
-            if (item != null && item.itemMapId == itemId) {
+            if (item != null && (item.itemMapId == itemId || (short) item.itemMapId == (short) itemId)) {
                 return item;
             }
         }
@@ -376,6 +376,9 @@ public class Zone {
                             }
 
                             if (InventoryService.gI().addItemBag(player, item)) {
+                                if (itemMap.itemTemplate.id != 74) {
+                                    itemMap.isPickedUp = true;
+                                }
                                 int itemType = item.template.type;
                                 Message msg;
                                 try {
@@ -384,7 +387,6 @@ public class Zone {
                                     switch (itemType) {
                                         case 9, 10, 34 -> {
                                             msg.writer().writeUTF(item.quantity > Short.MAX_VALUE ? "Bạn vừa nhận được " + Util.formatNumber(item.quantity) + " " + item.template.name : "");
-                                            PlayerService.gI().sendInfoHpMpMoney(player);
                                         }
                                         default -> {
                                             switch (item.template.id) {
@@ -410,13 +412,6 @@ public class Zone {
                                     player.sendMessage(msg);
                                     msg.cleanup();
                                     Service.gI().sendToAntherMePickItem(player, itemMapId);
-
-                                    // Mark item as picked up unless the item ID is 74
-                                    if (picked) {
-                                        if (itemMap.itemTemplate.id != 74) {
-                                            itemMap.isPickedUp = true;
-                                        }
-                                    }
 
                                     if (!(this.map.mapId >= 21 && this.map.mapId <= 23
                                             && itemMap.itemTemplate != null && itemMap.itemTemplate.id == 74

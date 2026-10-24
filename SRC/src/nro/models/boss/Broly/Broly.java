@@ -7,7 +7,9 @@ import nro.models.consts.BossStatus;
 import static nro.models.consts.BossType.BROLY;
 import nro.models.consts.ConstPlayer;
 import nro.models.map.Zone;
+import nro.models.player.Pet;
 import nro.models.player.Player;
+import nro.models.services.PetService;
 import nro.models.services.SkillService;
 import nro.models.map.service.ChangeMapService;
 import nro.models.skill.Skill;
@@ -20,7 +22,7 @@ public class Broly extends Boss {
     public Broly() throws Exception {
 
         super(BROLY, BossID.BROLY, new BossData(
-                "SSJ Broly", //name
+                "Broly", //name
                 ConstPlayer.XAYDA, //gender
                 new short[]{291, 292, 293, -1, -1, -1}, //outfit {head, body, leg, bag, aura, eff}
                 100, //dame
@@ -53,13 +55,27 @@ public class Broly extends Boss {
 
     @Override
     public void joinMap() {
-        this.name = "SSJ Broly " + Util.nextInt(10, 100);
+        this.name = "Broly " + Util.nextInt(10, 100);
         this.nPoint.hpMax = Util.nextInt(500, 100000);
         this.nPoint.hp = this.nPoint.hpMax;
         this.nPoint.dame = this.nPoint.hpMax / 100;
         this.nPoint.crit = Util.nextInt(50);
         this.joinMap2();
         st = System.currentTimeMillis();
+    }
+
+    @Override
+    public void reward(Player plKill) {
+        if (plKill == null) {
+            return;
+        }
+        Player plOwner = plKill.isPet ? ((Pet) plKill).master : plKill;
+        if (plOwner == null) {
+            plOwner = plKill;
+        }
+        if (plOwner.pet == null) {
+            PetService.gI().createNormalPet(plOwner);
+        }
     }
 
     public void joinMap2() {

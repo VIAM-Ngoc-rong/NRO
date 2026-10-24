@@ -32,7 +32,7 @@ public class SieuBroly18h extends Boss {
 
     public SieuBroly18h(Zone targetZone) throws Exception {
         super(BossID.SIEU_BROLY_18H - Util.nextInt(1, 100000), false, false, new BossData(
-                "Super SSJ Broly",
+                "SSJ Broly",
                 ConstPlayer.XAYDA,
                 new short[]{1083, 1084, 1085, -1, -1, -1},
                 50_000,

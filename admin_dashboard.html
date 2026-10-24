@@ -154,26 +154,53 @@
     }
     .announce-box input { flex: 1; }
 
+    .workspace-layout {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
     .tabs {
       display: flex;
-      flex-wrap: wrap;
+      flex-direction: column;
       gap: 8px;
-      margin-bottom: 14px;
+      width: 265px;
+      flex-shrink: 0;
+      position: sticky;
+      top: 14px;
+    }
+    .tab-content-area {
+      flex: 1;
+      min-width: 0;
     }
     .tab-btn {
       background: var(--panel);
       border: 1px solid var(--border);
       color: var(--muted);
-      padding: 10px 16px;
-      border-radius: 9px;
+      padding: 12px 15px;
+      border-radius: 10px;
       font-size: 13.5px;
       font-weight: 700;
       box-shadow: var(--shadow);
+      text-align: left;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
     }
     .tab-btn.active {
       background: var(--primary);
       border-color: var(--primary);
       color: #fff;
+    }
+    @media (max-width: 960px) {
+      .workspace-layout {
+        flex-direction: column;
+      }
+      .tabs {
+        width: 100%;
+        position: static;
+      }
     }
 
     .card {
@@ -399,24 +426,34 @@
       <button class="btn-purple" onclick="downloadBackup()">⬇️ Tải File Backup (.sql.gz)</button>
     </div>
 
-    <div class="tabs">
-      <button id="tabBtnPlayers" class="tab-btn active" onclick="switchTab('players')">
-        1. Người Chơi Online (<span id="countPlayersTab">0</span>)
-      </button>
-      <button id="tabBtnAccounts" class="tab-btn" onclick="switchTab('accounts')">
-        2. Tài Khoản & Nhân Vật Database (<span id="countAccountsTab">Tất cả</span>)
-      </button>
-      <button id="tabBtnBosses" class="tab-btn" onclick="switchTab('bosses')">
-        3. Giám Sát & Gọi Boss (<span id="countBossesTab">0</span>)
-      </button>
-      <button id="tabBtnItems" class="tab-btn" onclick="switchTab('items')">
-        4. Kho Vật Phẩm & Option (<span id="countItemsTab">Tất cả</span>)
-      </button>
-      <button id="tabBtnSystem" class="tab-btn" onclick="switchTab('system')">
-        5. Hệ Thống, Bot, BXH & Log Server
-      </button>
-    </div>
+    <div class="workspace-layout">
+      <div class="tabs">
+        <button id="tabBtnPlayers" class="tab-btn active" onclick="switchTab('players')">
+          <span>1. Người Chơi Online</span>
+          <span class="badge badge-alive" id="countPlayersTab">0</span>
+        </button>
+        <button id="tabBtnAccounts" class="tab-btn" onclick="switchTab('accounts')">
+          <span>2. Tài Khoản & NV DB</span>
+          <span class="badge badge-dead" id="countAccountsTab">Tất cả</span>
+        </button>
+        <button id="tabBtnBosses" class="tab-btn" onclick="switchTab('bosses')">
+          <span>3. Giám Sát & Gọi Boss</span>
+          <span class="badge badge-admin" id="countBossesTab">0</span>
+        </button>
+        <button id="tabBtnItems" class="tab-btn" onclick="switchTab('items')">
+          <span>4. Kho Vật Phẩm & Option</span>
+          <span class="badge badge-dead" id="countItemsTab">Tất cả</span>
+        </button>
+        <button id="tabBtnEvents" class="tab-btn" onclick="switchTab('events')">
+          <span>5. 🎉 Quản Lý Sự Kiện</span>
+          <span class="badge badge-alive">Live</span>
+        </button>
+        <button id="tabBtnSystem" class="tab-btn" onclick="switchTab('system')">
+          <span>6. ⚙️ Hệ Thống, Bot & BXH</span>
+        </button>
+      </div>
 
+      <div class="tab-content-area">
     <!-- TAB 1: NGƯỜI CHƠI ĐANG ONLINE -->
     <div id="tabPlayers" class="card">
       <div class="card-header">
@@ -600,7 +637,56 @@
       </div>
     </div>
 
-    <!-- TAB 5: HỆ THỐNG, BOT, EXP, BXH & LOG SERVER -->
+    <!-- TAB 5: QUẢN LÝ SỰ KIỆN GAME (LIVE) -->
+    <div id="tabEvents" style="display: none;">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h3>🎉 Quản Lý Sự Kiện Game (Live — Bật / Tắt Không Cần Khởi Động Lại)</h3>
+            <span style="font-size:12.5px;color:var(--muted);">Bật/tắt rơi vật phẩm sự kiện khi đánh quái, nhân đôi vàng rơi, triệu hồi Boss sự kiện và tặng Điểm Sự Kiện trực tiếp cho người chơi.</span>
+          </div>
+          <button class="btn-sm" onclick="loadSystemTab()">🔄 Làm mới trạng thái Sự kiện</button>
+        </div>
+
+        <div id="eventsToggleGrid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px;margin-bottom:14px;">
+          <!-- Sẽ được render tự động từ data.events -->
+        </div>
+
+        <div class="grid-2" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; border-top: 1px solid var(--border); padding-top: 12px;">
+          <div class="form-group" style="margin-bottom:0;">
+            <label>🎯 Tỷ lệ rơi Vật Phẩm Sự Kiện khi đánh quái (%):</label>
+            <div style="display:flex;gap:8px;align-items:center;margin-top:4px;">
+              <input type="number" id="eventDropRateInput" value="15" min="0" max="100" style="width:90px;" />
+              <button class="btn-success btn-sm" onclick="saveEventDropRate()">Lưu Tỷ Lệ (%)</button>
+              <button class="btn-muted btn-sm" onclick="document.getElementById('eventDropRateInput').value=15;saveEventDropRate()">15%</button>
+              <button class="btn-muted btn-sm" onclick="document.getElementById('eventDropRateInput').value=50;saveEventDropRate()">50%</button>
+              <button class="btn-muted btn-sm" onclick="document.getElementById('eventDropRateInput').value=100;saveEventDropRate()">100%</button>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-bottom:0;">
+            <label>👹 Triệu hồi nhanh Boss Sự Kiện:</label>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px;">
+              <button class="btn-warning btn-sm" onclick="spawnEventBoss('halloween')">🎃 Boss Halloween (Bộ Xương / Ma Trơi)</button>
+              <button class="btn-teal btn-sm" onclick="spawnEventBoss('christmas')">🎄 Boss Giáng Sinh (Ông Già Noel)</button>
+              <button class="btn-danger btn-sm" onclick="spawnEventBoss('tet')">🧧 Boss Tết (Lân Con)</button>
+              <button class="btn-purple btn-sm" onclick="spawnEventBoss('hung_vuong')">⚔️ Boss Hùng Vương (Sơn Tinh - Thủy Tinh)</button>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-bottom:0;">
+            <label>🎁 Tặng Điểm Sự Kiện (Event Point) cho người chơi:</label>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px;">
+              <input type="text" id="eventPointTarget" placeholder="Tên NV / ID hoặc ALL (Toàn Server)" style="flex:1;min-width:140px;" />
+              <input type="number" id="eventPointAmount" value="100" step="10" style="width:90px;" title="Số điểm sự kiện" />
+              <button class="btn-success btn-sm" onclick="giveEventPoints()">+ Cộng Điểm SK</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 6: HỆ THỐNG, BOT, EXP, BXH & LOG SERVER -->
     <div id="tabSystem" style="display: none;">
       <div class="grid-2">
         <div class="card">
@@ -680,6 +766,8 @@
             </tbody>
           </table>
         </div>
+      </div>
+    </div>
       </div>
     </div>
   </div>
@@ -1030,12 +1118,13 @@
 
     function switchTab(tab) {
       currentTab = tab;
-      const tabs = ['players', 'accounts', 'bosses', 'items', 'system'];
+      const tabs = ['players', 'accounts', 'bosses', 'items', 'events', 'system'];
       const mapIds = {
         players: ['tabPlayers', 'tabBtnPlayers'],
         accounts: ['tabAccounts', 'tabBtnAccounts'],
         bosses: ['tabBosses', 'tabBtnBosses'],
         items: ['tabItems', 'tabBtnItems'],
+        events: ['tabEvents', 'tabBtnEvents'],
         system: ['tabSystem', 'tabBtnSystem']
       };
       for (const k of tabs) {
@@ -1046,7 +1135,7 @@
         loadAccountsDb();
       } else if (tab === 'items' && allItemsCache.length === 0) {
         searchItemsDb();
-      } else if (tab === 'system') {
+      } else if (tab === 'events' || tab === 'system') {
         loadSystemTab();
       }
     }
@@ -1462,6 +1551,8 @@
         const data = await res.json();
         if (!data.ok) return;
 
+        renderEventsAdmin(data.events || {});
+
         const backups = data.backups || [];
         const bDiv = document.getElementById('backupFilesList');
         if (backups.length === 0) {
@@ -1490,6 +1581,75 @@
           </tr>
         `).join('') || `<tr><td colspan="9" style="text-align:center;color:var(--muted);">Chưa có nhân vật nào.</td></tr>`;
       } catch (e) {}
+    }
+
+    const EVENT_DEFINITIONS = [
+      { key: 'halloween', label: '🎃 Sự Kiện Halloween', desc: 'Rơi Bí Ngô, Bàn Tay Phép Thuật, Đổi quà Halloween' },
+      { key: 'christmas', label: '🎄 Sự Kiện Giáng Sinh (Noel)', desc: 'Rơi Chuông, Quả Châu, Ngôi Sao, Đầu tuần lộc' },
+      { key: 'lunnar_new_year', label: '🧧 Sự Kiện Tết Nguyên Đán', desc: 'Rơi Thịt Tươi, Lá Dong, Gạo Nếp, Đậu Xanh, Dây Lạt' },
+      { key: 'trung_thu', label: '🥮 Sự Kiện Tết Trung Thu', desc: 'Rơi Đuôi Khỉ, Hộp Quà Trung Thu' },
+      { key: 'hung_vuong', label: '⚔️ Sự Kiện Giỗ Tổ Hùng Vương', desc: 'Rơi Ngà Voi, Cựa Gà, Bờm Ngựa, Dưa Hấu' },
+      { key: 'womans_day', label: '🌹 Sự Kiện Quốc Tế Phụ Nữ 8/3', desc: 'Rơi Hoa Hồng khi đánh quái' },
+      { key: 'top_up', label: '💎 Sự Kiện Khuyến Mãi Nạp', desc: 'Kích hoạt mốc thưởng sự kiện nạp' },
+      { key: 'double_gold', label: '💰 Sự Kiện X2 Vàng Rơi Toàn Server', desc: 'Nhân đôi lượng Vàng rơi ra khi tiêu diệt quái' }
+    ];
+
+    function renderEventsAdmin(evObj) {
+      const grid = document.getElementById('eventsToggleGrid');
+      if (!grid) return;
+      if (evObj && typeof evObj.drop_rate === 'number') {
+        const dropInp = document.getElementById('eventDropRateInput');
+        if (dropInp) dropInp.value = evObj.drop_rate;
+      }
+      grid.innerHTML = EVENT_DEFINITIONS.map(def => {
+        const isOn = Boolean(evObj && evObj[def.key]);
+        return `
+          <div style="border:1px solid ${isOn ? 'var(--success)' : 'var(--border)'};background:${isOn ? 'rgba(16,185,129,0.08)' : 'var(--bg)'};border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;justify-content:space-between;gap:8px;">
+            <div>
+              <div style="display:flex;justify-content:space-between;align-items:center;gap:6px;">
+                <b style="font-size:13px;">${def.label}</b>
+                <span class="badge ${isOn ? 'badge-alive' : 'badge-dead'}">${isOn ? 'ĐANG BẬT' : 'ĐANG TẮT'}</span>
+              </div>
+              <div style="font-size:11.5px;color:var(--muted);margin-top:4px;">${def.desc}</div>
+            </div>
+            <div style="display:flex;gap:6px;">
+              <button class="${isOn ? 'btn-danger' : 'btn-success'} btn-sm" style="width:100%;" onclick="toggleGameEvent('${def.key}', ${isOn ? 0 : 1})">
+                ${isOn ? '⏹ Tắt Sự Kiện' : '▶ Bật Sự Kiện Ngay'}
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function toggleGameEvent(eventKey, enabled) {
+      const res = await postAction({ action: 'event_toggle', event: eventKey, enabled });
+      showToast(res.message, !res.ok);
+      if (res.ok) loadSystemTab();
+    }
+
+    async function saveEventDropRate() {
+      const rate = document.getElementById('eventDropRateInput').value || 15;
+      const res = await postAction({ action: 'event_drop_rate', rate });
+      showToast(res.message, !res.ok);
+      if (res.ok) loadSystemTab();
+    }
+
+    async function spawnEventBoss(eventKey) {
+      const res = await postAction({ action: 'event_spawn_boss', event: eventKey });
+      showToast(res.message, !res.ok);
+      fetchStatus();
+    }
+
+    async function giveEventPoints() {
+      const playerTarget = (document.getElementById('eventPointTarget').value || '').trim();
+      const points = document.getElementById('eventPointAmount').value || 0;
+      if (!playerTarget) {
+        showToast('Vui lòng nhập Tên Nhân Vật, ID hoặc gõ ALL để tặng toàn Server!', true);
+        return;
+      }
+      const res = await postAction({ action: 'event_give_point', playerTarget, points });
+      showToast(res.message, !res.ok);
     }
 
     async function postAction(paramsObj) {
@@ -1896,6 +2056,7 @@
       return String(s || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
     }
 
+    renderEventsAdmin({});
     fetchStatus();
     setInterval(fetchStatus, 3000);
   </script>

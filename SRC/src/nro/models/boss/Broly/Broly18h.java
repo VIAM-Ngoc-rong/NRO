@@ -13,6 +13,7 @@ import nro.models.map.Zone;
 import nro.models.player.Pet;
 import nro.models.player.Player;
 import nro.models.services.ItemService;
+import nro.models.services.PetService;
 import nro.models.services.Service;
 import nro.models.services.TaskService;
 import nro.models.skill.Skill;
@@ -29,7 +30,7 @@ public class Broly18h extends Boss {
 
     public Broly18h() throws Exception {
         super(BossID.BROLY_18H - Util.nextInt(1, 100000), false, true, new BossData(
-                "SSJ Broly",
+                "Broly",
                 ConstPlayer.XAYDA,
                 new short[]{1080, 1081, 1082, -1, -1, -1},
                 15_000,
@@ -138,13 +139,9 @@ public class Broly18h extends Boss {
         if (plOwner == null) {
             plOwner = plKill;
         }
-        int x = this.location.x;
-        int y = this.zone.map.yPhysicInTop(x, this.location.y - 24);
-
-        // 10% tỷ lệ rớt Quả Trứng Đệ Tử Broly (ID 1826)
-        if (Util.isTrue(10, 100)) {
-            ItemMap eggMap = new ItemMap(this.zone, 1826, 1, x, y, plOwner.id);
-            Service.gI().dropItemMap(this.zone, eggMap);
+        // Hạ Boss Broly thường -> nhận Đệ tử thường (nếu chưa có đệ tử)
+        if (plOwner.pet == null) {
+            PetService.gI().createNormalPet(plOwner);
         }
     }
 

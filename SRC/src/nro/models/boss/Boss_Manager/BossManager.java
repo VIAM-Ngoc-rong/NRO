@@ -436,7 +436,7 @@ public class BossManager implements Runnable {
             });
 
             msg = new Message(-96);
-            msg.writer().writeByte(1);
+            msg.writer().writeByte(0);
             msg.writer().writeUTF("Danh Sách Boss");
             msg.writer().writeByte(Math.min(validIndices.size(), 120));
             int count = 0;
@@ -446,7 +446,7 @@ public class BossManager implements Runnable {
                 }
                 Boss boss = this.bosses.get(i);
                 int lv = (boss.currentLevel >= 0 && boss.currentLevel < boss.data.length) ? boss.currentLevel : 0;
-                msg.writer().writeInt(i);
+                msg.writer().writeInt(count);
                 msg.writer().writeInt(i);
                 msg.writer().writeShort(boss.data[lv].getOutfit()[0]);
                 if (player.getSession().version >= 214) {
@@ -456,11 +456,11 @@ public class BossManager implements Runnable {
                 msg.writer().writeShort(boss.data[lv].getOutfit()[2]);
                 msg.writer().writeUTF(boss.data[lv].getName());
                 if (boss.zone != null && !boss.isDie()) {
-                    msg.writer().writeUTF("Đang sống (Bấm đến Khu 0)");
+                    msg.writer().writeUTF(boss.zone.map.mapName + " (Bấm đến Khu 0)");
                     if (player.isAdmin()) {
-                        msg.writer().writeUTF(boss.zone.map.mapName + " (" + boss.zone.map.mapId + ") khu " + boss.zone.zoneId);
+                        msg.writer().writeUTF(boss.zone.map.mapName + " (" + boss.zone.map.mapId + ") khu " + boss.zone.zoneId + " - Bấm Chọn để đến Khu 0");
                     } else {
-                        msg.writer().writeUTF(boss.zone.map.mapName + " (" + boss.zone.map.mapId + ") - Bấm để đến Khu 0");
+                        msg.writer().writeUTF("Đang ở " + boss.zone.map.mapName + " (" + boss.zone.map.mapId + ")\nBấm Chọn để dịch chuyển đến Khu 0!");
                     }
                 } else {
                     msg.writer().writeUTF("Đang chờ hồi sinh");

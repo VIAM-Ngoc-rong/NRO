@@ -89,29 +89,33 @@ public class Command {
 
     private void initParameterizedCommands() {
         parameterizedCommands.put("m", (player, text) -> {
+            String arg = text.substring(1).trim();
+            if (!arg.matches("^\\d+$")) {
+                Service.gI().chat(player, text);
+                return;
+            }
             try {
-                int mapId = Integer.parseInt(text.replace("m", "").trim());
+                int mapId = Integer.parseInt(arg);
                 ChangeMapService.gI().changeMapInYard(player, mapId, -1, -1);
             } catch (NumberFormatException e) {
                 Service.gI().sendThongBao(player, "Sai định dạng map ID!");
             }
         });
 
-        parameterizedCommands.put("toado", (player, text) -> {
+        adminCommands.put("toado", player -> {
             Service.gI().sendThongBaoOK(player, "x: " + player.location.x + " - y: " + player.location.y);
         });
 
-        parameterizedCommands.put("1", (player, text) -> {
+        adminCommands.put("1", player -> {
             NpcService.gI().createMenuConMeo(player, 206783, 206783, "|7| Menu bot\n"
                     + "Player online : " + Client.gI().getPlayers().size() + "\n"
                     + "\b|1|Thread: " + Thread.activeCount() + "\n"
                     + "\n Sessions: " + SessionManager.gI().getNumSession() + "\n"
                     + "Bot online : " + BotManager.gI().bot.size(),
                     "Bot\nPem Quái", "Bot\nBán Item", "Bot\nSăn Boss", "Bot\nAttack Player");
-            return;
         });
 
-        parameterizedCommands.put("2", (player, text) -> {
+        adminCommands.put("2", player -> {
             player.originalName = player.name;
             PlayerService.gI().changeAndSendTypePK(player, ConstPlayer.PK_ALL);
             player.originalName = player.name;
@@ -141,13 +145,18 @@ public class Command {
             ServerNotify.gI().notify("Đã gọi bot tấn công người chơi!");
         });
 
-        parameterizedCommands.put("b", (player, text) -> {
+        adminCommands.put("b", player -> {
             Input.gI().createFormSenditem1(player);
         });
 
         parameterizedCommands.put("n", (player, text) -> {
+            String arg = text.substring(1).trim();
+            if (!arg.matches("^\\d+$")) {
+                Service.gI().chat(player, text);
+                return;
+            }
             try {
-                int idTask = Integer.parseInt(text.replaceAll("n", "").trim());
+                int idTask = Integer.parseInt(arg);
                 player.playerTask.taskMain.id = idTask - 1;
                 player.playerTask.taskMain.index = 0;
                 TaskService.gI().sendNextTaskMain(player);
@@ -156,87 +165,116 @@ public class Command {
             }
         });
         // dmg <value>
-parameterizedCommands.put("dm", (player, text) -> {
-    try {
-        int dmg = Integer.parseInt(text.replace("dm", "").trim());
-        player.nPoint.dameg = dmg;
-        Service.gI().point(player);
-        Service.gI().sendThongBao(player, "SET DAMAGE = " + dmg);
-    } catch (Exception e) {
-        Service.gI().sendThongBao(player, "Sai cú pháp: dmg <số>");
-    }
-});
+        parameterizedCommands.put("dm", (player, text) -> {
+            String arg = text.substring(2).trim();
+            if (!arg.matches("^\\d+$")) {
+                Service.gI().chat(player, text);
+                return;
+            }
+            try {
+                int dmg = Integer.parseInt(arg);
+                player.nPoint.dameg = dmg;
+                Service.gI().point(player);
+                Service.gI().sendThongBao(player, "SET DAMAGE = " + dmg);
+            } catch (Exception e) {
+                Service.gI().sendThongBao(player, "Sai cú pháp: dmg <số>");
+            }
+        });
 
-// hpg <value>
-parameterizedCommands.put("hp", (player, text) -> {
-    try {
-        int hpg = Integer.parseInt(text.replace("hp", "").trim());
-        player.nPoint.hpg = hpg;
-        Service.gI().point(player);
-        Service.gI().sendThongBao(player, "SET HP GỐC = " + hpg);
-    } catch (Exception e) {
-        Service.gI().sendThongBao(player, "Sai cú pháp: hpg <số>");
-    }
-});
+        // hpg <value>
+        parameterizedCommands.put("hp", (player, text) -> {
+            String arg = text.substring(2).trim();
+            if (!arg.matches("^\\d+$")) {
+                Service.gI().chat(player, text);
+                return;
+            }
+            try {
+                int hpg = Integer.parseInt(arg);
+                player.nPoint.hpg = hpg;
+                Service.gI().point(player);
+                Service.gI().sendThongBao(player, "SET HP GỐC = " + hpg);
+            } catch (Exception e) {
+                Service.gI().sendThongBao(player, "Sai cú pháp: hpg <số>");
+            }
+        });
 
-// ki <value>
-parameterizedCommands.put("ki", (player, text) -> {
-    try {
-        int ki = Integer.parseInt(text.replace("ki", "").trim());
-        player.nPoint.mpg = ki;
-        Service.gI().point(player);
-        Service.gI().sendThongBao(player, "SET KI GỐC = " + ki);
-    } catch (Exception e) {
-        Service.gI().sendThongBao(player, "Sai cú pháp: ki <số>");
-    }
-});
-// upp <power> (đặt trước "up" để không bị "up" bắt nhầm prefix)
-parameterizedCommands.put("upp", (player, text) -> {
-    try {
-        if (player.pet == null) {
-            Service.gI().sendThongBao(player, "Bạn chưa có đệ tử");
-            return;
-        }
+        // ki <value>
+        parameterizedCommands.put("ki", (player, text) -> {
+            String arg = text.substring(2).trim();
+            if (!arg.matches("^\\d+$")) {
+                Service.gI().chat(player, text);
+                return;
+            }
+            try {
+                int ki = Integer.parseInt(arg);
+                player.nPoint.mpg = ki;
+                Service.gI().point(player);
+                Service.gI().sendThongBao(player, "SET KI GỐC = " + ki);
+            } catch (Exception e) {
+                Service.gI().sendThongBao(player, "Sai cú pháp: ki <số>");
+            }
+        });
+        // upp <power> (đặt trước "up" để không bị "up" bắt nhầm prefix)
+        parameterizedCommands.put("upp", (player, text) -> {
+            String arg = text.substring(3).trim();
+            if (!arg.matches("^-?\\d+$")) {
+                Service.gI().chat(player, text);
+                return;
+            }
+            try {
+                if (player.pet == null) {
+                    Service.gI().sendThongBao(player, "Bạn chưa có đệ tử");
+                    return;
+                }
 
-        long power = Long.parseLong(text.replace("upp", "").trim());
-        Service.gI().addSMTN(player.pet, (byte) 2, power, false);
-        Service.gI().sendThongBao(
-            player,
-            "UP TNSM cho đệ tử = " + power
-        );
-    } catch (Exception e) {
-        Service.gI().sendThongBao(player, "Sai cú pháp: upp <số>");
-    }
-});
-// up <power>
-parameterizedCommands.put("up", (player, text) -> {
-    try {
-        long power = Long.parseLong(text.replace("up", "").trim());
-        Service.gI().addSMTN(player, (byte) 2, power, false);
-        Service.gI().sendThongBao(player, "UP SMTN = " + power);
-    } catch (Exception e) {
-        Service.gI().sendThongBao(player, "Sai cú pháp: up <số>");
-    }
-});
-parameterizedCommands.put("henbaotri", (player, text) -> {
-    try {
-        String arg = text.replace("henbaotri", "").trim();
-        String[] parts = arg.split(":");
-        int h = Integer.parseInt(parts[0].trim());
-        int m = parts.length > 1 ? Integer.parseInt(parts[1].trim()) : 0;
-        AutoMaintenance.hours = h;
-        AutoMaintenance.mins = m;
-        AutoMaintenance.AutoMaintenance = true;
-        Service.gI().sendThongBao(player, String.format("Đã hẹn bảo trì tự động hằng ngày lúc %02d:%02d", h, m));
-    } catch (Exception e) {
-        Service.gI().sendThongBao(player, "Sai cú pháp! Dùng: henbaotri <giờ:phút> (VD: henbaotri 05:00)");
-    }
-});
+                long power = Long.parseLong(arg);
+                Service.gI().addSMTN(player.pet, (byte) 2, power, false);
+                Service.gI().sendThongBao(
+                    player,
+                    "UP TNSM cho đệ tử = " + power
+                );
+            } catch (Exception e) {
+                Service.gI().sendThongBao(player, "Sai cú pháp: upp <số>");
+            }
+        });
+        // up <power>
+        parameterizedCommands.put("up", (player, text) -> {
+            String arg = text.substring(2).trim();
+            if (!arg.matches("^-?\\d+$")) {
+                Service.gI().chat(player, text);
+                return;
+            }
+            try {
+                long power = Long.parseLong(arg);
+                Service.gI().addSMTN(player, (byte) 2, power, false);
+                Service.gI().sendThongBao(player, "UP SMTN = " + power);
+            } catch (Exception e) {
+                Service.gI().sendThongBao(player, "Sai cú pháp: up <số>");
+            }
+        });
+        parameterizedCommands.put("henbaotri", (player, text) -> {
+            try {
+                String arg = text.replace("henbaotri", "").trim();
+                String[] parts = arg.split(":");
+                int h = Integer.parseInt(parts[0].trim());
+                int m = parts.length > 1 ? Integer.parseInt(parts[1].trim()) : 0;
+                AutoMaintenance.hours = h;
+                AutoMaintenance.mins = m;
+                AutoMaintenance.AutoMaintenance = true;
+                Service.gI().sendThongBao(player, String.format("Đã hẹn bảo trì tự động hằng ngày lúc %02d:%02d", h, m));
+            } catch (Exception e) {
+                Service.gI().sendThongBao(player, "Sai cú pháp! Dùng: henbaotri <giờ:phút> (VD: henbaotri 05:00)");
+            }
+        });
 
 
         parameterizedCommands.put("dctt", (player, text) -> {
+            String arg = text.substring(4).trim();
+            if (!arg.isEmpty() && !arg.matches("^\\d+$")) {
+                Service.gI().chat(player, text);
+                return;
+            }
             try {
-                String arg = text.replace("dctt", "").trim();
                 short param = arg.isEmpty() ? (short) 145 : Short.parseShort(arg);
                 nro.models.intrinsic.Intrinsic intrinsic = nro.models.services.IntrinsicService.gI().getIntrinsicById(6);
                 if (intrinsic != null) {
@@ -341,6 +379,7 @@ parameterizedCommands.put("henbaotri", (player, text) -> {
 
         if (text.startsWith("ten con la ")) {
             PetService.gI().changeNamePet(player, text.replace("ten con la ", ""));
+            return true;
         }
 
         String lowerText = text.toLowerCase().trim();
