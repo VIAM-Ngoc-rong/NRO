@@ -201,7 +201,10 @@ public class Bot extends Player {
         int point = 0;
         if (this.nPoint != null) {
             if (Util.isTrue(50, 100)) {
-                point = 100;
+                if (this.nPoint.hpg >= 80000) {
+                    return;
+                }
+                point = 20;
                 int pointHp = point * 20;
                 tiemNangUse = point * (2 * (this.nPoint.hpg + 1000) + pointHp - 20) / 2;
                 if (doUseTiemNang(tiemNangUse)) {
@@ -210,7 +213,10 @@ public class Bot extends Player {
                     Service.gI().point(this);
                 }
             } else {
-                point = 10;
+                if (this.nPoint.dameg >= 5000) {
+                    return;
+                }
+                point = 5;
                 tiemNangUse = point * (2 * this.nPoint.dameg + point - 1) / 2 * 100;
                 if (doUseTiemNang(tiemNangUse)) {
                     this.nPoint.dameg += point;

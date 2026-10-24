@@ -37,11 +37,11 @@ public class BotAttackplayer extends Bot {
 
         try {
             this.nPoint = new NPoint(this);
-            this.nPoint.hpMax = 500000;
+            this.nPoint.hpg = 50000; this.nPoint.hpMax = 50000;
             this.nPoint.hp = this.nPoint.hpMax;
-            this.nPoint.mpMax = 200000;
+            this.nPoint.mpg = 35000; this.nPoint.mpMax = 35000;
             this.nPoint.mp = this.nPoint.mpMax;
-            this.nPoint.dame = 100000;
+            this.nPoint.dameg = 3500; this.nPoint.dame = 3500;
 
             this.playerSkill = new PlayerSkill(this);
 

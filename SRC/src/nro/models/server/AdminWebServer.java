@@ -1202,8 +1202,9 @@ public class AdminWebServer {
                 case "set_exp_rate" -> {
                     int rate = (int) Math.max(1, Math.min(127, parseLongSafe(params.get("rate"), 1)));
                     Manager.RATE_EXP_SERVER = (byte) rate;
+                    EventManager.saveRuntimeConfig();
                     Service.gI().sendThongBaoAllPlayer("[THÔNG BÁO] Admin vừa điều chỉnh tỷ lệ Sức Mạnh / Tiềm Năng toàn Server lên x" + rate + "!");
-                    sendJson(exchange, 200, "{\"ok\":true,\"message\":" + jsonStr("Đã cập nhật Tỷ lệ EXP toàn Server thành x" + rate + " ngay lập tức!") + "}");
+                    sendJson(exchange, 200, "{\"ok\":true,\"message\":" + jsonStr("Đã cập nhật Tỷ lệ EXP toàn Server thành x" + rate + " (đã lưu cố định vào MySQL)!") + "}");
                 }
                 case "spawn_bot" -> {
                     int botType = (int) parseLongSafe(params.get("botType"), 0);
@@ -1459,14 +1460,16 @@ public class AdminWebServer {
                             return;
                         }
                     }
+                    EventManager.saveRuntimeConfig();
                     String statusStr = state ? "BẬT" : "TẮT";
                     Service.gI().sendThongBaoAllPlayer("[SỰ KIỆN] Admin vừa " + statusStr + " " + evLabel + "!");
-                    sendJson(exchange, 200, "{\"ok\":true,\"message\":" + jsonStr("Đã " + statusStr + " " + evLabel + " thành công!") + ",\"events\":" + serializeEvents() + "}");
+                    sendJson(exchange, 200, "{\"ok\":true,\"message\":" + jsonStr("Đã " + statusStr + " " + evLabel + " (đã lưu cố định vào MySQL)!") + ",\"events\":" + serializeEvents() + "}");
                 }
                 case "event_drop_rate" -> {
                     int rate = (int) Math.max(1, Math.min(100, parseLongSafe(params.get("rate"), 5)));
                     EventManager.EVENT_DROP_RATE = rate;
-                    sendJson(exchange, 200, "{\"ok\":true,\"message\":" + jsonStr("Đã cập nhật tỷ lệ rơi Vật phẩm Sự kiện từ quái thành " + rate + "%!") + ",\"events\":" + serializeEvents() + "}");
+                    EventManager.saveRuntimeConfig();
+                    sendJson(exchange, 200, "{\"ok\":true,\"message\":" + jsonStr("Đã cập nhật tỷ lệ rơi Vật phẩm Sự kiện từ quái thành " + rate + "% (đã lưu vào MySQL)!") + ",\"events\":" + serializeEvents() + "}");
                 }
                 case "event_spawn_boss" -> {
                     String type = params.getOrDefault("type", params.getOrDefault("event", "")).trim();
@@ -1553,7 +1556,8 @@ public class AdminWebServer {
                         ConsignShopManager.gI().save();
                     } catch (Exception ignored) {
                     }
-                    sendJson(exchange, 200, "{\"ok\":true,\"message\":" + jsonStr("Đã lưu thành công dữ liệu của " + savedCount + " người chơi, Bang hội & Ký gửi vào MySQL!") + "}");
+                    EventManager.saveRuntimeConfig();
+                    sendJson(exchange, 200, "{\"ok\":true,\"message\":" + jsonStr("Đã lưu thành công dữ liệu của " + savedCount + " người chơi, Bang hội, Ký gửi & Cấu hình Sự Kiện vào MySQL!") + "}");
                 }
                 case "backup_now" -> {
                     String token = params.getOrDefault("gitToken", "").trim();
@@ -1590,6 +1594,7 @@ public class AdminWebServer {
                         ConsignShopManager.gI().save();
                     } catch (Exception ignored) {
                     }
+                    EventManager.saveRuntimeConfig();
                     Service.gI().sendThongBaoAllPlayer("[THÔNG BÁO] Server đang cập nhật phiên bản mới và khởi động lại, vui lòng đăng nhập lại sau 10 giây!");
                     sendJson(exchange, 200, "{\"ok\":true,\"message\":\"Đang tự động kéo code mới từ GitHub (git pull) và khởi động lại Server! Vui lòng đợi khoảng 8-12 giây để Server bật lại...\"}");
 

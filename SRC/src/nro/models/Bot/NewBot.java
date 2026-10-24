@@ -87,25 +87,43 @@ public class NewBot {
             b.mo1 = mo1;
             b.boss = bos;
 
-            int congThem = new Random().nextInt(50000000);
-            b.nPoint.limitPower = 8;
-            b.nPoint.power = 1000 + congThem;
-            b.nPoint.tiemNang = 20000000 + congThem;
-            b.nPoint.dameg = 600000;
-            b.nPoint.mpg = 600000;
-            b.nPoint.mpMax = 2000000000;
-            b.nPoint.mp = 600000;
-            b.nPoint.hpg = 675000;
-            b.nPoint.hpMax = 10000;
-            b.nPoint.hp = 600000;
-            b.nPoint.maxStamina = 20000;
-            b.nPoint.stamina = 20000;
-            b.nPoint.critg = 10;
-            b.nPoint.defg = 10;
+            Random rnd = new Random();
+            boolean isCombatBot = (type == 2 || type == 3);
+            long basePower = isCombatBot
+                    ? (5_000_000L + rnd.nextInt(15_000_000))
+                    : (1_500_000L + rnd.nextInt(8_500_000));
+            int baseHp = isCombatBot
+                    ? (40_000 + rnd.nextInt(40_000))
+                    : (15_000 + rnd.nextInt(30_000));
+            int baseMp = isCombatBot
+                    ? (30_000 + rnd.nextInt(30_000))
+                    : (15_000 + rnd.nextInt(25_000));
+            int baseDame = isCombatBot
+                    ? (2_500 + rnd.nextInt(3_500))
+                    : (800 + rnd.nextInt(1_700));
+
+            b.nPoint.limitPower = 3;
+            b.nPoint.power = basePower;
+            b.nPoint.tiemNang = 500_000L + rnd.nextInt(1_500_000);
+            b.nPoint.hpg = baseHp;
+            b.nPoint.mpg = baseMp;
+            b.nPoint.dameg = baseDame;
+            b.nPoint.hpMax = baseHp;
+            b.nPoint.mpMax = baseMp;
+            b.nPoint.dame = baseDame;
+            b.nPoint.hp = baseHp;
+            b.nPoint.mp = baseMp;
+            b.nPoint.maxStamina = 10000;
+            b.nPoint.stamina = 10000;
+            b.nPoint.critg = 2 + rnd.nextInt(4);
+            b.nPoint.defg = 20 + rnd.nextInt(30);
             b.gender = (byte) Gender;
             b.charms.tdThuHut = System.currentTimeMillis() + (30L * 24 * 60 * 60 * 1000);
 
             b.leakSkill();
+            b.nPoint.calPoint();
+            b.nPoint.hp = b.nPoint.hpMax;
+            b.nPoint.mp = b.nPoint.mpMax;
             b.joinMap();
 
             for (int j = 0; j < 20; j++) {

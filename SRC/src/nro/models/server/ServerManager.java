@@ -284,6 +284,10 @@ public class ServerManager {
         isSavedOnClose = true;
         isRunning = false;
         try {
+            EventManager.saveRuntimeConfig();
+        } catch (Exception ignored) {
+        }
+        try {
             ClanService.gI().close();
         } catch (Exception e) {
             Logger.error("Lỗi save clan!\n");
