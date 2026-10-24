@@ -93,6 +93,7 @@ import nro.models.npc_list.ToriBot;
 import nro.models.services.shenron.SummonDragon;
 import static nro.models.services.shenron.SummonDragon.SHENRON_1_STAR_WISHES_1;
 import static nro.models.services.shenron.SummonDragon.SHENRON_1_STAR_WISHES_2;
+import static nro.models.services.shenron.SummonDragon.SHENRON_1_STAR_WISHES_3;
 import static nro.models.services.shenron.SummonDragon.SHENRON_SAY;
 import nro.models.services.shenron.SummonDragonNamek;
 import nro.models.shop_ky_gui.ConsignShopService;
@@ -325,11 +326,11 @@ public class NpcFactory {
                         }
                     case ConstNpc.SHENRON_1_2:
                         if (player.idMark.getIndexMenu() == ConstNpc.SHENRON_1_2 && select == SHENRON_1_STAR_WISHES_2.length - 1) {
-                            NpcService.gI().createMenuRongThieng(player, ConstNpc.SHENRON_1_1, SHENRON_SAY, SHENRON_1_STAR_WISHES_1);
+                            NpcService.gI().createMenuRongThieng(player, ConstNpc.SHENRON_1_3, SHENRON_SAY, SHENRON_1_STAR_WISHES_3);
                             break;
                         }
                     case ConstNpc.SHENRON_1_3:
-                        if (player.idMark.getIndexMenu() == ConstNpc.SHENRON_1_2 && select == SHENRON_1_STAR_WISHES_2.length - 1) {
+                        if (player.idMark.getIndexMenu() == ConstNpc.SHENRON_1_3 && select == SHENRON_1_STAR_WISHES_3.length - 1) {
                             NpcService.gI().createMenuRongThieng(player, ConstNpc.SHENRON_1_1, SHENRON_SAY, SHENRON_1_STAR_WISHES_1);
                             break;
                         }

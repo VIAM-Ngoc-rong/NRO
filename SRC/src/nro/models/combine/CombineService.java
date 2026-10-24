@@ -39,6 +39,7 @@ public class CombineService {
     public static final int DAP_DO_KICH_HOAT = 998;
     public static final int PHAN_RA_DO_SAO = 999;
     public static final int TINH_LUYEN_DA_NGU_SAC = 1000;
+    public static final int XOA_THUOC_TINH_SKH = 1001;
     public static final int NANG_CAP_SAO_PHA_LE = 100;
     public static final int DANH_BONG_SAO_PHA_LE = 101;
     public static final int CUONG_HOA_LO_SAO_PHA_LE = 102;
@@ -119,6 +120,12 @@ public class CombineService {
                 break;
             case TINH_LUYEN_DA_NGU_SAC:
                 TinhLuyenDaNguSac.showInfoCombine(player);
+                break;
+            case PHAN_RA_DO_THAN_LINH:
+                TaiCheDoThan.showInfoCombine(player);
+                break;
+            case XOA_THUOC_TINH_SKH:
+                XoaThuocTinhSKH.showInfoCombine(player);
                 break;
             case NHAP_NGOC_RONG:
                 NhapNgocRong.showInfoCombine(player);
@@ -210,6 +217,12 @@ public class CombineService {
                 break;
             case TINH_LUYEN_DA_NGU_SAC:
                 TinhLuyenDaNguSac.thucHienTinhLuyen(player);
+                break;
+            case PHAN_RA_DO_THAN_LINH:
+                TaiCheDoThan.thucHienTaiChe(player);
+                break;
+            case XOA_THUOC_TINH_SKH:
+                XoaThuocTinhSKH.thucHienXoaSKH(player);
                 break;
             case NHAP_NGOC_RONG:
                 NhapNgocRong.nhapNgocRong(player);
@@ -658,7 +671,9 @@ public class CombineService {
             case NANG_CAP_VAT_PHAM:
                 return "Ta sẽ phù phép cho trang bị của ngươi trở lên mạnh mẽ";
             case PHAN_RA_DO_THAN_LINH:
-                return "Ta sẽ phân rã \n  trang bị của người thành điểm!";
+                return "Ta sẽ phù phép\ntái chế Đồ Thần Linh thành Vàng,\nHồng Ngọc, Đá Ngũ Sắc & Thức Ăn";
+            case XOA_THUOC_TINH_SKH:
+                return "Ta sẽ phù phép\nxóa sạch thuộc tính SKH\ngiữ nguyên cấp [+] và Sao Pha Lê";
             case NANG_CAP_BONG_TAI:
                 return "Ta sẽ phù phép\ncho bông tai Porata của ngươi\nthành cấp 2";
             case NANG_CHI_SO_BONG_TAI:
@@ -727,8 +742,9 @@ public class CombineService {
                 return "vào hành trang\nChọn trang bị\n(Áo, quần, găng, giày hoặc rađa)\nChọn loại đá để nâng cấp\n"
                         + "Sau đó chọn 'Nâng cấp'";
             case PHAN_RA_DO_THAN_LINH:
-                return "vào hành trang\nChọn trang bị\n(Áo, quần, găng, giày hoặc rađa)\nChọn loại đá để phân rã\n"
-                        + "Sau đó chọn 'Phân Rã'";
+                return "Vào hành trang\nChọn 1 hoặc nhiều món Đồ Thần Linh cần tái chế\nNhận 200-400Tr Vàng, 50-100 Hồng Ngọc, 3-5 Đá Ngũ Sắc, 1-2 Khoáng Tái Chế và 10-20 Thức Ăn Hủy Diệt mỗi món";
+            case XOA_THUOC_TINH_SKH:
+                return "Vào hành trang\nChọn 1 trang bị đang có thuộc tính Set Kích Hoạt (SKH)\nCần 200 triệu vàng -> Xóa sạch dòng SKH, giữ nguyên cấp [+], chỉ số gốc và toàn bộ Sao Pha Lê";
             case CHE_TAO_TRANG_BI_THIEN_SU:
                 return "vào hành trang\nChọn 1 công thức và công thức Vip\nkèm 1 đá nâng, 1 đá may mắn\n và 999 mảnh thiên sứ\n "
                         + "Ta sẽ cho ra đồ thiên sứ từ 0-15% chỉ số\n"

@@ -58,11 +58,11 @@ public class SummonDragon {
             = "Ta sẽ ban cho người 1 điều ước, ngươi có 5 phút, hãy suy nghĩ thật kỹ trước khi quyết định";
 
     public static final String[] SHENRON_1_STAR_WISHES_1
-            = new String[]{"Giàu có\n+20 Tỷ\nVàng", "Găng tay\nđang mang\nlên 1 cấp", "Chí mạng\nGốc +2%",
-                "Thay\nChiêu 2-3\nĐệ tử", "Điều ước\nkhác"};
+            = new String[]{"Giàu có\n+20 Tỷ\nVàng", "Găng tay\nđang mang\nlên 1 cấp", "Quần\nđang mang\nlên 1 cấp",
+                "Chí mạng\nGốc +2%", "Thay\nChiêu 2-3\nĐệ tử", "Điều ước\nkhác"};
     public static final String[] SHENRON_1_STAR_WISHES_2
-            = new String[]{"Đẹp trai\nnhất\nVũ trụ", "Giàu có\n+20 Tỷ\nVàng", "+200 Tr\nSức mạnh\nvà tiềm\nnăng",
-                "Găng tay đệ\nđang mang\nlên 1 cấp",
+            = new String[]{"Đẹp trai\nnhất\nVũ trụ", "+200 Tr\nSức mạnh\nvà tiềm\nnăng",
+                "Găng tay đệ\nđang mang\nlên 1 cấp", "Quần đệ\nđang mang\nlên 1 cấp",
                 "Điều ước\nkhác"};
     public static final String[] SHENRON_1_STAR_WISHES_3
             = new String[]{"Quần\nđang mang\nlên 1 cấp", "Quần đệ\nđang mang\nlên 1 cấp",
@@ -329,7 +329,12 @@ public class SummonDragon {
                             return;
                         }
                         break;
-                    case 2: //chí mạng +2%
+                    case 2: //quần đang mang lên 1 cấp
+                        if (!upgradePants(false)) {
+                            return;
+                        }
+                        break;
+                    case 3: //chí mạng +2%
                         if (this.playerSummonShenron.nPoint.critdragon < 9) {
                             this.playerSummonShenron.nPoint.critdragon += 2;
                         } else {
@@ -338,7 +343,7 @@ public class SummonDragon {
                             return;
                         }
                         break;
-                    case 3: //thay chiêu 2-3 đệ tử
+                    case 4: //thay chiêu 2-3 đệ tử
                         if (playerSummonShenron.pet != null) {
                             if (playerSummonShenron.pet.playerSkill.skills.get(1).skillId != -1) {
                                 playerSummonShenron.pet.openSkill2();
@@ -375,14 +380,10 @@ public class SummonDragon {
                             return;
                         }
                         break;
-                    case 1: //+2 tỷ vàng
-                        this.playerSummonShenron.inventory.addGold(20_000_000_000L);
-                        PlayerService.gI().sendInfoHpMpMoney(this.playerSummonShenron);
-                        break;
-                    case 2: //+200 tr smtn
+                    case 1: //+200 tr smtn
                         Service.gI().addSMTN(this.playerSummonShenron, (byte) 2, 200000000, false);
                         break;
-                    case 3: //găng tay đệ lên 1 cấp
+                    case 2: //găng tay đệ lên 1 cấp
                         if (this.playerSummonShenron.pet != null) {
                             Item item = this.playerSummonShenron.pet.inventory.itemsBody.get(2);
                             if (item.isNotNullItem()) {
@@ -423,6 +424,25 @@ public class SummonDragon {
                             return;
                         }
                         break;
+                    case 3: //quần đệ đang mang lên 1 cấp
+                        if (!upgradePants(true)) {
+                            return;
+                        }
+                        break;
+                }
+                break;
+            case ConstNpc.SHENRON_1_3:
+                switch (this.select) {
+                    case 0: //quần đang mang lên 1 cấp
+                        if (!upgradePants(false)) {
+                            return;
+                        }
+                        break;
+                    case 1: //quần đệ đang mang lên 1 cấp
+                        if (!upgradePants(true)) {
+                            return;
+                        }
+                        break;
                 }
                 break;
             case ConstNpc.SHENRON_2:
@@ -457,6 +477,50 @@ public class SummonDragon {
                 break;
         }
         shenronLeave(this.playerSummonShenron, WISHED);
+    }
+
+    private boolean upgradePants(boolean isPet) {
+        if (isPet && this.playerSummonShenron.pet == null) {
+            Service.gI().sendThongBao(playerSummonShenron, "Ngươi đâu có đệ tử");
+            reOpenShenronWishes(playerSummonShenron);
+            return false;
+        }
+        Item item = isPet
+                ? this.playerSummonShenron.pet.inventory.itemsBody.get(1)
+                : this.playerSummonShenron.inventory.itemsBody.get(1);
+        if (item == null || !item.isNotNullItem()) {
+            Service.gI().sendThongBao(playerSummonShenron, (isPet ? "Đệ ngươi" : "Ngươi") + " hiện tại có mặc quần đâu");
+            reOpenShenronWishes(playerSummonShenron);
+            return false;
+        }
+        int level = 0;
+        for (ItemOption io : item.itemOptions) {
+            if (io.optionTemplate.id == 72) {
+                level = io.param;
+                if (level < 7) {
+                    io.param++;
+                }
+                break;
+            }
+        }
+        if (level >= 7) {
+            Service.gI().sendThongBao(playerSummonShenron, "Quần của " + (isPet ? "đệ ngươi" : "ngươi") + " đã đạt cấp tối đa");
+            reOpenShenronWishes(playerSummonShenron);
+            return false;
+        }
+        if (level == 0) {
+            item.itemOptions.add(new ItemOption(72, 1));
+        }
+        for (ItemOption io : item.itemOptions) {
+            if (io.optionTemplate.id == 6 || io.optionTemplate.id == 22 || io.optionTemplate.id == 27) {
+                io.param += Math.max(1, io.param * 10 / 100);
+            }
+        }
+        if (!isPet) {
+            InventoryService.gI().sendItemBody(playerSummonShenron);
+        }
+        Service.gI().point(playerSummonShenron);
+        return true;
     }
 
     public void showConfirmShenron(Player pl, int menu, byte select) {
