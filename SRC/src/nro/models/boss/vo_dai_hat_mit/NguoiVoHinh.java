@@ -64,7 +64,7 @@ public class NguoiVoHinh extends DeathOrAliveArena {
             if (plAtt != null && plAtt.idNRNM != -1) {
                 return 1;
             }
-            if (damage > this.nPoint.hpMax / 10) {
+            if (!piercing && damage > this.nPoint.hpMax / 10) {
                 damage = this.nPoint.hpMax / 10;
             }
 

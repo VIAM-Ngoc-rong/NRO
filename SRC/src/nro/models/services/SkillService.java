@@ -204,6 +204,9 @@ public class SkillService {
                     player.newSkill.stepSkillSpecial = 1;
                     newSkillNotFocus(player, 21);
                 } else if (player.newSkill.stepSkillSpecial == 1 && !Util.canDoWithTime(player.newSkill.lastTimeSkillSpecial, NewSkill.TIME_GONG)) {
+                    if (player.playerSkill != null && player.newSkill.skillSelect != null) {
+                        player.playerSkill.skillSelect = player.newSkill.skillSelect;
+                    }
                     List<Player> playersMap;
                     if (player.isBoss) {
                         playersMap = player.zone.getNotBosses();
@@ -914,7 +917,8 @@ public class SkillService {
                 dameAttack /= 3;
             }
         }
-        int dameHit = plInjure.injured(plAtt, miss ? 0 : dameAttack, false, false);
+        boolean isSpecialSkill = SkillUtil.isUseSkillSpecial(plAtt);
+        int dameHit = plInjure.injured(plAtt, miss ? 0 : dameAttack, isSpecialSkill, false);
         if (plAtt.playerSkill == null) {
             return;
         }

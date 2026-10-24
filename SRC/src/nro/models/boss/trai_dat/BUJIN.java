@@ -76,7 +76,9 @@ public class BUJIN extends Boss {
             if (plAtt != null && plAtt.idNRNM != -1) {
                 return 1;
             }
-            damage = Math.max(1, this.nPoint.hpMax / 100);
+            if (!piercing) {
+                damage = Math.max(1, this.nPoint.hpMax / 100);
+            }
             this.nPoint.subHP(damage);
             if (isDie()) {
                 this.setDie(plAtt);

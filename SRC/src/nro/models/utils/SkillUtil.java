@@ -90,6 +90,25 @@ public class SkillUtil {
         return (skillId == Skill.KAMEJOKO || skillId == Skill.MASENKO || skillId == Skill.ANTOMIC);
     }
 
+    public static boolean isUseSkillSpecial(Player player) {
+        if (player == null) {
+            return false;
+        }
+        if (player.newSkill != null && player.newSkill.isStartSkillSpecial
+                && player.newSkill.skillSelect != null && player.newSkill.skillSelect.template != null) {
+            int specialId = player.newSkill.skillSelect.template.id;
+            if (specialId == Skill.SUPER_KAME || specialId == Skill.LIEN_HOAN_CHUONG || specialId == Skill.MA_PHONG_BA) {
+                return true;
+            }
+        }
+        if (player.playerSkill != null && player.playerSkill.skillSelect != null
+                && player.playerSkill.skillSelect.template != null) {
+            int skillId = player.playerSkill.skillSelect.template.id;
+            return (skillId == Skill.SUPER_KAME || skillId == Skill.LIEN_HOAN_CHUONG || skillId == Skill.MA_PHONG_BA);
+        }
+        return false;
+    }
+
     public static int getTimeMonkey(int level) { //thời gian tồn tại khỉ v
         return (level + 5) * 10000;
     }

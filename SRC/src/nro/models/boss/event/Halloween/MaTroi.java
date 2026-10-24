@@ -49,7 +49,7 @@ public class MaTroi extends Boss {
                 }
                 damage = damage / 1;
             }
-            if (damage > this.nPoint.hpMax / 50) {
+            if (!piercing && damage > this.nPoint.hpMax / 50) {
                 damage = this.nPoint.hpMax / 50;
             }
             this.nPoint.subHP(damage);

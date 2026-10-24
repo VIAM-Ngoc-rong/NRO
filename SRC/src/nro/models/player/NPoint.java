@@ -1533,7 +1533,9 @@ public class NPoint {
         percentDameIntrinsic = 0;
         int percentDameSkill = 0;
         int percentXDame = 0;
-        Skill skillSelect = player.playerSkill.skillSelect;
+        Skill skillSelect = (player.newSkill != null && player.newSkill.isStartSkillSpecial && player.newSkill.skillSelect != null)
+                ? player.newSkill.skillSelect
+                : player.playerSkill.skillSelect;
         if (skillSelect.template.id != Skill.DICH_CHUYEN_TUC_THOI && isCritTele) {
             isCrit = true;
             isCritTele = false;

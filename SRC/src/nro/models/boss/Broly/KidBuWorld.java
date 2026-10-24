@@ -8,6 +8,7 @@ import nro.models.map.Zone;
 import nro.models.player.Player;
 import nro.models.services.TaskService;
 import nro.models.skill.Skill;
+import nro.models.utils.SkillUtil;
 import nro.models.utils.Util;
 
 public class KidBuWorld extends Boss {
@@ -67,7 +68,8 @@ public class KidBuWorld extends Boss {
             boolean isTuSat = plAtt != null && plAtt.playerSkill != null
                     && plAtt.playerSkill.skillSelect != null
                     && plAtt.playerSkill.skillSelect.template.id == Skill.TU_SAT;
-            if (!piercing && !isTuSat && this.nPoint.hpMax > 0) {
+            boolean isSpecialSkill = SkillUtil.isUseSkillSpecial(plAtt);
+            if (!piercing && !isTuSat && !isSpecialSkill && this.nPoint.hpMax > 0) {
                 long maxDamage = Math.max(1L, this.nPoint.hpMax * 5L / 100L);
                 if (damage > maxDamage) {
                     damage = maxDamage;

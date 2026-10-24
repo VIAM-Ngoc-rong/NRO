@@ -101,7 +101,8 @@ public class SieuBroly18h extends Boss {
             boolean isTuSat = plAtt != null && plAtt.playerSkill != null
                     && plAtt.playerSkill.skillSelect != null
                     && plAtt.playerSkill.skillSelect.template.id == Skill.TU_SAT;
-            if (!piercing && !isTuSat && this.nPoint.hpMax > 0) {
+            boolean isSpecialSkill = SkillUtil.isUseSkillSpecial(plAtt);
+            if (!piercing && !isTuSat && !isSpecialSkill && this.nPoint.hpMax > 0) {
                 double hpRatio = Math.max(0.0, Math.min(1.0, (double) this.nPoint.hp / (double) this.nPoint.hpMax));
                 double maxPercent = 0.001 + (0.004 * hpRatio); // 0.5% ở 100% HP giảm dần về 0.1% khi cạn máu
                 long maxDamage = Math.max(1L, (long) (this.nPoint.hpMax * maxPercent));
