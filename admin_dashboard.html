@@ -65,24 +65,24 @@
       background: var(--bg);
       color: var(--text);
       line-height: 1.5;
-      padding: 16px 20px;
+      padding: 10px 14px;
       transition: background 0.15s, color 0.15s;
       -webkit-font-smoothing: antialiased;
     }
-    .container { max-width: 1480px; margin: 0 auto; }
+    .container { width: 100%; max-width: 100%; margin: 0; }
 
     header {
       display: flex;
       flex-wrap: wrap;
       align-items: center;
       justify-content: space-between;
-      gap: 14px;
+      gap: 12px;
       background: var(--panel);
       border: 1px solid var(--border);
       box-shadow: var(--shadow);
-      padding: 14px 20px;
+      padding: 11px 16px;
       border-radius: 10px;
-      margin-bottom: 14px;
+      margin-bottom: 10px;
     }
     .brand { display: flex; align-items: center; gap: 12px; }
     .status-dot {
@@ -189,9 +189,14 @@
 
     .stats-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-      gap: 12px;
-      margin-bottom: 14px;
+      grid-template-columns: repeat(5, minmax(180px, 1fr));
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    @media (max-width: 1100px) {
+      .stats-grid {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      }
     }
     .stat-card {
       background: var(--panel);
@@ -213,9 +218,9 @@
       background: var(--panel);
       border: 1px solid var(--border);
       box-shadow: var(--shadow);
-      padding: 10px 14px;
+      padding: 9px 14px;
       border-radius: 10px;
-      margin-bottom: 16px;
+      margin-bottom: 10px;
       align-items: center;
     }
     .announce-box {
@@ -234,22 +239,48 @@
 
     .workspace-layout {
       display: flex;
-      gap: 16px;
-      align-items: flex-start;
+      gap: 12px;
+      align-items: stretch;
     }
     .tabs {
       display: flex;
       flex-direction: column;
       gap: 4px;
-      width: 245px;
+      width: 240px;
       flex-shrink: 0;
       position: sticky;
-      top: 14px;
+      top: 10px;
       background: var(--panel);
       border: 1px solid var(--border);
       box-shadow: var(--shadow);
-      padding: 8px;
+      padding: 10px;
       border-radius: 10px;
+    }
+    .sidebar-section {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .sidebar-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--muted);
+      padding: 0 4px;
+    }
+    .sidebar-grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5px;
+    }
+    .sidebar-grid-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 5px;
     }
     .tab-content-area {
       flex: 1;
@@ -326,7 +357,7 @@
       grid-template-columns: repeat(auto-fit, minmax(430px, 1fr));
       gap: 16px;
     }
-    .table-wrap { overflow-x: auto; max-height: 620px; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px; }
+    .table-wrap { overflow-x: auto; max-height: calc(100vh - 245px); min-height: 500px; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px; }
     table {
       width: 100%;
       border-collapse: collapse;
@@ -562,6 +593,37 @@
         <button id="tabBtnSystem" class="tab-btn" onclick="switchTab('system')">
           <span>6. Hệ Thống & BXH</span>
         </button>
+
+        <div class="sidebar-section">
+          <div class="sidebar-label">Công cụ Nhân Vật</div>
+          <button class="btn-muted btn-sm" style="width:100%;justify-content:flex-start;" onclick="openTaskModal('', 0, 0, 0, 0)">⏭ Nhảy Nhiệm Vụ</button>
+          <button class="btn-muted btn-sm" style="width:100%;justify-content:flex-start;" onclick="openIntrinsicModal('', 0, 0, -1, 0, 0)">⚡ Buff Nội Tại</button>
+          <button class="btn-muted btn-sm" style="width:100%;justify-content:flex-start;" onclick="openGiftModal('', 'Người chơi')">🎁 Trao Quà / Vật Phẩm</button>
+        </div>
+
+        <div class="sidebar-section">
+          <div class="sidebar-label">Đổi nhanh EXP Server</div>
+          <div class="sidebar-grid-3">
+            <button class="btn-muted btn-sm" onclick="quickSetExp(1)">x1</button>
+            <button class="btn-muted btn-sm" onclick="quickSetExp(2)">x2</button>
+            <button class="btn-muted btn-sm" onclick="quickSetExp(3)">x3</button>
+            <button class="btn-muted btn-sm" onclick="quickSetExp(5)">x5</button>
+            <button class="btn-muted btn-sm" onclick="quickSetExp(10)">x10</button>
+            <button class="btn-muted btn-sm" onclick="quickSetExp(20)">x20</button>
+          </div>
+        </div>
+
+        <div class="sidebar-section">
+          <div class="sidebar-label">Điều khiển Bot & Boss</div>
+          <div class="sidebar-grid-2">
+            <button class="btn-muted btn-sm" onclick="spawnBots(0)">+Bot Quái</button>
+            <button class="btn-muted btn-sm" onclick="spawnBots(2)">+Bot Boss</button>
+          </div>
+          <div class="sidebar-grid-2">
+            <button class="btn-muted btn-sm" onclick="spawnAllBosses()">Gọi All Boss</button>
+            <button class="btn-danger btn-sm" onclick="clearAllBots()">Xóa Bot</button>
+          </div>
+        </div>
       </div>
 
       <div class="tab-content-area">
