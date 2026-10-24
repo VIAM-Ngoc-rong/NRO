@@ -76,8 +76,8 @@ public class Boss extends Player implements IBoss {
 
     protected Zone lastZone;
 
-    protected long lastTimeRest;
-    protected int secondsRest;
+    public long lastTimeRest;
+    public int secondsRest;
 
     protected long lastTimeChatS;
     protected int timeChatS;
@@ -94,7 +94,7 @@ public class Boss extends Player implements IBoss {
     protected int timeTargetPlayer;
     protected Player playerTarger;
 
-    protected Boss parentBoss;
+    public Boss parentBoss;
     public Boss[][] bossAppearTogether;
 
     public Zone zoneFinal = null;

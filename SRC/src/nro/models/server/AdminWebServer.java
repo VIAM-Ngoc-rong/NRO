@@ -300,6 +300,14 @@ public class AdminWebServer {
             int mapId = (alive && b.zone.map != null) ? b.zone.map.mapId : -1;
             int zoneId = alive ? b.zone.zoneId : -1;
             String statusStr = b.bossStatus != null ? b.bossStatus.name() : "REST";
+            long nowMs = System.currentTimeMillis();
+            long spawnTimeMs = (alive && b.lastTimeSpawnOnMap > 0) ? b.lastTimeSpawnOnMap : 0L;
+            long aliveSec = spawnTimeMs > 0 ? Math.max(0L, (nowMs - spawnTimeMs) / 1000L) : 0L;
+            Boss restRef = (b.parentBoss != null && b.secondsRest <= 0) ? b.parentBoss : b;
+            int secondsRest = restRef.secondsRest;
+            long lastRestMs = restRef.lastTimeRest;
+            long respawnRemainSec = (!alive && secondsRest > 0 && lastRestMs > 0)
+                    ? Math.max(0L, (lastRestMs + secondsRest * 1000L - nowMs) / 1000L) : 0L;
 
             sb.append("{");
             sb.append("\"index\":").append(i);
@@ -312,6 +320,11 @@ public class AdminWebServer {
             sb.append(",\"mapId\":").append(mapId);
             sb.append(",\"zoneId\":").append(zoneId);
             sb.append(",\"status\":").append(jsonStr(statusStr));
+            sb.append(",\"spawnTimeMs\":").append(spawnTimeMs);
+            sb.append(",\"aliveSec\":").append(aliveSec);
+            sb.append(",\"respawnRemainSec\":").append(respawnRemainSec);
+            sb.append(",\"secondsRest\":").append(secondsRest);
+            sb.append(",\"hasParent\":").append(b.parentBoss != null);
             sb.append("}");
         }
         sb.append("]");
