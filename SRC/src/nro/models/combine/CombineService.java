@@ -648,7 +648,7 @@ public class CombineService {
             case TAI_TAO_CAPSULE_KH:
                 return "Ta sẽ phù phép\ntái tạo thành 1 viên\nCapsule kích hoạt tự chọn";
             case DAP_DO_KICH_HOAT:
-                return "Ta sẽ phù phép\n3 món đồ Kích Hoạt\nthành 1 món đồ Kích Hoạt mới";
+                return "Ta sẽ phù phép\n3 món đồ Kích Hoạt + 1 Đồ Phôi\nthành 1 món đồ Kích Hoạt theo Phôi";
             case PHAN_RA_DO_SAO:
                 return "Ta sẽ phù phép\nphân rã Đồ Sao nhận Đá Ngũ Sắc,\nVàng, Hồng Ngọc, SPL & Hematite";
             case TINH_LUYEN_DA_NGU_SAC:
@@ -712,7 +712,7 @@ public class CombineService {
             case TAI_TAO_CAPSULE_KH:
                 return "Vào hành trang\nChọn 3 khoáng tái chế\nChọn 1 Capsule vỡ\nSau đó chọn 'Tái tạo'";
             case DAP_DO_KICH_HOAT:
-                return "Vào hành trang\nChọn 3 món đồ Kích Hoạt bất kỳ\nCần 100 triệu vàng\nĐập ra đồ Kích Hoạt mới (từ 200tr SM đến Đồ Thần Linh)";
+                return "Vào hành trang\nChọn 3 món đồ Kích Hoạt bất kỳ\nChọn thêm 1 món Đồ Phôi (VD: Găng Thần Linh)\nCần 100 triệu vàng -> Ra đúng món Đồ Phôi có SKH bất kỳ";
             case PHAN_RA_DO_SAO:
                 return "Vào hành trang\nChọn 1 hoặc nhiều trang bị có Sao Pha Lê (1s - 9s)\nPhân rã miễn phí nhận Đá Ngũ Sắc, Vàng, Hồng Ngọc, Sao Pha Lê, Đá Hematite và Capsule Kích Hoạt";
             case TINH_LUYEN_DA_NGU_SAC:

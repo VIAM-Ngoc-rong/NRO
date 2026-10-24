@@ -76,6 +76,11 @@ public class MrBlue {
                 session.vnd = rs.getInt("vnd");
                 session.tongnap = rs.getInt("tongnap");
                 session.vip = rs.getInt("vip");
+                try {
+                    session.ruongSkh = rs.getInt("ruong_skh");
+                } catch (Exception ignored) {
+                    session.ruongSkh = 5;
+                }
                 long lastTimeLogin = rs.getTimestamp("last_time_login").getTime();
                 int secondsPass1 = (int) ((System.currentTimeMillis() - lastTimeLogin) / 1000);
                 long lastTimeLogout = rs.getTimestamp("last_time_logout").getTime();

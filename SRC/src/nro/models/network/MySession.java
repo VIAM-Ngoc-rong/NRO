@@ -62,6 +62,7 @@ public class MySession extends Session {
     public int tongnap;
     public int vip;
     public int luotquay;
+    public int ruongSkh = 5;
 
     public boolean finishUpdate;
 

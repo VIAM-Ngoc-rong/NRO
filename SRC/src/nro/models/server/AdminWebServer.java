@@ -219,6 +219,7 @@ public class AdminWebServer {
             int zoneId = (pl.zone != null) ? pl.zone.zoneId : -1;
             String genderName = pl.gender == 0 ? "Trái Đất" : (pl.gender == 1 ? "Namek" : "Xayda");
             int vnd = pl.getSession() != null ? pl.getSession().vnd : 0;
+            int ruongSkh = pl.getSession() != null ? pl.getSession().ruongSkh : 5;
             int inId = (pl.playerIntrinsic != null && pl.playerIntrinsic.intrinsic != null) ? pl.playerIntrinsic.intrinsic.id : 0;
             int inP1 = (pl.playerIntrinsic != null && pl.playerIntrinsic.intrinsic != null) ? pl.playerIntrinsic.intrinsic.param1 : 0;
             int inP2 = (pl.playerIntrinsic != null && pl.playerIntrinsic.intrinsic != null) ? pl.playerIntrinsic.intrinsic.param2 : 0;
@@ -239,6 +240,7 @@ public class AdminWebServer {
             sb.append(",\"gem\":").append(pl.inventory.gem);
             sb.append(",\"ruby\":").append(pl.inventory.ruby);
             sb.append(",\"vnd\":").append(vnd);
+            sb.append(",\"ruongSkh\":").append(ruongSkh);
             sb.append(",\"mapName\":").append(jsonStr(mapName));
             sb.append(",\"mapId\":").append(mapId);
             sb.append(",\"zoneId\":").append(zoneId);
@@ -337,7 +339,7 @@ public class AdminWebServer {
         StringBuilder sb = new StringBuilder(8192);
         sb.append("{\"ok\":true,\"accounts\":[");
 
-        String sql = "SELECT a.id AS acc_id, a.username, a.password, a.is_admin, a.ban, a.active, a.vnd, a.tongnap, a.last_time_login, "
+        String sql = "SELECT a.*, "
                 + "p.id AS player_id, p.name AS player_name, p.gender, p.data_inventory, p.data_point, p.data_intrinsic "
                 + "FROM account a LEFT JOIN player p ON p.account_id = a.id ";
         if (!q.isEmpty()) {
@@ -367,7 +369,7 @@ public class AdminWebServer {
                             sb.append(",");
                         }
                         first = false;
-                        int accId = rs.getInt("acc_id");
+                        int accId = rs.getInt("id");
                         String username = rs.getString("username");
                         String password = rs.getString("password");
                         boolean isAdmin = rs.getBoolean("is_admin");
@@ -375,6 +377,11 @@ public class AdminWebServer {
                         boolean active = rs.getBoolean("active");
                         int vnd = rs.getInt("vnd");
                         int tongnap = rs.getInt("tongnap");
+                        int ruongSkh = 5;
+                        try {
+                            ruongSkh = rs.getInt("ruong_skh");
+                        } catch (Exception ignored) {
+                        }
                         String lastLogin = rs.getString("last_time_login");
                         long playerId = rs.getLong("player_id");
                         String playerName = rs.getString("player_name");
@@ -393,6 +400,7 @@ public class AdminWebServer {
                             power = livePl.nPoint.power;
                             if (livePl.getSession() != null) {
                                 vnd = livePl.getSession().vnd;
+                                ruongSkh = livePl.getSession().ruongSkh;
                             }
                             if (livePl.playerIntrinsic != null && livePl.playerIntrinsic.intrinsic != null) {
                                 inId = livePl.playerIntrinsic.intrinsic.id;
@@ -450,6 +458,7 @@ public class AdminWebServer {
                         sb.append(",\"active\":").append(active);
                         sb.append(",\"vnd\":").append(vnd);
                         sb.append(",\"tongnap\":").append(tongnap);
+                        sb.append(",\"ruongSkh\":").append(ruongSkh);
                         sb.append(",\"lastLogin\":").append(jsonStr(lastLogin != null ? lastLogin : ""));
                         sb.append(",\"playerId\":").append(playerId);
                         sb.append(",\"playerName\":").append(jsonStr(playerName != null ? playerName : "(Chưa tạo nhân vật)"));
@@ -743,6 +752,7 @@ public class AdminWebServer {
                     int intrinsicId = (int) parseLongSafe(params.get("intrinsicId"), 0);
                     int intrinsicParam1 = (int) parseLongSafe(params.get("intrinsicParam1"), 0);
                     int intrinsicParam2 = (int) parseLongSafe(params.get("intrinsicParam2"), 0);
+                    int ruongSkh = (int) parseLongSafe(params.get("ruongSkh"), 0);
 
                     List<Player> recipients = new ArrayList<>();
                     if ("ALL".equalsIgnoreCase(target)) {
@@ -794,6 +804,17 @@ public class AdminWebServer {
                             pl.inventory.ruby = (int) Math.min(Integer.MAX_VALUE, (long) pl.inventory.ruby + ruby);
                             given.append(" +").append(ruby).append(" Hồng Ngọc");
                         }
+                        if (ruongSkh > 0 && pl.getSession() != null) {
+                            try (Connection con = LocalManager.getConnection();
+                                 PreparedStatement ps = con.prepareStatement("UPDATE account SET ruong_skh = GREATEST(0, ruong_skh + ?) WHERE id = ?")) {
+                                ps.setInt(1, ruongSkh);
+                                ps.setInt(2, pl.getSession().userId);
+                                ps.executeUpdate();
+                            } catch (Exception ignored) {
+                            }
+                            pl.getSession().ruongSkh = Math.max(0, pl.getSession().ruongSkh + ruongSkh);
+                            given.append(" +").append(ruongSkh).append(" Rương SKH (Hiện có: ").append(pl.getSession().ruongSkh).append(")");
+                        }
                         if (itemId > 0) {
                             Item item = ItemService.gI().createNewItem((short) itemId, quantity);
                             if (item != null && item.template != null) {
@@ -836,6 +857,115 @@ public class AdminWebServer {
                             ? ("Tất cả " + recipients.size() + " người chơi Online")
                             : recipients.get(0).name;
                     sendJson(exchange, 200, "{\"ok\":true,\"message\":" + jsonStr("Đã trao cho [" + targetLabel + "]:" + givenDesc) + "}");
+                }
+                case "give_skh_box" -> {
+                    String target = params.getOrDefault("playerTarget", params.getOrDefault("playerId", "")).trim();
+                    int accId = (int) parseLongSafe(params.get("accId"), -1);
+                    int addCount = (int) parseLongSafe(params.get("count"), 5);
+                    if (addCount == 0) {
+                        sendJson(exchange, 400, "{\"ok\":false,\"message\":\"Số lượng Rương SKH phải khác 0!\"}");
+                        return;
+                    }
+
+                    if ("ALL".equalsIgnoreCase(target)) {
+                        int count = 0;
+                        try (Connection con = LocalManager.getConnection();
+                             PreparedStatement ps = con.prepareStatement("UPDATE account SET ruong_skh = GREATEST(0, ruong_skh + ?) WHERE id = ?")) {
+                            for (Player p : new ArrayList<>(Client.gI().getPlayers())) {
+                                if (p != null && !p.isBot && p.getSession() != null) {
+                                    ps.setInt(1, addCount);
+                                    ps.setInt(2, p.getSession().userId);
+                                    ps.addBatch();
+                                    p.getSession().ruongSkh = Math.max(0, p.getSession().ruongSkh + addCount);
+                                    Service.gI().sendThongBao(p, "Admin vừa tặng bạn +" + addCount + " Rương SKH! (Hiện có: " + p.getSession().ruongSkh + " rương tại Ông Gohan/Moori/Paragus)");
+                                    count++;
+                                }
+                            }
+                            if (count > 0) {
+                                ps.executeBatch();
+                            }
+                        }
+                        if (count == 0) {
+                            sendJson(exchange, 404, "{\"ok\":false,\"message\":\"Hiện không có người chơi nào đang Online!\"}");
+                            return;
+                        }
+                        sendJson(exchange, 200, "{\"ok\":true,\"message\":" + jsonStr("Đã tặng +" + addCount + " Rương SKH cho toàn bộ " + count + " người chơi đang Online!") + "}");
+                        return;
+                    }
+
+                    Player livePl = null;
+                    if (accId > 0) {
+                        livePl = Client.gI().getPlayerByUser(accId);
+                    }
+                    if (livePl == null && !target.isEmpty()) {
+                        long pid = parseLongSafe(target, -1);
+                        if (pid > 0) {
+                            livePl = Client.gI().getPlayer(pid);
+                        }
+                        if (livePl == null) {
+                            livePl = Client.gI().getPlayer(target);
+                        }
+                        if (livePl == null) {
+                            for (Player p : new ArrayList<>(Client.gI().getPlayers())) {
+                                if (p != null && p.name != null && p.name.equalsIgnoreCase(target)) {
+                                    livePl = p;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    if (livePl != null && livePl.getSession() != null) {
+                        accId = livePl.getSession().userId;
+                    }
+
+                    int updatedRows = 0;
+                    int newTotal = 0;
+                    try (Connection con = LocalManager.getConnection()) {
+                        if (accId <= 0 && !target.isEmpty()) {
+                            long pid = parseLongSafe(target, -1);
+                            String findSql = pid > 0
+                                    ? "SELECT account_id FROM player WHERE id = ? LIMIT 1"
+                                    : "SELECT account_id FROM player WHERE LOWER(name) = LOWER(?) LIMIT 1";
+                            try (PreparedStatement psFind = con.prepareStatement(findSql)) {
+                                if (pid > 0) {
+                                    psFind.setLong(1, pid);
+                                } else {
+                                    psFind.setString(1, target);
+                                }
+                                try (ResultSet rs = psFind.executeQuery()) {
+                                    if (rs.next()) {
+                                        accId = rs.getInt("account_id");
+                                    }
+                                }
+                            }
+                        }
+                        if (accId > 0) {
+                            try (PreparedStatement ps = con.prepareStatement("UPDATE account SET ruong_skh = GREATEST(0, ruong_skh + ?) WHERE id = ?")) {
+                                ps.setInt(1, addCount);
+                                ps.setInt(2, accId);
+                                updatedRows = ps.executeUpdate();
+                            }
+                            try (PreparedStatement psGet = con.prepareStatement("SELECT ruong_skh FROM account WHERE id = ? LIMIT 1")) {
+                                psGet.setInt(1, accId);
+                                try (ResultSet rs = psGet.executeQuery()) {
+                                    if (rs.next()) {
+                                        newTotal = rs.getInt("ruong_skh");
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    if (livePl != null && livePl.getSession() != null) {
+                        livePl.getSession().ruongSkh = newTotal;
+                        Service.gI().sendThongBao(livePl, "Admin vừa tặng bạn " + (addCount >= 0 ? "+" : "") + addCount + " Rương SKH! (Hiện có: " + newTotal + " rương tại Ông Gohan/Moori/Paragus)");
+                        sendJson(exchange, 200, "{\"ok\":true,\"message\":" + jsonStr("Đã tặng " + (addCount >= 0 ? "+" : "") + addCount + " Rương SKH cho " + livePl.name + " (Hiện có: " + newTotal + " rương)!") + "}");
+                    } else if (updatedRows > 0) {
+                        sendJson(exchange, 200, "{\"ok\":true,\"message\":" + jsonStr("Đã cộng " + (addCount >= 0 ? "+" : "") + addCount + " Rương SKH vào Database cho [" + (target.isEmpty() ? ("TK #" + accId) : target) + "] (Hiện có: " + newTotal + " rương)!") + "}");
+                    } else {
+                        sendJson(exchange, 404, "{\"ok\":false,\"message\":" + jsonStr("Không tìm thấy nhân vật hoặc tài khoản [" + target + "]!") + "}");
+                    }
                 }
                 case "set_intrinsic" -> {
                     String target = params.getOrDefault("playerTarget", params.getOrDefault("playerId", "")).trim();
@@ -1055,6 +1185,7 @@ public class AdminWebServer {
                     }
                     int addVnd = (int) parseLongSafe(params.get("addVnd"), 0);
                     int addTongnap = (int) parseLongSafe(params.get("addTongnap"), 0);
+                    int addRuongSkh = (int) parseLongSafe(params.get("addRuongSkh"), 0);
                     String newPass = params.getOrDefault("password", "").trim();
                     int active = (int) parseLongSafe(params.get("active"), -1);
                     int ban = (int) parseLongSafe(params.get("ban"), -1);
@@ -1066,6 +1197,13 @@ public class AdminWebServer {
                                 ps.setInt(1, addVnd);
                                 ps.setInt(2, addTongnap);
                                 ps.setInt(3, accId);
+                                ps.executeUpdate();
+                            }
+                        }
+                        if (addRuongSkh != 0) {
+                            try (PreparedStatement ps = con.prepareStatement("UPDATE account SET ruong_skh = GREATEST(0, ruong_skh + ?) WHERE id = ?")) {
+                                ps.setInt(1, addRuongSkh);
+                                ps.setInt(2, accId);
                                 ps.executeUpdate();
                             }
                         }
@@ -1108,6 +1246,10 @@ public class AdminWebServer {
                         }
                         if (addTongnap != 0) {
                             livePl.getSession().tongnap = Math.max(0, livePl.getSession().tongnap + addTongnap);
+                        }
+                        if (addRuongSkh != 0) {
+                            livePl.getSession().ruongSkh = Math.max(0, livePl.getSession().ruongSkh + addRuongSkh);
+                            Service.gI().sendThongBao(livePl, "Admin vừa cộng " + (addRuongSkh > 0 ? "+" : "") + addRuongSkh + " Rương SKH vào tài khoản của bạn! (Hiện có: " + livePl.getSession().ruongSkh + " rương)");
                         }
                         if (active == 0 || active == 1) {
                             livePl.getSession().actived = (active == 1);

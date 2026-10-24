@@ -34,7 +34,7 @@ public class AchievementService {
             for (int i = 0; i < Manager.ACHIEVEMENT_TEMPLATE.size(); i++) {
                 AchievementTemplate at = Manager.ACHIEVEMENT_TEMPLATE.get(i);
                 msg.writer().writeUTF(at.info1); // info 1
-                msg.writer().writeUTF(regex(player, at.info2) + " (" + numberToString(player.achievement.getCompleted(i)) + "/" + numberToString(at.maxCount) + ")"); // info 2
+                msg.writer().writeUTF(regex(player, at.info2) + " (" + numberToString(player.achievement.getCompleted(i)) + "/" + numberToString(at.maxCount) + ") [Thưởng: " + at.money + " Thỏi vàng]"); // info 2
                 msg.writer().writeShort(at.money); // money
                 msg.writer().writeBoolean(player.achievement.isFinish(i, at.maxCount));// isFinish
                 msg.writer().writeBoolean(player.achievement.isRecieve(i)); // isRecieve
@@ -49,16 +49,21 @@ public class AchievementService {
     }
 
     public void confirmAchievement(Player player, byte select) {
-        if (player.achievement == null) {
+        if (player.achievement == null || select < 0 || select >= Manager.ACHIEVEMENT_TEMPLATE.size()) {
+            return;
+        }
+        AchievementTemplate at = Manager.ACHIEVEMENT_TEMPLATE.get(select);
+        if (!player.achievement.isFinish(select, at.maxCount) || player.achievement.isRecieve(select)) {
             return;
         }
         if (InventoryService.gI().getCountEmptyBag(player) > 0) {
-            int money = Manager.ACHIEVEMENT_TEMPLATE.get(select).money;
+            int money = at.money;
             player.achievement.reward(select);
-            player.inventory.gem += money;
+            nro.models.item.Item thoiVang = ItemService.gI().createNewItem((short) 457, money);
+            InventoryService.gI().addItemBag(player, thoiVang);
             InventoryService.gI().sendItemBags(player);
             Service.gI().sendMoney(player);
-            Service.gI().sendThongBao(player, "Bạn vừa nhận được " + money + " ngọc.");
+            Service.gI().sendThongBao(player, "Bạn vừa nhận được x" + money + " Thỏi vàng từ Thành tích Bò Mộng!");
         } else {
             Service.gI().sendThongBao(player, "Cần tối thiểu 1 ô trống hành trang để nhận thưởng");
             return;

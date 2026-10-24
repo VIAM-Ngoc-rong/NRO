@@ -710,10 +710,14 @@
           <input type="number" id="giftGem" value="0" min="0" step="100" />
         </div>
       </div>
-      <div class="grid-2" style="grid-template-columns: 1fr 1fr; gap: 10px;">
+      <div class="grid-2" style="grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
         <div class="form-group">
           <label>Cộng thêm Hồng Ngọc:</label>
           <input type="number" id="giftRuby" value="0" min="0" step="100" />
+        </div>
+        <div class="form-group">
+          <label style="color: var(--purple); font-weight: 700;">🎁 Tặng Rương SKH:</label>
+          <input type="number" id="giftRuongSkh" value="0" min="0" step="1" title="Số Rương SKH cộng thêm (Mở tại Ông Gohan/Moori/Paragus)" />
         </div>
         <div class="form-group">
           <label>Số lượng Vật Phẩm:</label>
@@ -760,14 +764,18 @@
     <div class="modal">
       <h3 id="accModalTitle">Chỉnh Sửa Tài Khoản</h3>
       <input type="hidden" id="editAccId" />
-      <div class="grid-2" style="grid-template-columns: 1fr 1fr; gap: 10px;">
+      <div class="grid-2" style="grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
         <div class="form-group">
-          <label>Cộng / Trừ thêm VNĐ (Nhập số âm để trừ):</label>
+          <label>Cộng / Trừ thêm VNĐ:</label>
           <input type="number" id="editAccAddVnd" value="0" step="10000" />
         </div>
         <div class="form-group">
-          <label>Cộng / Trừ thêm Tổng Nạp:</label>
+          <label>Cộng / Trừ Tổng Nạp:</label>
           <input type="number" id="editAccAddTongnap" value="0" step="10000" />
+        </div>
+        <div class="form-group">
+          <label style="color: var(--purple); font-weight: 700;">🎁 Cộng / Trừ Rương SKH:</label>
+          <input type="number" id="editAccAddRuongSkh" value="0" step="1" />
         </div>
       </div>
       <div class="form-group">
@@ -1123,12 +1131,14 @@
           </td>
           <td>
             <span class="text-gold">${formatNum(p.gold)} Vàng</span><br/>
-            <span class="text-gem">${formatNum(p.gem)} Ngọc</span> • <span class="text-ruby">${formatNum(p.ruby)} HN</span> • <span class="text-vnd">${formatNum(p.vnd)}đ</span>
+            <span class="text-gem">${formatNum(p.gem)} Ngọc</span> • <span class="text-ruby">${formatNum(p.ruby)} HN</span> • <span class="text-vnd">${formatNum(p.vnd)}đ</span><br/>
+            <span style="font-size:11.5px;color:var(--purple);font-weight:700;">🎁 Rương SKH: ${formatNum(p.ruongSkh ?? 5)}</span>
           </td>
           <td><b>${escapeHtml(p.mapName)}</b> <span class="badge badge-alive">Khu ${p.zoneId}</span></td>
           <td>${p.hasPet ? `Có (${formatNum(p.petPower)})` : '<span style="color:var(--muted)">Không</span>'}</td>
           <td style="display:flex;gap:5px;flex-wrap:wrap;">
             <button class="btn-success btn-sm" onclick="openGiftModal(${p.id}, '${escapeJs(p.name)}')">Trao Quà</button>
+            <button class="btn-teal btn-sm" onclick="promptGiveSkhBox('${escapeJs(p.name)}', ${p.id}, 0, ${p.ruongSkh ?? 5})">🎁 +Rương SKH</button>
             <button class="btn-warning btn-sm" onclick="openIntrinsicModal('${escapeJs(p.name)}', ${p.id}, 0, ${p.genderId ?? -1}, ${p.intrinsicId || 0}, ${p.intrinsicParam1 || 0})">⚡ Nội Tại</button>
             <button class="btn-purple btn-sm" onclick="inspectPlayer(${p.id})">Xem Đồ</button>
             <button class="btn-sm" onclick="healPlayer(${p.id})">Hồi HP/KI</button>
@@ -1179,10 +1189,12 @@
             <td class="text-power">${formatNum(a.power)}</td>
             <td>
               <span class="text-gold">${formatNum(a.gold)} Vàng</span><br/>
-              <span class="text-gem">${formatNum(a.gem)} Ngọc</span> • <span class="text-ruby">${formatNum(a.ruby)} HN</span>
+              <span class="text-gem">${formatNum(a.gem)} Ngọc</span> • <span class="text-ruby">${formatNum(a.ruby)} HN</span><br/>
+              <span style="font-size:11.5px;color:var(--purple);font-weight:700;">🎁 Rương SKH: ${formatNum(a.ruongSkh ?? 5)}</span>
             </td>
             <td style="display:flex;gap:5px;flex-wrap:wrap;">
               <button class="btn-sm" onclick="openEditAccount(${a.accId})">Cộng VNĐ / Sửa</button>
+              <button class="btn-teal btn-sm" onclick="promptGiveSkhBox('${escapeJs(a.playerName)}', ${a.playerId || 0}, ${a.accId}, ${a.ruongSkh ?? 5})">🎁 +Rương SKH</button>
               ${a.playerId > 0 ? `<button class="btn-warning btn-sm" onclick="openIntrinsicModal('${escapeJs(a.playerName)}', ${a.playerId}, ${a.accId}, ${a.genderId ?? -1}, ${a.intrinsicId || 0}, ${a.intrinsicParam1 || 0})">⚡ Nội Tại</button>` : ''}
               ${!a.active ? `<button class="btn-success btn-sm" onclick="quickToggleAccount(${a.accId}, 'active', 1)">Mở TV</button>` : ''}
               ${a.online && a.playerId > 0 ? `<button class="btn-purple btn-sm" onclick="openGiftModal(${a.playerId}, '${escapeJs(a.playerName)}')">Tặng Đồ</button>` : ''}
@@ -1202,6 +1214,7 @@
       document.getElementById('accModalTitle').textContent = `Quản Lý Tài Khoản: ${a.username} (${a.playerName})`;
       document.getElementById('editAccAddVnd').value = 0;
       document.getElementById('editAccAddTongnap').value = 0;
+      document.getElementById('editAccAddRuongSkh').value = 0;
       document.getElementById('editAccPassword').value = '';
       document.getElementById('editAccActive').value = a.active ? '1' : '0';
       document.getElementById('editAccAdmin').value = a.isAdmin ? '1' : '0';
@@ -1216,6 +1229,7 @@
         accId,
         addVnd: document.getElementById('editAccAddVnd').value,
         addTongnap: document.getElementById('editAccAddTongnap').value,
+        addRuongSkh: document.getElementById('editAccAddRuongSkh').value,
         password: document.getElementById('editAccPassword').value,
         active: document.getElementById('editAccActive').value,
         isAdmin: document.getElementById('editAccAdmin').value,
@@ -1636,11 +1650,37 @@
       document.getElementById('giftGold').value = 0;
       document.getElementById('giftGem').value = 0;
       document.getElementById('giftRuby').value = 0;
+      if (document.getElementById('giftRuongSkh')) document.getElementById('giftRuongSkh').value = 0;
       document.getElementById('giftItemId').value = 0;
       document.getElementById('giftQuantity').value = 1;
       document.getElementById('giftOptions').value = '';
       document.getElementById('giftIntrinsicParam1').value = 150;
       document.getElementById('giftModal').classList.add('show');
+    }
+
+    async function promptGiveSkhBox(playerName, playerId, accId, currentSkh) {
+      const label = playerName && !playerName.includes('Chưa tạo') ? playerName : (`Tài khoản #${accId}`);
+      const val = prompt(`🎁 Nhập số lượng Rương SKH muốn tặng thêm cho [${label}] (Hiện có: ${currentSkh ?? 5} rương):\n(Nhập số âm nếu muốn trừ bớt Rương SKH)`, '5');
+      if (val === null || val.trim() === '') return;
+      const count = parseInt(val.trim(), 10);
+      if (isNaN(count) || count === 0) {
+        showToast('Vui lòng nhập số lượng Rương SKH khác 0!', true);
+        return;
+      }
+      const res = await postAction({
+        action: 'give_skh_box',
+        playerTarget: playerId > 0 ? String(playerId) : (playerName || ''),
+        playerId: playerId > 0 ? String(playerId) : '',
+        accId: accId || 0,
+        count
+      });
+      showToast(res.message, !res.ok);
+      if (res.ok) {
+        fetchStatus();
+        if (currentTab === 'accounts') {
+          loadAccountsDb();
+        }
+      }
     }
 
     function closeGiftModal() {
@@ -1793,6 +1833,7 @@
         gold: document.getElementById('giftGold').value,
         gem: document.getElementById('giftGem').value,
         ruby: document.getElementById('giftRuby').value,
+        ruongSkh: document.getElementById('giftRuongSkh')?.value || 0,
         itemId: document.getElementById('giftItemId').value,
         quantity: document.getElementById('giftQuantity').value,
         options: document.getElementById('giftOptions').value.trim(),

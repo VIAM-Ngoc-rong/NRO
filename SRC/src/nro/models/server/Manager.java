@@ -637,6 +637,47 @@ public final class Manager {
             }
             Logger.success(Logger.RED + "Successfully loaded clan task (" + CLAN_TASKS_TEMPLATE.size() + ")\n");
 
+            // Auto-migrate account.ruong_skh (Mặc định mỗi người chơi có 5 Rương SKH)
+            try (PreparedStatement psAlterSkh = ConnectionDatabase.prepareStatement(
+                    "ALTER TABLE account ADD COLUMN ruong_skh INT NOT NULL DEFAULT 5")) {
+                psAlterSkh.executeUpdate();
+            } catch (Exception ignored) {
+            }
+
+            // Điều chỉnh phần thưởng Thành Tích Bò Mộng hợp lý (Thưởng bằng Thỏi Vàng)
+            int[][] balancedAchievements = {
+                {1, 5},    // Gia nhập Vệ Binh (340k SM) -> 5 Thỏi vàng
+                {2, 10},   // Sức mạnh siêu cấp (1.5Tr SM) -> 10 Thỏi vàng
+                {3, 10},   // Nông dân chăm chỉ (Đậu thần cấp 5) -> 10 Thỏi vàng
+                {4, 20},   // Trăm trận trăm thắng (Thắng 100 người) -> 20 Thỏi vàng
+                {5, 10},   // Nội công cao cường (Chưởng 2000 phát) -> 10 Thỏi vàng
+                {6, 10},   // Khinh công thành thạo (Bay 20000m) -> 10 Thỏi vàng
+                {7, 15},   // Thợ săn thiện xạ (Hạ 1000 quái bay) -> 15 Thỏi vàng
+                {8, 10},   // Tập luyện bài bản (Hạ 1000 người rơm) -> 10 Thỏi vàng
+                {9, 30},   // Hoạt động chăm chỉ (Online 120 giờ) -> 30 Thỏi vàng
+                {10, 30},  // Hỗ trợ đồng đội (Cho 10000 đậu) -> 30 Thỏi vàng
+                {11, 15},  // Trùm nhặt ve chai (Bán 200 đồ) -> 15 Thỏi vàng
+                {12, 20},  // Lần đầu nạp ngọc (150 ngọc) -> 20 Thỏi vàng
+                {13, 20},  // Đánh bại siêu quái (Hạ 100 siêu quái) -> 20 Thỏi vàng
+                {14, 20},  // Thánh hồi sinh (Hồi sinh 200 lần) -> 20 Thỏi vàng
+                {15, 20},  // Kỹ năng thành thạo (Dùng chiêu đặc biệt 1000 lần) -> 20 Thỏi vàng
+                {16, 20},  // Trùm nhặt ngọc (Nhặt 1000 ngọc) -> 20 Thỏi vàng
+                {17, 15},  // Đạt 15 triệu sức mạnh -> 15 Thỏi vàng
+                {18, 100}, // Tuyệt kỹ thành thạo (Dùng tuyệt kỹ 7749 lần) -> 100 Thỏi vàng
+                {19, 30},  // Chăm sóc đặc biệt (Được Namek hồi sinh 2000 lần) -> 30 Thỏi vàng
+                {20, 100}  // Trùm kết liễu Boss (Hạ 2000 Boss) -> 100 Thỏi vàng
+            };
+            try (PreparedStatement psUpdAch = ConnectionDatabase.prepareStatement(
+                    "UPDATE achievement_template SET money = ? WHERE id = ?")) {
+                for (int[] pair : balancedAchievements) {
+                    psUpdAch.setInt(1, pair[1]);
+                    psUpdAch.setInt(2, pair[0]);
+                    psUpdAch.addBatch();
+                }
+                psUpdAch.executeBatch();
+            } catch (Exception ignored) {
+            }
+
             //load achievement template
             ps = ConnectionDatabase.prepareStatement("select * from achievement_template");
             rs = ps.executeQuery();
@@ -653,6 +694,13 @@ public final class Manager {
                     + "description = 'Sử dụng để ấp Đệ tử Broly tại nhà (Hợp thể +30% chỉ số)', "
                     + "level = 1, icon_id = 15128, part = -1, is_up_to_up = 0 WHERE id = 1826")) {
                 psUpdateEgg.executeUpdate();
+            } catch (Exception ignored) {
+            }
+
+            try (PreparedStatement psUpdateStackable = ConnectionDatabase.prepareStatement(
+                    "UPDATE item_template SET is_up_to_up = 1 WHERE id IN (1655, 1664, 1665, 1666, 1671, 1672, 1775, 1823) "
+                    + "OR TYPE IN (6, 12, 14, 29, 31, 33)")) {
+                psUpdateStackable.executeUpdate();
             } catch (Exception ignored) {
             }
 
@@ -697,6 +745,12 @@ public final class Manager {
                             itemTemp.part = 143;
                         }
                         itemTemp.isUpToUp = rs.getBoolean("is_up_to_up");
+                        if (itemTemp.id == 1655 || itemTemp.id == 1664 || itemTemp.id == 1665 || itemTemp.id == 1666
+                                || itemTemp.id == 1671 || itemTemp.id == 1672 || itemTemp.id == 1775 || itemTemp.id == 1823
+                                || itemTemp.type == 6 || itemTemp.type == 12 || itemTemp.type == 14
+                                || itemTemp.type == 29 || itemTemp.type == 31 || itemTemp.type == 33) {
+                            itemTemp.isUpToUp = true;
+                        }
                         itemTemp.strRequire = rs.getInt("power_require");
                         itemTemp.gold = rs.getInt("gold");
                         itemTemp.gem = rs.getInt("gem");

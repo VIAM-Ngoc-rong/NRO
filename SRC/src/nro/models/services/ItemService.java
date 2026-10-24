@@ -391,13 +391,25 @@ public class ItemService {
         };
 
         int[][] optionIds = {
-            {128, 129, 127, 233, 245}, // Trái đất
-            {130, 131, 132, 233, 237}, // Namek
-            {133, 135, 134, 233, 241} // Xayda
+            {128, 129, 127, 245}, // Trái đất
+            {130, 131, 132, 237}, // Namek
+            {133, 135, 134, 241} // Xayda
         };
 
         int[] selectedItemIds = itemIds[gender][select];
-        int itemId = selectedItemIds[Util.nextInt(selectedItemIds.length)];
+        int itemId = selectedItemIds[0];
+        if (player.nPoint != null && player.nPoint.power >= 15_000_000L) {
+            List<Integer> wearable = new ArrayList<>();
+            for (int candId : selectedItemIds) {
+                Template.ItemTemplate tpl = getTemplate(candId);
+                if (tpl != null && tpl.strRequire <= player.nPoint.power) {
+                    wearable.add(candId);
+                }
+            }
+            if (!wearable.isEmpty()) {
+                itemId = wearable.get(Util.nextInt(wearable.size()));
+            }
+        }
         int[] possibleOptions = optionIds[gender];
         int optionRandom = possibleOptions[Util.nextInt(possibleOptions.length)];
 
@@ -454,13 +466,25 @@ public class ItemService {
         };
 
         int[][] optionIds = {
-            {128, 129, 127, 233, 245}, // Trái đất
-            {130, 131, 132, 233, 237}, // Namek
-            {133, 135, 134, 233, 241} // Xayda
+            {128, 129, 127, 245}, // Trái đất
+            {130, 131, 132, 237}, // Namek
+            {133, 135, 134, 241} // Xayda
         };
 
         int[] selectedItemIds = itemIds[gender][select];
-        int itemId = selectedItemIds[Util.nextInt(selectedItemIds.length)];
+        int itemId = selectedItemIds[0];
+        if (player.nPoint != null && player.nPoint.power >= 15_000_000L) {
+            List<Integer> wearable = new ArrayList<>();
+            for (int candId : selectedItemIds) {
+                Template.ItemTemplate tpl = getTemplate(candId);
+                if (tpl != null && tpl.strRequire <= player.nPoint.power) {
+                    wearable.add(candId);
+                }
+            }
+            if (!wearable.isEmpty()) {
+                itemId = wearable.get(Util.nextInt(wearable.size()));
+            }
+        }
         int[] possibleOptions = optionIds[gender];
         int optionRandom = possibleOptions[Util.nextInt(possibleOptions.length)];
 
@@ -476,8 +500,32 @@ public class ItemService {
 
     public Item createItemSKH(int itemId, int skhId) {
         Item item = createItemSetKichHoat(itemId, 1);
-        if (item != null) {
-            item.itemOptions.addAll(ItemService.gI().getListOptionItemShop((short) itemId));
+        if (item != null && item.template != null) {
+            List<Item.ItemOption> shopOpts = ItemService.gI().getListOptionItemShop((short) itemId);
+            if (shopOpts != null && !shopOpts.isEmpty()) {
+                item.itemOptions.addAll(shopOpts);
+            } else {
+                int lv = Math.max(1, item.template.level);
+                switch (item.template.type) {
+                    case 0 -> item.itemOptions.add(new Item.ItemOption(47, lv <= 1 ? 3 : lv * 15));
+                    case 1 -> {
+                        if (lv <= 4) {
+                            item.itemOptions.add(new Item.ItemOption(6, lv <= 1 ? 30 : lv * 150));
+                        } else {
+                            item.itemOptions.add(new Item.ItemOption(22, lv * 2));
+                        }
+                    }
+                    case 2 -> item.itemOptions.add(new Item.ItemOption(0, lv <= 1 ? 15 : lv * 60));
+                    case 3 -> {
+                        if (lv <= 4) {
+                            item.itemOptions.add(new Item.ItemOption(7, lv <= 1 ? 30 : lv * 150));
+                        } else {
+                            item.itemOptions.add(new Item.ItemOption(23, lv * 2));
+                        }
+                    }
+                    case 4 -> item.itemOptions.add(new Item.ItemOption(14, lv));
+                }
+            }
             item.itemOptions.add(new Item.ItemOption(skhId, 1));
             for (int subId : getOptionIdsBySKH(skhId)) {
                 item.itemOptions.add(new Item.ItemOption(subId, 1));
@@ -549,11 +597,11 @@ public class ItemService {
     }
 
     public int randomSKHId(byte gender) {
-        if (gender == 3) {
+        if (gender < 0 || gender >= 3) {
             gender = 2;
         }
-        int[][] options = {{128, 129, 127, 233, 245}, {130, 131, 132, 233, 237}, {133, 135, 134, 233, 241}};
-        return options[gender][Util.nextInt(0, options[gender].length - 1)];
+        int[][] options = {{128, 129, 127, 245}, {130, 131, 132, 237}, {133, 135, 134, 241}};
+        return options[gender][Util.nextInt(options[gender].length)];
     }
 
     public Item createItemFromItemMap(ItemMap itemMap) {
@@ -879,7 +927,9 @@ public class ItemService {
         List<Item.ItemOption> list = new ArrayList<>();
         Manager.SHOPS.forEach(shop -> shop.tabShops.forEach(tabShop -> tabShop.itemShops.forEach(itemShop -> {
             if (itemShop.temp.id == id && list.isEmpty()) {
-                list.addAll(itemShop.options);
+                for (Item.ItemOption io : itemShop.options) {
+                    list.add(new Item.ItemOption(io));
+                }
             }
         })));
         return list;

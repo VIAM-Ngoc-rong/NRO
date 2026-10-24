@@ -11,6 +11,7 @@ import nro.models.services.RadarService;
 import nro.models.radar.RadarCard;
 import nro.models.consts.ConstMap;
 import nro.models.item.Item;
+import nro.models.item.ItemTime;
 import nro.models.consts.ConstNpc;
 import nro.models.consts.ConstPlayer;
 import nro.models.services.shenron.Shenron_Service;
@@ -799,10 +800,6 @@ public class UseItem {
                             case 880:
                             case 881:
                             case 882:
-                                if (pl.itemTime.isEatMeal2) {
-                                    Service.gI().sendThongBao(pl, "Chỉ được sử dụng 1 cái");
-                                    break;
-                                }
                                 useItemTime(pl, item);
                                 break;
                             case 521: //tdlt
@@ -1584,181 +1581,262 @@ public class UseItem {
     }
 
     private void useItemTime(Player pl, Item item) {
+        long now = System.currentTimeMillis();
         switch (item.template.id) {
             case 379: // máy dò capsule
-                pl.itemTime.lastTimeUseMayDo = System.currentTimeMillis();
-                pl.itemTime.isUseMayDo = true;
+                if (pl.itemTime.isUseMayDo) {
+                    pl.itemTime.lastTimeUseMayDo += ItemTime.TIME_MAY_DO;
+                } else {
+                    pl.itemTime.lastTimeUseMayDo = now;
+                    pl.itemTime.isUseMayDo = true;
+                }
                 break;
             case 1635: // co bon la
-                pl.itemTime.lastTimeUseCoBonLa = System.currentTimeMillis();
-                pl.itemTime.timeLengthCoBonLa = nro.models.item.ItemTime.TIME_CO_BON_LA;
-                pl.itemTime.isUseCoBonLa = true;
+                if (pl.itemTime.isUseCoBonLa) {
+                    pl.itemTime.lastTimeUseCoBonLa += ItemTime.TIME_CO_BON_LA;
+                } else {
+                    pl.itemTime.lastTimeUseCoBonLa = now;
+                    pl.itemTime.timeLengthCoBonLa = ItemTime.TIME_CO_BON_LA;
+                    pl.itemTime.isUseCoBonLa = true;
+                }
                 break;
             case 1614: // nuoc mia 1
                 if (pl.itemTime.isUseNuocMia2 || pl.itemTime.isUseNuocMia3) {
-                    Service.gI().sendThongBao(pl, "Chỉ có thể sự dụng cùng lúc 1 vật phẩm bổ trợ cùng loại");
+                    Service.gI().sendThongBao(pl, "Chỉ có thể sử dụng cùng lúc 1 vật phẩm bổ trợ cùng loại");
                     return;
                 }
-                pl.itemTime.lastTimeUseNuocMia1 = System.currentTimeMillis();
-                pl.itemTime.isUseNuocMia1 = true;
+                if (pl.itemTime.isUseNuocMia1) {
+                    pl.itemTime.lastTimeUseNuocMia1 += ItemTime.TIME_NUOC_MIA1;
+                } else {
+                    pl.itemTime.lastTimeUseNuocMia1 = now;
+                    pl.itemTime.isUseNuocMia1 = true;
+                }
                 Service.gI().point(pl);
                 break;
-            case 1615: // nuoc mia 1
+            case 1615: // nuoc mia 2
                 if (pl.itemTime.isUseNuocMia1 || pl.itemTime.isUseNuocMia3) {
-                    Service.gI().sendThongBao(pl, "Chỉ có thể sự dụng cùng lúc 1 vật phẩm bổ trợ cùng loại");
+                    Service.gI().sendThongBao(pl, "Chỉ có thể sử dụng cùng lúc 1 vật phẩm bổ trợ cùng loại");
                     return;
                 }
-                pl.itemTime.lastTimeUseNuocMia2 = System.currentTimeMillis();
-                pl.itemTime.isUseNuocMia2 = true;
+                if (pl.itemTime.isUseNuocMia2) {
+                    pl.itemTime.lastTimeUseNuocMia2 += ItemTime.TIME_NUOC_MIA2;
+                } else {
+                    pl.itemTime.lastTimeUseNuocMia2 = now;
+                    pl.itemTime.isUseNuocMia2 = true;
+                }
                 Service.gI().point(pl);
                 break;
-            case 1616: // nuoc mia 1
+            case 1616: // nuoc mia 3
                 if (pl.itemTime.isUseNuocMia1 || pl.itemTime.isUseNuocMia2) {
-                    Service.gI().sendThongBao(pl, "Chỉ có thể sự dụng cùng lúc 1 vật phẩm bổ trợ cùng loại");
+                    Service.gI().sendThongBao(pl, "Chỉ có thể sử dụng cùng lúc 1 vật phẩm bổ trợ cùng loại");
                     return;
                 }
-                pl.itemTime.lastTimeUseNuocMia3 = System.currentTimeMillis();
-                pl.itemTime.isUseNuocMia3 = true;
+                if (pl.itemTime.isUseNuocMia3) {
+                    pl.itemTime.lastTimeUseNuocMia3 += ItemTime.TIME_NUOC_MIA3;
+                } else {
+                    pl.itemTime.lastTimeUseNuocMia3 = now;
+                    pl.itemTime.isUseNuocMia3 = true;
+                }
                 Service.gI().point(pl);
                 break;
             case 381: // cuồng nộ
                 if (pl.itemTime.isUseCuongNo2) {
-                    Service.gI().sendThongBao(pl, "Chỉ có thể sự dụng cùng lúc 1 vật phẩm bổ trợ cùng loại");
+                    Service.gI().sendThongBao(pl, "Chỉ có thể sử dụng cùng lúc 1 vật phẩm bổ trợ cùng loại");
                     return;
                 }
-                pl.itemTime.lastTimeCuongNo = System.currentTimeMillis();
-                pl.itemTime.isUseCuongNo = true;
+                if (pl.itemTime.isUseCuongNo) {
+                    pl.itemTime.lastTimeCuongNo += ItemTime.TIME_ITEM;
+                } else {
+                    pl.itemTime.lastTimeCuongNo = now;
+                    pl.itemTime.isUseCuongNo = true;
+                }
                 Service.gI().point(pl);
                 break;
-            case 382: //bổ huyết
+            case 382: // bổ huyết
                 if (pl.itemTime.isUseBoHuyet2) {
-                    Service.gI().sendThongBao(pl, "Chỉ có thể sự dụng cùng lúc 1 vật phẩm bổ trợ cùng loại");
+                    Service.gI().sendThongBao(pl, "Chỉ có thể sử dụng cùng lúc 1 vật phẩm bổ trợ cùng loại");
                     return;
                 }
-                pl.itemTime.lastTimeBoHuyet = System.currentTimeMillis();
-                pl.itemTime.isUseBoHuyet = true;
+                if (pl.itemTime.isUseBoHuyet) {
+                    pl.itemTime.lastTimeBoHuyet += ItemTime.TIME_ITEM;
+                } else {
+                    pl.itemTime.lastTimeBoHuyet = now;
+                    pl.itemTime.isUseBoHuyet = true;
+                }
                 Service.gI().point(pl);
                 break;
-            case 383: //bổ khí
+            case 383: // bổ khí
                 if (pl.itemTime.isUseBoKhi2) {
-                    Service.gI().sendThongBao(pl, "Chỉ có thể sự dụng cùng lúc 1 vật phẩm bổ trợ cùng loại");
+                    Service.gI().sendThongBao(pl, "Chỉ có thể sử dụng cùng lúc 1 vật phẩm bổ trợ cùng loại");
                     return;
                 }
-                pl.itemTime.lastTimeBoKhi = System.currentTimeMillis();
-                pl.itemTime.isUseBoKhi = true;
+                if (pl.itemTime.isUseBoKhi) {
+                    pl.itemTime.lastTimeBoKhi += ItemTime.TIME_ITEM;
+                } else {
+                    pl.itemTime.lastTimeBoKhi = now;
+                    pl.itemTime.isUseBoKhi = true;
+                }
                 Service.gI().point(pl);
                 break;
-            case 384: //giáp xên
+            case 384: // giáp xên
                 if (pl.itemTime.isUseGiapXen2) {
-                    Service.gI().sendThongBao(pl, "Chỉ có thể sự dụng cùng lúc 1 vật phẩm bổ trợ cùng loại");
+                    Service.gI().sendThongBao(pl, "Chỉ có thể sử dụng cùng lúc 1 vật phẩm bổ trợ cùng loại");
                     return;
                 }
-                pl.itemTime.lastTimeGiapXen = System.currentTimeMillis();
-                pl.itemTime.isUseGiapXen = true;
+                if (pl.itemTime.isUseGiapXen) {
+                    pl.itemTime.lastTimeGiapXen += ItemTime.TIME_ITEM;
+                } else {
+                    pl.itemTime.lastTimeGiapXen = now;
+                    pl.itemTime.isUseGiapXen = true;
+                }
                 Service.gI().point(pl);
                 break;
             case 385: // ẩn danh
-                pl.itemTime.lastTimeAnDanh = System.currentTimeMillis();
-                pl.itemTime.isUseAnDanh = true;
+                if (pl.itemTime.isUseAnDanh) {
+                    pl.itemTime.lastTimeAnDanh += ItemTime.TIME_ITEM;
+                } else {
+                    pl.itemTime.lastTimeAnDanh = now;
+                    pl.itemTime.isUseAnDanh = true;
+                }
                 break;
             case 764: // Khau trang
-                pl.itemTime.lastTimeKhauTrang = System.currentTimeMillis();
-                pl.itemTime.isUseKhauTrang = true;
+                if (pl.itemTime.isUseKhauTrang) {
+                    pl.itemTime.lastTimeKhauTrang += ItemTime.TIME_ITEM;
+                } else {
+                    pl.itemTime.lastTimeKhauTrang = now;
+                    pl.itemTime.isUseKhauTrang = true;
+                }
                 break;
             case 1150: // cuồng nộ 2
                 if (pl.itemTime.isUseCuongNo) {
-                    Service.gI().sendThongBao(pl, "Chỉ có thể sự dụng cùng lúc 1 vật phẩm bổ trợ cùng loại");
+                    Service.gI().sendThongBao(pl, "Chỉ có thể sử dụng cùng lúc 1 vật phẩm bổ trợ cùng loại");
                     return;
                 }
-                pl.itemTime.lastTimeCuongNo2 = System.currentTimeMillis();
-                pl.itemTime.isUseCuongNo2 = true;
+                if (pl.itemTime.isUseCuongNo2) {
+                    pl.itemTime.lastTimeCuongNo2 += ItemTime.TIME_ITEM;
+                } else {
+                    pl.itemTime.lastTimeCuongNo2 = now;
+                    pl.itemTime.isUseCuongNo2 = true;
+                }
                 Service.gI().point(pl);
                 break;
 
             case 1151: // bổ khí 2
                 if (pl.itemTime.isUseBoKhi) {
-                    Service.gI().sendThongBao(pl, "Chỉ có thể sự dụng cùng lúc 1 vật phẩm bổ trợ cùng loại");
+                    Service.gI().sendThongBao(pl, "Chỉ có thể sử dụng cùng lúc 1 vật phẩm bổ trợ cùng loại");
                     return;
                 }
-                pl.itemTime.lastTimeBoKhi2 = System.currentTimeMillis();
-                pl.itemTime.isUseBoKhi2 = true;
+                if (pl.itemTime.isUseBoKhi2) {
+                    pl.itemTime.lastTimeBoKhi2 += ItemTime.TIME_ITEM;
+                } else {
+                    pl.itemTime.lastTimeBoKhi2 = now;
+                    pl.itemTime.isUseBoKhi2 = true;
+                }
                 Service.gI().point(pl);
                 break;
 
             case 1152: // bổ huyết 2
                 if (pl.itemTime.isUseBoHuyet) {
-                    Service.gI().sendThongBao(pl, "Chỉ có thể sự dụng cùng lúc 1 vật phẩm bổ trợ cùng loại");
+                    Service.gI().sendThongBao(pl, "Chỉ có thể sử dụng cùng lúc 1 vật phẩm bổ trợ cùng loại");
                     return;
                 }
-                pl.itemTime.lastTimeBoHuyet2 = System.currentTimeMillis();
-                pl.itemTime.isUseBoHuyet2 = true;
+                if (pl.itemTime.isUseBoHuyet2) {
+                    pl.itemTime.lastTimeBoHuyet2 += ItemTime.TIME_ITEM;
+                } else {
+                    pl.itemTime.lastTimeBoHuyet2 = now;
+                    pl.itemTime.isUseBoHuyet2 = true;
+                }
                 Service.gI().point(pl);
                 break;
 
             case 1153: // giáp xên 2
                 if (pl.itemTime.isUseGiapXen) {
-                    Service.gI().sendThongBao(pl, "Chỉ có thể sự dụng cùng lúc 1 vật phẩm bổ trợ cùng loại");
+                    Service.gI().sendThongBao(pl, "Chỉ có thể sử dụng cùng lúc 1 vật phẩm bổ trợ cùng loại");
                     return;
                 }
-                pl.itemTime.lastTimeGiapXen2 = System.currentTimeMillis();
-                pl.itemTime.isUseGiapXen2 = true;
+                if (pl.itemTime.isUseGiapXen2) {
+                    pl.itemTime.lastTimeGiapXen2 += ItemTime.TIME_ITEM;
+                } else {
+                    pl.itemTime.lastTimeGiapXen2 = now;
+                    pl.itemTime.isUseGiapXen2 = true;
+                }
                 Service.gI().point(pl);
                 break;
 
-            case 1154: // an danh
-                pl.itemTime.lastTimeAnDanh2 = System.currentTimeMillis();
-                pl.itemTime.isUseAnDanh2 = true;
+            case 1154: // an danh 2
+                if (pl.itemTime.isUseAnDanh2) {
+                    pl.itemTime.lastTimeAnDanh2 += ItemTime.TIME_ITEM;
+                } else {
+                    pl.itemTime.lastTimeAnDanh2 = now;
+                    pl.itemTime.isUseAnDanh2 = true;
+                }
                 break;
 
-            case 638: //Commeson
-                pl.itemTime.lastTimeUseCMS = System.currentTimeMillis();
-                pl.itemTime.isUseCMS = true;
+            case 638: // Commeson
+                if (pl.itemTime.isUseCMS) {
+                    pl.itemTime.lastTimeUseCMS += ItemTime.TIME_CMS;
+                } else {
+                    pl.itemTime.lastTimeUseCMS = now;
+                    pl.itemTime.isUseCMS = true;
+                }
                 break;
-            case 1233: //Nồi cơm điện
-                pl.itemTime.lastTimeUseNCD = System.currentTimeMillis();
-                pl.itemTime.isUseNCD = true;
+            case 1233: // Nồi cơm điện
+                if (pl.itemTime.isUseNCD) {
+                    pl.itemTime.lastTimeUseNCD += ItemTime.TIME_NCD;
+                } else {
+                    pl.itemTime.lastTimeUseNCD = now;
+                    pl.itemTime.isUseNCD = true;
+                }
                 break;
             case 579:
             case 1045: // Đuôi khỉ
-                pl.itemTime.lastTimeUseDK = System.currentTimeMillis();
-                pl.itemTime.isUseDK = true;
+                if (pl.itemTime.isUseDK) {
+                    pl.itemTime.lastTimeUseDK += ItemTime.TIME_DK;
+                } else {
+                    pl.itemTime.lastTimeUseDK = now;
+                    pl.itemTime.isUseDK = true;
+                }
                 break;
-            case 663: //bánh pudding
-            case 664: //xúc xíc
-            case 665: //kem dâu
-            case 666: //mì ly
-            case 667: //sushi
-                pl.itemTime.lastTimeEatMeal = System.currentTimeMillis();
-                pl.itemTime.isEatMeal = true;
-                ItemTimeService.gI().removeItemTime(pl, pl.itemTime.iconMeal);
-                pl.itemTime.iconMeal = item.template.iconID;
+            case 663: // bánh pudding
+            case 664: // xúc xích
+            case 665: // kem dâu
+            case 666: // mì ly
+            case 667: // sushi
+                if (pl.itemTime.isEatMeal && pl.itemTime.iconMeal == item.template.iconID) {
+                    pl.itemTime.lastTimeEatMeal += ItemTime.TIME_EAT_MEAL;
+                } else {
+                    pl.itemTime.lastTimeEatMeal = now;
+                    pl.itemTime.isEatMeal = true;
+                    ItemTimeService.gI().removeItemTime(pl, pl.itemTime.iconMeal);
+                    pl.itemTime.iconMeal = item.template.iconID;
+                }
                 break;
             case 880:
             case 881:
             case 882:
-                pl.itemTime.lastTimeEatMeal2 = System.currentTimeMillis();
-                pl.itemTime.isEatMeal2 = true;
-                ItemTimeService.gI().removeItemTime(pl, pl.itemTime.iconMeal2);
-                pl.itemTime.iconMeal2 = item.template.iconID;
+                if (pl.itemTime.isEatMeal2 && pl.itemTime.iconMeal2 == item.template.iconID) {
+                    pl.itemTime.lastTimeEatMeal2 += ItemTime.TIME_EAT_MEAL;
+                } else {
+                    pl.itemTime.lastTimeEatMeal2 = now;
+                    pl.itemTime.isEatMeal2 = true;
+                    ItemTimeService.gI().removeItemTime(pl, pl.itemTime.iconMeal2);
+                    pl.itemTime.iconMeal2 = item.template.iconID;
+                }
                 break;
 
-            case 1532: //máy dò đồ
-                pl.itemTime.lastTimeUseKhoBauX2 = System.currentTimeMillis();
-                pl.itemTime.isUseKhoBauX2 = true;
-
-//            case 2109: //máy dò đồ
-//                pl.itemTime.lastTimeUseMayDo2 = System.currentTimeMillis();
-//                pl.itemTime.isUseMayDo2 = true;
+            case 1532: // máy dò đồ
+                if (pl.itemTime.isUseKhoBauX2) {
+                    pl.itemTime.lastTimeUseKhoBauX2 += ItemTime.TIME_MAY_DO2;
+                } else {
+                    pl.itemTime.lastTimeUseKhoBauX2 = now;
+                    pl.itemTime.isUseKhoBauX2 = true;
+                }
                 break;
-            case 1628: //máy dò đồ
-                long currentTime = System.currentTimeMillis();
-
-                // +++
+            case 1628: // bùa santa
                 if (pl.itemTime.isUseBuaSanta) {
                     pl.itemTime.lastTimeBuaSanta += 1_800_000; // 30p
                 } else {
-                    //null
-                    pl.itemTime.lastTimeBuaSanta = currentTime + 1; // 0
+                    pl.itemTime.lastTimeBuaSanta = now + 1;
                     pl.itemTime.isUseBuaSanta = true;
                 }
                 break;

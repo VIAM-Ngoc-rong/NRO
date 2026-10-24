@@ -154,7 +154,7 @@ Ngay khi vào **Nhà** (`Nhà Gôhan` / `Nhà Moori` / `Nhà Broly`), hãy gặp
 | Biểu Tượng | Phần Thưởng Tại NPC Ở Nhà | Chi Tiết Vật Phẩm | Cơ Chế Nhận |
 | :---: | :--- | :--- | :--- |
 | <img src="SRC/assets/readme/icons/4028.png" width="32"/> | **Nhận Quà Tân Thủ** | **99 Thỏi Vàng** (`49.5 Tỷ Vàng`) + **1.000.000 Ngọc Xanh** | 1 lần / Tài khoản |
-| <img src="SRC/assets/readme/icons/4670.png" width="32"/> | **Rương SKH Tân Thủ** | Trọn bộ **5 món Đồ Vải Thô (Áo, Quần, Găng, Giày, Rada cấp 1)** có **Set Kích Hoạt tùy chọn** | Tự chọn **1 trong 4 Set Kích Hoạt** của hành tinh theo định hướng ở **Mục 1.3** (1 lần / Tài khoản) |
+| <img src="SRC/assets/readme/icons/4670.png" width="32"/> | **Rương SKH Tân Thủ** | Trọn bộ **5 món Đồ Vải Thô (Áo, Quần, Găng, Giày, Rada cấp 1)** có **Set Kích Hoạt tùy chọn** | **Mặc định mỗi người chơi có sẵn `5 Rương SKH`** (tự chọn **1 trong 4 Set Kích Hoạt** của hành tinh mỗi lần mở; có thể được Admin tặng thêm qua sự kiện) |
 | <img src="SRC/assets/readme/icons/933.png" width="32"/> | **Nhận 200k Ngọc** | **+200.000 Ngọc Xanh** mỗi lượt bấm | **Nhận không giới hạn** |
 | <img src="SRC/assets/readme/icons/523.png" width="32"/> | **Nhận Đậu 10 x99** | **x99 Đậu Thần Cấp 10** | **Nhận không giới hạn** |
 
@@ -181,30 +181,50 @@ Tất cả các thao tác đập đồ sao và nâng cấp đều thực hiện 
 
 ---
 
-## ⚡ 2.3. Tái Tạo Trang Bị Kích Hoạt (SKH) & Tinh Luyện Đá Ngũ Sắc
+## ⚡ 2.3. Đập Đồ Kích Hoạt Theo Đồ Phôi, Phân Rã Đồ Sao & Tinh Luyện Đá Ngũ Sắc
 
-Để người chơi không bị lãng phí các món **Đồ Sao** hoặc **Đồ Thần Linh** nhặt được từ Boss, **Bà Hạt Mít (Đảo Kame)** cung cấp dây chuyền chuyển hóa khép kín tại mục **Trang Bị Kích Hoạt**:
+Để người chơi chủ động nâng cấp lên **Đồ Thần Linh SKH / Đồ Hủy Diệt SKH** và tận dụng mọi món **Đồ Sao** nhặt được từ Boss, **Bà Hạt Mít (Đảo Kame)** cung cấp hệ thống chế tác khép kín:
 
 ```mermaid
 flowchart LR
-    A["Đồ Sao / Đồ Thần Linh\nDư Thừa Khi Săn Boss"] -->|1. Phân Rã Trang Bị| B["Khoáng Tái Tạo\n& Nguyên Liệu Tinh Luyện"]
-    B -->|2A. Tái Tạo Capsule| C["Capsule Kích Hoạt\n(Mở chọn Áo/Quần/Găng/Giày/Rada SKH)"]
-    B -->|2B. Tinh Luyện Đá| D["Đá Ngũ Sắc"]
-    D -->|3. Đập Đồ Kích Hoạt| E["Nâng Trang Bị Thường / Thần Linh\nThành Đồ SKH Cao Cấp (+100% ST)"]
+    A["5 Rương SKH Mặc Định\nHoặc Đồ SKH Săn Boss"] -->|Chọn 3 Món Đồ KH| B["Kết Hợp Cùng 1 Đồ Phôi\n(VD: Găng Thần Linh)"]
+    B -->|Đập Đồ Kích Hoạt\n(100Tr Vàng - 100%)| C["1 Đồ SKH Đúng Theo Phôi\n(VD: Găng Thần Linh SKH)"]
+    D["Đồ Sao (1s - 9s)\nDư Thừa Khi Săn Boss"] -->|Phân Rã Đồ Sao\n(Miễn Phí)| E["Đá Ngũ Sắc + Vàng + HN\n+ SPL + Hematite + Capsule KH"]
+    E -->|Tinh Luyện Đá Ngũ Sắc| F["Nâng Cải Trang Vĩnh Viễn\n(+1~2% SĐ/HP/KI, Max 45%)"]
 ```
+
+| Chức Năng Tại Bà Hạt Mít | Nguyên Liệu Yêu Cầu | Kết Quả Nhận Được |
+| :--- | :--- | :--- |
+| **1. Đập Đồ Kích Hoạt**<br>*(Theo Đồ Phôi Tương Ứng)* | **3 món Đồ Kích Hoạt bất kỳ** + **1 món Đồ Phôi** (*VD: Găng Thần Linh, Áo Hủy Diệt...*) + **100 Triệu Vàng** | • **Tỷ lệ thành công `100%`**: Ra **1 món Đồ Kích Hoạt mới đúng theo món Đồ Phôi** (*VD: 3 đồ KH + 1 Găng Thần Linh $\rightarrow$ 1 Găng Thần Linh SKH bất kỳ theo hành tinh của Đồ Phôi*), giữ nguyên chỉ số gốc của Đồ Phôi! |
+| **2. Phân Rã Đồ Sao (`1s – 9s`)** | Chọn **1 hoặc nhiều trang bị có Sao Pha Lê** (*Miễn phí*) | • Nhận **Đá Ngũ Sắc (`x1 – x5`)**, **Vàng (`20Tr – 500Tr`)**, **Hồng Ngọc (`5 – 200`)** và cơ hội nổ thêm **Sao Pha Lê, Đá Hematite, Capsule Kích Hoạt**. |
+| **3. Tinh Luyện Đá Ngũ Sắc**<br>*(Đổi Quà / Cường Hóa Cải Trang)* | • **Cách 1**: `x10 Đá Ngũ Sắc + 100Tr Vàng`<br>• **Cách 2**: `1 Cải trang vĩnh viễn + x5 Đá Ngũ Sắc + 200Tr Vàng` | • **Cách 1**: Đổi Ngọc Rồng Tím `5–7 Sao`, Hồng Ngọc, SPL Cấp 2 hoặc Capsule Kích Hoạt.<br>• **Cách 2**: Tăng vĩnh viễn **`+1% ~ +2%` Sức Đánh, HP, KI** cho Cải trang (Tối đa **`45%`**). |
+| **4. Phân Rã & Tái Tạo Capsule KH** | Phân rã đồ KH lấy **Khoáng Tái Chế** $\rightarrow$ Ghép `3 Khoáng + 1 Capsule Vỡ` | • Nhận **1 Capsule Kích Hoạt tự chọn** (*Mở chọn Áo, Quần, Găng, Giày hoặc Rada SKH*). |
 
 ---
 
-## 👼 2.4. Chế Tạo Trang Bị Thiên Sứ & Sách Tuyệt Kỹ (Hành Tinh Bill)
+## 👼 2.4. Học Kỹ Năng Đặc Biệt (Tuyệt Kỹ 3 Hành Tinh), Sách Tuyệt Kỹ & Đồ Thiên Sứ (NPC Whis)
 
-Tại **Hành Tinh Bill**, gặp NPC **Whis** để mở khóa 2 hệ thống trang bị cuối game:
-1. **Chế Tạo Trang Bị Thiên Sứ**:
+Tại **Hành Tinh Bill (Map 154)**, gặp NPC **Whis** để học **Kỹ Năng Đặc Biệt (Skill 9)** của 3 hành tinh, chế tạo **Sách Tuyệt Kỹ** và **Trang Bị Thiên Sứ**:
+
+### 🔥 A. Cách Học Kỹ Năng Đặc Biệt (Tuyệt Kỹ Skill 9) Cho 3 Hành Tinh
+Mỗi hành tinh sở hữu 1 chiêu thức Tuyệt Kỹ tối thượng riêng biệt tại mục **"Tuyệt kỹ"** của NPC **Whis (Hành Tinh Bill)**:
+- **Trái Đất**: **Super Kamejoko** *(Chưởng Kamejoko siêu cấp sát thương cực đại)*.
+- **Namek**: **Ma Phong Ba** *(Phong ấn mục tiêu vào bình và rút máu theo % HP)*.
+- **Xayda**: **Ca Đíc Liên Hoàn Chưởng** *(Mưa chưởng năng lượng liên hoàn diện rộng)*.
+
+| Giai Đoạn Học Tuyệt Kỹ | Nguyên Liệu Cần Thiết Tại NPC Whis | Tỷ Lệ Thành Công & Cách Kiếm Nguyên Liệu |
+| :--- | :--- | :--- |
+| **Mở Khóa Tuyệt Kỹ (Học Cấp 1)** | **x999 Bí Kíp Tuyệt Kỹ** + **10.000.000 Vàng** + **99 Ngọc Xanh** | • **Tỷ lệ thành công: `50%`** (Thất bại mất 50% số Bí kíp).<br>• **Cách cày Bí Kíp Tuyệt Kỹ (`ID 1229`)**: Mặc **Sách Tuyệt Kỹ** trên người và đánh quái tại **Hành Tinh Bill (Map 154)**. |
+| **Nâng Cấp Tuyệt Kỹ (Cấp 2 $\rightarrow$ Cấp 7)** | **x99 Bí Kíp Tuyệt Kỹ** + **10.000.000 Vàng** + **99 Ngọc Xanh** | • **Tỷ lệ thành công: `20%`** mỗi bậc (Tối đa đạt **Cấp 7**). |
+
+### 📖 B. Hệ Thống Sách Tuyệt Kỹ & Chế Tạo Đồ Thiên Sứ
+1. **Đổi & Nâng Cấp Sách Tuyệt Kỹ (Tại NPC Whis)**:
+   - **Đổi Sách Tuyệt Kỹ 1**: Dùng **x999 Bí Kíp Tuyệt Kỹ + 1 Cuốn Sách Cũ (`ID 1281`) + 1 Kìm Bấm Giấy (`ID 1282`) + 10 Triệu Vàng** để đóng thành **Sách Tuyệt Kỹ 1** theo hành tinh.
+   - **Giám Định & Tẩy Sách**: Dùng *Bùa Giám Định Sách* để mở khóa 5 dòng chỉ số ẩn, dùng *Bùa Tẩy Sách* để làm mới dòng chỉ số.
+   - **Nâng Cấp Sách Tuyệt Kỹ 2**: Dùng *Sách Tuyệt Kỹ 1 + 10 Kìm Bấm Giấy + 100 Triệu Vàng + 500 Ngọc Xanh* để đột phá lên **Sách Tuyệt Kỹ 2** (cộng mạnh `% Sát thương Tuyệt kỹ`).
+2. **Chế Tạo Trang Bị Thiên Sứ**:
    - Nguyên liệu: **1 Công thức Thiên Sứ (hoặc Công thức VIP) + 999 Mảnh Thiên Sứ + Đá Nâng Cấp (cấp 1–5) + Đá May Mắn (cấp 1–5)**.
    - Tác dụng: Đúc trang bị Thiên Sứ có chỉ số gốc cao nhất game, đá nâng cấp và đá may mắn càng cao thì tỷ lệ nổ dòng thưởng (`+20% ~ +35% chỉ số gốc` và dòng phụ) càng lớn.
-2. **Hệ Thống Sách Tuyệt Kỹ**:
-   - **Đổi Sách Tuyệt Kỹ**: Dùng *Bìa Sách + Kìm Bấm* để đóng thành Sách Tuyệt Kỹ 1.
-   - **Giám Định & Tẩy Sách**: Mở khóa các dòng chỉ số ẩn trên Sách Tuyệt Kỹ.
-   - **Nâng Cấp Sách Tuyệt Kỹ 2**: Mở khóa kỹ năng tối thượng (**Super Kamejoko, Ma Phong Ba, Liên Hoàn Chưởng**) cho cả Sư Phụ và Đệ Tử!
 
 ---
 
@@ -241,6 +261,9 @@ Tại **Hành Tinh Bill**, gặp NPC **Whis** để mở khóa 2 hệ thống tr
    - **Tự động tràn Tab & Sắp xếp độc lập**: Khi Tab đang mở đầy `100/100 ô`, đồ nhặt mới sẽ tự động chảy sang các Tab còn trống tiếp theo; bấm *Sắp xếp* chỉ gom gọn trong từng Tab 100 ô để bạn thoải mái phân loại *Tab 1 (Đồ mặc/Đậu), Tab 2 (Bộ SKH phụ & Ngọc Rồng), Tab 3–5 (Đồ săn Boss & Treo quái)*.
 2. **Auto Treo Quái & Tự Động Lọc Bán Đồ Rác (`treoquai` / `tq`)**:
    - Khi bật `treoquai`, nhân vật tự động lọc bán các trang bị thường lấy Vàng khi đầy túi, nhưng **khóa bảo vệ tuyệt đối 100%** đối với: *Đồ có dòng Set Kích Hoạt (SKH), Đồ Thần Linh, Đồ Hủy Diệt, Đồ Thiên Sứ, và mọi trang bị có lỗ Sao Pha Lê*.
+3. **Vật Phẩm Sử Dụng Cộng Dồn Số Lượng & Cộng Dồn Thời Gian Hiệu Lực**:
+   - **Cộng dồn trong Hành trang & Rương đồ**: Mọi vật phẩm tiêu hao, bổ trợ, đậu thần, ngọc rồng, đá nâng cấp, sao pha lê, sách kỹ năng đệ tử, capsule kích hoạt... đều tự động **xếp chồng gọn vào 1 ô** (lên tới `99.999` cái/ô).
+   - **Cộng dồn thời gian khi sử dụng**: Khi bạn bấm dùng nhiều lần liên tiếp các vật phẩm bổ trợ (*Cuồng Nộ, Bổ Huyết, Bổ Khí, Giáp Xên, Ẩn Danh, Item Cấp 2, Máy Dò Capsule, Cỏ 4 Lá, Nước Mía, Thức Ăn Hủy Diệt, Commeson, Nồi Cơm Điện, Đuôi Khỉ, Bùa Santa...*), **thời gian hiệu lực sẽ được cộng dồn nối tiếp** thay vì bị đếm lại từ đầu!
 
 ---
 
@@ -281,12 +304,16 @@ flowchart LR
    - Mua **Bùa Đệ Tử 1 Tháng** tại Bà Hạt Mít + Bật **Auto Buff Đậu (`autodau`)**.
    - Mua **Cải trang Tôn Ngộ Không / Bát Giới / Sa Tăng Đệ Tử (`+30% TNSM Đệ`)** hoặc **Cải trang Thầy Giáo (`+40% TNSM, +30% TNSM Đệ`)** tại **Santa (giá 50 Ngọc Xanh)**.
    - Đưa Đệ tử lên **Ngũ Hành Sơn (Map 122–124, x5 TNSM)** và gõ `tan cong`.
-2. **Các Mốc Sức Mạnh Mở Đủ 5 Kỹ Năng (Áp Dụng Cho Mọi Loại Đệ Tử: Thường, Mabư, Broly...)**:
+2. **Các Mốc Sức Mạnh Mở Đủ 5 Kỹ Năng & Cơ Chế Sử Dụng Skill 5 Đệ Tử (Áp Dụng Cho Mọi Đệ Tử)**:
    - **1.5 Triệu SM**: Mặc được toàn bộ 9 ô Trang bị, Cải trang, **Đeo Lưng** & **Sách Tuyệt Kỹ** (bấm `auto -> Quản lý Đệ tử -> Mặc Sách Tuyệt Kỹ` hoặc gõ `sach tuyet ky`).
    - **150 Triệu SM**: Mở **Chiêu 2** (*Kamejoko / Masenko / Antomic*).
    - **1.5 Tỷ SM**: Mở **Chiêu 3** (*Thái Dương Hạ San / Kaioken / Tái Tạo Năng Lượng*).
    - **20 Tỷ SM**: Mở **Chiêu 4** (*Biến Khỉ / Đẻ Trứng / Khiên Năng Lượng*).
    - **100 Tỷ SM**: Mở **Chiêu 5** (*Super Kame / Ma Phong Ba / Liên Hoàn Chưởng* theo hệ của Đệ tử — mở khóa cho tất cả các loại Đệ tử!).
+3. **Khi Nào Đệ Tử Sử Dụng Skill 5 & Cách Nâng Cấp Skill 5 Đệ Tử**:
+   - **Điều kiện kích hoạt trong chiến đấu**: Khi Đệ tử ở chế độ **Tấn Công (`tan cong`)** hoặc **Bảo Vệ (`bao ve`)**, thứ tự ưu tiên tung chiêu của AI Đệ tử là: **Skill 4 $\rightarrow$ Skill 3 $\rightarrow$ Skill 5 $\rightarrow$ Skill 2 $\rightarrow$ Skill 1**. Ngay khi **Skill 4 và Skill 3 đang trong thời gian hồi chiêu (cooldown)** và Đệ tử **đủ KI (Mana)**, Đệ tử sẽ lập tức tung **Skill 5 (`Super Kame`, `Ma Phong Ba`, `Liên Hoàn Chưởng`)**!
+   - **Cách nâng cấp Skill 5 Đệ Tử lên Cấp 7**: Mua vật phẩm **Nâng kỹ năng 4 đệ tử (`ID 759` — giá 500 Ngọc Xanh tại Cửa hàng Santa)** và bấm sử dụng — sách này sẽ đồng thời nâng cấp cả **Skill 4 và Skill 5 của Đệ Tử** lên tối đa **Cấp 7** (giúp giảm thời gian hồi chiêu và tăng mạnh sát thương Skill 5)!
+   - **Mẹo tối ưu**: Luôn bật **Auto Buff Đậu (`autodau`)** để Đệ tử không bị thiếu KI khi tung Skill 5.
 
 ---
 
@@ -414,12 +441,15 @@ Mỗi khi hạ gục bất kỳ Boss nào, người kết liễu đều nhận n
 
 # 📂 07. HỆ THỐNG KINH TẾ, NHIỆM VỤ HÀNG NGÀY & BẢNG LỆNH AUTO
 
-## 💰 7.1. Hệ Thống Kinh Tế Vàng & Nhiệm Vụ Bò Mộng Hàng Ngày
+## 💰 7.1. Hệ Thống Kinh Tế Vàng, Nhiệm Vụ Hàng Ngày & Thành Tích Bò Mộng
 Để đảm bảo nền kinh tế Vàng ổn định (tỷ giá chuẩn **`1 Thỏi Vàng = 500.000.000 Vàng`** bán và mua tại **Santa**):
 1. **Nhiệm Vụ Hàng Ngày Bò Mộng (Tại Thần Điện / Đảo Kame)**:
    - Mỗi ngày bạn có **20 lượt Nhiệm Vụ Bò Mộng** chia làm **5 cấp độ khó** (*Dễ, Thường, Khó, Rất Khó, Siêu Khó*).
    - Hoàn thành nhiệm vụ nhận trực tiếp **Vàng & Thỏi Vàng** theo độ khó, đồng thời tích lũy tiến độ mở khóa **Nhiệm Vụ KOL**!
-2. **Săn Boss & Auto Treo Quái (`treoquai`)**:
+2. **Phần Thưởng Thành Tích Bò Mộng (Thưởng Bằng Thỏi Vàng)**:
+   - Gặp **Bò Mộng -> Thành tích** để nhận thưởng khi đạt đủ 20 cột mốc thành tích cày cuốc (*Đạt mốc Sức mạnh, Chưởng, Bay, Hạ quái, Hạ Boss, Dùng tuyệt kỹ...*).
+   - Toàn bộ các mốc Thành Tích đều thưởng trực tiếp **Thỏi Vàng (`từ 5 đến 100 Thỏi Vàng / mốc`, tổng cộng `515 Thỏi Vàng` = `257.5 Tỷ Vàng`)** thẳng vào hành trang!
+3. **Săn Boss & Auto Treo Quái (`treoquai`)**:
    - Săn Boss từ Nappa trở đi rơi trực tiếp các cục vàng triệu và Thỏi Vàng.
    - Bật `treoquai` vừa cày Tiềm năng vừa tự động lọc bán trang bị thường lấy Vàng liên tục.
 

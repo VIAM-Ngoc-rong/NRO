@@ -913,16 +913,32 @@ public class InventoryService {
     }
 
     public static boolean checkListsEqual(List<ItemOption> list1, List<ItemOption> list2) {
-        if (list1.size() != list2.size()) {
+        if (list1 == null && list2 == null) {
+            return true;
+        }
+        if (list1 == null || list2 == null) {
             return false;
         }
-
-        for (int i = 0; i < list1.size(); i++) {
-            if (list1.get(i).optionTemplate.id != list2.get(i).optionTemplate.id || list1.get(i).param != list2.get(i).param) {
+        List<ItemOption> f1 = new ArrayList<>();
+        for (ItemOption io : list1) {
+            if (io != null && io.optionTemplate != null && io.optionTemplate.id != 30 && io.optionTemplate.id != 73) {
+                f1.add(io);
+            }
+        }
+        List<ItemOption> f2 = new ArrayList<>();
+        for (ItemOption io : list2) {
+            if (io != null && io.optionTemplate != null && io.optionTemplate.id != 30 && io.optionTemplate.id != 73) {
+                f2.add(io);
+            }
+        }
+        if (f1.size() != f2.size()) {
+            return false;
+        }
+        for (int i = 0; i < f1.size(); i++) {
+            if (f1.get(i).optionTemplate.id != f2.get(i).optionTemplate.id || f1.get(i).param != f2.get(i).param) {
                 return false;
             }
         }
-
         return true;
     }
 

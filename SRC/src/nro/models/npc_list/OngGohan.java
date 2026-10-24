@@ -38,6 +38,21 @@ public class OngGohan extends Npc {
     }
 
     protected void openMenuRuongSKHTanThu(Player player) {
+        int ruongSkh = 5;
+        if (player.getSession() != null) {
+            try (Connection con = LocalManager.getConnection();
+                 PreparedStatement ps = con.prepareStatement("SELECT ruong_skh FROM account WHERE id = ? LIMIT 1")) {
+                ps.setInt(1, player.getSession().userId);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        ruongSkh = rs.getInt("ruong_skh");
+                        player.getSession().ruongSkh = ruongSkh;
+                    }
+                }
+            } catch (Exception ignored) {
+                ruongSkh = player.getSession().ruongSkh;
+            }
+        }
         String[] setOptions = switch (player.gender) {
             case 0 -> new String[]{
                 "Set Songoku\n(Kamejoko)",
@@ -63,8 +78,8 @@ public class OngGohan extends Npc {
         };
         this.createOtherMenu(player, 9904,
                 "|7|=== RƯƠNG SKH VẢI THÔ CƠ BẢN TÙY CHỌN ===\n"
-                + "|2|Mỗi tài khoản được nhận miễn phí 1 bộ 5 món Vải Thô cơ bản\n"
-                + "|1|(Áo, Quần, Găng, Giày, Rada cấp 1) kích hoạt 100% sát thương!\n"
+                + "|2|Số Rương SKH hiện có của con: " + ruongSkh + " rương (Mặc định Tân Thủ: 5 rương)\n"
+                + "|1|Mỗi Rương SKH mở ra trọn bộ 5 món Vải Thô cơ bản (Áo, Quần, Găng, Giày, Rada cấp 1) kích hoạt 100% sát thương!\n"
                 + "|0|Hãy chọn Set Kích Hoạt phù hợp với lối chơi của con:",
                 setOptions);
     }
@@ -82,24 +97,27 @@ public class OngGohan extends Npc {
         }
         int userId = player.getSession().userId;
         try (Connection con = LocalManager.getConnection()) {
-            int giftFlags = 0;
-            try (PreparedStatement ps = con.prepareStatement("SELECT is_gift_box FROM account WHERE id = ? LIMIT 1")) {
+            int ruongSkh = 0;
+            try (PreparedStatement ps = con.prepareStatement("SELECT ruong_skh FROM account WHERE id = ? LIMIT 1")) {
                 ps.setInt(1, userId);
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
-                        giftFlags = rs.getInt("is_gift_box");
+                        ruongSkh = rs.getInt("ruong_skh");
                     }
                 }
             }
-            if ((giftFlags & 2) != 0) {
-                Service.gI().sendThongBao(player, "Mỗi tài khoản chỉ được nhận Rương SKH Tân Thủ duy nhất 1 lần!");
+            if (ruongSkh <= 0) {
+                player.getSession().ruongSkh = 0;
+                Service.gI().sendThongBao(player, "Bạn đã mở hết Rương SKH (Còn 0 rương)! Hãy liên hệ Admin để được tặng thêm Rương SKH.");
                 return;
             }
-            try (PreparedStatement psUpdate = con.prepareStatement("UPDATE account SET is_gift_box = ? WHERE id = ?")) {
-                psUpdate.setInt(1, giftFlags | 2);
+            int remainSkh = ruongSkh - 1;
+            try (PreparedStatement psUpdate = con.prepareStatement("UPDATE account SET ruong_skh = ? WHERE id = ?")) {
+                psUpdate.setInt(1, remainSkh);
                 psUpdate.setInt(2, userId);
                 psUpdate.executeUpdate();
             }
+            player.getSession().ruongSkh = remainSkh;
 
             int gender = player.gender < 0 || player.gender > 2 ? 0 : player.gender;
             int[][] skhTable = {
@@ -139,7 +157,7 @@ public class OngGohan extends Npc {
                 InventoryService.gI().addItemBag(player, it);
             }
             InventoryService.gI().sendItemBags(player);
-            Service.gI().sendThongBao(player, "Chúc mừng! Bạn đã nhận trọn bộ 5 món Vải Thô " + skhNames[gender][select] + "!");
+            Service.gI().sendThongBao(player, "Chúc mừng! Bạn đã nhận trọn bộ 5 món Vải Thô " + skhNames[gender][select] + " (Còn lại: " + remainSkh + " Rương SKH)!");
         } catch (Exception e) {
             Logger.logException(OngGohan.class, e, "Lỗi nhận rương SKH tân thủ: " + player.name);
             Service.gI().sendThongBao(player, "Có lỗi xảy ra khi nhận Rương SKH, vui lòng thử lại!");
