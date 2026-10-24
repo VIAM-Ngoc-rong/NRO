@@ -969,9 +969,9 @@ public class NpcFactory {
         }
         if (canExpand) {
             options[totalTabs] = "Mở thêm Tab\n(+100 ô / 50k Ngọc)";
-            options[totalTabs + 1] = "Quay lại";
+            options[totalTabs + 1] = "Menu\nTiện Ích";
         } else {
-            options[totalTabs] = "Quay lại";
+            options[totalTabs] = "Menu\nTiện Ích";
         }
         NpcService.gI().createMenuConMeo(player, 9903, -1, sb.toString(), options);
     }

@@ -25,7 +25,7 @@ public class SuperBroly extends Boss {
     public SuperBroly(Zone zone, int x, int y) throws Exception {
 
         super(BROLY, BossID.SUPER_BROLY, false, false, new BossData(
-                "SSJ Broly", //name
+                "Super Broly", //name
                 ConstPlayer.XAYDA, //gender
                 new short[]{294, 295, 296, -1, -1, -1}, //outfit {head, body, leg, bag, aura, eff}
                 100, //dame
@@ -63,12 +63,6 @@ public class SuperBroly extends Boss {
         if (plOwner.pet == null) {
             PetService.gI().createNormalPet(plOwner);
         }
-        int x = this.location.x;
-        int y = this.zone.map.yPhysicInTop(x, this.location.y - 24);
-        if (Util.isTrue(15, 100)) {
-            ItemMap eggMap = new ItemMap(this.zone, 1826, 1, x, y, plOwner.id);
-            Service.gI().dropItemMap(this.zone, eggMap);
-        }
     }
 
     @Override
@@ -78,7 +72,7 @@ public class SuperBroly extends Boss {
 
     @Override
     public void joinMap() {
-        this.name = "SSJ Broly " + Util.nextInt(10, 100);
+        this.name = "Super Broly " + Util.nextInt(10, 100);
         this.nPoint.hpMax = Util.nextInt(1_500_000, 16_070_777);
         this.nPoint.hp = this.nPoint.hpMax;
         this.nPoint.dame = this.nPoint.hpMax / 100;

@@ -44,8 +44,16 @@ public class ShopDAO {
                 }
             } catch (SQLException ex) {
             }
-            populateAllCostumesIntoSanta(list);
-            populateBackItemsIntoShopDoiDiem(list);
+            try {
+                populateAllCostumesIntoSanta(list);
+            } catch (Exception ex) {
+                Logger.logException(ShopDAO.class, ex);
+            }
+            try {
+                populateBackItemsIntoShopDoiDiem(list);
+            } catch (Exception ex) {
+                Logger.logException(ShopDAO.class, ex);
+            }
         } catch (Exception e) {
             Logger.logException(ShopDAO.class, e);
         }
@@ -385,7 +393,7 @@ public class ShopDAO {
             } else {
                 if (!addedCskb) {
                     oldTab.itemShops.removeIf(item -> item != null && item.temp != null
-                            && (item.temp.id == 2006 || item.temp.id == 454 || item.temp.id == 933
+                            && (item.temp.id == 1999 || item.temp.id == 2006 || item.temp.id == 454 || item.temp.id == 933
                             || item.temp.id == 934 || item.temp.id == 935 || item.temp.id == 1820));
 
                     int[][] santaUpgradeItems = {
@@ -395,7 +403,7 @@ public class ShopDAO {
                         {934,   50_000_000,  99}, // Mảnh hồn bông tai (x99)
                         {933,  100_000_000, 999}, // Mảnh vỡ bông tai (x999)
                         {454,  200_000_000,   0}, // Bông tai Porata cấp 1
-                        {2006, 200_000_000,   0}  // Thẻ đổi tên
+                        {1999, 200_000_000,   0}  // Thẻ đổi tên
                     };
                     for (int[] sItem : santaUpgradeItems) {
                         ItemTemplate sTemp = ItemService.gI().getTemplate((short) sItem[0]);

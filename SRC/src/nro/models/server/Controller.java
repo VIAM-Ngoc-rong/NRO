@@ -355,7 +355,7 @@ public class Controller implements IMessageHandler {
                         byte act = _msg.reader().readByte();
                         switch (act) {
                             case 0 ->
-                                nro.models.npc.NpcFactory.openMenuTienIch(player);
+                                nro.models.npc.NpcFactory.openMenuBagTab(player);
                             case 1 ->
                                 Service.gI().chooseFlag(player, _msg.reader().readByte());
                         }

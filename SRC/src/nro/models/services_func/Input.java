@@ -423,7 +423,10 @@ public class Input {
                         } else if (text[0].length() > 10) {
                             Service.gI().sendThongBaoOK(player, "Tên nhân vật chỉ đồng ý các ký tự a-z, 0-9 và chiều dài từ 5 đến 10 ký tự");
                         } else {
-                            Item theDoiTen = InventoryService.gI().findItem(player.inventory.itemsBag, 2006);
+                            Item theDoiTen = InventoryService.gI().findItem(player.inventory.itemsBag, 1999);
+                            if (theDoiTen == null) {
+                                theDoiTen = InventoryService.gI().findItem(player.inventory.itemsBag, 2006);
+                            }
                             if (theDoiTen == null) {
                                 Service.gI().sendThongBao(player, "Không tìm thấy thẻ đổi tên");
                             } else {

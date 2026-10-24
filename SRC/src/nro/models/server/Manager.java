@@ -704,13 +704,13 @@ public final class Manager {
 
             try (PreparedStatement psUpdateNameCard = ConnectionDatabase.prepareStatement(
                     "UPDATE item_template SET TYPE = 27, gender = 3, NAME = 'Thẻ đổi tên', "
-                    + "description = 'Sử dụng để đổi tên nhân vật', is_up_to_up = 1 WHERE id = 2006")) {
+                    + "description = 'Sử dụng để đổi tên nhân vật', level = 1, icon_id = 4030, part = -1, is_up_to_up = 1 WHERE id IN (1999, 2006)")) {
                 psUpdateNameCard.executeUpdate();
             } catch (Exception ignored) {
             }
 
             try (PreparedStatement psUpdateStackable = ConnectionDatabase.prepareStatement(
-                    "UPDATE item_template SET is_up_to_up = 1 WHERE id IN (933, 934, 935, 1655, 1664, 1665, 1666, 1671, 1672, 1775, 1820, 1823, 2006) "
+                    "UPDATE item_template SET is_up_to_up = 1 WHERE id IN (933, 934, 935, 1655, 1664, 1665, 1666, 1671, 1672, 1775, 1820, 1823, 1999, 2006) "
                     + "OR TYPE IN (6, 12, 14, 29, 31, 33)")) {
                 psUpdateStackable.executeUpdate();
             } catch (Exception ignored) {

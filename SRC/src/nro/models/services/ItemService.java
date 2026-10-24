@@ -611,10 +611,16 @@ public class ItemService {
     }
 
     public ItemOptionTemplate getItemOptionTemplate(int id) {
+        if (id < 0 || id >= Manager.ITEM_OPTION_TEMPLATES.size()) {
+            return null;
+        }
         return Manager.ITEM_OPTION_TEMPLATES.get(id);
     }
 
     public Template.ItemTemplate getTemplate(int id) {
+        if (id < 0 || id >= Manager.ITEM_TEMPLATES.size()) {
+            return null;
+        }
         return Manager.ITEM_TEMPLATES.get(id);
     }
 

@@ -197,21 +197,21 @@ public class QuyLaoKame extends Npc {
 
     private void openDoiDiemSanBossMenu(Player player) {
         String curAuraInfo = switch (player.levelHaoQuang) {
-            case 1 -> "Cấp 1 (+3% SĐ, HP, KI)";
-            case 2 -> "Cấp 2 (+5% SĐ, HP, KI, Hút HP, KI)";
-            case 3 -> "Cấp 3 (+10% SĐ, HP, KI, Hút HP, KI)";
+            case 1 -> "Vòng Chân Cấp 1 (+3% SĐ, HP, KI)";
+            case 2 -> "Vòng Chân Cấp 2 (+5% SĐ, HP, KI, Hút HP, KI)";
+            case 3 -> "Vòng Chân Cấp 3 (+10% SĐ, HP, KI, Hút HP, KI)";
             default -> "Chưa sở hữu";
         };
-        String npcSay = "|7|ĐỔI ĐIỂM SĂN BOSS LẤY HÀO QUANG\n"
+        String npcSay = "|7|ĐỔI ĐIỂM SĂN BOSS LẤY VÒNG CHÂN\n"
                 + "|2|Điểm săn Boss hiện tại: " + Util.numberToMoney(player.pointSanBoss) + " điểm\n"
-                + "Hào Quang đang kích hoạt: " + curAuraInfo + "\n"
+                + "Vòng Chân đang kích hoạt: " + curAuraInfo + "\n"
                 + "|1|• Cấp 1 (100 điểm): +3% SĐ, HP, KI\n"
                 + "• Cấp 2 (1.000 điểm): +5% SĐ, HP, KI, Hút HP, Hút KI\n"
                 + "• Cấp 3 (10.000 điểm): +10% SĐ, HP, KI, Hút HP, Hút KI";
         this.createOtherMenu(player, 99, npcSay,
-                "Hào Quang\nCấp 1\n(100 đ)",
-                "Hào Quang\nCấp 2\n(1.000 đ)",
-                "Hào Quang\nCấp 3\n(10.000 đ)",
+                "Vòng Chân\nCấp 1\n(100 đ)",
+                "Vòng Chân\nCấp 2\n(1.000 đ)",
+                "Vòng Chân\nCấp 3\n(10.000 đ)",
                 "Đóng");
     }
 
@@ -226,7 +226,7 @@ public class QuyLaoKame extends Npc {
             default -> 10000;
         };
         if (player.levelHaoQuang >= targetLevel) {
-            Service.gI().sendThongBao(player, "Bạn đã sở hữu Hào Quang cấp " + player.levelHaoQuang + " rồi!");
+            Service.gI().sendThongBao(player, "Bạn đã sở hữu Vòng Chân cấp " + player.levelHaoQuang + " rồi!");
             return;
         }
         if (player.pointSanBoss < cost) {
@@ -242,7 +242,7 @@ public class QuyLaoKame extends Npc {
         Service.gI().Send_Info_NV(player);
         Service.gI().Send_Caitrang(player);
         RadarService.gI().sendAura(player, player.getAura(), player.getEffFront());
-        Service.gI().sendThongBao(player, "Chúc mừng bạn đã đổi thành công Hào Quang Cấp " + targetLevel + "!");
+        Service.gI().sendThongBao(player, "Chúc mừng bạn đã đổi thành công Vòng Chân Cấp " + targetLevel + "!");
     }
 
     private void handleTalk(Player player) {

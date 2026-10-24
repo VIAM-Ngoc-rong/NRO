@@ -835,13 +835,6 @@ public class Player implements Runnable {
         if (!isPl()) {
             return -1;
         }
-        if (this.levelHaoQuang > 0) {
-            return switch (this.levelHaoQuang) {
-                case 1 -> 2;
-                case 2 -> 3;
-                default -> 4;
-            };
-        }
         if (this.Cards == null || this.Cards.isEmpty()) {
             return -1;
         }
@@ -857,11 +850,19 @@ public class Player implements Runnable {
     }
 
     public byte getEffFront() {
+        byte eff = -1;
+        if (this.levelHaoQuang > 0) {
+            eff = switch (this.levelHaoQuang) {
+                case 1 -> 6;
+                case 2 -> 7;
+                default -> 8;
+            };
+        }
         if (this.inventory == null) {
-            return -1;
+            return eff;
         }
         if (this.inventory.itemsBody.isEmpty() || this.inventory.itemsBody.size() < 10) {
-            return -1;
+            return eff;
         }
         int levelAo = 0;
         Item.ItemOption optionLevelAo = null;
@@ -913,24 +914,24 @@ public class Player implements Runnable {
                 break;
             }
         }
+        byte setEff = -1;
         if (optionLevelAo != null && optionLevelQuan != null && optionLevelGang != null && optionLevelGiay != null && optionLevelNhan != null
                 && levelAo >= 8 && levelQuan >= 8 && levelGang >= 8 && levelGiay >= 8 && levelNhan >= 8) {
-            return 8;
+            setEff = 8;
         } else if (optionLevelAo != null && optionLevelQuan != null && optionLevelGang != null && optionLevelGiay != null && optionLevelNhan != null
                 && levelAo >= 7 && levelQuan >= 7 && levelGang >= 7 && levelGiay >= 7 && levelNhan >= 7) {
-            return 7;
+            setEff = 7;
         } else if (optionLevelAo != null && optionLevelQuan != null && optionLevelGang != null && optionLevelGiay != null && optionLevelNhan != null
                 && levelAo >= 6 && levelQuan >= 6 && levelGang >= 6 && levelGiay >= 6 && levelNhan >= 6) {
-            return 6;
+            setEff = 6;
         } else if (optionLevelAo != null && optionLevelQuan != null && optionLevelGang != null && optionLevelGiay != null && optionLevelNhan != null
                 && levelAo >= 5 && levelQuan >= 5 && levelGang >= 5 && levelGiay >= 5 && levelNhan >= 5) {
-            return 5;
+            setEff = 5;
         } else if (optionLevelAo != null && optionLevelQuan != null && optionLevelGang != null && optionLevelGiay != null && optionLevelNhan != null
                 && levelAo >= 4 && levelQuan >= 4 && levelGang >= 4 && levelGiay >= 4 && levelNhan >= 4) {
-            return 4;
-        } else {
-            return -1;
+            setEff = 4;
         }
+        return (byte) Math.max(eff, setEff);
     }
 
     public short getHead() {

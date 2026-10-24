@@ -898,6 +898,7 @@ public class UseItem {
                                     Service.gI().sendThongBao(pl, "Bạn đang có Quả Trứng ở nhà nên không thể sử dụng thêm!");
                                 }
                                 break;
+                            case 1999:
                             case 2006:
                                 Input.gI().createFormChangeNameByItem(pl);
                                 break;
