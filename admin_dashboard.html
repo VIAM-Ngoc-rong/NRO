@@ -1185,6 +1185,9 @@
         if (Array.isArray(data.intrinsics) && data.intrinsics.length > 0) {
           allIntrinsicsCache = data.intrinsics;
         }
+        if (data.events) {
+          renderEventsAdmin(data.events);
+        }
         document.getElementById('countPlayersTab').textContent = cachedPlayers.length;
         document.getElementById('countBossesTab').textContent = `${data.aliveBossCount}/${cachedBosses.length}`;
 
@@ -1624,25 +1627,26 @@
     }
 
     const EVENT_DEFINITIONS = [
-      { key: 'halloween', label: '🎃 Sự Kiện Halloween', desc: 'Rơi Bí Ngô, Bàn Tay Phép Thuật, Đổi quà Halloween' },
-      { key: 'christmas', label: '🎄 Sự Kiện Giáng Sinh (Noel)', desc: 'Rơi Chuông, Quả Châu, Ngôi Sao, Đầu tuần lộc' },
-      { key: 'lunnar_new_year', label: '🧧 Sự Kiện Tết Nguyên Đán', desc: 'Rơi Thịt Tươi, Lá Dong, Gạo Nếp, Đậu Xanh, Dây Lạt' },
-      { key: 'trung_thu', label: '🥮 Sự Kiện Tết Trung Thu', desc: 'Rơi Đuôi Khỉ, Hộp Quà Trung Thu' },
-      { key: 'hung_vuong', label: '⚔️ Sự Kiện Giỗ Tổ Hùng Vương', desc: 'Rơi Ngà Voi, Cựa Gà, Bờm Ngựa, Dưa Hấu' },
-      { key: 'womans_day', label: '🌹 Sự Kiện Quốc Tế Phụ Nữ 8/3', desc: 'Rơi Hoa Hồng khi đánh quái' },
-      { key: 'top_up', label: '💎 Sự Kiện Khuyến Mãi Nạp', desc: 'Kích hoạt mốc thưởng sự kiện nạp' },
-      { key: 'double_gold', label: '💰 Sự Kiện X2 Vàng Rơi Toàn Server', desc: 'Nhân đôi lượng Vàng rơi ra khi tiêu diệt quái' }
+      { key: 'halloween', altKey: 'halloween', label: '🎃 Sự Kiện Halloween', desc: 'Rơi Bí Ngô 1-7 Sao, Bàn Tay Phép Thuật, Boss Bí Ma / Ma Trơi / Dơi' },
+      { key: 'christmas', altKey: 'christmas', label: '🎄 Sự Kiện Giáng Sinh (Noel)', desc: 'Rơi Tất Vớ, Hộp Quà Giáng Sinh & Boss Ông Già Noel' },
+      { key: 'lunnar_new_year', altKey: 'lunarNewYear', label: '🧧 Sự Kiện Tết Nguyên Đán', desc: 'Rơi Bao Lì Xì, Bánh Chưng & Boss Lân Con' },
+      { key: 'trung_thu', altKey: 'trungThu', label: '🥮 Sự Kiện Tết Trung Thu', desc: 'Rơi Đuôi Khỉ, Hộp Quà Trung Thu & Boss Khỉ Đột / Nguyệt Thần' },
+      { key: 'hung_vuong', altKey: 'hungVuong', label: '⚔️ Sự Kiện Giỗ Tổ Hùng Vương', desc: 'Rơi Ngà Voi, Cựa Gà, Bờm Ngựa, Dưa Hấu & Boss Sơn Tinh - Thủy Tinh' },
+      { key: 'womans_day', altKey: 'womensDay', label: '🌹 Sự Kiện Quốc Tế Phụ Nữ 8/3', desc: 'Rơi Hoa Hồng khi đánh quái' },
+      { key: 'top_up', altKey: 'topUp', label: '💎 Sự Kiện Khuyến Mãi Nạp', desc: 'Kích hoạt mốc thưởng sự kiện nạp' },
+      { key: 'double_gold', altKey: 'doubleGold', label: '💰 Sự Kiện X2 Vàng Rơi Toàn Server', desc: 'Nhân đôi lượng Vàng rơi ra khi tiêu diệt quái' }
     ];
 
     function renderEventsAdmin(evObj) {
       const grid = document.getElementById('eventsToggleGrid');
       if (!grid) return;
-      if (evObj && typeof evObj.drop_rate === 'number') {
+      const rateVal = evObj ? (typeof evObj.drop_rate === 'number' ? evObj.drop_rate : evObj.dropRate) : undefined;
+      if (typeof rateVal === 'number') {
         const dropInp = document.getElementById('eventDropRateInput');
-        if (dropInp) dropInp.value = evObj.drop_rate;
+        if (dropInp && document.activeElement !== dropInp) dropInp.value = rateVal;
       }
       grid.innerHTML = EVENT_DEFINITIONS.map(def => {
-        const isOn = Boolean(evObj && evObj[def.key]);
+        const isOn = Boolean(evObj && (evObj[def.key] || evObj[def.altKey]));
         return `
           <div style="border:1px solid ${isOn ? 'var(--success)' : 'var(--border)'};background:${isOn ? 'rgba(16,185,129,0.08)' : 'var(--bg)'};border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;justify-content:space-between;gap:8px;">
             <div>
@@ -1653,7 +1657,7 @@
               <div style="font-size:11.5px;color:var(--muted);margin-top:4px;">${def.desc}</div>
             </div>
             <div style="display:flex;gap:6px;">
-              <button class="${isOn ? 'btn-danger' : 'btn-success'} btn-sm" style="width:100%;" onclick="toggleGameEvent('${def.key}', ${isOn ? 0 : 1})">
+              <button class="${isOn ? 'btn-danger' : 'btn-success'} btn-sm" style="width:100%;" onclick="toggleGameEvent('${def.altKey}', ${isOn ? 0 : 1})">
                 ${isOn ? '⏹ Tắt Sự Kiện' : '▶ Bật Sự Kiện Ngay'}
               </button>
             </div>
@@ -1663,20 +1667,26 @@
     }
 
     async function toggleGameEvent(eventKey, enabled) {
-      const res = await postAction({ action: 'event_toggle', event: eventKey, enabled });
+      const res = await postAction({ action: 'event_toggle', event: eventKey, state: enabled, enabled });
       showToast(res.message, !res.ok);
-      if (res.ok) loadSystemTab();
+      if (res.ok) {
+        fetchStatus();
+        loadSystemTab();
+      }
     }
 
     async function saveEventDropRate() {
-      const rate = document.getElementById('eventDropRateInput').value || 15;
+      const rate = document.getElementById('eventDropRateInput').value || 5;
       const res = await postAction({ action: 'event_drop_rate', rate });
       showToast(res.message, !res.ok);
-      if (res.ok) loadSystemTab();
+      if (res.ok) {
+        fetchStatus();
+        loadSystemTab();
+      }
     }
 
     async function spawnEventBoss(eventKey) {
-      const res = await postAction({ action: 'event_spawn_boss', event: eventKey });
+      const res = await postAction({ action: 'event_spawn_boss', type: eventKey, event: eventKey });
       showToast(res.message, !res.ok);
       fetchStatus();
     }
@@ -1688,7 +1698,7 @@
         showToast('Vui lòng nhập Tên Nhân Vật, ID hoặc gõ ALL để tặng toàn Server!', true);
         return;
       }
-      const res = await postAction({ action: 'event_give_point', playerTarget, points });
+      const res = await postAction({ action: 'event_give_point', target: playerTarget, playerTarget, points });
       showToast(res.message, !res.ok);
     }
 
@@ -2096,7 +2106,7 @@
       return String(s || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
     }
 
-    renderEventsAdmin({});
+    renderEventsAdmin({ halloween: true, drop_rate: 5, dropRate: 5 });
     fetchStatus();
     setInterval(fetchStatus, 3000);
   </script>

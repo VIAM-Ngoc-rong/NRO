@@ -331,9 +331,30 @@ public class AdminWebServer {
         sb.append(",\"aliveBossCount\":").append(aliveBossCount);
         sb.append(",\"totalBossCount\":").append(visibleBossCount);
         sb.append(",\"intrinsics\":").append(serializeIntrinsics());
+        sb.append(",\"events\":").append(serializeEvents());
         sb.append("}");
 
         sendJson(exchange, 200, sb.toString());
+    }
+
+    private static String serializeEvents() {
+        return "{\"halloween\":" + EventManager.HALLOWEEN
+                + ",\"christmas\":" + EventManager.CHRISTMAS
+                + ",\"lunarNewYear\":" + EventManager.LUNNAR_NEW_YEAR
+                + ",\"lunnar_new_year\":" + EventManager.LUNNAR_NEW_YEAR
+                + ",\"trungThu\":" + EventManager.TRUNG_THU
+                + ",\"trung_thu\":" + EventManager.TRUNG_THU
+                + ",\"hungVuong\":" + EventManager.HUNG_VUONG
+                + ",\"hung_vuong\":" + EventManager.HUNG_VUONG
+                + ",\"womensDay\":" + EventManager.INTERNATIONAL_WOMANS_DAY
+                + ",\"womans_day\":" + EventManager.INTERNATIONAL_WOMANS_DAY
+                + ",\"topUp\":" + EventManager.TOP_UP
+                + ",\"top_up\":" + EventManager.TOP_UP
+                + ",\"doubleGold\":" + EventManager.DOUBLE_GOLD
+                + ",\"double_gold\":" + EventManager.DOUBLE_GOLD
+                + ",\"dropRate\":" + EventManager.EVENT_DROP_RATE
+                + ",\"drop_rate\":" + EventManager.EVENT_DROP_RATE
+                + "}";
     }
 
     /**
@@ -723,17 +744,7 @@ public class AdminWebServer {
             }
         }
         sb.append(",\"serverLog\":").append(jsonStr(srvLogTail));
-        sb.append(",\"events\":{");
-        sb.append("\"halloween\":").append(EventManager.HALLOWEEN);
-        sb.append(",\"christmas\":").append(EventManager.CHRISTMAS);
-        sb.append(",\"lunarNewYear\":").append(EventManager.LUNNAR_NEW_YEAR);
-        sb.append(",\"trungThu\":").append(EventManager.TRUNG_THU);
-        sb.append(",\"hungVuong\":").append(EventManager.HUNG_VUONG);
-        sb.append(",\"womensDay\":").append(EventManager.INTERNATIONAL_WOMANS_DAY);
-        sb.append(",\"topUp\":").append(EventManager.TOP_UP);
-        sb.append(",\"doubleGold\":").append(EventManager.DOUBLE_GOLD);
-        sb.append(",\"dropRate\":").append(EventManager.EVENT_DROP_RATE);
-        sb.append("}");
+        sb.append(",\"events\":").append(serializeEvents());
         sb.append("}");
         sendJson(exchange, 200, sb.toString());
     }
@@ -1340,7 +1351,8 @@ public class AdminWebServer {
                 }
                 case "event_toggle" -> {
                     String evKey = params.getOrDefault("event", "").trim();
-                    boolean state = "1".equals(params.get("state")) || "true".equalsIgnoreCase(params.get("state"));
+                    String stateRaw = params.containsKey("state") ? params.get("state") : params.get("enabled");
+                    boolean state = "1".equals(stateRaw) || "true".equalsIgnoreCase(stateRaw);
                     String evLabel;
                     switch (evKey) {
                         case "halloween" -> {
@@ -1359,14 +1371,14 @@ public class AdminWebServer {
                                 BossManager.gI().createBoss(BossID.ONG_GIA_NOEL, 10);
                             }
                         }
-                        case "lunarNewYear" -> {
+                        case "lunarNewYear", "lunnar_new_year", "tet" -> {
                             EventManager.LUNNAR_NEW_YEAR = state;
                             evLabel = "Sự kiện Tết Nguyên Đán (Rơi Bao Lì Xì & Boss Lân Con)";
                             if (state && BossManager.gI().getBossById(BossID.LAN_CON) == null) {
                                 BossManager.gI().createBoss(BossID.LAN_CON, 10);
                             }
                         }
-                        case "trungThu" -> {
+                        case "trungThu", "trung_thu" -> {
                             EventManager.TRUNG_THU = state;
                             evLabel = "Sự kiện Trung Thu (Rơi Hộp Quà Trung Thu & Boss Khỉ Đột/Nguyệt Thần)";
                             if (state && BossManager.gI().getBossById(BossID.KHIDOT) == null) {
@@ -1374,7 +1386,7 @@ public class AdminWebServer {
                                 BossManager.gI().createBoss(BossID.NGUYETTHAN, 5);
                             }
                         }
-                        case "hungVuong" -> {
+                        case "hungVuong", "hung_vuong" -> {
                             EventManager.HUNG_VUONG = state;
                             evLabel = "Sự kiện Giỗ Tổ Hùng Vương (Rơi Dưa Hấu & Boss Thủy Tinh/Sơn Tinh)";
                             if (state && BossManager.gI().getBossById(BossID.THUY_TINH) == null) {
@@ -1382,15 +1394,15 @@ public class AdminWebServer {
                                 BossManager.gI().createBoss(BossID.SON_TINH, 5);
                             }
                         }
-                        case "womensDay" -> {
+                        case "womensDay", "womans_day" -> {
                             EventManager.INTERNATIONAL_WOMANS_DAY = state;
                             evLabel = "Sự kiện Quốc Tế Phụ Nữ (Rơi Bông Hoa)";
                         }
-                        case "topUp" -> {
+                        case "topUp", "top_up" -> {
                             EventManager.TOP_UP = state;
                             evLabel = "Sự kiện Khuyến Mãi Nạp (Top Up)";
                         }
-                        case "doubleGold" -> {
+                        case "doubleGold", "double_gold" -> {
                             EventManager.DOUBLE_GOLD = state;
                             evLabel = "Sự kiện X2 Vàng Rơi Từ Quái Toàn Server";
                         }
@@ -1409,7 +1421,7 @@ public class AdminWebServer {
                     sendJson(exchange, 200, "{\"ok\":true,\"message\":" + jsonStr("Đã cập nhật tỷ lệ rơi Vật phẩm Sự kiện từ quái thành " + rate + "%!") + "}");
                 }
                 case "event_spawn_boss" -> {
-                    String type = params.getOrDefault("type", "").trim();
+                    String type = params.getOrDefault("type", params.getOrDefault("event", "")).trim();
                     int count = (int) Math.max(1, Math.min(20, parseLongSafe(params.get("count"), 5)));
                     String bossName;
                     switch (type) {
@@ -1423,16 +1435,16 @@ public class AdminWebServer {
                             BossManager.gI().createBoss(BossID.ONG_GIA_NOEL, count);
                             bossName = "Ông Già Noel (x" + count + ")";
                         }
-                        case "lunarNewYear" -> {
+                        case "lunarNewYear", "lunnar_new_year", "tet" -> {
                             BossManager.gI().createBoss(BossID.LAN_CON, count);
                             bossName = "Lân Con (x" + count + ")";
                         }
-                        case "trungThu" -> {
+                        case "trungThu", "trung_thu" -> {
                             BossManager.gI().createBoss(BossID.KHIDOT, count);
                             BossManager.gI().createBoss(BossID.NGUYETTHAN, count);
                             bossName = "Khỉ Đột & Nguyệt Thần (x" + count + " mỗi loại)";
                         }
-                        case "hungVuong" -> {
+                        case "hungVuong", "hung_vuong" -> {
                             BossManager.gI().createBoss(BossID.THUY_TINH, count);
                             BossManager.gI().createBoss(BossID.SON_TINH, count);
                             bossName = "Thủy Tinh & Sơn Tinh (x" + count + " mỗi loại)";
@@ -1447,7 +1459,7 @@ public class AdminWebServer {
                 }
                 case "event_give_point" -> {
                     int pts = (int) parseLongSafe(params.get("points"), 100);
-                    String target = params.getOrDefault("target", "all").trim();
+                    String target = params.getOrDefault("target", params.getOrDefault("playerTarget", "all")).trim();
                     if ("all".equalsIgnoreCase(target)) {
                         int count = 0;
                         for (Player pl : new ArrayList<>(Client.gI().getPlayers())) {
