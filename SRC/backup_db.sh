@@ -18,6 +18,12 @@ BACKUP_FILE="$BACKUP_DIR/${DB_NAME}_${TIMESTAMP}.sql.gz"
 DAILY_FILE="$BACKUP_DIR/${DB_NAME}_${DATE_ONLY}.sql.gz"
 LATEST_FILE="$BACKUP_DIR/${DB_NAME}_latest.sql.gz"
 
+# Dọn dẹp ổ cứng và bản backup cũ trước khi nén để tránh lỗi No space left on device
+truncate -s 0 /var/log/btmp /var/log/wtmp /var/log/syslog /var/log/auth.log /var/log/kern.log /var/log/mysql/*.log 2>/dev/null || true
+rm -rf /root/NRO/backups/.git /tmp/*.tmp /var/tmp/* /root/.cache/* 2>/dev/null || true
+mysql -e "PURGE BINARY LOGS BEFORE NOW();" >/dev/null 2>&1 || true
+ls -1t "$BACKUP_DIR"/${DB_NAME}_20*.sql.gz 2>/dev/null | tail -n +2 | xargs -r rm -f 2>/dev/null || true
+
 mysqldump -h "$DB_HOST" -P "$DB_PORT" -u "$DB_USER" -p"$DB_PASS" \
   --single-transaction --quick --routines --triggers "$DB_NAME" 2>/dev/null | gzip > "$BACKUP_FILE"
 

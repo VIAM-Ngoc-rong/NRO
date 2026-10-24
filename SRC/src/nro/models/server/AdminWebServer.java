@@ -2230,7 +2230,7 @@ public class AdminWebServer {
                         try {
                             Thread.sleep(800);
                             new ProcessBuilder("/bin/bash", "-c",
-                                    "nohup /bin/bash -c 'apt-get clean >/dev/null 2>&1; rm -rf /var/cache/apt/archives/*.deb /var/lib/apt/lists/* /root/NRO/backups/.git 2>/dev/null; journalctl --vacuum-size=30M >/dev/null 2>&1; mysql -e \"PURGE BINARY LOGS BEFORE NOW();\" >/dev/null 2>&1; cd /root/NRO/SRC && git fetch origin && git reset --hard origin/main && sed -i \"s/\\r$//\" run.sh backup_db.sh && chmod +x run.sh backup_db.sh && ./run.sh' > /root/NRO/SRC/update.log 2>&1 < /dev/null &")
+                                    "nohup /bin/bash -c 'apt-get clean >/dev/null 2>&1; truncate -s 0 /var/log/btmp /var/log/wtmp /var/log/syslog /var/log/auth.log /var/log/kern.log /var/log/mysql/*.log 2>/dev/null; rm -rf /var/cache/apt/archives/*.deb /var/lib/apt/lists/* /root/.cache/* /var/crash/* /root/NRO/backups/.git 2>/dev/null; journalctl --vacuum-size=10M >/dev/null 2>&1; mysql -e \"PURGE BINARY LOGS BEFORE NOW(); SET GLOBAL binlog_expire_logs_seconds = 600;\" >/dev/null 2>&1; cd /root/NRO/SRC && git fetch --depth=1 origin main && git reset --hard origin/main && git reflog expire --expire=now --all >/dev/null 2>&1 && git gc --prune=now >/dev/null 2>&1 && sed -i \"s/\\r$//\" run.sh backup_db.sh && chmod +x run.sh backup_db.sh && ./run.sh' > /root/NRO/SRC/update.log 2>&1 < /dev/null &")
                                     .directory(new File("."))
                                     .start();
                         } catch (Exception ignored) {

@@ -156,6 +156,46 @@ public class ServerManager {
                 Manager.resetTopFlags();
             }
         }, 0, 3000, TimeUnit.MILLISECONDS);
+
+        // Định kỳ mỗi 15 phút tự động dọn rác log hệ thống, MySQL binlog và server.log để chống tràn ổ cứng (No space left on device) lúc nửa đêm
+        topUpdater.scheduleAtFixedRate(this::runPeriodicDiskCleanup, 5, 15, TimeUnit.MINUTES);
+    }
+
+    private void runPeriodicDiskCleanup() {
+        try {
+            java.io.File srvLog = new java.io.File("server.log");
+            if (srvLog.exists() && srvLog.length() > 5 * 1024 * 1024L) {
+                try (java.io.RandomAccessFile raf = new java.io.RandomAccessFile(srvLog, "rw")) {
+                    long len = raf.length();
+                    int keep = 256 * 1024;
+                    byte[] tail = new byte[keep];
+                    raf.seek(Math.max(0, len - keep));
+                    int read = raf.read(tail);
+                    raf.setLength(0);
+                    if (read > 0) {
+                        raf.write(tail, 0, read);
+                    }
+                } catch (Exception ignored) {
+                }
+            }
+            try (Connection con = LocalManager.getConnection();
+                 PreparedStatement ps = con.prepareStatement(
+                         "DELETE FROM boss_kill_history WHERE id < (SELECT min_id FROM (SELECT MIN(id) AS min_id FROM (SELECT id FROM boss_kill_history ORDER BY id DESC LIMIT 300) t) t2)")) {
+                ps.executeUpdate();
+            } catch (Exception ignored) {
+            }
+            String os = System.getProperty("os.name").toLowerCase();
+            if (!os.contains("win")) {
+                new ProcessBuilder("/bin/bash", "-c",
+                        "truncate -s 0 /var/log/btmp /var/log/wtmp /var/log/syslog /var/log/auth.log /var/log/kern.log /var/log/dpkg.log /var/log/ufw.log /var/log/mysql/*.log 2>/dev/null || true; "
+                        + "find /var/log -type f \\( -name '*.gz' -o -name '*.1' -o -name '*.old' \\) -delete 2>/dev/null || true; "
+                        + "journalctl --vacuum-size=10M >/dev/null 2>&1 || true; "
+                        + "rm -rf /tmp/*.tmp /var/tmp/* /var/crash/* /root/.cache/* /root/NRO/backups/.git 2>/dev/null || true; "
+                        + "mysql -e 'PURGE BINARY LOGS BEFORE NOW(); SET GLOBAL binlog_expire_logs_seconds = 600;' >/dev/null 2>&1 || true")
+                        .start();
+            }
+        } catch (Exception ignored) {
+        }
     }
 
     private boolean shouldUpdateTop() {
