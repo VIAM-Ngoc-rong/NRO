@@ -128,7 +128,7 @@ public class Whis extends Npc {
                 "Ca đíc liên hoàn chưởng";
         };
 
-        int requiredBk = canLearn ? 9999 : 999;
+        int requiredBk = canLearn ? 999 : 99;
         String message = "|1|Ta sẽ dạy ngươi tuyệt kỹ " + skillName
                 + (canLearn ? " 1" : " " + (currentSkill.point + 1));
 
@@ -165,14 +165,14 @@ public class Whis extends Npc {
         boolean isNewSkill = (currentSkill == null || currentSkill.point == 0);
 
         if (isNewSkill) {
-            if (sach.quantity >= 9999) {
+            if (sach.quantity >= 999) {
                 learnNewSkill(player, sach, skillId, iconSkill);
             } else {
-                int missing = 9999 - sach.quantity;
+                int missing = 999 - sach.quantity;
                 Service.gI().sendThongBao(player, "Ngươi còn thiếu " + missing + " bí kíp nữa.\nHãy tìm đủ rồi đến gặp ta.");
             }
         } else {
-            if (sach.quantity >= 999) {
+            if (sach.quantity >= 99) {
                 if (currentSkill.currLevel < 1000) {
                     npcChat(player, "Ngươi chưa luyện skill đến mức thành thạo. Luyện thêm đi.");
                 } else if (currentSkill.point >= 9) {
@@ -181,7 +181,7 @@ public class Whis extends Npc {
                     upgradeSkill(player, sach, currentSkill);
                 }
             } else {
-                int missing = 999 - sach.quantity;
+                int missing = 99 - sach.quantity;
                 Service.gI().sendThongBao(player, "Ngươi còn thiếu " + missing + " bí kíp nữa.\nHãy tìm đủ rồi đến gặp ta.");
             }
         }
@@ -192,14 +192,14 @@ public class Whis extends Npc {
             boolean success = Util.isTrue(15, 15);
             String message = success ? "Học skill thành công!" : "Tư chất kém!";
             String npcMessage = success ? "Chúc mừng con nhé!" : "Ngu dốt!";
-            int usedBk = success ? 9999 : 99;
+            int usedBk = success ? 999 : 99;
             if (success) {
                 SkillService.gI().learSkillSpecial(player, (byte) skillId);
             } else {
                 iconSkill = 15313;
             }
 
-            sendLearnSkillEffect(player, iconSkill, usedBk);
+            sendLearnSkillEffect(player, iconSkill, success);
             npcChat(player, npcMessage);
             Service.gI().sendThongBao(player, message);
 
@@ -215,15 +215,19 @@ public class Whis extends Npc {
 
     private void upgradeSkill(Player player, Item sach, Skill currentSkill) {
         try {
-            boolean success = Util.isTrue(1, 30);
+            boolean success = Util.isTrue(25, 100);
             String message = success ? "Nâng skill thành công!" : "Tư chất kém!";
             String npcMessage = success ? "Chúc mừng con nhé!" : "Ngu dốt!";
-            int usedBk = success ? 999 : 99;
+            int usedBk = success ? 99 : 50;
+            int iconSkill = player.gender == 0 ? 11162 : (player.gender == 1 ? 11194 : 11193);
             if (success) {
                 currentSkill.point++;
+                Service.gI().player(player);
+            } else {
+                iconSkill = 15313;
             }
 
-            sendLearnSkillEffect(player, 15313, usedBk);
+            sendLearnSkillEffect(player, iconSkill, success);
             npcChat(player, npcMessage);
             Service.gI().sendThongBao(player, message);
 
@@ -237,7 +241,7 @@ public class Whis extends Npc {
         }
     }
 
-    private void sendLearnSkillEffect(Player player, int iconSkill, int usedBk) throws IOException {
+    private void sendLearnSkillEffect(Player player, int iconSkill, boolean success) throws IOException {
         Message msg = new Message(-81);
         msg.writer().writeByte(0);
         msg.writer().writeUTF("Skill 9");
@@ -254,7 +258,7 @@ public class Whis extends Npc {
         msg.cleanup();
 
         msg = new Message(-81);
-        msg.writer().writeByte(usedBk == 99 ? 8 : 7);
+        msg.writer().writeByte(success ? 7 : 8);
         msg.writer().writeShort(iconSkill);
         player.sendMessage(msg);
         msg.cleanup();

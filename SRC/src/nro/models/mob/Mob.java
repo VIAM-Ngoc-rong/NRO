@@ -892,21 +892,32 @@ public class Mob {
             }
         }
 
-        //========================Thức Ăn & Nguyên Liệu========================
-        if (Util.isTrue(3, 333)) {
-            if (player.setClothes.checkSetGod()) {
-                ItemMap it = new ItemMap(zone, Util.nextInt(663, 667), 1, x, yEnd, player.id);
-                candidateItems.add(it);
-            }
+        //========================Thức Ăn, Mảnh Thiên Sứ & Bí Kíp Tuyệt Kỹ========================
+        boolean hasSetGod = (plOwner != null && plOwner.setClothes != null && plOwner.setClothes.checkSetGod())
+                || (player.setClothes != null && player.setClothes.checkSetGod());
+        if (hasSetGod && Util.isTrue(5, 100)) {
+            ItemMap it = new ItemMap(zone, Util.nextInt(663, 667), 1, x, yEnd, plOwner.id);
+            candidateItems.add(0, it);
         }
 
-        if (player.setClothes.checkSetDes() && MapService.gI().isMapNgucTu(mapid)) {
-            if ((player.isActive() && Util.isTrue(2, 555)) || Util.isTrue(10, 100)) {
-                candidateItems.add(new ItemMap(zone, Util.nextInt(1066, 1070), 1, x, yEnd, player.id));
+        boolean isMapBillOrNgucTu = MapService.gI().isMapNgucTu(mapid) || mapid == 154;
+        boolean hasSetDes = (plOwner != null && plOwner.setClothes != null && plOwner.setClothes.checkSetDes())
+                || (player.setClothes != null && player.setClothes.checkSetDes());
+        boolean hasCoBonLa = plOwner != null && plOwner.itemTime != null && plOwner.itemTime.isUseCoBonLa;
+
+        if (isMapBillOrNgucTu) {
+            int biKipRate = hasSetDes ? 75 : 50;
+            if (hasCoBonLa) {
+                biKipRate = Math.min(90, biKipRate + 15);
             }
-        }
-        if ((Util.isTrue(10, 100) || (player.isActive() && player.setClothes.checkSetDes() && Util.isTrue(20, 100))) && MapService.gI().isMapNgucTu(mapid)) {
-            candidateItems.add(new ItemMap(zone, 1229, 1, x, yEnd, player.id));
+            if (Util.isTrue(biKipRate, 100)) {
+                int biKipQty = hasSetDes ? Util.nextInt(2, 5) : Util.nextInt(1, 3);
+                candidateItems.add(0, new ItemMap(zone, 1229, biKipQty, x, yEnd, plOwner.id));
+            } else if (hasSetDes && Util.isTrue(25, 100)) {
+                candidateItems.add(0, new ItemMap(zone, Util.nextInt(1066, 1070), 1, x, yEnd, plOwner.id));
+            } else if (Util.isTrue(35, 100)) {
+                candidateItems.add(0, new ItemMap(zone, 1281, Util.nextInt(2, 5), x, yEnd, plOwner.id));
+            }
         }
 
         if ((Util.isTrue(10, 100) && MapService.gI().isMapNguHanhSon(mapid))) {

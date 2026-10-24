@@ -42,7 +42,7 @@ public class HocTuyetKy {
             .append(nextPoint)
             .append("\n");
 
-        int requiredBiKip = (nextPoint == 1) ? 9999 : 999;
+        int requiredBiKip = (nextPoint == 1) ? 999 : 99;
         int requiredGold = (nextPoint == 1) ? 100_000_000 : 10_000_000;
 
         appendRequirement(text, "Bí kíp tuyệt kỹ", quantityBiKipTuyetKy, requiredBiKip);
@@ -68,7 +68,7 @@ public class HocTuyetKy {
             return;
         }
 
-        int requiredBiKip = (nextPoint == 1) ? 9999 : 999;
+        int requiredBiKip = (nextPoint == 1) ? 999 : 99;
         int requiredGold = (nextPoint == 1) ? 100_000_000 : 10_000_000;
 
         if (quantityBiKipTuyetKy < requiredBiKip || gold < requiredGold) {
