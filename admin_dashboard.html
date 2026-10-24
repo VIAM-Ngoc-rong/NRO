@@ -392,6 +392,7 @@
         <input type="text" id="announceText" placeholder="Nhập thông báo gửi toàn bộ người chơi đang online..." onkeydown="if(event.key==='Enter') sendAnnounce()" />
         <button onclick="sendAnnounce()">📢 Gửi Thông Báo</button>
       </div>
+      <button class="btn-warning" onclick="openIntrinsicModal('', 0, 0, -1, 0, 0)" title="Tặng hoặc chỉnh sửa chỉ số Nội tại (%) cho người chơi Online & Offline">⚡ Buff Nội Tại</button>
       <button class="btn-success" onclick="saveAllData()">💾 Lưu Dữ Liệu</button>
       <button class="btn-teal" onclick="updateAndRestartServer()" title="Tự động kéo code mới từ GitHub (git pull) và khởi động lại Server không cần mở SSH">🔄 Cập Nhật Code & Khởi Động Lại Server</button>
       <button class="btn-warning" onclick="triggerBackupNow()">☁️ Backup & Đẩy GitHub</button>
@@ -735,6 +736,18 @@
           <button type="button" class="btn-muted btn-sm" onclick="appendGiftOption('30:1')">Không GD (30)</button>
         </div>
       </div>
+      <div class="grid-2" style="grid-template-columns: 1.5fr 1fr; gap: 10px; background: rgba(245, 158, 11, 0.08); padding: 10px 12px; border-radius: 10px; border: 1px dashed var(--warning); margin-bottom: 6px;">
+        <div class="form-group" style="margin-bottom: 0;">
+          <label style="color: var(--warning); font-weight: 700;">⚡ Tặng Kèm / Buff Nội Tại (Tuỳ chọn):</label>
+          <select id="giftIntrinsicId" onchange="onChangeGiftIntrinsic()" style="width: 100%;">
+            <option value="0">-- Không thay đổi Nội tại --</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin-bottom: 0;">
+          <label style="color: var(--warning); font-weight: 700;">Chỉ số % Nội Tại (param1):</label>
+          <input type="number" id="giftIntrinsicParam1" value="150" min="1" max="32000" placeholder="VD: 150" />
+        </div>
+      </div>
       <div class="modal-actions">
         <button class="btn-muted" onclick="closeGiftModal()">Đóng</button>
         <button class="btn-success" onclick="submitGift()">Trao Ngay</button>
@@ -834,6 +847,86 @@
     </div>
   </div>
 
+  <!-- MODAL 5: BUFF / TẶNG NỘI TẠI CHO NGƯỜI CHƠI (CẢ ONLINE & OFFLINE) -->
+  <div id="intrinsicModal" class="modal-backdrop">
+    <div class="modal" style="max-width: 600px;">
+      <h3 id="intrinsicModalTitle">⚡ Buff / Tặng Nội Tại Cho Người Chơi</h3>
+      <input type="hidden" id="intrinsicAccId" value="0" />
+      <div class="grid-2" style="grid-template-columns: 1.2fr 1fr; gap: 10px; background: rgba(245, 158, 11, 0.08); padding: 10px 12px; border-radius: 10px; border: 1px solid var(--border); margin-bottom: 12px;">
+        <div class="form-group" style="margin-bottom: 0;">
+          <label style="color: var(--primary); font-weight: 700;">👤 Chọn Người Nhận (Online / Toàn Server):</label>
+          <select id="intrinsicPlayerSelect" onchange="onChangeIntrinsicPlayerSelect()" style="width: 100%; border-color: #93c5fd;">
+            <option value="">-- Chọn người chơi --</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin-bottom: 0;">
+          <label style="color: var(--text); font-weight: 700;">✍️ Hoặc nhập Tên Nhân Vật / ID (Cả Offline):</label>
+          <input type="text" id="intrinsicPlayerTarget" placeholder="Nhập Tên NV, ID hoặc ALL..." />
+        </div>
+      </div>
+
+      <div class="grid-2" style="grid-template-columns: 1fr 2fr; gap: 10px;">
+        <div class="form-group">
+          <label>Lọc theo Hành Tinh (Hệ):</label>
+          <select id="intrinsicGenderFilter" onchange="populateIntrinsicSelects()">
+            <option value="-1">Tất cả Hành Tinh</option>
+            <option value="0">Trái Đất</option>
+            <option value="1">Namek</option>
+            <option value="2">Xayda</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label style="color: var(--warning); font-weight: 700;">⚡ Chọn Nội Tại muốn tặng:</label>
+          <select id="intrinsicSelectId" onchange="onSelectIntrinsicChange()" style="width: 100%; font-weight: 600;">
+          </select>
+        </div>
+      </div>
+
+      <div class="grid-2" style="grid-template-columns: 1fr 1fr; gap: 10px;">
+        <div class="form-group">
+          <label style="color: var(--success); font-weight: 700;">Chỉ số % Chính (param1 — Mặc định Max):</label>
+          <input type="number" id="intrinsicParam1" value="150" min="1" max="32000" />
+        </div>
+        <div class="form-group">
+          <label>Chỉ số Phụ (param2 — nếu có):</label>
+          <input type="number" id="intrinsicParam2" value="0" min="0" max="32000" />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>🔥 Chọn nhanh Nội Tại VIP phổ biến nhất:</label>
+        <div style="display:flex;gap:5px;flex-wrap:wrap;margin-top:4px;">
+          <button type="button" class="btn-sm" style="background:#2563eb;" onclick="quickPickIntrinsic('dich chuyen', 0, 150)">TĐ: Dịch Chuyển +150%</button>
+          <button type="button" class="btn-sm" style="background:#2563eb;" onclick="quickPickIntrinsic('thoi mien', 0, 150)">TĐ: Thôi Miên +150%</button>
+          <button type="button" class="btn-sm" style="background:#2563eb;" onclick="quickPickIntrinsic('kamejoko', 0, 25)">TĐ: Kamejoko +25%</button>
+          <button type="button" class="btn-sm" style="background:#059669;" onclick="quickPickIntrinsic('socola', 1, 150)">NM: Biến Sôcôla +150%</button>
+          <button type="button" class="btn-sm" style="background:#059669;" onclick="quickPickIntrinsic('lien hoan', 1, 25)">NM: Liên Hoàn +25%</button>
+          <button type="button" class="btn-sm" style="background:#059669;" onclick="quickPickIntrinsic('de trung', 1, 65)">NM: Đẻ Trứng +65%</button>
+          <button type="button" class="btn-sm" style="background:#d97706;" onclick="quickPickIntrinsic('troi', 2, 150)">XD: Trói +150%</button>
+          <button type="button" class="btn-sm" style="background:#d97706;" onclick="quickPickIntrinsic('galick', 2, 25)">XD: Galick +25%</button>
+          <button type="button" class="btn-sm" style="background:#d97706;" onclick="quickPickIntrinsic('bien hinh', 2, 25)">XD: Biến Hình +25%</button>
+          <button type="button" class="btn-sm" style="background:#7c3aed;" onclick="quickPickIntrinsic('vang roi', -1, 300)">Chung: Vàng Rơi +300%</button>
+          <button type="button" class="btn-sm" style="background:#7c3aed;" onclick="quickPickIntrinsic('suc manh', -1, 35)">Chung: TNSM +35%</button>
+        </div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap;margin-top:6px;">
+          <span style="font-size:12px;color:var(--muted);align-self:center;">Đặt nhanh %:</span>
+          <button type="button" class="btn-muted btn-sm" onclick="setIntrinsicPct('max')">Max Mặc Định</button>
+          <button type="button" class="btn-muted btn-sm" onclick="setIntrinsicPct(50)">+50%</button>
+          <button type="button" class="btn-muted btn-sm" onclick="setIntrinsicPct(100)">+100%</button>
+          <button type="button" class="btn-muted btn-sm" onclick="setIntrinsicPct(150)">+150%</button>
+          <button type="button" class="btn-muted btn-sm" onclick="setIntrinsicPct(200)">+200%</button>
+          <button type="button" class="btn-muted btn-sm" onclick="setIntrinsicPct(300)">+300%</button>
+          <button type="button" class="btn-muted btn-sm" onclick="setIntrinsicPct(500)">+500%</button>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-muted" onclick="closeIntrinsicModal()">Đóng</button>
+        <button class="btn-warning" onclick="submitIntrinsicBuff()">⚡ Buff Nội Tại Ngay</button>
+      </div>
+    </div>
+  </div>
+
   <div id="toast"></div>
 
   <script>
@@ -842,6 +935,33 @@
     let cachedAccounts = [];
     let allItemsCache = [];
     let allOptionsCache = [];
+    let allIntrinsicsCache = [
+      { id: 1, name: 'Chiêu đấm Dragon +p0% đến p1% sát thương', desc: 'Chiêu đấm Dragon +5% đến 25% sát thương', paramFrom1: 5, paramTo1: 25, paramFrom2: 0, paramTo2: 0, genderId: 0, gender: 'Trái Đất' },
+      { id: 2, name: 'Chiêu Kamejoko +p0% đến p1% sát thương', desc: 'Chiêu Kamejoko +5% đến 25% sát thương', paramFrom1: 5, paramTo1: 25, paramFrom2: 0, paramTo2: 0, genderId: 0, gender: 'Trái Đất' },
+      { id: 3, name: 'Thái Dương Hạ San +p0% đến p1% tốc độ -p2% đến p3% KI', desc: 'Thái Dương Hạ San +10% đến 35% tốc độ -10% đến 35% KI', paramFrom1: 10, paramTo1: 35, paramFrom2: 10, paramTo2: 35, genderId: 0, gender: 'Trái Đất' },
+      { id: 4, name: 'Quả cầu kênh khi +p0% đến p1% tốc độ hồi phục', desc: 'Quả cầu kênh khi +15% đến 55% tốc độ hồi phục', paramFrom1: 15, paramTo1: 55, paramFrom2: 0, paramTo2: 0, genderId: 0, gender: 'Trái Đất' },
+      { id: 5, name: 'Khiên năng lượng +p0% đến p1% tốc độ hồi phục', desc: 'Khiên năng lượng +15% đến 55% tốc độ hồi phục', paramFrom1: 15, paramTo1: 55, paramFrom2: 0, paramTo2: 0, genderId: 0, gender: 'Trái Đất' },
+      { id: 6, name: 'Dịch chuyển tức thời +p0% đến p1% sát thương đòn kế', desc: 'Dịch chuyển tức thời +50% đến 150% sát thương đòn kế', paramFrom1: 50, paramTo1: 150, paramFrom2: 0, paramTo2: 0, genderId: 0, gender: 'Trái Đất' },
+      { id: 7, name: 'Thôi miên +p0% đến p1% sát thương đòn kế', desc: 'Thôi miên +50% đến 150% sát thương đòn kế', paramFrom1: 50, paramTo1: 150, paramFrom2: 0, paramTo2: 0, genderId: 0, gender: 'Trái Đất' },
+      { id: 8, name: 'Chiêu đấm Demon +p0% đến p1% sát thương', desc: 'Chiêu đấm Demon +5% đến 25% sát thương', paramFrom1: 5, paramTo1: 25, paramFrom2: 0, paramTo2: 0, genderId: 1, gender: 'Namek' },
+      { id: 9, name: 'Chiêu Masenko +p0% đến p1% sát thương', desc: 'Chiêu Masenko +2% đến 25% sát thương', paramFrom1: 2, paramTo1: 25, paramFrom2: 0, paramTo2: 0, genderId: 1, gender: 'Namek' },
+      { id: 10, name: 'Trị thương +p0% đến p1% tốc độ hồi phục', desc: 'Trị thương +15% đến 65% tốc độ hồi phục', paramFrom1: 15, paramTo1: 65, paramFrom2: 0, paramTo2: 0, genderId: 1, gender: 'Namek' },
+      { id: 11, name: 'Makankosappo +p0% đến p1% tốc độ hồi phục', desc: 'Makankosappo +15% đến 55% tốc độ hồi phục', paramFrom1: 15, paramTo1: 55, paramFrom2: 0, paramTo2: 0, genderId: 1, gender: 'Namek' },
+      { id: 12, name: 'Đẻ trứng +p0% đến p1% tốc độ hồi phục', desc: 'Đẻ trứng +15% đến 65% tốc độ hồi phục', paramFrom1: 15, paramTo1: 65, paramFrom2: 0, paramTo2: 0, genderId: 1, gender: 'Namek' },
+      { id: 13, name: 'Liên hoàn +p0% đến p1% sát thương', desc: 'Liên hoàn +5% đến 25% sát thương', paramFrom1: 5, paramTo1: 25, paramFrom2: 0, paramTo2: 0, genderId: 1, gender: 'Namek' },
+      { id: 14, name: 'Biến Sôcôla +p0% đến p1% sát thương đòn kế', desc: 'Biến Sôcôla +50% đến 150% sát thương đòn kế', paramFrom1: 50, paramTo1: 150, paramFrom2: 0, paramTo2: 0, genderId: 1, gender: 'Namek' },
+      { id: 15, name: 'Khiên năng lượng +p0% đến p1% tốc độ hồi phục', desc: 'Khiên năng lượng +15% đến 55% tốc độ hồi phục', paramFrom1: 15, paramTo1: 55, paramFrom2: 0, paramTo2: 0, genderId: 1, gender: 'Namek' },
+      { id: 16, name: 'Chiêu đấm Galick +p0% đến p1% sát thương', desc: 'Chiêu đấm Galick +5% đến 25% sát thương', paramFrom1: 5, paramTo1: 25, paramFrom2: 0, paramTo2: 0, genderId: 2, gender: 'Xayda' },
+      { id: 17, name: 'Chiêu Antomic +p0% đến p1% sát thương', desc: 'Chiêu Antomic +5% đến 25% sát thương', paramFrom1: 5, paramTo1: 25, paramFrom2: 0, paramTo2: 0, genderId: 2, gender: 'Xayda' },
+      { id: 18, name: 'Biến hình +p0% đến p1% sát thương', desc: 'Biến hình +5% đến 25% sát thương', paramFrom1: 5, paramTo1: 25, paramFrom2: 0, paramTo2: 0, genderId: 2, gender: 'Xayda' },
+      { id: 19, name: 'Tự phát nổ +p0% đến p1% tốc độ hồi phục', desc: 'Tự phát nổ +15% đến 65% tốc độ hồi phục', paramFrom1: 15, paramTo1: 65, paramFrom2: 0, paramTo2: 0, genderId: 2, gender: 'Xayda' },
+      { id: 20, name: 'Khiên năng lượng +p0% đến p1% tốc độ hồi phục', desc: 'Khiên năng lượng +15% đến 55% tốc độ hồi phục', paramFrom1: 15, paramTo1: 55, paramFrom2: 0, paramTo2: 0, genderId: 2, gender: 'Xayda' },
+      { id: 21, name: 'Huýt sáo +p0% đến p1% tốc độ hồi phục', desc: 'Huýt sáo +15% đến 65% tốc độ hồi phục', paramFrom1: 15, paramTo1: 65, paramFrom2: 0, paramTo2: 0, genderId: 2, gender: 'Xayda' },
+      { id: 22, name: 'Trói +p0% đến p1% sát thương đòn kế', desc: 'Trói +50% đến 150% sát thương đòn kế', paramFrom1: 50, paramTo1: 150, paramFrom2: 0, paramTo2: 0, genderId: 2, gender: 'Xayda' },
+      { id: 23, name: 'Vàng rơi từ quái +p0% đến p1%', desc: 'Vàng rơi từ quái +25% đến 300%', paramFrom1: 25, paramTo1: 300, paramFrom2: 0, paramTo2: 0, genderId: 3, gender: 'Tất cả' },
+      { id: 24, name: 'Sức mạnh và tiềm năng khi đánh quái +p0% đến p1%', desc: 'Sức mạnh và tiềm năng khi đánh quái +5% đến 35%', paramFrom1: 5, paramTo1: 35, paramFrom2: 0, paramTo2: 0, genderId: 3, gender: 'Tất cả' },
+      { id: 25, name: 'Chí mạng liên tục khi HP dưới p0% đến p1%', desc: 'Chí mạng liên tục khi HP dưới 20% đến 50%', paramFrom1: 20, paramTo1: 50, paramFrom2: 0, paramTo2: 0, genderId: 3, gender: 'Tất cả' }
+    ];
     let filteredItemsCache = [];
     let currentItemPage = 1;
     let totalServerItems = 0;
@@ -963,6 +1083,9 @@
 
         cachedPlayers = data.players || [];
         cachedBosses = data.bosses || [];
+        if (Array.isArray(data.intrinsics) && data.intrinsics.length > 0) {
+          allIntrinsicsCache = data.intrinsics;
+        }
         document.getElementById('countPlayersTab').textContent = cachedPlayers.length;
         document.getElementById('countBossesTab').textContent = `${data.aliveBossCount}/${cachedBosses.length}`;
 
@@ -995,7 +1118,8 @@
           <td class="text-power">${formatNum(p.power)}</td>
           <td>
             HP: ${formatNum(p.hp)}/${formatNum(p.hpMax)}<br/>
-            <span style="color:var(--muted);">KI: ${formatNum(p.mp)} • SĐ: ${formatNum(p.dame)}</span>
+            <span style="color:var(--muted);">KI: ${formatNum(p.mp)} • SĐ: ${formatNum(p.dame)}</span><br/>
+            <span style="font-size:11.5px;color:var(--warning);font-weight:600;">⚡ ${escapeHtml(p.intrinsicName || 'Chưa mở nội tại')}</span>
           </td>
           <td>
             <span class="text-gold">${formatNum(p.gold)} Vàng</span><br/>
@@ -1003,8 +1127,9 @@
           </td>
           <td><b>${escapeHtml(p.mapName)}</b> <span class="badge badge-alive">Khu ${p.zoneId}</span></td>
           <td>${p.hasPet ? `Có (${formatNum(p.petPower)})` : '<span style="color:var(--muted)">Không</span>'}</td>
-          <td style="display:flex;gap:5px;">
+          <td style="display:flex;gap:5px;flex-wrap:wrap;">
             <button class="btn-success btn-sm" onclick="openGiftModal(${p.id}, '${escapeJs(p.name)}')">Trao Quà</button>
+            <button class="btn-warning btn-sm" onclick="openIntrinsicModal('${escapeJs(p.name)}', ${p.id}, 0, ${p.genderId ?? -1}, ${p.intrinsicId || 0}, ${p.intrinsicParam1 || 0})">⚡ Nội Tại</button>
             <button class="btn-purple btn-sm" onclick="inspectPlayer(${p.id})">Xem Đồ</button>
             <button class="btn-sm" onclick="healPlayer(${p.id})">Hồi HP/KI</button>
             <button class="btn-danger btn-sm" onclick="kickPlayer(${p.id}, '${escapeJs(p.name)}')">Kick</button>
@@ -1035,7 +1160,10 @@
             <td>#${a.accId}</td>
             <td style="font-weight:700;">${escapeHtml(a.username)}</td>
             <td style="color:var(--muted);font-family:monospace;">${escapeHtml(a.password)}</td>
-            <td class="text-name">${escapeHtml(a.playerName)} <span style="font-size:11px;color:var(--muted);font-weight:400;">(${escapeHtml(a.gender)})</span></td>
+            <td class="text-name">
+              ${escapeHtml(a.playerName)} <span style="font-size:11px;color:var(--muted);font-weight:400;">(${escapeHtml(a.gender)})</span>
+              ${a.playerId > 0 ? `<br/><span style="font-size:11px;color:var(--warning);font-weight:600;">⚡ ${escapeHtml(a.intrinsicName || 'Chưa mở')}</span>` : ''}
+            </td>
             <td>
               ${a.online ? '<span class="badge badge-alive">Đang Online</span>' : '<span class="badge badge-dead">Offline</span>'}
               ${a.ban ? '<span class="badge badge-ban">Đang Khóa</span>' : ''}
@@ -1053,8 +1181,9 @@
               <span class="text-gold">${formatNum(a.gold)} Vàng</span><br/>
               <span class="text-gem">${formatNum(a.gem)} Ngọc</span> • <span class="text-ruby">${formatNum(a.ruby)} HN</span>
             </td>
-            <td style="display:flex;gap:5px;">
+            <td style="display:flex;gap:5px;flex-wrap:wrap;">
               <button class="btn-sm" onclick="openEditAccount(${a.accId})">Cộng VNĐ / Sửa</button>
+              ${a.playerId > 0 ? `<button class="btn-warning btn-sm" onclick="openIntrinsicModal('${escapeJs(a.playerName)}', ${a.playerId}, ${a.accId}, ${a.genderId ?? -1}, ${a.intrinsicId || 0}, ${a.intrinsicParam1 || 0})">⚡ Nội Tại</button>` : ''}
               ${!a.active ? `<button class="btn-success btn-sm" onclick="quickToggleAccount(${a.accId}, 'active', 1)">Mở TV</button>` : ''}
               ${a.online && a.playerId > 0 ? `<button class="btn-purple btn-sm" onclick="openGiftModal(${a.playerId}, '${escapeJs(a.playerName)}')">Tặng Đồ</button>` : ''}
               <button class="${a.ban ? 'btn-warning' : 'btn-danger'} btn-sm" onclick="quickToggleAccount(${a.accId}, 'ban', ${a.ban ? 0 : 1})">${a.ban ? 'Mở Khóa' : 'Khóa'}</button>
@@ -1181,6 +1310,9 @@
         if (!data.ok) return;
         allItemsCache = data.items || [];
         allOptionsCache = data.options || [];
+        if (Array.isArray(data.intrinsics) && data.intrinsics.length > 0) {
+          allIntrinsicsCache = data.intrinsics;
+        }
         totalServerItems = data.totalItems || allItemsCache.length;
         document.getElementById('countItemsTab').textContent = `${totalServerItems} Item`;
 
@@ -1286,6 +1418,7 @@
         document.getElementById('giftPlayerId').value = curTarget;
       }
       populateGiftPlayerSelect(curTarget);
+      populateGiftIntrinsicSelect(0);
       const found = cachedPlayers.find(p => String(p.id) === curTarget);
       if (found) {
         document.getElementById('giftModalTitle').textContent = `Trao [${itemName} #${itemId}] cho: ${found.name}`;
@@ -1475,9 +1608,30 @@
       fetchStatus();
     }
 
+    function populateGiftIntrinsicSelect(selectedInId) {
+      const sel = document.getElementById('giftIntrinsicId');
+      if (!sel) return;
+      let html = `<option value="0">-- Không thay đổi Nội tại --</option>`;
+      for (const it of allIntrinsicsCache) {
+        if (!it || it.id <= 0) continue;
+        html += `<option value="${it.id}">#${it.id} [${escapeHtml(it.gender)}] ${escapeHtml(it.desc || it.name)} (Max: ${it.paramTo1}%)</option>`;
+      }
+      sel.innerHTML = html;
+      sel.value = String(selectedInId || 0);
+    }
+
+    function onChangeGiftIntrinsic() {
+      const id = parseInt(document.getElementById('giftIntrinsicId').value, 10) || 0;
+      const found = allIntrinsicsCache.find(x => x.id === id);
+      if (found && found.paramTo1 > 0) {
+        document.getElementById('giftIntrinsicParam1').value = found.paramTo1;
+      }
+    }
+
     function openGiftModal(playerId, name) {
       document.getElementById('giftPlayerId').value = playerId;
       populateGiftPlayerSelect(playerId);
+      populateGiftIntrinsicSelect(0);
       document.getElementById('giftModalTitle').textContent = `Trao Thưởng Cho: ${name} (#${playerId})`;
       document.getElementById('giftGold').value = 0;
       document.getElementById('giftGem').value = 0;
@@ -1485,11 +1639,143 @@
       document.getElementById('giftItemId').value = 0;
       document.getElementById('giftQuantity').value = 1;
       document.getElementById('giftOptions').value = '';
+      document.getElementById('giftIntrinsicParam1').value = 150;
       document.getElementById('giftModal').classList.add('show');
     }
 
     function closeGiftModal() {
       document.getElementById('giftModal').classList.remove('show');
+    }
+
+    function populateIntrinsicPlayerSelect(selectedVal) {
+      const sel = document.getElementById('intrinsicPlayerSelect');
+      if (!sel) return;
+      let html = `<option value="">-- Chọn người chơi đang Online (${cachedPlayers.length}) --</option>`;
+      if (cachedPlayers.length > 0) {
+        html += `<option value="ALL">⚡ TẤT CẢ NGƯỜI CHƠI ONLINE (${cachedPlayers.length} người)</option>`;
+        for (const p of cachedPlayers) {
+          html += `<option value="${p.id}">👤 ${escapeHtml(p.name)} (#${p.id} - ${escapeHtml(p.gender)})</option>`;
+        }
+      }
+      sel.innerHTML = html;
+      if (selectedVal !== undefined && selectedVal !== null && String(selectedVal) !== '') {
+        sel.value = String(selectedVal);
+      }
+    }
+
+    function onChangeIntrinsicPlayerSelect() {
+      const val = document.getElementById('intrinsicPlayerSelect').value;
+      if (val) {
+        document.getElementById('intrinsicPlayerTarget').value = val;
+        const p = cachedPlayers.find(x => String(x.id) === String(val));
+        if (p && p.genderId !== undefined) {
+          document.getElementById('intrinsicGenderFilter').value = String(p.genderId);
+          populateIntrinsicSelects(p.intrinsicId || 0);
+        }
+      }
+    }
+
+    function populateIntrinsicSelects(selectedIntrinsicId) {
+      const gFilter = parseInt(document.getElementById('intrinsicGenderFilter').value, 10);
+      const sel = document.getElementById('intrinsicSelectId');
+      if (!sel) return;
+      const list = allIntrinsicsCache.filter(it => {
+        if (!it || it.id <= 0) return false;
+        if (gFilter >= 0 && it.genderId !== gFilter && it.genderId !== 3) return false;
+        return true;
+      });
+      sel.innerHTML = list.map(it =>
+        `<option value="${it.id}">#${it.id} [${escapeHtml(it.gender)}] ${escapeHtml(it.desc || it.name)} (Max: ${it.paramTo1}%)</option>`
+      ).join('');
+      if (selectedIntrinsicId && list.some(x => x.id === Number(selectedIntrinsicId))) {
+        sel.value = String(selectedIntrinsicId);
+      }
+      onSelectIntrinsicChange();
+    }
+
+    function onSelectIntrinsicChange() {
+      const id = parseInt(document.getElementById('intrinsicSelectId').value, 10) || 0;
+      const found = allIntrinsicsCache.find(x => x.id === id);
+      if (found) {
+        document.getElementById('intrinsicParam1').value = found.paramTo1 > 0 ? found.paramTo1 : 150;
+        document.getElementById('intrinsicParam2').value = found.paramTo2 > 0 ? found.paramTo2 : 0;
+      }
+    }
+
+    function quickPickIntrinsic(keyword, genderId, pct) {
+      document.getElementById('intrinsicGenderFilter').value = String(genderId);
+      populateIntrinsicSelects();
+      const normKey = normalizeVi(keyword);
+      const found = allIntrinsicsCache.find(it =>
+        it && it.id > 0 && (it.genderId === genderId || it.genderId === 3) && normalizeVi(it.name).includes(normKey)
+      ) || allIntrinsicsCache.find(it => it && it.id > 0 && normalizeVi(it.name).includes(normKey));
+      if (found) {
+        document.getElementById('intrinsicSelectId').value = String(found.id);
+        document.getElementById('intrinsicParam1').value = pct || (found.paramTo1 > 0 ? found.paramTo1 : 150);
+        document.getElementById('intrinsicParam2').value = found.paramTo2 > 0 ? found.paramTo2 : 0;
+      }
+    }
+
+    function setIntrinsicPct(val) {
+      if (val === 'max') {
+        onSelectIntrinsicChange();
+      } else {
+        document.getElementById('intrinsicParam1').value = val;
+      }
+    }
+
+    function openIntrinsicModal(playerName, playerId, accId, genderId, currentInId, currentP1) {
+      document.getElementById('intrinsicAccId').value = accId || 0;
+      const targetVal = playerId > 0 ? String(playerId) : (playerName || '');
+      document.getElementById('intrinsicPlayerTarget').value = targetVal;
+      populateIntrinsicPlayerSelect(playerId > 0 ? String(playerId) : '');
+      document.getElementById('intrinsicGenderFilter').value = (genderId !== undefined && genderId >= 0) ? String(genderId) : '-1';
+      populateIntrinsicSelects(currentInId || 0);
+      if (currentP1 > 0) {
+        document.getElementById('intrinsicParam1').value = currentP1;
+      }
+      document.getElementById('intrinsicModalTitle').textContent = playerName
+        ? `⚡ Buff Nội Tại Cho: ${playerName} (${playerId > 0 ? '#' + playerId : 'TK #' + accId})`
+        : '⚡ Buff / Tặng Nội Tại Cho Người Chơi';
+      document.getElementById('intrinsicModal').classList.add('show');
+    }
+
+    function closeIntrinsicModal() {
+      document.getElementById('intrinsicModal').classList.remove('show');
+    }
+
+    async function submitIntrinsicBuff() {
+      let rawTarget = document.getElementById('intrinsicPlayerTarget').value.trim();
+      const selVal = document.getElementById('intrinsicPlayerSelect')?.value || '';
+      const accId = document.getElementById('intrinsicAccId').value || '0';
+      if (!rawTarget && selVal) {
+        rawTarget = selVal;
+      }
+      if (!rawTarget && Number(accId) <= 0) {
+        showToast('Vui lòng chọn hoặc nhập Tên Nhân Vật / ID cần Buff Nội Tại!', true);
+        return;
+      }
+      const intrinsicId = document.getElementById('intrinsicSelectId').value;
+      const param1 = document.getElementById('intrinsicParam1').value || 150;
+      const param2 = document.getElementById('intrinsicParam2').value || 0;
+
+      const res = await postAction({
+        action: 'set_intrinsic',
+        playerTarget: rawTarget,
+        playerId: rawTarget,
+        accId,
+        intrinsicId,
+        param1,
+        param2
+      });
+      showToast(res.message, !res.ok);
+      if (res.ok) {
+        closeIntrinsicModal();
+        fetchStatus();
+        if (currentTab === 'accounts') {
+          loadAccountsDb();
+        }
+      }
     }
 
     async function submitGift() {
@@ -1509,7 +1795,9 @@
         ruby: document.getElementById('giftRuby').value,
         itemId: document.getElementById('giftItemId').value,
         quantity: document.getElementById('giftQuantity').value,
-        options: document.getElementById('giftOptions').value.trim()
+        options: document.getElementById('giftOptions').value.trim(),
+        intrinsicId: document.getElementById('giftIntrinsicId')?.value || 0,
+        intrinsicParam1: document.getElementById('giftIntrinsicParam1')?.value || 0
       };
 
       if (rawTarget.toUpperCase() === 'ALL') {

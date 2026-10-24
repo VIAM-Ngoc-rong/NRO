@@ -64,16 +64,22 @@ public class IntrinsicService {
 
     public void showAllIntrinsic(Player player) {
         List<Intrinsic> listIntrinsic = getIntrinsics(player.gender);
+        List<Intrinsic> validList = new java.util.ArrayList<>();
+        for (Intrinsic in : listIntrinsic) {
+            if (in != null && in.id > 0) {
+                validList.add(in);
+            }
+        }
         Message msg;
         try {
             msg = new Message(112);
             msg.writer().writeByte(1);
             msg.writer().writeByte(1); //count tab
             msg.writer().writeUTF("Nội tại");
-            msg.writer().writeByte(listIntrinsic.size() - 1);
-            for (int i = 1; i < listIntrinsic.size(); i++) {
-                msg.writer().writeShort(listIntrinsic.get(i).icon);
-                msg.writer().writeUTF(listIntrinsic.get(i).getDescription());
+            msg.writer().writeByte(validList.size());
+            for (int i = 0; i < validList.size(); i++) {
+                msg.writer().writeShort(validList.get(i).icon);
+                msg.writer().writeUTF(validList.get(i).getDescription());
             }
             player.sendMessage(msg);
             msg.cleanup();
@@ -99,7 +105,16 @@ public class IntrinsicService {
 
     private void changeIntrinsic(Player player) {
         List<Intrinsic> listIntrinsic = getIntrinsics(player.gender);
-        player.playerIntrinsic.intrinsic = new Intrinsic(listIntrinsic.get(Util.nextInt(1, listIntrinsic.size() - 1)));
+        List<Intrinsic> validList = new java.util.ArrayList<>();
+        for (Intrinsic in : listIntrinsic) {
+            if (in != null && in.id > 0) {
+                validList.add(in);
+            }
+        }
+        if (validList.isEmpty()) {
+            return;
+        }
+        player.playerIntrinsic.intrinsic = new Intrinsic(validList.get(Util.nextInt(0, validList.size() - 1)));
         player.playerIntrinsic.intrinsic.param1 = (short) Util.nextInt(player.playerIntrinsic.intrinsic.paramFrom1, player.playerIntrinsic.intrinsic.paramTo1);
         player.playerIntrinsic.intrinsic.param2 = (short) Util.nextInt(player.playerIntrinsic.intrinsic.paramFrom2, player.playerIntrinsic.intrinsic.paramTo2);
         String name = player.playerIntrinsic.intrinsic.getName();
@@ -115,12 +130,7 @@ public class IntrinsicService {
     }
 
     public void doinoitai(Player player) {
-        List<Intrinsic> listIntrinsic = getIntrinsics(player.gender);
-        player.playerIntrinsic.intrinsic = new Intrinsic(listIntrinsic.get(Util.nextInt(1, listIntrinsic.size() - 1)));
-        player.playerIntrinsic.intrinsic.param1 = (short) Util.nextInt(player.playerIntrinsic.intrinsic.paramFrom1, player.playerIntrinsic.intrinsic.paramTo1);
-        player.playerIntrinsic.intrinsic.param2 = (short) Util.nextInt(player.playerIntrinsic.intrinsic.paramFrom2, player.playerIntrinsic.intrinsic.paramTo2);
-        Service.gI().sendThongBao(player, "Bạn nhận được Nội tại:\n" + player.playerIntrinsic.intrinsic.getName().substring(0, player.playerIntrinsic.intrinsic.getName().indexOf(" [")));
-        sendInfoIntrinsic(player);
+        changeIntrinsic(player);
     }
 
     public void open(Player player) {

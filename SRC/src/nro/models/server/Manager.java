@@ -511,11 +511,15 @@ public final class Manager {
             Logger.success(Logger.PURPLE + "Successfully loaded flag bag (" + FLAGS_BAGS.size() + ")\n");
 
             //load intrinsic
-            ps = ConnectionDatabase.prepareStatement("select * from intrinsic");
+            ps = ConnectionDatabase.prepareStatement("select * from intrinsic order by id asc");
             rs = ps.executeQuery();
+            java.util.Set<Integer> loadedIntrinsicIds = new java.util.HashSet<>();
             while (rs.next()) {
                 Intrinsic intrinsic = new Intrinsic();
                 intrinsic.id = rs.getByte("id");
+                if (!loadedIntrinsicIds.add(intrinsic.id)) {
+                    continue;
+                }
                 intrinsic.name = rs.getString("name");
                 intrinsic.paramFrom1 = rs.getShort("param_from_1");
                 intrinsic.paramTo1 = rs.getShort("param_to_1");

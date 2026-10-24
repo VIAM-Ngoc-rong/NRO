@@ -31,12 +31,14 @@ import nro.models.boss.Boss_Manager.BossManager;
 import nro.models.consts.BossStatus;
 import nro.models.data.LocalManager;
 import nro.models.database.PlayerDAO;
+import nro.models.intrinsic.Intrinsic;
 import nro.models.item.Item;
 import nro.models.map.service.ChangeMapService;
 import nro.models.player.Inventory;
 import nro.models.player.Player;
 import nro.models.player_system.Template;
 import nro.models.services.ClanService;
+import nro.models.services.IntrinsicService;
 import nro.models.services.InventoryService;
 import nro.models.services.ItemService;
 import nro.models.services.PlayerService;
@@ -217,10 +219,16 @@ public class AdminWebServer {
             int zoneId = (pl.zone != null) ? pl.zone.zoneId : -1;
             String genderName = pl.gender == 0 ? "Trái Đất" : (pl.gender == 1 ? "Namek" : "Xayda");
             int vnd = pl.getSession() != null ? pl.getSession().vnd : 0;
+            int inId = (pl.playerIntrinsic != null && pl.playerIntrinsic.intrinsic != null) ? pl.playerIntrinsic.intrinsic.id : 0;
+            int inP1 = (pl.playerIntrinsic != null && pl.playerIntrinsic.intrinsic != null) ? pl.playerIntrinsic.intrinsic.param1 : 0;
+            int inP2 = (pl.playerIntrinsic != null && pl.playerIntrinsic.intrinsic != null) ? pl.playerIntrinsic.intrinsic.param2 : 0;
+            String inName = (pl.playerIntrinsic != null && pl.playerIntrinsic.intrinsic != null && inId > 0)
+                    ? pl.playerIntrinsic.intrinsic.getName() : "Chưa mở";
             sb.append("{");
             sb.append("\"id\":").append(pl.id);
             sb.append(",\"name\":").append(jsonStr(pl.name));
             sb.append(",\"gender\":").append(jsonStr(genderName));
+            sb.append(",\"genderId\":").append(pl.gender);
             sb.append(",\"power\":").append(pl.nPoint.power);
             sb.append(",\"hp\":").append(pl.nPoint.hp);
             sb.append(",\"hpMax\":").append(pl.nPoint.hpMax);
@@ -236,6 +244,10 @@ public class AdminWebServer {
             sb.append(",\"zoneId\":").append(zoneId);
             sb.append(",\"hasPet\":").append(pl.pet != null);
             sb.append(",\"petPower\":").append(pl.pet != null && pl.pet.nPoint != null ? pl.pet.nPoint.power : 0);
+            sb.append(",\"intrinsicId\":").append(inId);
+            sb.append(",\"intrinsicParam1\":").append(inP1);
+            sb.append(",\"intrinsicParam2\":").append(inP2);
+            sb.append(",\"intrinsicName\":").append(jsonStr(inName));
             sb.append("}");
         }
         sb.append("]");
@@ -301,6 +313,7 @@ public class AdminWebServer {
         sb.append("]");
         sb.append(",\"aliveBossCount\":").append(aliveBossCount);
         sb.append(",\"totalBossCount\":").append(visibleBossCount);
+        sb.append(",\"intrinsics\":").append(serializeIntrinsics());
         sb.append("}");
 
         sendJson(exchange, 200, sb.toString());
@@ -325,7 +338,7 @@ public class AdminWebServer {
         sb.append("{\"ok\":true,\"accounts\":[");
 
         String sql = "SELECT a.id AS acc_id, a.username, a.password, a.is_admin, a.ban, a.active, a.vnd, a.tongnap, a.last_time_login, "
-                + "p.id AS player_id, p.name AS player_name, p.gender, p.data_inventory, p.data_point "
+                + "p.id AS player_id, p.name AS player_name, p.gender, p.data_inventory, p.data_point, p.data_intrinsic "
                 + "FROM account a LEFT JOIN player p ON p.account_id = a.id ";
         if (!q.isEmpty()) {
             sql += "WHERE a.username LIKE ? OR p.name LIKE ? OR CAST(a.id AS CHAR) = ? ";
@@ -368,6 +381,8 @@ public class AdminWebServer {
                         int gender = rs.getInt("gender");
 
                         long gold = 0, gem = 0, ruby = 0, power = 0;
+                        int inId = 0, inP1 = 0, inP2 = 0;
+                        String inName = "Chưa mở";
                         Player livePl = Client.gI().getPlayerByUser(accId);
                         boolean isOnline = (livePl != null);
 
@@ -378,6 +393,14 @@ public class AdminWebServer {
                             power = livePl.nPoint.power;
                             if (livePl.getSession() != null) {
                                 vnd = livePl.getSession().vnd;
+                            }
+                            if (livePl.playerIntrinsic != null && livePl.playerIntrinsic.intrinsic != null) {
+                                inId = livePl.playerIntrinsic.intrinsic.id;
+                                inP1 = livePl.playerIntrinsic.intrinsic.param1;
+                                inP2 = livePl.playerIntrinsic.intrinsic.param2;
+                                if (inId > 0) {
+                                    inName = livePl.playerIntrinsic.intrinsic.getName();
+                                }
                             }
                         } else {
                             try {
@@ -402,6 +425,19 @@ public class AdminWebServer {
                                 }
                             } catch (Exception ignored) {
                             }
+                            try {
+                                String inStr = rs.getString("data_intrinsic");
+                                if (inStr != null && !inStr.isEmpty()) {
+                                    JSONArray arr = (JSONArray) JSONValue.parse(inStr);
+                                    if (arr != null && arr.size() >= 3) {
+                                        inId = Integer.parseInt(String.valueOf(arr.get(0)));
+                                        inP1 = Integer.parseInt(String.valueOf(arr.get(1)));
+                                        inP2 = Integer.parseInt(String.valueOf(arr.get(2)));
+                                        inName = formatIntrinsicInfo(inId, inP1, inP2);
+                                    }
+                                }
+                            } catch (Exception ignored) {
+                            }
                         }
 
                         String genderName = playerName == null ? "Chưa tạo NV" : (gender == 0 ? "Trái Đất" : (gender == 1 ? "Namek" : "Xayda"));
@@ -418,11 +454,16 @@ public class AdminWebServer {
                         sb.append(",\"playerId\":").append(playerId);
                         sb.append(",\"playerName\":").append(jsonStr(playerName != null ? playerName : "(Chưa tạo nhân vật)"));
                         sb.append(",\"gender\":").append(jsonStr(genderName));
+                        sb.append(",\"genderId\":").append(gender);
                         sb.append(",\"power\":").append(power);
                         sb.append(",\"gold\":").append(gold);
                         sb.append(",\"gem\":").append(gem);
                         sb.append(",\"ruby\":").append(ruby);
                         sb.append(",\"online\":").append(isOnline);
+                        sb.append(",\"intrinsicId\":").append(inId);
+                        sb.append(",\"intrinsicParam1\":").append(inP1);
+                        sb.append(",\"intrinsicParam2\":").append(inP2);
+                        sb.append(",\"intrinsicName\":").append(jsonStr(inName));
                         sb.append("}");
                     }
                 }
@@ -512,7 +553,7 @@ public class AdminWebServer {
             sb.append("}");
             optCount++;
         }
-        sb.append("]}");
+        sb.append("],\"intrinsics\":").append(serializeIntrinsics()).append("}");
         sendJson(exchange, 200, sb.toString());
     }
 
@@ -699,6 +740,9 @@ public class AdminWebServer {
                     int itemId = (int) parseLongSafe(params.get("itemId"), -1);
                     int quantity = (int) Math.max(1, parseLongSafe(params.get("quantity"), 1));
                     String customOptions = params.getOrDefault("options", "").trim();
+                    int intrinsicId = (int) parseLongSafe(params.get("intrinsicId"), 0);
+                    int intrinsicParam1 = (int) parseLongSafe(params.get("intrinsicParam1"), 0);
+                    int intrinsicParam2 = (int) parseLongSafe(params.get("intrinsicParam2"), 0);
 
                     List<Player> recipients = new ArrayList<>();
                     if ("ALL".equalsIgnoreCase(target)) {
@@ -775,6 +819,12 @@ public class AdminWebServer {
                                 given.append(" +x").append(quantity).append(" ").append(item.template.name);
                             }
                         }
+                        if (intrinsicId > 0) {
+                            String inApplied = applyIntrinsicToPlayer(pl, intrinsicId, intrinsicParam1, intrinsicParam2);
+                            if (inApplied != null) {
+                                given.append(" +Nội tại [").append(inApplied).append("]");
+                            }
+                        }
                         Service.gI().sendMoney(pl);
                         Service.gI().sendThongBao(pl, "Admin vừa trao thưởng cho bạn:" + given);
                         if (givenDesc.length() == 0) {
@@ -786,6 +836,113 @@ public class AdminWebServer {
                             ? ("Tất cả " + recipients.size() + " người chơi Online")
                             : recipients.get(0).name;
                     sendJson(exchange, 200, "{\"ok\":true,\"message\":" + jsonStr("Đã trao cho [" + targetLabel + "]:" + givenDesc) + "}");
+                }
+                case "set_intrinsic" -> {
+                    String target = params.getOrDefault("playerTarget", params.getOrDefault("playerId", "")).trim();
+                    int accId = (int) parseLongSafe(params.get("accId"), -1);
+                    int intrinsicId = (int) parseLongSafe(params.get("intrinsicId"), 0);
+                    int param1 = (int) parseLongSafe(params.get("param1"), 0);
+                    int param2 = (int) parseLongSafe(params.get("param2"), 0);
+
+                    if (intrinsicId <= 0) {
+                        sendJson(exchange, 400, "{\"ok\":false,\"message\":\"Vui lòng chọn Nội tại cần buff!\"}");
+                        return;
+                    }
+                    Intrinsic tpl = IntrinsicService.gI().getIntrinsicById(intrinsicId);
+                    if (tpl == null) {
+                        sendJson(exchange, 404, "{\"ok\":false,\"message\":\"Không tìm thấy mẫu Nội tại #" + intrinsicId + "!\"}");
+                        return;
+                    }
+                    short p1 = (short) (param1 > 0 ? param1 : tpl.paramTo1);
+                    short p2 = (short) (param2 > 0 ? param2 : tpl.paramTo2);
+
+                    if ("ALL".equalsIgnoreCase(target)) {
+                        int count = 0;
+                        String appliedName = "";
+                        for (Player p : new ArrayList<>(Client.gI().getPlayers())) {
+                            if (p != null && !p.isBot) {
+                                String n = applyIntrinsicToPlayer(p, intrinsicId, p1, p2);
+                                if (n != null) {
+                                    appliedName = n;
+                                    Service.gI().sendThongBao(p, "Admin vừa tặng bạn Nội tại: " + n);
+                                    count++;
+                                }
+                            }
+                        }
+                        if (count == 0) {
+                            sendJson(exchange, 404, "{\"ok\":false,\"message\":\"Hiện không có người chơi nào đang Online!\"}");
+                            return;
+                        }
+                        sendJson(exchange, 200, "{\"ok\":true,\"message\":" + jsonStr("Đã buff Nội tại [" + appliedName + "] cho toàn bộ " + count + " người chơi đang Online!") + "}");
+                        return;
+                    }
+
+                    // 1. Thử tìm người chơi đang Online trước
+                    Player livePl = null;
+                    if (accId > 0) {
+                        livePl = Client.gI().getPlayerByUser(accId);
+                    }
+                    if (livePl == null && !target.isEmpty()) {
+                        long pid = parseLongSafe(target, -1);
+                        if (pid > 0) {
+                            livePl = Client.gI().getPlayer(pid);
+                        }
+                        if (livePl == null) {
+                            livePl = Client.gI().getPlayer(target);
+                        }
+                        if (livePl == null) {
+                            for (Player p : new ArrayList<>(Client.gI().getPlayers())) {
+                                if (p != null && p.name != null && p.name.equalsIgnoreCase(target)) {
+                                    livePl = p;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    if (livePl != null) {
+                        String appliedName = applyIntrinsicToPlayer(livePl, intrinsicId, p1, p2);
+                        Service.gI().sendThongBao(livePl, "Admin vừa tặng bạn Nội tại: " + appliedName);
+                        sendJson(exchange, 200, "{\"ok\":true,\"message\":" + jsonStr("Đã buff trực tiếp Nội tại [" + appliedName + "] cho " + livePl.name + " (Đang Online)!") + "}");
+                        return;
+                    }
+
+                    // 2. Nếu người chơi đang Offline, cập nhật trực tiếp vào bảng player trong MySQL
+                    String dbDataIntrinsic = "[" + intrinsicId + "," + p1 + "," + p2 + ",0,false,0,0,0]";
+                    String formattedName = formatIntrinsicInfo(intrinsicId, p1, p2);
+                    int updatedRows = 0;
+                    String foundPlayerName = target;
+
+                    try (Connection con = LocalManager.getConnection()) {
+                        long pid = parseLongSafe(target, -1);
+                        if (pid > 0) {
+                            try (PreparedStatement ps = con.prepareStatement("UPDATE player SET data_intrinsic = ? WHERE id = ?")) {
+                                ps.setString(1, dbDataIntrinsic);
+                                ps.setLong(2, pid);
+                                updatedRows = ps.executeUpdate();
+                            }
+                        }
+                        if (updatedRows == 0 && accId > 0) {
+                            try (PreparedStatement ps = con.prepareStatement("UPDATE player SET data_intrinsic = ? WHERE account_id = ?")) {
+                                ps.setString(1, dbDataIntrinsic);
+                                ps.setInt(2, accId);
+                                updatedRows = ps.executeUpdate();
+                            }
+                        }
+                        if (updatedRows == 0 && !target.isEmpty()) {
+                            try (PreparedStatement ps = con.prepareStatement("UPDATE player SET data_intrinsic = ? WHERE LOWER(name) = LOWER(?)")) {
+                                ps.setString(1, dbDataIntrinsic);
+                                ps.setString(2, target);
+                                updatedRows = ps.executeUpdate();
+                            }
+                        }
+                    }
+
+                    if (updatedRows > 0) {
+                        sendJson(exchange, 200, "{\"ok\":true,\"message\":" + jsonStr("Đã lưu Nội tại [" + formattedName + "] vào Database cho nhân vật [" + (foundPlayerName.isEmpty() ? ("TK #" + accId) : foundPlayerName) + "] (Đang Offline)!") + "}");
+                    } else {
+                        sendJson(exchange, 404, "{\"ok\":false,\"message\":" + jsonStr("Không tìm thấy nhân vật [" + target + "] trong Server hoặc Database!") + "}");
+                    }
                 }
                 case "heal_player" -> {
                     long playerId = Long.parseLong(params.getOrDefault("playerId", "-1"));
@@ -1070,6 +1227,78 @@ public class AdminWebServer {
         } catch (Exception e) {
             sendJson(exchange, 500, "{\"ok\":false,\"message\":" + jsonStr("Lỗi: " + e.getMessage()) + "}");
         }
+    }
+
+    private static String applyIntrinsicToPlayer(Player pl, int intrinsicId, int param1, int param2) {
+        if (pl == null || intrinsicId <= 0) {
+            return null;
+        }
+        Intrinsic tpl = IntrinsicService.gI().getIntrinsicById(intrinsicId);
+        if (tpl == null) {
+            return null;
+        }
+        short p1 = (short) (param1 > 0 ? Math.min(Short.MAX_VALUE, param1) : tpl.paramTo1);
+        short p2 = (short) (param2 > 0 ? Math.min(Short.MAX_VALUE, param2) : tpl.paramTo2);
+        if (pl.playerIntrinsic != null) {
+            pl.playerIntrinsic.intrinsic = new Intrinsic(tpl);
+            pl.playerIntrinsic.intrinsic.param1 = p1;
+            pl.playerIntrinsic.intrinsic.param2 = p2;
+            pl.playerIntrinsic.countOpen = 0;
+            IntrinsicService.gI().sendInfoIntrinsic(pl);
+        }
+        if (pl.nPoint != null) {
+            pl.nPoint.calPoint();
+            Service.gI().point(pl);
+        }
+        PlayerDAO.updatePlayer(pl);
+        return (pl.playerIntrinsic != null && pl.playerIntrinsic.intrinsic != null)
+                ? pl.playerIntrinsic.intrinsic.getName()
+                : tpl.name;
+    }
+
+    private static String formatIntrinsicInfo(int id, int p1, int p2) {
+        if (id <= 0) {
+            return "Chưa mở";
+        }
+        Intrinsic tpl = IntrinsicService.gI().getIntrinsicById(id);
+        if (tpl == null) {
+            return "Nội tại #" + id + " (+" + p1 + "%)";
+        }
+        tpl.param1 = (short) p1;
+        tpl.param2 = (short) p2;
+        return tpl.getName();
+    }
+
+    private static String serializeIntrinsics() {
+        if (Manager.INTRINSICS == null) {
+            return "[]";
+        }
+        StringBuilder sb = new StringBuilder(2048);
+        sb.append("[");
+        boolean first = true;
+        for (Intrinsic in : Manager.INTRINSICS) {
+            if (in == null || in.id <= 0) {
+                continue;
+            }
+            if (!first) {
+                sb.append(",");
+            }
+            first = false;
+            String gName = in.gender == 0 ? "Trái Đất" : (in.gender == 1 ? "Namek" : (in.gender == 2 ? "Xayda" : "Tất cả"));
+            sb.append("{");
+            sb.append("\"id\":").append(in.id);
+            sb.append(",\"name\":").append(jsonStr(in.name));
+            sb.append(",\"desc\":").append(jsonStr(in.getDescription()));
+            sb.append(",\"paramFrom1\":").append(in.paramFrom1);
+            sb.append(",\"paramTo1\":").append(in.paramTo1);
+            sb.append(",\"paramFrom2\":").append(in.paramFrom2);
+            sb.append(",\"paramTo2\":").append(in.paramTo2);
+            sb.append(",\"genderId\":").append(in.gender);
+            sb.append(",\"gender\":").append(jsonStr(gName));
+            sb.append("}");
+        }
+        sb.append("]");
+        return sb.toString();
     }
 
     private static String serializeItemList(List<Item> items) {
