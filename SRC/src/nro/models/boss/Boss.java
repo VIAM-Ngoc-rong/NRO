@@ -1162,7 +1162,10 @@ public class Boss extends Player implements IBoss {
         // Rớt Hồng Ngọc (ID 861) khi tiêu diệt Boss (phục vụ mua Cải trang tối ưu hành tinh >1000 Hồng ngọc)
         long bossHpForRuby = this.nPoint != null ? Math.max(1L, (long) this.nPoint.hpMax) : 1L;
         int rubyDrop;
-        if (bossHpForRuby < 50_000_000L) {
+        if (this.isDailyEarlyBoss()) {
+            // Tiểu đội Bojack & TDST Namek: rớt 20 - 30 Hồng Ngọc / 1 Boss
+            rubyDrop = Util.nextInt(20, 30);
+        } else if (bossHpForRuby < 50_000_000L) {
             rubyDrop = Util.nextInt(1, 3);
         } else if (bossHpForRuby <= 300_000_000L) {
             rubyDrop = Util.nextInt(3, 6);

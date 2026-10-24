@@ -180,10 +180,12 @@ public class ServerNotify extends Thread {
             + "10. Pháo Hoa: Dùng Pháo Bông (1575/1576) bắn pháo hoa nhận 500K - 2Tr Vàng."
         });
 
-        // 3. Hướng dẫn Tuyệt Kỹ Whis & Sách Tuyệt Kỹ
+        // 3. Hướng dẫn Tuyệt Kỹ Whis & Săn Hồng Ngọc
         entries.add(new String[]{
-            "Bí Kíp Tuyệt Kỹ & Đóng Sách Cũ",
-            "• Cày Bí Kíp Tuyệt Kỹ (ID 1229) & Trang Sách Cũ (ID 1281):\n"
+            "Bí Kíp Tuyệt Kỹ & Săn Hồng Ngọc",
+            "• Săn Hồng Ngọc từ Boss Hằng Ngày:\n"
+            + "  - Tiểu Đội Bojack (Bujin, Kogu, Zangya, Bido, Bojack, Super Bojack) & Tiểu Đội Sát Thủ Namek (Số 4, Số 3, Số 2, Số 1, Tiểu Đội Trưởng): Rớt 20 - 30 Hồng Ngọc / 1 Boss.\n"
+            + "• Cày Bí Kíp Tuyệt Kỹ (ID 1229) & Trang Sách Cũ (ID 1281):\n"
             + "  - Đánh quái tại Hành Tinh Bill (Map 154) hoặc Hành Tinh Ngục Tù (Map 155).\n"
             + "  - Tỷ lệ rớt 50% (tăng lên 75% - 90% khi mặc Set Hủy Diệt & dùng Cỏ 4 Lá), mỗi lần rớt x1 - x5 quyển (cả Đệ tử đánh cũng rớt).\n"
             + "• Học Tuyệt Kỹ (Skill 9) tại NPC Whis (Hành Tinh Bill):\n"
