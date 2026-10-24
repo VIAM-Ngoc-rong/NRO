@@ -817,7 +817,7 @@ public class Service {
     }
 
     public void player(Player pl) {
-        if (pl == null) {
+        if (pl == null || pl.getSession() == null) {
             return;
         }
         Message msg;
@@ -1252,7 +1252,7 @@ public class Service {
     }
 
     public void sendThongBaoOK(Player pl, String text) {
-        if (pl.isPet || pl.isNewPet) {
+        if (pl == null || pl.isPet || pl.isNewPet || pl.isBot || pl.getSession() == null) {
             return;
         }
         Message msg;
@@ -1309,6 +1309,9 @@ public class Service {
     }
 
     public void sendThongBao(Player pl, String thongBao) {
+        if (pl == null || pl.isPet || pl.isNewPet || pl.isBot || pl.getSession() == null) {
+            return;
+        }
         Message msg;
         try {
             msg = new Message(-25);
@@ -1340,6 +1343,9 @@ public class Service {
     }
 
     public void sendMoney(Player pl) {
+        if (pl == null || pl.getSession() == null || pl.inventory == null) {
+            return;
+        }
         Message msg;
         try {
             msg = new Message(6);
@@ -1668,6 +1674,9 @@ public class Service {
     }
 
     public void sendSpeedPlayer(Player pl, int speed) {
+        if (pl == null || pl.getSession() == null) {
+            return;
+        }
         Message msg;
         try {
             msg = Service.gI().messageSubCommand((byte) 8);

@@ -83,8 +83,12 @@ public class Bot extends Player {
         Zone zone = getRandomZone(MapToPow());
         if (zone != null) {
             ChangeMapService.gI().goToMap(this, zone);
-            this.zone.load_Me_To_Another(this);
-            this.mo1.lastTimeChanM = System.currentTimeMillis();
+            if (this.zone != null) {
+                this.zone.load_Me_To_Another(this);
+            }
+            if (this.mo1 != null) {
+                this.mo1.lastTimeChanM = System.currentTimeMillis();
+            }
         }
     }
 
@@ -188,6 +192,9 @@ public class Bot extends Player {
     }
 
     public boolean UseLastTimeSkill() {
+        if (this.playerSkill == null || this.playerSkill.skillSelect == null) {
+            return false;
+        }
         if (this.playerSkill.skillSelect.lastTimeUseThisSkillbot < (System.currentTimeMillis() - this.playerSkill.skillSelect.coolDown)) {
             this.playerSkill.skillSelect.lastTimeUseThisSkillbot = System.currentTimeMillis();
             return true;
@@ -210,7 +217,7 @@ public class Bot extends Player {
                 if (doUseTiemNang(tiemNangUse)) {
                     this.nPoint.hpMax += point;
                     this.nPoint.hpg += point;
-                    Service.gI().point(this);
+                    this.nPoint.calPoint();
                 }
             } else {
                 if (this.nPoint.dameg >= 5000) {
@@ -220,7 +227,7 @@ public class Bot extends Player {
                 tiemNangUse = point * (2 * this.nPoint.dameg + point - 1) / 2 * 100;
                 if (doUseTiemNang(tiemNangUse)) {
                     this.nPoint.dameg += point;
-                    Service.gI().point(this);
+                    this.nPoint.calPoint();
                 }
             }
         }

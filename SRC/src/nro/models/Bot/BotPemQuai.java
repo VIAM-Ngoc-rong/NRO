@@ -67,8 +67,11 @@ public class BotPemQuai {
     }
 
     public void GetMobAttack() {
+        if (this.bot == null || this.bot.zone == null || this.bot.zone.mobs == null) {
+            return;
+        }
         if (this.bot.zone.mobs.size() >= 1) {
-            if (this.mAttack == null || this.mAttack.isDie()) {
+            if (this.mAttack == null || this.mAttack.isDie() || this.mAttack.zone != this.bot.zone) {
                 mAttack = this.bot.zone.mobs.get(new Random().nextInt(this.bot.zone.mobs.size()));
             }
         }
@@ -80,9 +83,13 @@ public class BotPemQuai {
             return;
         }
 
-        if (!bot.playerSkill.skills.isEmpty()) {
-            Skill skill = bot.playerSkill.skills.get(new Random().nextInt(bot.playerSkill.skills.size()));
-            bot.playerSkill.skillSelect = skill;
+        if (bot.playerSkill == null || bot.playerSkill.skills.isEmpty()) {
+            return;
+        }
+        Skill skill = bot.playerSkill.skills.get(new Random().nextInt(bot.playerSkill.skills.size()));
+        bot.playerSkill.skillSelect = skill;
+        if (bot.playerSkill.skillSelect == null || bot.playerSkill.skillSelect.template == null) {
+            return;
         }
 
         long now = System.currentTimeMillis();
@@ -114,20 +121,22 @@ public class BotPemQuai {
             return;
         }
 
-        boolean miss = false;
         int skillId = bot.playerSkill.skillSelect.template.id;
+        byte skillType = bot.playerSkill.skillSelect.template.type;
         if (skillId == Skill.KAMEJOKO || skillId == Skill.MASENKO || skillId == Skill.ANTOMIC) {
             if (this.bot.UseLastTimeSkill()) {
-                SkillService.gI().useSkillAttack(bot, bot, mAttack);
-                SkillService.gI().useSkillAlone(bot);
+                SkillService.gI().useSkillAttack(bot, null, mAttack);
             }
             return;
         }
 
         if (this.bot.UseLastTimeSkill()) {
-            PlayerService.gI().playerMove(this.bot, this.mAttack.location.x, this.mAttack.location.y);
-            SkillService.gI().useSkillAttack(bot, bot, mAttack);
-            SkillService.gI().useSkillAlone(bot);
+            if (skillType == 1) {
+                PlayerService.gI().playerMove(this.bot, this.mAttack.location.x, this.mAttack.location.y);
+                SkillService.gI().useSkillAttack(bot, null, mAttack);
+            } else if (skillType == 3 && skillId != Skill.TU_SAT && skillId != Skill.DE_TRUNG) {
+                SkillService.gI().useSkillAlone(bot);
+            }
         }
     }
 

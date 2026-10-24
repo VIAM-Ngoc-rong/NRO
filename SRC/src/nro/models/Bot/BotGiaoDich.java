@@ -43,10 +43,14 @@ public class BotGiaoDich {
    }
    
    public String getChat(){
-        Item it = ItemService.gI().createNewItem((short) this.idItem);
-        Item it1 = ItemService.gI().createNewItem((short) this.idItTd);
-        String text = String.format("p %s ja x%d %s/1 %s k%d", it.template.name , this.slot , it1.template.name , this.bot.zone.map.mapName , this.bot.zone.zoneId);
-        return text;
+        if (this.bot == null || this.bot.zone == null || this.bot.zone.map == null) {
+            return "";
+        }
+        var t1 = ItemService.gI().getTemplate(this.idItem);
+        var t2 = ItemService.gI().getTemplate(this.idItTd);
+        String name1 = t1 != null ? t1.name : String.valueOf(this.idItem);
+        String name2 = t2 != null ? t2.name : String.valueOf(this.idItTd);
+        return String.format("p %s ja x%d %s/1 %s k%d", name1, this.slot, name2, this.bot.zone.map.mapName, this.bot.zone.zoneId);
    }
    
    public void chat(){
@@ -90,11 +94,16 @@ public class BotGiaoDich {
    }
    
    public void mapL(){
-      if(this.bot.zone.map.mapId != 84){
+      if (this.bot == null) {
+          return;
+      }
+      if(this.bot.zone == null || this.bot.zone.map == null || this.bot.zone.map.mapId != 84){
           Zone zone = this.bot.getRandomZone(84);
           if(zone != null){
               ChangeMapService.gI().goToMap(this.bot, zone);
-              this.bot.zone.load_Me_To_Another(this.bot);
+              if (this.bot.zone != null) {
+                  this.bot.zone.load_Me_To_Another(this.bot);
+              }
               PlayerService.gI().playerMove(this.bot, 81 + new Random().nextInt(716), 336);
           }
       }

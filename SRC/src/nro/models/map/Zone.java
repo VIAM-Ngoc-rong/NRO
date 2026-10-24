@@ -375,6 +375,13 @@ public class Zone {
                                 }
                             }
 
+                            if (player.isBot && player.inventory != null && player.inventory.itemsBag != null
+                                    && InventoryService.gI().getCountEmptyBag(player) <= 2) {
+                                for (int bi = 0; bi < player.inventory.itemsBag.size(); bi++) {
+                                    player.inventory.itemsBag.set(bi, ItemService.gI().createItemNull());
+                                }
+                            }
+
                             if (InventoryService.gI().addItemBag(player, item)) {
                                 if (itemMap.itemTemplate.id != 74) {
                                     itemMap.isPickedUp = true;
@@ -505,6 +512,9 @@ public class Zone {
     }
 
     public void load_Another_To_Me(Player player) {
+        if (player == null || player.getSession() == null) {
+            return;
+        }
         try {
             if (this.map.mapId == 164) {
                 return;
@@ -556,6 +566,9 @@ public class Zone {
     }
 
     private void infoPlayer(Player plReceive, Player plInfo) {
+        if (plReceive == null || plInfo == null || plReceive.getSession() == null) {
+            return;
+        }
         Message msg;
         try {
             msg = new Message(-5);

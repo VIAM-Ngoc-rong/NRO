@@ -18,7 +18,7 @@ public class CheTaoCuonSachCu {
     private static final int TRANG_SACH_CU_ID = 1281;
     private static final int BIA_SACH_ID = 1282;
     private static final int CUON_SACH_CU_ID = 1283;
-    private static final int REQUIRED_TRANG_SACH_CU = 9999;
+    private static final int REQUIRED_TRANG_SACH_CU = 999;
     private static final int REQUIRED_BIA_SACH = 1;
     private static final int SUCCESS_RATE_PERCENT = 20;
     private static final int TRANG_SACH_CU_LOSS_ON_FAIL = 99;

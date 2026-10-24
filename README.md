@@ -342,8 +342,9 @@ Mỗi hành tinh sở hữu 1 chiêu thức Tuyệt Kỹ tối thượng riêng 
 | **Nâng Cấp Tuyệt Kỹ (Cấp 2 $\rightarrow$ Cấp 7)** | **x99 Bí Kíp Tuyệt Kỹ** + **10.000.000 Vàng** + **99 Ngọc Xanh** | • **Tỷ lệ thành công: `20%`** mỗi bậc (Tối đa đạt **Cấp 7**). |
 
 ### 📖 B. Hệ Thống Sách Tuyệt Kỹ & Chế Tạo Đồ Thiên Sứ
-1. **Đổi & Nâng Cấp Sách Tuyệt Kỹ (Tại NPC Whis)**:
-   - **Đổi Sách Tuyệt Kỹ 1**: Dùng **x999 Bí Kíp Tuyệt Kỹ + 1 Cuốn Sách Cũ (`ID 1281`) + 1 Kìm Bấm Giấy (`ID 1282`) + 10 Triệu Vàng** để đóng thành **Sách Tuyệt Kỹ 1** theo hành tinh.
+1. **Đổi & Nâng Cấp Sách Tuyệt Kỹ (Tại NPC Bà Hạt Mít - Đảo Kame / Vách Núi)**:
+   - **Đóng Thành Cuốn Sách Cũ**: Dùng **x999 Trang Sách Cũ (`ID 1281`) + 1 Bìa Sách (`ID 1282`)** để chế tạo **1 Cuốn Sách Cũ (`ID 1283`)**.
+   - **Đổi Sách Tuyệt Kỹ 1**: Dùng **10 Cuốn Sách Cũ (`ID 1283`) + 1 Kìm Bấm Giấy (`ID 1285`)** (có thể dùng thêm **Con Dấu (`ID 1794`)** để đạt tỷ lệ 100% và X5 cơ hội ra thêm dòng) để đóng thành **Sách Tuyệt Kỹ 1**.
    - **Giám Định & Tẩy Sách**: Dùng *Bùa Giám Định Sách* để mở khóa 5 dòng chỉ số ẩn, dùng *Bùa Tẩy Sách* để làm mới dòng chỉ số.
    - **Nâng Cấp Sách Tuyệt Kỹ 2**: Dùng *Sách Tuyệt Kỹ 1 + 10 Kìm Bấm Giấy + 100 Triệu Vàng + 500 Ngọc Xanh* để đột phá lên **Sách Tuyệt Kỹ 2** (cộng mạnh `% Sát thương Tuyệt kỹ`).
 2. **Chế Tạo Trang Bị Thiên Sứ**:

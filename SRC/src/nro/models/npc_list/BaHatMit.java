@@ -435,7 +435,9 @@ public class BaHatMit extends Npc {
                             }
                         }
                     } else if (player.idMark.getIndexMenu() == ConstNpc.DONG_THANH_SACH_CU) {
-                        CheTaoCuonSachCu.cheTaoCuonSachCu(player);
+                        if (select == 0) {
+                            CheTaoCuonSachCu.cheTaoCuonSachCu(player);
+                        }
                     } else if (player.idMark.getIndexMenu() == ConstNpc.DOI_SACH_TUYET_KY) {
                         if (select == 0) {
                             DoiSachTuyetKy.doiSachTuyetKy(player, false);

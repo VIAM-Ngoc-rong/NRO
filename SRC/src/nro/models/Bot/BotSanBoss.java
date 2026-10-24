@@ -39,40 +39,48 @@ public class BotSanBoss {
     }
 
     public void GetBoss(int status) {
-        if (this.bossAttack == null || this.bossAttack.isDie()) {
-            this.bossAttack = BossManager.gI().getBosses().get(new Random().nextInt(BossManager.gI().getBosses().size()));
-
-            boolean bosAction = false;
-            if (this.bossAttack != null && this.bossAttack.zone != null && this.bossAttack.zone.map != null) {
-                int bId = (int) this.bossAttack.id;
+        if (this.bossAttack == null || this.bossAttack.isDie() || this.bossAttack.zone == null) {
+            List<Boss> allBosses = BossManager.gI().getBosses();
+            if (allBosses == null || allBosses.isEmpty()) {
+                this.bossAttack = null;
+                return;
+            }
+            List<Boss> validBosses = new ArrayList<>();
+            for (int i = 0; i < allBosses.size(); i++) {
+                Boss b = allBosses.get(i);
+                if (b == null || b.isDie() || b.zone == null || b.zone.map == null) {
+                    continue;
+                }
+                int bId = (int) b.id;
                 boolean isBojackTeam = bId == nro.models.boss.BossID.BUJIN || bId == nro.models.boss.BossID.KOGU
                         || bId == nro.models.boss.BossID.ZANGYA || bId == nro.models.boss.BossID.BIDO
                         || bId == nro.models.boss.BossID.BOJACK || bId == nro.models.boss.BossID.SUPER_BOJACK;
-                bosAction = !this.bossAttack.isDie()
-                        && !isBojackTeam
-                        && !this.isMap(this.bossAttack.zone.map.mapId)
-                        && !this.bossAttack.zone.isFullPlayer()
-                        && this.bossAttack.zone.mobs != null
-                        && this.bossAttack.zone.mobs.size() >= 1;
+                if (!isBojackTeam
+                        && !this.isMap(b.zone.map.mapId)
+                        && !b.zone.isFullPlayer()
+                        && b.zone.mobs != null
+                        && b.zone.mobs.size() >= 1) {
+                    validBosses.add(b);
+                }
             }
-
-            if (bosAction) {
-                ChangeMapService.gI().goToMap(this.bot, this.bossAttack.zone);
-                this.bot.zone.load_Me_To_Another(this.bot);
-            }
-
-            if (!bosAction && status < 3) {
-                this.bossAttack = null;
-                this.GetBoss(status + 1);
-            } else if (!bosAction) {
-                BotManager.gI().bot.remove(this.bot);
-                ChangeMapService.gI().exitMap(this.bot);
+            if (!validBosses.isEmpty()) {
+                this.bossAttack = validBosses.get(Util.nextInt(0, validBosses.size() - 1));
+                if (this.bot.zone != this.bossAttack.zone) {
+                    ChangeMapService.gI().goToMap(this.bot, this.bossAttack.zone);
+                    if (this.bot.zone != null) {
+                        this.bot.zone.load_Me_To_Another(this.bot);
+                    }
+                }
+            } else {
                 this.bossAttack = null;
             }
         }
     }
 
     public void GetSkil() {
+        if (this.bot == null || this.bot.playerSkill == null || this.bot.playerSkill.skills.size() < 2) {
+            return;
+        }
         if (Util.isTrue(50, 100)) {
             this.bot.playerSkill.skillSelect = this.bot.playerSkill.skills.get(0);
         } else {
@@ -97,20 +105,8 @@ public class BotSanBoss {
     public void SanBot() {
         this.GetBoss(0);
         this.GetSkil();
-        if (this.bossAttack != null && !this.bossAttack.isDie()) {
+        if (this.bossAttack != null && !this.bossAttack.isDie() && this.bossAttack.zone != null && this.bot.zone != null) {
             if (this.bot.UseLastTimeSkill()) {
-                int y = 0;
-                int x = 0;
-                for (Mob m : this.bot.zone.mobs) {
-                    if (y < m.location.y) {
-                        y = m.location.y;
-                        x = m.location.x;
-                    }
-
-                }
-                if (this.bot.zone.map.mapId == 72) {
-                    y = 312;
-                }
                 PlayerService.gI().playerMove(this.bot, this.bossAttack.location.x, this.bossAttack.location.y);
                 SkillService.gI().useSkill(this.bot, this.bossAttack, null, 0, null);
             }

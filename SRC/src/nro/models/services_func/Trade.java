@@ -297,9 +297,10 @@ public class Trade {
             if (pl.equals(player1)) {
                 msg.writer().writeInt(goldTrade1);
                 msg.writer().writeByte(itemsTrade1.size());
+                boolean oldVer2 = player2.getSession() != null && player2.getSession().version < 222;
                 for (Item item : itemsTrade1) {
                     msg.writer().writeShort(item.template.id);
-                    if (player1.getSession().version < 222) {
+                    if (oldVer2) {
                         msg.writer().writeByte(item.quantity > Byte.MAX_VALUE ? Byte.MAX_VALUE : item.quantity);
                     } else {
                         msg.writer().writeInt(item.quantity);
@@ -314,9 +315,10 @@ public class Trade {
             } else {
                 msg.writer().writeInt(goldTrade2);
                 msg.writer().writeByte(itemsTrade2.size());
+                boolean oldVer1 = player1.getSession() != null && player1.getSession().version < 222;
                 for (Item item : itemsTrade2) {
                     msg.writer().writeShort(item.template.id);
-                    if (player2.getSession().version < 222) {
+                    if (oldVer1) {
                         msg.writer().writeByte(item.quantity > Byte.MAX_VALUE ? Byte.MAX_VALUE : item.quantity);
                     } else {
                         msg.writer().writeInt(item.quantity);

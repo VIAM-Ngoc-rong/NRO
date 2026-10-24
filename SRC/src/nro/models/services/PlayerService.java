@@ -45,6 +45,9 @@ public class PlayerService {
     }
 
     public void sendTNSM(Player player, byte type, long param) {
+        if (player == null || player.getSession() == null) {
+            return;
+        }
         if (param > 0) {
             Message msg;
             try {
@@ -77,6 +80,9 @@ public class PlayerService {
     }
 
     public void sendInfoHp(Player player) {
+        if (player == null || player.getSession() == null || player.nPoint == null) {
+            return;
+        }
         Message msg;
         try {
             msg = Service.gI().messageSubCommand((byte) 5);
@@ -89,6 +95,9 @@ public class PlayerService {
     }
 
     public void sendInfoMp(Player player) {
+        if (player == null || player.getSession() == null || player.nPoint == null) {
+            return;
+        }
         Message msg;
         try {
             msg = Service.gI().messageSubCommand((byte) 6);
@@ -101,7 +110,7 @@ public class PlayerService {
     }
 
     public void sendInfoHpMp(Player player) {
-        if (player.nPoint == null) {
+        if (player == null || player.getSession() == null || player.nPoint == null) {
             return;
         }
         sendInfoHp(player);

@@ -570,7 +570,13 @@ public class InventoryService {
     }
 
     public void sendItemBags(Player player) {
+        if (player == null || player.inventory == null || player.inventory.itemsBag == null) {
+            return;
+        }
         sortItems(player.inventory.itemsBag);
+        if (player.getSession() == null) {
+            return;
+        }
         Message msg;
         try {
             int tabSize = player.inventory.getActiveTabSize();
@@ -636,45 +642,50 @@ public class InventoryService {
     }
 
     public void sendItemBody(Player player) {
-        Message msg;
-        try {
-            msg = new Message(-37);
-            msg.writer().writeByte(0);
-            msg.writer().writeShort(player.getHead());
-            msg.writer().writeByte(player.inventory.itemsBody.size());
-            for (Item item : player.inventory.itemsBody) {
-                if (!item.isNotNullItem()) {
-                    msg.writer().writeShort(-1);
-                } else {
-                    msg.writer().writeShort(item.template.id);
-                    msg.writer().writeInt(item.quantity);
-                    msg.writer().writeUTF(item.getInfo());
-                    msg.writer().writeUTF(item.getContent());
-                    List<Item.ItemOption> itemOptions = item.itemOptions;
-                    msg.writer().writeByte(itemOptions.size());
-                    for (Item.ItemOption itemOption : itemOptions) {
-                        if (itemOption.optionTemplate.id == 213) {
-                            int opId = 213;
-                            int param = itemOption.param;
-                            if (param > 1_000_000) {
-                                opId = 223;
-                                param /= 1_000_000;
-                            } else if (param > 1000) {
-                                opId = 222;
-                                param /= 1000;
+        if (player == null || player.inventory == null) {
+            return;
+        }
+        if (player.getSession() != null) {
+            Message msg;
+            try {
+                msg = new Message(-37);
+                msg.writer().writeByte(0);
+                msg.writer().writeShort(player.getHead());
+                msg.writer().writeByte(player.inventory.itemsBody.size());
+                for (Item item : player.inventory.itemsBody) {
+                    if (!item.isNotNullItem()) {
+                        msg.writer().writeShort(-1);
+                    } else {
+                        msg.writer().writeShort(item.template.id);
+                        msg.writer().writeInt(item.quantity);
+                        msg.writer().writeUTF(item.getInfo());
+                        msg.writer().writeUTF(item.getContent());
+                        List<Item.ItemOption> itemOptions = item.itemOptions;
+                        msg.writer().writeByte(itemOptions.size());
+                        for (Item.ItemOption itemOption : itemOptions) {
+                            if (itemOption.optionTemplate.id == 213) {
+                                int opId = 213;
+                                int param = itemOption.param;
+                                if (param > 1_000_000) {
+                                    opId = 223;
+                                    param /= 1_000_000;
+                                } else if (param > 1000) {
+                                    opId = 222;
+                                    param /= 1000;
+                                }
+                                msg.writer().writeByte(opId);
+                                msg.writer().writeShort(param);
+                            } else {
+                                msg.writer().writeByte(itemOption.optionTemplate.id);
+                                msg.writer().writeShort(itemOption.param);
                             }
-                            msg.writer().writeByte(opId);
-                            msg.writer().writeShort(param);
-                        } else {
-                            msg.writer().writeByte(itemOption.optionTemplate.id);
-                            msg.writer().writeShort(itemOption.param);
                         }
                     }
                 }
+                player.sendMessage(msg);
+                msg.cleanup();
+            } catch (Exception e) {
             }
-            player.sendMessage(msg);
-            msg.cleanup();
-        } catch (Exception e) {
         }
         Service.gI().Send_Caitrang(player);
     }
@@ -685,6 +696,9 @@ public class InventoryService {
     }
 
     public void sendItemBoxSilent(Player player) {
+        if (player == null || player.getSession() == null || player.inventory == null) {
+            return;
+        }
         Message msg;
         try {
             msg = new Message(-35);
