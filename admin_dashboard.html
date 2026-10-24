@@ -529,6 +529,7 @@
         <button onclick="sendAnnounce()">Gửi Thông Báo</button>
       </div>
       <div class="toolbar-divider"></div>
+      <button class="btn-warning" onclick="openTaskModal('', 0, 0, 0, 0)" title="Nhảy qua bước nhiệm vụ đang kẹt hoặc đặt thẳng nhiệm vụ cho người chơi Online & Offline">Nhảy Nhiệm Vụ</button>
       <button class="btn-warning" onclick="openIntrinsicModal('', 0, 0, -1, 0, 0)" title="Tặng hoặc chỉnh sửa chỉ số Nội tại (%) cho người chơi Online & Offline">Buff Nội Tại</button>
       <button class="btn-teal" onclick="saveAllData()">Lưu Dữ Liệu</button>
       <button class="btn-teal" onclick="updateAndRestartServer()" title="Tự động kéo code mới từ GitHub (git pull) và khởi động lại Server">Cập Nhật & Khởi Động Lại</button>
@@ -1141,6 +1142,70 @@
     </div>
   </div>
 
+  <!-- MODAL 6: ĐIỀU KHIỂN & NHẢY NHIỆM VỤ CHO NGƯỜI CHƠI (ONLINE & OFFLINE) -->
+  <div id="taskModal" class="modal-backdrop">
+    <div class="modal" style="max-width: 600px;">
+      <h3 id="taskModalTitle">Điều Khiển & Nhảy Nhiệm Vụ Nhân Vật</h3>
+      <input type="hidden" id="taskAccId" value="0" />
+      <div class="grid-2 modal-box-subtle" style="grid-template-columns: 1.2fr 1fr; gap: 10px;">
+        <div class="form-group" style="margin-bottom: 0;">
+          <label>Chọn Người Chơi (Đang Online / Toàn Server):</label>
+          <select id="taskPlayerSelect" onchange="onChangeTaskPlayerSelect()" style="width: 100%;">
+            <option value="">-- Chọn người chơi --</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin-bottom: 0;">
+          <label>Hoặc nhập Tên Nhân Vật / ID (Cả Offline):</label>
+          <input type="text" id="taskPlayerTarget" placeholder="Nhập Tên NV, ID hoặc ALL..." />
+        </div>
+      </div>
+
+      <div class="modal-box-subtle" style="margin-bottom: 12px;">
+        <label style="display:block;font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:8px;">Thao tác Nhảy Nhiệm Vụ nhanh (1 chạm):</label>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <button type="button" class="btn-success" onclick="submitTaskSkip('next_sub')">⏭ +1 Bước Nhiệm Vụ Con</button>
+          <button type="button" class="btn-muted" onclick="submitTaskSkip('next_main')">⏩ Qua Nhiệm Vụ Chính Kế Tiếp</button>
+        </div>
+        <span style="display:block;font-size:11.5px;color:var(--muted);margin-top:6px;">Bấm <b>+1 Bước Nhiệm Vụ Con</b> để bỏ qua ngay bước đang kẹt (hạ Boss, đánh quái...), hoặc <b>Qua Nhiệm Vụ Chính Kế Tiếp</b> để sang hẳn nhiệm vụ mới.</span>
+      </div>
+
+      <div class="grid-2" style="grid-template-columns: 1.7fr 1fr; gap: 10px;">
+        <div class="form-group">
+          <label>Hoặc chọn Nhiệm Vụ Chính muốn nhảy tới:</label>
+          <select id="taskSelectId" onchange="onSelectTaskMainChange()" style="width: 100%; font-weight: 600;">
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Bước Nhiệm Vụ Con (SubTask):</label>
+          <select id="taskSelectIndex" style="width: 100%;">
+            <option value="0">Bước 1 (Đầu nhiệm vụ)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-bottom: 4px;">
+        <label>Chọn nhanh các mốc Nhiệm Vụ quan trọng:</label>
+        <div style="display:flex;gap:5px;flex-wrap:wrap;margin-top:4px;">
+          <button type="button" class="btn-muted btn-sm" onclick="quickPickTask(0)">NV #0: Tân Thủ</button>
+          <button type="button" class="btn-muted btn-sm" onclick="quickPickTask(11)">NV #11: Ta Pảy Pảy</button>
+          <button type="button" class="btn-muted btn-sm" onclick="quickPickTask(16)">NV #16: Thượng Đế / Đệ Tử</button>
+          <button type="button" class="btn-muted btn-sm" onclick="quickPickTask(19)">NV #19: Tiểu Đội Sát Thủ</button>
+          <button type="button" class="btn-muted btn-sm" onclick="quickPickTask(20)">NV #20: Fide Đại Ca</button>
+          <button type="button" class="btn-muted btn-sm" onclick="quickPickTask(22)">NV #22: Android 19 - 20</button>
+          <button type="button" class="btn-muted btn-sm" onclick="quickPickTask(23)">NV #23: Pic, Poc, KingKong</button>
+          <button type="button" class="btn-muted btn-sm" onclick="quickPickTask(24)">NV #24: Xên Bọ Hung</button>
+          <button type="button" class="btn-muted btn-sm" onclick="quickPickTask(25)">NV #25: Siêu Bọ Hung</button>
+          <button type="button" class="btn-muted btn-sm" onclick="quickPickTask(28)">NV #28: Hoàn Thành NV</button>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-muted" onclick="closeTaskModal()">Đóng</button>
+        <button class="btn-success" onclick="submitTaskSkip('set_task')">Đặt Nhiệm Vụ Đã Chọn</button>
+      </div>
+    </div>
+  </div>
+
   <div id="toast"></div>
 
   <script>
@@ -1180,6 +1245,40 @@
     let currentItemPage = 1;
     let totalServerItems = 0;
     let currentTab = 'players';
+    let allTasksCache = [
+      { id: 0, name: 'Nhiệm vụ đầu tiên', subCount: 6, subTasks: ['Bước 1', 'Bước 2', 'Bước 3', 'Bước 4', 'Bước 5', 'Bước 6'] },
+      { id: 1, name: 'Nhiệm vụ tập luyện', subCount: 2, subTasks: ['Đánh 5 mộc nhân', 'Báo cáo Ông Gohan/Moori/Paragus'] },
+      { id: 2, name: 'Nhiệm vụ tìm thức ăn', subCount: 2, subTasks: ['Nhặt 10 đùi gà', 'Mang về cho Ông Gohan/Moori/Paragus'] },
+      { id: 3, name: 'Nhiệm vụ sao băng', subCount: 3, subTasks: ['Tìm đứa trẻ', 'Đánh bại quái vật', 'Báo cáo'] },
+      { id: 4, name: 'Nhiệm vụ thử thách (Trái Đất)', subCount: 4, subTasks: ['Đánh Khủng Long Mẹ', 'Đánh Lợn Lòi Mẹ', 'Đánh Quỷ Đất Mẹ', 'Báo cáo'] },
+      { id: 5, name: 'Nhiệm vụ thử thách (Namek)', subCount: 4, subTasks: ['Đánh Lợn Lòi Mẹ', 'Đánh Khủng Long Mẹ', 'Đánh Quỷ Đất Mẹ', 'Báo cáo'] },
+      { id: 6, name: 'Nhiệm vụ thử thách (Xayda)', subCount: 4, subTasks: ['Đánh Quỷ Đất Mẹ', 'Đánh Khủng Long Mẹ', 'Đánh Lợn Lòi Mẹ', 'Báo cáo'] },
+      { id: 7, name: 'Nhiệm vụ giải cứu', subCount: 4, subTasks: ['Đánh 20 quái bay', 'Giải cứu Bunma/Dende/Appule', 'Nói chuyện', 'Báo cáo'] },
+      { id: 8, name: 'Nhiệm vụ tìm ngọc rồng', subCount: 4, subTasks: ['Đạt 16.000 sức mạnh', 'Tìm Ngọc Rồng 7 Sao', 'Gặp Quy Lão / Trưởng Lão / Vua Vegeta', 'Báo cáo'] },
+      { id: 9, name: 'Nhiệm vụ bái sư', subCount: 2, subTasks: ['Gặp Quy Lão / Trưởng Lão / Vua Vegeta', 'Học võ công'] },
+      { id: 10, name: 'Nhiệm vụ diệt Hắc Hổ / Tàu Pảy Pảy', subCount: 3, subTasks: ['Đánh 20 Heo Rừng', 'Đánh bại Tàu Pảy Pảy', 'Báo cáo'] },
+      { id: 11, name: 'Nhiệm vụ gia nhập Bang hội', subCount: 4, subTasks: ['Đạt 40.000 sức mạnh', 'Gia nhập một Bang hội', 'Nói chuyện', 'Báo cáo'] },
+      { id: 12, name: 'Nhiệm vụ rừng Karin', subCount: 3, subTasks: ['Lên Tháp Karin', 'Tập luyện cùng Thần Mèo Karin', 'Báo cáo'] },
+      { id: 13, name: 'Nhiệm vụ tiêu diệt Độc Nhãn', subCount: 2, subTasks: ['Tham gia Doanh Trại Độc Nhãn', 'Báo cáo'] },
+      { id: 14, name: 'Nhiệm vụ chạm trán Tambourine', subCount: 4, subTasks: ['Đánh quái', 'Hạ Drum', 'Hạ Tambourine', 'Báo cáo'] },
+      { id: 15, name: 'Nhiệm vụ tiêu diệt Akkuman', subCount: 4, subTasks: ['Đạt sức mạnh yêu cầu', 'Đánh quái cùng bang', 'Hạ Akkuman', 'Báo cáo'] },
+      { id: 16, name: 'Nhiệm vụ tiêu diệt Đại Ma Vương Piccolo', subCount: 4, subTasks: ['Đánh quái', 'Hạ Cymbal', 'Hạ Đại Ma Vương Piccolo', 'Báo cáo'] },
+      { id: 17, name: 'Nhiệm vụ chạm trán Раđít & Nappa', subCount: 2, subTasks: ['Lên Điện Thượng Đế', 'Báo cáo Quy Lão'] },
+      { id: 18, name: 'Nhiệm vụ tiêu diệt Nappa & Kuku', subCount: 6, subTasks: ['Đạt sức mạnh yêu cầu', 'Hạ Kuku', 'Hạ Mập Đầu Đinh', 'Hạ Rambo', 'Nói chuyện', 'Báo cáo'] },
+      { id: 19, name: 'Nhiệm vụ tiêu diệt Tiểu Đội Sát Thủ', subCount: 4, subTasks: ['Đạt sức mạnh yêu cầu', 'Đánh quái tương lai/Fide', 'Hạ Tiểu Đội Sát Thủ (Số 4, 3, 2, 1, Tiểu Đội Trưởng)', 'Báo cáo'] },
+      { id: 20, name: 'Nhiệm vụ tiêu diệt Fide Đại Ca', subCount: 7, subTasks: ['Đánh quái', 'Hạ Fide Đại Ca Cấp 1', 'Hạ Fide Đại Ca Cấp 2', 'Hạ Fide Đại Ca Cấp 3', 'Nói chuyện', 'Hoàn thành', 'Báo cáo'] },
+      { id: 21, name: 'Nhiệm vụ chạm trán Rôbốt Sát Thủ', subCount: 5, subTasks: ['Đánh quái', 'Tìm gặp Bardock / Tương lai', 'Hạ Boss', 'Nói chuyện', 'Báo cáo'] },
+      { id: 22, name: 'Nhiệm vụ tiêu diệt Android 19 & 20', subCount: 4, subTasks: ['Hạ APK 19', 'Hạ APK 20 (Dr.Kôrê)', 'Nói chuyện', 'Báo cáo'] },
+      { id: 23, name: 'Nhiệm vụ tiêu diệt Pic, Poc & King Kong', subCount: 5, subTasks: ['Hạ Android 15', 'Hạ Android 14', 'Hạ Android 13', 'Hạ Pic, Poc, King Kong', 'Báo cáo'] },
+      { id: 24, name: 'Nhiệm vụ tiêu diệt Xên Bọ Hung', subCount: 5, subTasks: ['Hạ Xên Bọ Hung Cấp 1', 'Hạ Xên Bọ Hung Cấp 2', 'Hạ Xên Bọ Hung Hoàn Thiện', 'Nói chuyện', 'Báo cáo'] },
+      { id: 25, name: 'Nhiệm vụ Võ Đài Xên Bọ Hung (Siêu Bọ Hung)', subCount: 6, subTasks: ['Đánh quái', 'Hạ 7 Xên Con', 'Hạ Siêu Bọ Hung', 'Nói chuyện', 'Hoàn thành', 'Báo cáo'] },
+      { id: 26, name: 'Nhiệm vụ chạm trán Đôrêmon / Ma Bư', subCount: 5, subTasks: ['Bước 1', 'Bước 2', 'Bước 3', 'Bước 4', 'Báo cáo'] },
+      { id: 27, name: 'Nhiệm vụ tiêu diệt Ma Bư', subCount: 5, subTasks: ['Bước 1', 'Bước 2', 'Bước 3', 'Bước 4', 'Báo cáo'] },
+      { id: 28, name: 'Nhiệm vụ hoàn thành cốt truyện', subCount: 2, subTasks: ['Đã hoàn thành cốt truyện chính', 'Tự do khám phá'] },
+      { id: 29, name: 'Nhiệm vụ nâng cao #29', subCount: 2, subTasks: ['Bước 1', 'Bước 2'] },
+      { id: 30, name: 'Nhiệm vụ nâng cao #30', subCount: 2, subTasks: ['Bước 1', 'Bước 2'] },
+      { id: 31, name: 'Nhiệm vụ nâng cao #31', subCount: 2, subTasks: ['Bước 1', 'Bước 2'] }
+    ];
 
     if (localStorage.getItem('nro_admin_theme') === 'dark') {
       document.body.classList.add('dark-mode');
@@ -1301,6 +1400,9 @@
         if (Array.isArray(data.intrinsics) && data.intrinsics.length > 0) {
           allIntrinsicsCache = data.intrinsics;
         }
+        if (Array.isArray(data.tasks) && data.tasks.length > 0) {
+          allTasksCache = data.tasks;
+        }
         if (data.events) {
           renderEventsAdmin(data.events);
         }
@@ -1337,7 +1439,8 @@
           <td>
             <span style="font-weight:500;">HP: ${formatNum(p.hp)}/${formatNum(p.hpMax)}</span><br/>
             <span style="font-size:12px;color:var(--muted);">KI: ${formatNum(p.mp)} · SĐ: ${formatNum(p.dame)}</span><br/>
-            <span style="font-size:11.5px;color:var(--text-secondary);">Nội tại: ${escapeHtml(p.intrinsicName || 'Chưa mở')}</span>
+            <span style="font-size:11.5px;color:var(--text-secondary);">Nội tại: ${escapeHtml(p.intrinsicName || 'Chưa mở')}</span><br/>
+            <span style="font-size:11.5px;color:var(--muted);">${escapeHtml(p.taskName || ('NV #' + (p.taskId ?? 0)))}</span>
           </td>
           <td>
             <span class="text-gold">${formatNum(p.gold)} Vàng</span> · <span class="text-vnd">${formatNum(p.vnd)} đ</span><br/>
@@ -1347,6 +1450,7 @@
           <td>${p.hasPet ? `Có (${formatNum(p.petPower)})` : '<span style="color:var(--muted)">Không</span>'}</td>
           <td style="display:flex;gap:5px;flex-wrap:wrap;">
             <button class="btn-success btn-sm" onclick="openGiftModal(${p.id}, '${escapeJs(p.name)}')">Trao Quà</button>
+            <button class="btn-muted btn-sm" onclick="openTaskModal('${escapeJs(p.name)}', ${p.id}, 0, ${p.taskId ?? 0}, ${p.taskIndex ?? 0})">Nhảy NV</button>
             <button class="btn-muted btn-sm" onclick="promptGiveSkhBox('${escapeJs(p.name)}', ${p.id}, 0, ${p.ruongSkh ?? 5})">+Rương SKH</button>
             <button class="btn-muted btn-sm" onclick="openIntrinsicModal('${escapeJs(p.name)}', ${p.id}, 0, ${p.genderId ?? -1}, ${p.intrinsicId || 0}, ${p.intrinsicParam1 || 0})">Nội Tại</button>
             <button class="btn-muted btn-sm" onclick="inspectPlayer(${p.id})">Xem Đồ</button>
@@ -1382,6 +1486,7 @@
             <td class="text-name">
               ${escapeHtml(a.playerName)} <span style="font-size:11.5px;color:var(--muted);font-weight:400;">(${escapeHtml(a.gender)})</span>
               ${a.playerId > 0 ? `<br/><span style="font-size:11.5px;color:var(--muted);font-weight:400;">Nội tại: ${escapeHtml(a.intrinsicName || 'Chưa mở')}</span>` : ''}
+              ${a.playerId > 0 ? `<br/><span style="font-size:11.5px;color:var(--muted);font-weight:400;">${escapeHtml(a.taskName || ('NV #' + (a.taskId ?? 0)))}</span>` : ''}
             </td>
             <td>
               ${a.online ? '<span class="badge badge-alive">Online</span>' : '<span class="badge badge-dead">Offline</span>'}
@@ -1402,6 +1507,7 @@
             </td>
             <td style="display:flex;gap:5px;flex-wrap:wrap;">
               <button class="btn-success btn-sm" onclick="openEditAccount(${a.accId})">Sửa / +VNĐ</button>
+              ${a.playerId > 0 ? `<button class="btn-muted btn-sm" onclick="openTaskModal('${escapeJs(a.playerName)}', ${a.playerId}, ${a.accId}, ${a.taskId ?? 0}, ${a.taskIndex ?? 0})">Nhảy NV</button>` : ''}
               <button class="btn-muted btn-sm" onclick="promptGiveSkhBox('${escapeJs(a.playerName)}', ${a.playerId || 0}, ${a.accId}, ${a.ruongSkh ?? 5})">+Rương SKH</button>
               ${a.playerId > 0 ? `<button class="btn-muted btn-sm" onclick="openIntrinsicModal('${escapeJs(a.playerName)}', ${a.playerId}, ${a.accId}, ${a.genderId ?? -1}, ${a.intrinsicId || 0}, ${a.intrinsicParam1 || 0})">Nội Tại</button>` : ''}
               ${!a.active ? `<button class="btn-muted btn-sm" onclick="quickToggleAccount(${a.accId}, 'active', 1)">Mở TV</button>` : ''}
@@ -2147,6 +2253,118 @@
 
     function closeIntrinsicModal() {
       document.getElementById('intrinsicModal').classList.remove('show');
+    }
+
+    function populateTaskPlayerSelect(selectedVal) {
+      const sel = document.getElementById('taskPlayerSelect');
+      if (!sel) return;
+      let html = `<option value="">-- Chọn người chơi đang Online (${cachedPlayers.length}) --</option>`;
+      if (cachedPlayers.length > 0) {
+        html += `<option value="ALL">TẤT CẢ NGƯỜI CHƠI ONLINE (${cachedPlayers.length} người)</option>`;
+        for (const p of cachedPlayers) {
+          html += `<option value="${p.id}">${escapeHtml(p.name)} (#${p.id} - ${escapeHtml(p.taskName || ('NV #' + (p.taskId ?? 0)))})</option>`;
+        }
+      }
+      sel.innerHTML = html;
+      if (selectedVal !== undefined && selectedVal !== null && String(selectedVal) !== '') {
+        sel.value = String(selectedVal);
+      }
+    }
+
+    function onChangeTaskPlayerSelect() {
+      const val = document.getElementById('taskPlayerSelect').value;
+      if (val) {
+        document.getElementById('taskPlayerTarget').value = val;
+        const p = cachedPlayers.find(x => String(x.id) === String(val));
+        if (p) {
+          populateTaskSelects(p.taskId ?? 0, p.taskIndex ?? 0);
+        }
+      }
+    }
+
+    function populateTaskSelects(selectedTaskId, selectedSubIndex) {
+      const sel = document.getElementById('taskSelectId');
+      if (!sel) return;
+      sel.innerHTML = allTasksCache.map(t =>
+        `<option value="${t.id}">NV #${t.id}: ${escapeHtml(t.name)} (${t.subCount || (t.subTasks ? t.subTasks.length : 1)} bước)</option>`
+      ).join('');
+      if (selectedTaskId !== undefined && selectedTaskId !== null && allTasksCache.some(x => x.id === Number(selectedTaskId))) {
+        sel.value = String(selectedTaskId);
+      }
+      onSelectTaskMainChange(selectedSubIndex);
+    }
+
+    function onSelectTaskMainChange(preferredSubIndex) {
+      const id = parseInt(document.getElementById('taskSelectId').value, 10) || 0;
+      const found = allTasksCache.find(x => x.id === id);
+      const subSel = document.getElementById('taskSelectIndex');
+      if (!subSel) return;
+      const subs = (found && Array.isArray(found.subTasks) && found.subTasks.length > 0)
+        ? found.subTasks
+        : ['Bước 1 (Đầu nhiệm vụ)'];
+      subSel.innerHTML = subs.map((sName, idx) =>
+        `<option value="${idx}">Bước ${idx + 1}: ${escapeHtml(sName)}</option>`
+      ).join('');
+      if (preferredSubIndex !== undefined && preferredSubIndex >= 0 && preferredSubIndex < subs.length) {
+        subSel.value = String(preferredSubIndex);
+      } else {
+        subSel.value = '0';
+      }
+    }
+
+    function quickPickTask(taskId) {
+      populateTaskSelects(taskId, 0);
+    }
+
+    function openTaskModal(playerName, playerId, accId, curTaskId, curTaskIndex) {
+      document.getElementById('taskAccId').value = accId || 0;
+      const targetVal = playerId > 0 ? String(playerId) : (playerName || '');
+      document.getElementById('taskPlayerTarget').value = targetVal;
+      populateTaskPlayerSelect(playerId > 0 ? String(playerId) : '');
+      populateTaskSelects(curTaskId ?? 0, curTaskIndex ?? 0);
+      document.getElementById('taskModalTitle').textContent = playerName
+        ? `Điều Khiển Nhiệm Vụ: ${playerName} (${playerId > 0 ? '#' + playerId : 'TK #' + accId})`
+        : 'Điều Khiển & Nhảy Nhiệm Vụ Nhân Vật';
+      document.getElementById('taskModal').classList.add('show');
+    }
+
+    function closeTaskModal() {
+      document.getElementById('taskModal').classList.remove('show');
+    }
+
+    async function submitTaskSkip(mode) {
+      let rawTarget = document.getElementById('taskPlayerTarget').value.trim();
+      const selVal = document.getElementById('taskPlayerSelect')?.value || '';
+      const accId = document.getElementById('taskAccId').value || '0';
+      if (!rawTarget && selVal) {
+        rawTarget = selVal;
+      }
+      if (!rawTarget && Number(accId) <= 0) {
+        showToast('Vui lòng chọn hoặc nhập Tên Nhân Vật / ID cần nhảy nhiệm vụ!', true);
+        return;
+      }
+      const taskId = document.getElementById('taskSelectId').value || 0;
+      const taskIndex = document.getElementById('taskSelectIndex').value || 0;
+
+      const res = await postAction({
+        action: 'skip_task',
+        playerTarget: rawTarget,
+        playerId: rawTarget,
+        accId,
+        mode: mode || 'next_sub',
+        taskId,
+        taskIndex
+      });
+      showToast(res.message, !res.ok);
+      if (res.ok) {
+        if (mode === 'set_task') {
+          closeTaskModal();
+        }
+        fetchStatus();
+        if (currentTab === 'accounts') {
+          loadAccountsDb();
+        }
+      }
     }
 
     async function submitIntrinsicBuff() {

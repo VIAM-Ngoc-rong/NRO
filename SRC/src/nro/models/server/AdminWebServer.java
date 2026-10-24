@@ -50,7 +50,10 @@ import nro.models.services.InventoryService;
 import nro.models.services.ItemService;
 import nro.models.services.PlayerService;
 import nro.models.services.Service;
+import nro.models.services.TaskService;
 import nro.models.shop_ky_gui.ConsignShopManager;
+import nro.models.task.SubTaskMain;
+import nro.models.task.TaskMain;
 import nro.models.utils.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONValue;
@@ -232,6 +235,9 @@ public class AdminWebServer {
             int inP2 = (pl.playerIntrinsic != null && pl.playerIntrinsic.intrinsic != null) ? pl.playerIntrinsic.intrinsic.param2 : 0;
             String inName = (pl.playerIntrinsic != null && pl.playerIntrinsic.intrinsic != null && inId > 0)
                     ? pl.playerIntrinsic.intrinsic.getName() : "Chưa mở";
+            int taskId = (pl.playerTask != null && pl.playerTask.taskMain != null) ? pl.playerTask.taskMain.id : 0;
+            int taskIndex = (pl.playerTask != null && pl.playerTask.taskMain != null) ? pl.playerTask.taskMain.index : 0;
+            String taskName = formatTaskInfo(taskId, taskIndex);
             sb.append("{");
             sb.append("\"id\":").append(pl.id);
             sb.append(",\"name\":").append(jsonStr(pl.name));
@@ -257,6 +263,9 @@ public class AdminWebServer {
             sb.append(",\"intrinsicParam1\":").append(inP1);
             sb.append(",\"intrinsicParam2\":").append(inP2);
             sb.append(",\"intrinsicName\":").append(jsonStr(inName));
+            sb.append(",\"taskId\":").append(taskId);
+            sb.append(",\"taskIndex\":").append(taskIndex);
+            sb.append(",\"taskName\":").append(jsonStr(taskName));
             sb.append("}");
         }
         sb.append("]");
@@ -336,6 +345,7 @@ public class AdminWebServer {
         sb.append(",\"aliveBossCount\":").append(aliveBossCount);
         sb.append(",\"totalBossCount\":").append(visibleBossCount);
         sb.append(",\"intrinsics\":").append(serializeIntrinsics());
+        sb.append(",\"tasks\":").append(serializeTasks());
         sb.append(",\"events\":").append(serializeEvents());
         sb.append("}");
 
@@ -388,7 +398,7 @@ public class AdminWebServer {
         sb.append("{\"ok\":true,\"accounts\":[");
 
         String sql = "SELECT a.*, "
-                + "p.id AS player_id, p.name AS player_name, p.gender, p.data_inventory, p.data_point, p.data_intrinsic "
+                + "p.id AS player_id, p.name AS player_name, p.gender, p.data_inventory, p.data_point, p.data_intrinsic, p.data_task "
                 + "FROM account a LEFT JOIN player p ON p.account_id = a.id ";
         if (!q.isEmpty()) {
             sql += "WHERE a.username LIKE ? OR p.name LIKE ? OR CAST(a.id AS CHAR) = ? ";
@@ -438,6 +448,7 @@ public class AdminWebServer {
                         long gold = 0, gem = 0, ruby = 0, power = 0;
                         int inId = 0, inP1 = 0, inP2 = 0;
                         String inName = "Chưa mở";
+                        int taskId = 0, taskIndex = 0;
                         Player livePl = Client.gI().getPlayerByUser(accId);
                         boolean isOnline = (livePl != null);
 
@@ -457,6 +468,10 @@ public class AdminWebServer {
                                 if (inId > 0) {
                                     inName = livePl.playerIntrinsic.intrinsic.getName();
                                 }
+                            }
+                            if (livePl.playerTask != null && livePl.playerTask.taskMain != null) {
+                                taskId = livePl.playerTask.taskMain.id;
+                                taskIndex = livePl.playerTask.taskMain.index;
                             }
                         } else {
                             try {
@@ -494,8 +509,20 @@ public class AdminWebServer {
                                 }
                             } catch (Exception ignored) {
                             }
+                            try {
+                                String taskStr = rs.getString("data_task");
+                                if (taskStr != null && !taskStr.isEmpty()) {
+                                    JSONArray arr = (JSONArray) JSONValue.parse(taskStr);
+                                    if (arr != null && arr.size() >= 2) {
+                                        taskId = Integer.parseInt(String.valueOf(arr.get(0)));
+                                        taskIndex = Integer.parseInt(String.valueOf(arr.get(1)));
+                                    }
+                                }
+                            } catch (Exception ignored) {
+                            }
                         }
 
+                        String taskName = playerId > 0 ? formatTaskInfo(taskId, taskIndex) : "Chưa có";
                         String genderName = playerName == null ? "Chưa tạo NV" : (gender == 0 ? "Trái Đất" : (gender == 1 ? "Namek" : "Xayda"));
                         sb.append("{");
                         sb.append("\"accId\":").append(accId);
@@ -521,6 +548,9 @@ public class AdminWebServer {
                         sb.append(",\"intrinsicParam1\":").append(inP1);
                         sb.append(",\"intrinsicParam2\":").append(inP2);
                         sb.append(",\"intrinsicName\":").append(jsonStr(inName));
+                        sb.append(",\"taskId\":").append(taskId);
+                        sb.append(",\"taskIndex\":").append(taskIndex);
+                        sb.append(",\"taskName\":").append(jsonStr(taskName));
                         sb.append("}");
                     }
                 }
@@ -1134,6 +1164,121 @@ public class AdminWebServer {
                     Service.gI().sendThongBao(pl, "Admin vừa hồi phục 100% HP & KI cho bạn!");
                     sendJson(exchange, 200, "{\"ok\":true,\"message\":" + jsonStr("Đã hồi đầy 100% HP & KI cho " + pl.name + "!") + "}");
                 }
+                case "skip_task" -> {
+                    String target = params.getOrDefault("playerTarget", params.getOrDefault("playerId", "")).trim();
+                    int accId = (int) parseLongSafe(params.get("accId"), -1);
+                    String mode = params.getOrDefault("mode", "next_sub").trim();
+                    int reqTaskId = (int) parseLongSafe(params.get("taskId"), 0);
+                    int reqTaskIndex = (int) parseLongSafe(params.get("taskIndex"), 0);
+
+                    if ("ALL".equalsIgnoreCase(target)) {
+                        int count = 0;
+                        String lastTaskName = "";
+                        for (Player p : new ArrayList<>(Client.gI().getPlayers())) {
+                            if (p != null && !p.isBot && p.playerTask != null && p.playerTask.taskMain != null) {
+                                lastTaskName = applyTaskToPlayer(p, mode, reqTaskId, reqTaskIndex);
+                                count++;
+                            }
+                        }
+                        if (count == 0) {
+                            sendJson(exchange, 404, "{\"ok\":false,\"message\":\"Hiện không có người chơi nào đang Online!\"}");
+                            return;
+                        }
+                        sendJson(exchange, 200, "{\"ok\":true,\"message\":" + jsonStr("Đã nhảy nhiệm vụ cho toàn bộ " + count + " người chơi đang Online (" + lastTaskName + ")!") + "}");
+                        return;
+                    }
+
+                    // 1. Thử tìm người chơi đang Online trước
+                    Player livePl = null;
+                    if (accId > 0) {
+                        livePl = Client.gI().getPlayerByUser(accId);
+                    }
+                    if (livePl == null && !target.isEmpty()) {
+                        long pid = parseLongSafe(target, -1);
+                        if (pid > 0) {
+                            livePl = Client.gI().getPlayer(pid);
+                        }
+                        if (livePl == null) {
+                            livePl = Client.gI().getPlayer(target);
+                        }
+                        if (livePl == null) {
+                            for (Player p : new ArrayList<>(Client.gI().getPlayers())) {
+                                if (p != null && p.name != null && p.name.equalsIgnoreCase(target)) {
+                                    livePl = p;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    if (livePl != null && livePl.playerTask != null && livePl.playerTask.taskMain != null) {
+                        String newTaskInfo = applyTaskToPlayer(livePl, mode, reqTaskId, reqTaskIndex);
+                        sendJson(exchange, 200, "{\"ok\":true,\"message\":" + jsonStr("Đã cập nhật nhiệm vụ cho " + livePl.name + " thành: " + newTaskInfo + " (Đang Online)!") + "}");
+                        return;
+                    }
+
+                    // 2. Nếu người chơi đang Offline, cập nhật trực tiếp data_task trong MySQL
+                    try (Connection con = LocalManager.getConnection()) {
+                        long pid = parseLongSafe(target, -1);
+                        String findSql;
+                        if (pid > 0) {
+                            findSql = "SELECT id, name, gender, data_task FROM player WHERE id = ? LIMIT 1";
+                        } else if (accId > 0) {
+                            findSql = "SELECT id, name, gender, data_task FROM player WHERE account_id = ? LIMIT 1";
+                        } else if (!target.isEmpty()) {
+                            findSql = "SELECT id, name, gender, data_task FROM player WHERE LOWER(name) = LOWER(?) LIMIT 1";
+                        } else {
+                            sendJson(exchange, 400, "{\"ok\":false,\"message\":\"Vui lòng chọn hoặc nhập Tên Nhân Vật / ID!\"}");
+                            return;
+                        }
+
+                        long foundPid = -1;
+                        String foundName = target;
+                        int gender = 0;
+                        int curTaskId = 0;
+                        int curIndex = 0;
+
+                        try (PreparedStatement ps = con.prepareStatement(findSql)) {
+                            if (pid > 0) {
+                                ps.setLong(1, pid);
+                            } else if (accId > 0) {
+                                ps.setInt(1, accId);
+                            } else {
+                                ps.setString(1, target);
+                            }
+                            try (ResultSet rs = ps.executeQuery()) {
+                                if (rs.next()) {
+                                    foundPid = rs.getLong("id");
+                                    foundName = rs.getString("name");
+                                    gender = rs.getInt("gender");
+                                    String tStr = rs.getString("data_task");
+                                    if (tStr != null && !tStr.isEmpty()) {
+                                        JSONArray arr = (JSONArray) JSONValue.parse(tStr);
+                                        if (arr != null && arr.size() >= 2) {
+                                            curTaskId = Integer.parseInt(String.valueOf(arr.get(0)));
+                                            curIndex = Integer.parseInt(String.valueOf(arr.get(1)));
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        if (foundPid <= 0) {
+                            sendJson(exchange, 404, "{\"ok\":false,\"message\":" + jsonStr("Không tìm thấy nhân vật [" + (target.isEmpty() ? ("TK #" + accId) : target) + "] trong Database!") + "}");
+                            return;
+                        }
+
+                        int[] nextState = computeNextTaskState(curTaskId, curIndex, gender, mode, reqTaskId, reqTaskIndex);
+                        String newDataTask = "[" + nextState[0] + "," + nextState[1] + ",0]";
+                        try (PreparedStatement up = con.prepareStatement("UPDATE player SET data_task = ? WHERE id = ?")) {
+                            up.setString(1, newDataTask);
+                            up.setLong(2, foundPid);
+                            up.executeUpdate();
+                        }
+                        String info = formatTaskInfo(nextState[0], nextState[1]);
+                        sendJson(exchange, 200, "{\"ok\":true,\"message\":" + jsonStr("Đã lưu nhiệm vụ mới [" + info + "] vào Database cho [" + foundName + "] (Đang Offline)!") + "}");
+                    }
+                }
                 case "inspect_player" -> {
                     long playerId = Long.parseLong(params.getOrDefault("playerId", "-1"));
                     Player pl = Client.gI().getPlayer(playerId);
@@ -1641,6 +1786,144 @@ public class AdminWebServer {
         return (pl.playerIntrinsic != null && pl.playerIntrinsic.intrinsic != null)
                 ? pl.playerIntrinsic.intrinsic.getName()
                 : tpl.name;
+    }
+
+    private static TaskMain findRawTaskTemplate(int taskId) {
+        if (Manager.TASKS == null) {
+            return null;
+        }
+        for (TaskMain tm : Manager.TASKS) {
+            if (tm != null && tm.id == taskId) {
+                return tm;
+            }
+        }
+        return null;
+    }
+
+    private static int getMaxTaskTemplateId() {
+        int maxId = 31;
+        if (Manager.TASKS != null) {
+            for (TaskMain tm : Manager.TASKS) {
+                if (tm != null && tm.id > maxId) {
+                    maxId = tm.id;
+                }
+            }
+        }
+        return maxId;
+    }
+
+    private static int[] computeNextTaskState(int curTaskId, int curIndex, int gender, String mode, int reqTaskId, int reqTaskIndex) {
+        int maxTaskId = getMaxTaskTemplateId();
+        int newTaskId = curTaskId;
+        int newIndex = curIndex;
+
+        if ("set_task".equalsIgnoreCase(mode)) {
+            newTaskId = Math.max(0, Math.min(maxTaskId, reqTaskId));
+            if (newTaskId >= 4 && newTaskId <= 6) {
+                newTaskId = Math.max(0, Math.min(2, gender)) + 4;
+            }
+            TaskMain tpl = findRawTaskTemplate(newTaskId);
+            int maxSub = (tpl != null && tpl.subTasks != null && !tpl.subTasks.isEmpty()) ? tpl.subTasks.size() - 1 : 0;
+            newIndex = Math.max(0, Math.min(maxSub, reqTaskIndex));
+        } else if ("next_main".equalsIgnoreCase(mode)) {
+            if (curTaskId == 3) {
+                newTaskId = Math.max(0, Math.min(2, gender)) + 4;
+            } else if (curTaskId >= 4 && curTaskId <= 6) {
+                newTaskId = 7;
+            } else {
+                newTaskId = Math.min(maxTaskId, curTaskId + 1);
+            }
+            newIndex = 0;
+        } else {
+            // next_sub
+            TaskMain tpl = findRawTaskTemplate(curTaskId);
+            int subSize = (tpl != null && tpl.subTasks != null) ? tpl.subTasks.size() : 1;
+            if (curIndex + 1 < subSize) {
+                newIndex = curIndex + 1;
+            } else {
+                if (curTaskId == 3) {
+                    newTaskId = Math.max(0, Math.min(2, gender)) + 4;
+                } else if (curTaskId >= 4 && curTaskId <= 6) {
+                    newTaskId = 7;
+                } else {
+                    newTaskId = Math.min(maxTaskId, curTaskId + 1);
+                }
+                newIndex = 0;
+            }
+        }
+        return new int[]{newTaskId, newIndex};
+    }
+
+    private static String applyTaskToPlayer(Player pl, String mode, int reqTaskId, int reqTaskIndex) {
+        if (pl == null || pl.playerTask == null || pl.playerTask.taskMain == null) {
+            return "Không rõ";
+        }
+        int curTaskId = pl.playerTask.taskMain.id;
+        int curIndex = pl.playerTask.taskMain.index;
+        int[] next = computeNextTaskState(curTaskId, curIndex, pl.gender, mode, reqTaskId, reqTaskIndex);
+        TaskMain newTm = TaskService.gI().getTaskMainById(pl, next[0]);
+        if (newTm != null) {
+            int maxSub = (newTm.subTasks != null && !newTm.subTasks.isEmpty()) ? newTm.subTasks.size() - 1 : 0;
+            newTm.index = Math.max(0, Math.min(maxSub, next[1]));
+            if (newTm.subTasks != null && !newTm.subTasks.isEmpty()) {
+                newTm.subTasks.get(newTm.index).count = 0;
+            }
+            pl.playerTask.taskMain = newTm;
+            TaskService.gI().sendTaskMain(pl);
+            String stepName = (newTm.subTasks != null && newTm.index < newTm.subTasks.size())
+                    ? newTm.subTasks.get(newTm.index).name
+                    : newTm.name;
+            Service.gI().sendThongBao(pl, "Admin vừa chuyển nhiệm vụ của bạn sang: NV #" + newTm.id + " - " + newTm.name + " (Bước " + (newTm.index + 1) + ": " + stepName + ")");
+        }
+        PlayerDAO.updatePlayer(pl);
+        return formatTaskInfo(pl.playerTask.taskMain.id, pl.playerTask.taskMain.index);
+    }
+
+    private static String formatTaskInfo(int taskId, int taskIndex) {
+        TaskMain tpl = findRawTaskTemplate(taskId);
+        if (tpl == null) {
+            return "NV #" + taskId + " (Bước " + (taskIndex + 1) + ")";
+        }
+        int totalSub = (tpl.subTasks != null && !tpl.subTasks.isEmpty()) ? tpl.subTasks.size() : 1;
+        String cleanName = tpl.name != null ? tpl.name : ("Nhiệm vụ #" + taskId);
+        return "NV #" + taskId + ": " + cleanName + " (" + (taskIndex + 1) + "/" + totalSub + ")";
+    }
+
+    private static String serializeTasks() {
+        if (Manager.TASKS == null) {
+            return "[]";
+        }
+        StringBuilder sb = new StringBuilder(4096);
+        sb.append("[");
+        boolean first = true;
+        for (TaskMain tm : Manager.TASKS) {
+            if (tm == null) {
+                continue;
+            }
+            if (!first) {
+                sb.append(",");
+            }
+            first = false;
+            int subCount = tm.subTasks != null ? tm.subTasks.size() : 0;
+            sb.append("{");
+            sb.append("\"id\":").append(tm.id);
+            sb.append(",\"name\":").append(jsonStr(tm.name != null ? tm.name : ("Nhiệm vụ #" + tm.id)));
+            sb.append(",\"subCount\":").append(subCount);
+            sb.append(",\"subTasks\":[");
+            if (tm.subTasks != null) {
+                for (int i = 0; i < tm.subTasks.size(); i++) {
+                    if (i > 0) {
+                        sb.append(",");
+                    }
+                    SubTaskMain stm = tm.subTasks.get(i);
+                    sb.append(jsonStr(stm != null && stm.name != null ? stm.name : ("Bước " + (i + 1))));
+                }
+            }
+            sb.append("]");
+            sb.append("}");
+        }
+        sb.append("]");
+        return sb.toString();
     }
 
     private static String formatIntrinsicInfo(int id, int p1, int p2) {
