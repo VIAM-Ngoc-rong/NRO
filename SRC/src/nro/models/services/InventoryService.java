@@ -432,9 +432,9 @@ public class InventoryService {
                 }
             }
             player.inventory.itemsBody.set(index, putItemBag(player, item));
+            Service.gI().player(player);
             sendItemBags(player);
             sendItemBody(player);
-            Service.gI().player(player);
             player.zone.load_Me_To_Another(player);
             player.zone.load_Another_To_Me(player);
             Service.gI().Send_Caitrang(player);
@@ -580,7 +580,8 @@ public class InventoryService {
                     nonNullCount++;
                 }
             }
-            int displaySlots = Math.min(125, Math.max(tabSize, nonNullCount + 1));
+            int rawSlots = Math.max(tabSize, nonNullCount + 1);
+            int displaySlots = Math.min(120, ((rawSlots + 5) / 6) * 6);
             msg = new Message(-36);
             msg.writer().writeByte(0);
             msg.writer().writeByte(displaySlots);
@@ -617,13 +618,16 @@ public class InventoryService {
             // Ô nút bấm ảo ngay trong Hành Trang để chuyển Trang Hành Trang tức thì
             int curTab = player.inventory.currentBagTab + 1;
             int totalTabs = player.inventory.getTotalBagTabs();
-            msg.writer().writeShort(1998);
-            msg.writer().writeInt(curTab);
-            msg.writer().writeUTF("Đang mở: Trang " + curTab + "/" + totalTabs);
-            msg.writer().writeUTF("Bấm Sử dụng để chuyển sang Trang Hành Trang khác hoặc mở thêm Trang mới");
-            msg.writer().writeByte(1);
-            msg.writer().writeByte(30);
-            msg.writer().writeShort(0);
+            int virtualButtons = (nonNullCount >= tabSize) ? Math.max(1, displaySlots - nonNullCount) : 1;
+            for (int b = 0; b < virtualButtons; b++) {
+                msg.writer().writeShort(1998);
+                msg.writer().writeInt(curTab);
+                msg.writer().writeUTF("Đang mở: Trang " + curTab + "/" + totalTabs);
+                msg.writer().writeUTF("Bấm Sử dụng để chuyển sang Trang Hành Trang khác hoặc mở thêm Trang mới");
+                msg.writer().writeByte(1);
+                msg.writer().writeByte(30);
+                msg.writer().writeShort(0);
+            }
 
             player.sendMessage(msg);
             msg.cleanup();

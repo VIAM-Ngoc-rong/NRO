@@ -783,6 +783,7 @@ public class Controller implements IMessageHandler {
                         //client ok
                         if (player != null && player.isPl()) {
                             Service.gI().player(player);
+                            nro.models.services.InventoryService.gI().sendItemBags(player);
                             Service.gI().Send_Caitrang(player);
 
                             // -64 my flag bag

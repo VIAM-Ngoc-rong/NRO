@@ -89,6 +89,18 @@ public class UseItem {
         return instance;
     }
 
+    private boolean isVirtualBagSwitchSlot(Player player, int index) {
+        if (player == null || player.inventory == null || player.inventory.itemsBag == null || index < 0) {
+            return false;
+        }
+        int activeTabSize = player.inventory.getActiveTabSize();
+        if (index >= activeTabSize || index >= player.inventory.itemsBag.size()) {
+            return true;
+        }
+        Item item = player.inventory.itemsBag.get(index);
+        return item == null || !item.isNotNullItem() || item.template.id == 1998;
+    }
+
     public void getItem(MySession session, Message msg) {
         Player player = session.player;
         if (player == null) {
@@ -99,6 +111,11 @@ public class UseItem {
             int type = msg.reader().readByte();
             int index = msg.reader().readByte();
             if (index == -1) {
+                return;
+            }
+            if ((type == ITEM_BAG_TO_BOX || type == ITEM_BAG_TO_BODY || type == ITEM_BAG_TO_PET_BODY)
+                    && isVirtualBagSwitchSlot(player, index)) {
+                nro.models.npc.NpcFactory.openMenuBagTab(player);
                 return;
             }
             switch (type) {
@@ -165,7 +182,7 @@ public class UseItem {
                             if (index < 0) {
                                 return;
                             }
-                            if (index >= player.inventory.itemsBag.size() || !player.inventory.itemsBag.get(index).isNotNullItem()) {
+                            if (isVirtualBagSwitchSlot(player, index)) {
                                 nro.models.npc.NpcFactory.openMenuBagTab(player);
                                 return;
                             }
@@ -231,7 +248,8 @@ public class UseItem {
                             }
                             item = player.inventory.itemsBody.get(index);
                         } else {
-                            if (index >= player.inventory.itemsBag.size()) {
+                            if (isVirtualBagSwitchSlot(player, index)) {
+                                nro.models.npc.NpcFactory.openMenuBagTab(player);
                                 return;
                             }
                             item = player.inventory.itemsBag.get(index);
@@ -255,12 +273,21 @@ public class UseItem {
                     }
                 }
                 case ACCEPT_THROW_ITEM -> {
+                    if (where != 0 && isVirtualBagSwitchSlot(player, index)) {
+                        nro.models.npc.NpcFactory.openMenuBagTab(player);
+                        return;
+                    }
                     InventoryService.gI().throwItem(player, where, index);
                     Service.gI().point(player);
                     InventoryService.gI().sendItemBags(player);
                 }
-                case ACCEPT_USE_ITEM ->
+                case ACCEPT_USE_ITEM -> {
+                    if (isVirtualBagSwitchSlot(player, index)) {
+                        nro.models.npc.NpcFactory.openMenuBagTab(player);
+                        return;
+                    }
                     UseItem.gI().useItem(player, player.inventory.itemsBag.get(index), index);
+                }
             }
         } catch (Exception e) {
             Logger.logException(UseItem.class, e);
