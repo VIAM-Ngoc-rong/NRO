@@ -570,10 +570,6 @@ public class Player implements Runnable {
                             this.hasSentInitialBossNotify = true;
                             nro.models.server.ServerNotify.gI().sendActiveBossesToPlayer(this);
                         }
-                        if (this.pet != null && !this.pet.isDie() && Util.canDoWithTime(this.lastTimeSyncPetInfo, 2500)) {
-                            this.lastTimeSyncPetInfo = System.currentTimeMillis();
-                            Service.gI().showInfoPet(this);
-                        }
                         if (this.isAutoBuffPea && Util.canDoWithTime(this.lastTimeEatPea, 3000)) {
                             boolean needBuff = (this.nPoint.hp <= this.nPoint.hpMax * 25L / 100L)
                                     || (this.nPoint.mp <= this.nPoint.mpMax * 25L / 100L)

@@ -552,15 +552,16 @@ public class InventoryService {
 
     public void itemBodyToBox(Player player, int index) {
         if (index < 0 || index >= player.inventory.itemsBody.size()) {
-            Item item = player.inventory.itemsBody.get(index);
-            if (item.isNotNullItem()) {
-                player.inventory.itemsBody.set(index, putItemBox(player, item));
-                sortItems(player.inventory.itemsBag);
-                sendItemBody(player);
-                sendItemBox(player);
-                Service.gI().point(player);
-                Service.gI().Send_Caitrang(player);
-            }
+            return;
+        }
+        Item item = player.inventory.itemsBody.get(index);
+        if (item.isNotNullItem()) {
+            player.inventory.itemsBody.set(index, putItemBox(player, item));
+            sortItems(player.inventory.itemsBag);
+            sendItemBody(player);
+            sendItemBox(player);
+            Service.gI().point(player);
+            Service.gI().Send_Caitrang(player);
         }
     }
 
@@ -657,6 +658,11 @@ public class InventoryService {
     }
 
     public void sendItemBox(Player player) {
+        sendItemBoxSilent(player);
+        this.openBox(player);
+    }
+
+    public void sendItemBoxSilent(Player player) {
         Message msg;
         try {
             msg = new Message(-35);
@@ -695,7 +701,6 @@ public class InventoryService {
             msg.cleanup();
         } catch (Exception e) {
         }
-        this.openBox(player);
     }
 
     public void openBox(Player player) {
@@ -972,11 +977,11 @@ public class InventoryService {
     }
 
     public byte getIndexBag(Player pl, Item it) {
-        int limit = Math.min(pl.inventory.itemsBag.size(), Byte.MAX_VALUE);
-        for (byte i = 0; i < limit; ++i) {
+        int limit = pl.inventory.getActiveTabSize();
+        for (int i = 0; i < limit; ++i) {
             Item item = pl.inventory.itemsBag.get(i);
             if (item != null && it.equals(item)) {
-                return i;
+                return (byte) i;
             }
         }
         return -1;

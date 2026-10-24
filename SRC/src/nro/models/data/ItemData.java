@@ -77,8 +77,9 @@ public class ItemData {
                 Template.ItemTemplate it = Manager.ITEM_TEMPLATES.get(i);
                 String name = it.name != null ? it.name : "";
                 String desc = it.description != null ? it.description : "";
-                if (desc.length() > 18) {
-                    desc = desc.substring(0, 18);
+                int maxDesc = msg.writer().size() > 54000 ? 12 : 36;
+                if (desc.length() > maxDesc) {
+                    desc = desc.substring(0, maxDesc);
                 }
                 msg.writer().writeByte(it.type);
                 msg.writer().writeByte(it.gender);

@@ -733,6 +733,45 @@ public final class Manager {
                     }
                 }
 
+                // Tự động đăng ký mọi headId (Cải trang, Part type=0, Hợp thể Porata 1/2/3, Gogeta, Đệ tử...)
+                // vào HEAD_AVATARS để client không bao giờ nhận getAvatar(headId) == -1 gây IndexOutOfRangeException ở Panel.paintTopInfo
+                java.util.Set<Integer> registeredHeads = new java.util.HashSet<>();
+                for (HeadAvatar ha : HEAD_AVATARS) {
+                    if (ha.avatarId <= 0 || ha.avatarId >= 32767) {
+                        ha.avatarId = 522;
+                    }
+                    registeredHeads.add(ha.headId);
+                }
+                for (ItemTemplate itemTemp : ITEM_TEMPLATES) {
+                    if (itemTemp != null && itemTemp.head >= 0 && itemTemp.iconID > 0 && itemTemp.iconID < 32767) {
+                        if (registeredHeads.add(itemTemp.head)) {
+                            HEAD_AVATARS.add(new HeadAvatar(itemTemp.head, itemTemp.iconID));
+                        }
+                    }
+                }
+                for (Part part : parts) {
+                    if (part != null && part.type == 0 && part.id >= 0) {
+                        if (registeredHeads.add((int) part.id)) {
+                            int iconId = (!part.partDetails.isEmpty() && part.partDetails.get(0).iconId > 0 && part.partDetails.get(0).iconId < 32767)
+                                    ? part.partDetails.get(0).iconId : 522;
+                            HEAD_AVATARS.add(new HeadAvatar(part.id, iconId));
+                        }
+                    }
+                }
+                int[] specialHeads = {
+                    192, 195, 196, 197, 198, 199, 200,
+                    282, 285, 288, 297, 303, 304, 305,
+                    380, 383, 391, 412, 454, 545, 546, 547,
+                    651, 654, 760, 867, 870, 873, 876, 946,
+                    1080, 1083, 1218, 1422, 1578, 1743,
+                    1856, 1861, 1866, 2082, 2083, 2084, 2100
+                };
+                for (int sh : specialHeads) {
+                    if (registeredHeads.add(sh)) {
+                        HEAD_AVATARS.add(new HeadAvatar(sh, 522));
+                    }
+                }
+
                 Logger.success(Logger.RED + "Successfully loaded map item template (" + ITEM_TEMPLATES.size() + " items)\n");
 
             } catch (SQLException e) {

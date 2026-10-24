@@ -380,8 +380,10 @@ public class ShopService {
             msg.writer().writeByte(4);
             msg.writer().writeByte(1);
             msg.writer().writeUTF("Phần\nthưởng");
-            msg.writer().writeByte(items.size());
-            for (Item item : items) {
+            int size4 = Math.min(items.size(), 120);
+            msg.writer().writeByte(size4);
+            for (int i = 0; i < size4; i++) {
+                Item item = items.get(i);
                 msg.writer().writeShort(item.template.id);
                 msg.writer().writeUTF("|7| LUCKY REWARD");
                 msg.writer().writeByte(item.itemOptions.size() + 1);
@@ -425,8 +427,10 @@ public class ShopService {
             msg.writer().writeByte(8);
             msg.writer().writeByte(1);
             msg.writer().writeUTF("Mua lại");
-            msg.writer().writeByte(items.size());
-            for (Item item : items) {
+            int size4 = Math.min(items.size(), 120);
+            msg.writer().writeByte(size4);
+            for (int i = 0; i < size4; i++) {
+                Item item = items.get(i);
                 int giamualaingoc = item.template.gem / 2;
                 int giamualaivang = giamualaingoc == 0 ? (int) item.template.gold / 2 > 0 ? (int) item.template.gold / 2 : item.quantity * 100 : 0;
                 msg.writer().writeShort(item.template.id);

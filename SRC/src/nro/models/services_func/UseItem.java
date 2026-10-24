@@ -2007,7 +2007,7 @@ public class UseItem {
 
             if (fromBox) {
                 InventoryService.gI().subQuantityItemsBox(player, pea, 1);
-                InventoryService.gI().sendItemBox(player);
+                InventoryService.gI().sendItemBoxSilent(player);
             } else {
                 InventoryService.gI().subQuantityItemsBag(player, pea, 1);
                 InventoryService.gI().sendItemBags(player);

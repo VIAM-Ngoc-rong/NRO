@@ -988,19 +988,28 @@ public class Pet extends Player {
             while (this.playerSkill.skills.size() < 5) {
                 this.playerSkill.skills.add(SkillUtil.createEmptySkill());
             }
+            boolean changed = false;
             if (this.playerSkill.skills.get(1).skillId == -1 && this.nPoint.power >= 150_000_000L) {
                 openSkill2();
+                changed = true;
             }
             if (this.playerSkill.skills.get(2).skillId == -1 && this.nPoint.power >= 1_500_000_000L) {
                 openSkill3();
+                changed = true;
             }
             if (this.playerSkill.skills.get(3).skillId == -1 && this.nPoint.power >= 20_000_000_000L) {
                 openSkill4();
+                changed = true;
             }
             if (this.playerSkill.skills.get(4).skillId == -1 && this.nPoint.power >= 100_000_000_000L) {
                 openSkill5();
+                changed = true;
             } else if (this.playerSkill.skills.get(4).skillId != -1 && this.nPoint.power < 100_000_000_000L) {
                 this.playerSkill.skills.set(4, SkillUtil.createEmptySkill());
+                changed = true;
+            }
+            if (changed && this.master != null) {
+                Service.gI().showInfoPet(this.master);
             }
         }
     }
