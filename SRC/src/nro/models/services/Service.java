@@ -870,8 +870,9 @@ public class Service {
 
             }
             ArrayList<Item> itemsBag = (ArrayList<Item>) pl.inventory.itemsBag;
-            msg.writer().writeByte(itemsBag.size());
-            for (int i = 0; i < itemsBag.size(); i++) {
+            int bagSize = pl.inventory.getActiveTabSize();
+            msg.writer().writeByte(bagSize);
+            for (int i = 0; i < bagSize; i++) {
                 Item item = itemsBag.get(i);
                 if (!item.isNotNullItem()) {
                     msg.writer().writeShort(-1);
@@ -890,8 +891,9 @@ public class Service {
 
             }
             ArrayList<Item> itemsBox = (ArrayList<Item>) pl.inventory.itemsBox;
-            msg.writer().writeByte(itemsBox.size());
-            for (int i = 0; i < itemsBox.size(); i++) {
+            int boxSize = Math.min(itemsBox.size(), 120);
+            msg.writer().writeByte(boxSize);
+            for (int i = 0; i < boxSize; i++) {
                 Item item = itemsBox.get(i);
                 if (!item.isNotNullItem()) {
                     msg.writer().writeShort(-1);

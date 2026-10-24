@@ -661,8 +661,10 @@ public class InventoryService {
         try {
             msg = new Message(-35);
             msg.writer().writeByte(0);
-            msg.writer().writeByte(player.inventory.itemsBox.size());
-            for (Item it : player.inventory.itemsBox) {
+            int boxSize = Math.min(player.inventory.itemsBox.size(), 120);
+            msg.writer().writeByte(boxSize);
+            for (int i = 0; i < boxSize; i++) {
+                Item it = player.inventory.itemsBox.get(i);
                 msg.writer().writeShort(it.isNotNullItem() ? it.template.id : -1);
                 if (it.isNotNullItem()) {
                     msg.writer().writeInt(it.quantity);

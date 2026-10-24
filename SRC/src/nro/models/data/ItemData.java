@@ -12,14 +12,8 @@ public class ItemData {
     public static void updateItem(MySession session) {
         updateItemOptionItemplate(session);
         updateItemArrHead2FTemplate(session);
-        int total = Manager.ITEM_TEMPLATES.size();
-        int firstBatch = Math.min(650, total);
-        updateItemTemplate(session, firstBatch);
-        int step = 650;
-        for (int start = firstBatch; start < total; start += step) {
-            int end = Math.min(start + step, total);
-            updateItemTemplate(session, start, end);
-        }
+        updateItemTemplate(session, 750);
+        updateItemTemplate(session, 750, Manager.ITEM_TEMPLATES.size());
     }
 
     private static void updateItemOptionItemplate(MySession session) {
@@ -80,16 +74,21 @@ public class ItemData {
             msg.writer().writeShort(start);
             msg.writer().writeShort(end);
             for (int i = start; i < end; i++) {
-//                System.out.println("start: " + start + " -> " + end + " id " + Manager.ITEM_TEMPLATES.get(i).id);
-                msg.writer().writeByte(Manager.ITEM_TEMPLATES.get(i).type);
-                msg.writer().writeByte(Manager.ITEM_TEMPLATES.get(i).gender);
-                msg.writer().writeUTF(Manager.ITEM_TEMPLATES.get(i).name);
-                msg.writer().writeUTF(Manager.ITEM_TEMPLATES.get(i).description);
-                msg.writer().writeByte(Manager.ITEM_TEMPLATES.get(i).level);
-                msg.writer().writeInt(Manager.ITEM_TEMPLATES.get(i).strRequire);
-                msg.writer().writeShort(Manager.ITEM_TEMPLATES.get(i).iconID);
-                msg.writer().writeShort(Manager.ITEM_TEMPLATES.get(i).part);
-                msg.writer().writeBoolean(Manager.ITEM_TEMPLATES.get(i).isUpToUp);
+                Template.ItemTemplate it = Manager.ITEM_TEMPLATES.get(i);
+                String name = it.name != null ? it.name : "";
+                String desc = it.description != null ? it.description : "";
+                if (desc.length() > 18) {
+                    desc = desc.substring(0, 18);
+                }
+                msg.writer().writeByte(it.type);
+                msg.writer().writeByte(it.gender);
+                msg.writer().writeUTF(name);
+                msg.writer().writeUTF(desc);
+                msg.writer().writeByte(it.level);
+                msg.writer().writeInt(it.strRequire);
+                msg.writer().writeShort(it.iconID);
+                msg.writer().writeShort(it.part);
+                msg.writer().writeBoolean(it.isUpToUp);
             }
             session.doSendMessage(msg);
             msg.cleanup();
