@@ -669,9 +669,10 @@
           <div class="form-group" style="margin-bottom:0;">
             <label>👹 Triệu hồi nhanh Boss Sự Kiện:</label>
             <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px;">
-              <button class="btn-warning btn-sm" onclick="spawnEventBoss('halloween')">🎃 Boss Halloween (Bộ Xương / Ma Trơi)</button>
+              <button class="btn-warning btn-sm" onclick="spawnEventBoss('halloween')">🎃 Boss Halloween (Bí Ma / Ma Trơi / Dơi)</button>
               <button class="btn-teal btn-sm" onclick="spawnEventBoss('christmas')">🎄 Boss Giáng Sinh (Ông Già Noel)</button>
               <button class="btn-danger btn-sm" onclick="spawnEventBoss('tet')">🧧 Boss Tết (Lân Con)</button>
+              <button class="btn-sm" onclick="spawnEventBoss('trung_thu')">🥮 Boss Trung Thu (Khỉ Đột / Nguyệt Thần)</button>
               <button class="btn-purple btn-sm" onclick="spawnEventBoss('hung_vuong')">⚔️ Boss Hùng Vương (Sơn Tinh - Thủy Tinh)</button>
             </div>
           </div>
@@ -1627,12 +1628,16 @@
     }
 
     const EVENT_DEFINITIONS = [
-      { key: 'halloween', altKey: 'halloween', label: '🎃 Sự Kiện Halloween', desc: 'Rơi Bí Ngô 1-7 Sao, Bàn Tay Phép Thuật, Boss Bí Ma / Ma Trơi / Dơi' },
+      { key: 'halloween', altKey: 'halloween', label: '🎃 Sự Kiện Halloween', desc: 'Rơi Bí Ngô 1-7 Sao (gọi Rồng Xương), Boss Bí Ma / Ma Trơi / Dơi' },
       { key: 'christmas', altKey: 'christmas', label: '🎄 Sự Kiện Giáng Sinh (Noel)', desc: 'Rơi Tất Vớ, Hộp Quà Giáng Sinh & Boss Ông Già Noel' },
-      { key: 'lunnar_new_year', altKey: 'lunarNewYear', label: '🧧 Sự Kiện Tết Nguyên Đán', desc: 'Rơi Bao Lì Xì, Bánh Chưng & Boss Lân Con' },
-      { key: 'trung_thu', altKey: 'trungThu', label: '🥮 Sự Kiện Tết Trung Thu', desc: 'Rơi Đuôi Khỉ, Hộp Quà Trung Thu & Boss Khỉ Đột / Nguyệt Thần' },
-      { key: 'hung_vuong', altKey: 'hungVuong', label: '⚔️ Sự Kiện Giỗ Tổ Hùng Vương', desc: 'Rơi Ngà Voi, Cựa Gà, Bờm Ngựa, Dưa Hấu & Boss Sơn Tinh - Thủy Tinh' },
-      { key: 'womans_day', altKey: 'womensDay', label: '🌹 Sự Kiện Quốc Tế Phụ Nữ 8/3', desc: 'Rơi Hoa Hồng khi đánh quái' },
+      { key: 'lunnar_new_year', altKey: 'lunarNewYear', label: '🧧 Sự Kiện Tết Nguyên Đán', desc: 'Rơi Bao Lì Xì, NPC Tết & Boss Lân Con' },
+      { key: 'trung_thu', altKey: 'trungThu', label: '🥮 Sự Kiện Tết Trung Thu', desc: 'Rơi Hộp Quà Trung Thu & Boss Khỉ Đột / Nguyệt Thần' },
+      { key: 'hung_vuong', altKey: 'hungVuong', label: '⚔️ Sự Kiện Giỗ Tổ Hùng Vương', desc: 'Rơi Ngà Voi, Cựa Gà, Hồng Mao, Dưa Hấu, Tem (Dâng sính lễ Vua Hùng)' },
+      { key: 'summer_nuoc_mia', altKey: 'summerNuocMia', label: '🍹 Sự Kiện Mùa Hè (Nước Mía & Kem)', desc: 'Rơi Khúc Mía, Nước Đá, Kem Trái Cây (Đua Top tại NPC Xe Nước Mía & ChiChi)' },
+      { key: 'children_day', altKey: 'childrenDay', label: '🎈 Sự Kiện Thiếu Nhi 1/6', desc: 'Rơi Hộp Quà Thiếu Nhi (Mở Cải trang VIP & Đua Top tại NPC ChiChi)' },
+      { key: 'cooking_banh', altKey: 'cookingBanh', label: '🍲 Sự Kiện Nấu Bánh Chưng & Bánh Dầy', desc: 'Rơi Cơm Nếp, Đậu Xanh, Thịt Tươi, Chả Lụa... nấu bánh tại NPC Nồi Bánh' },
+      { key: 'firework', altKey: 'firework', label: '🎆 Sự Kiện Pháo Hoa Lễ Hội', desc: 'Rơi Pháo Bông & Pháo Bông VIP khi đánh quái (Bắn pháo hoa nhận Vàng)' },
+      { key: 'womans_day', altKey: 'womensDay', label: '🌹 Sự Kiện Quốc Tế Phụ Nữ 8/3', desc: 'Rơi Hoa Hồng khi đánh quái & Buff chỉ số sự kiện' },
       { key: 'top_up', altKey: 'topUp', label: '💎 Sự Kiện Khuyến Mãi Nạp', desc: 'Kích hoạt mốc thưởng sự kiện nạp' },
       { key: 'double_gold', altKey: 'doubleGold', label: '💰 Sự Kiện X2 Vàng Rơi Toàn Server', desc: 'Nhân đôi lượng Vàng rơi ra khi tiêu diệt quái' }
     ];

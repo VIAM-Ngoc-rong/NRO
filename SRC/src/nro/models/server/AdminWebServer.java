@@ -348,6 +348,13 @@ public class AdminWebServer {
                 + ",\"hung_vuong\":" + EventManager.HUNG_VUONG
                 + ",\"womensDay\":" + EventManager.INTERNATIONAL_WOMANS_DAY
                 + ",\"womans_day\":" + EventManager.INTERNATIONAL_WOMANS_DAY
+                + ",\"summerNuocMia\":" + EventManager.SUMMER_NUOC_MIA
+                + ",\"summer_nuoc_mia\":" + EventManager.SUMMER_NUOC_MIA
+                + ",\"childrenDay\":" + EventManager.CHILDREN_DAY
+                + ",\"children_day\":" + EventManager.CHILDREN_DAY
+                + ",\"cookingBanh\":" + EventManager.COOKING_BANH
+                + ",\"cooking_banh\":" + EventManager.COOKING_BANH
+                + ",\"firework\":" + EventManager.NEW_YEAR_FIREWORK
                 + ",\"topUp\":" + EventManager.TOP_UP
                 + ",\"top_up\":" + EventManager.TOP_UP
                 + ",\"doubleGold\":" + EventManager.DOUBLE_GOLD
@@ -1397,6 +1404,22 @@ public class AdminWebServer {
                         case "womensDay", "womans_day" -> {
                             EventManager.INTERNATIONAL_WOMANS_DAY = state;
                             evLabel = "Sự kiện Quốc Tế Phụ Nữ (Rơi Bông Hoa)";
+                        }
+                        case "summerNuocMia", "summer_nuoc_mia" -> {
+                            EventManager.SUMMER_NUOC_MIA = state;
+                            evLabel = "Sự kiện Mùa Hè Nước Mía & Kem Trái Cây (Rơi Khúc Mía, Nước Đá, Kem Trái Cây & Đua Top tại ChiChi)";
+                        }
+                        case "childrenDay", "children_day" -> {
+                            EventManager.CHILDREN_DAY = state;
+                            evLabel = "Sự kiện Thiếu Nhi 1/6 (Rơi Hộp Quà Thiếu Nhi & Đua Top tại ChiChi)";
+                        }
+                        case "cookingBanh", "cooking_banh" -> {
+                            EventManager.COOKING_BANH = state;
+                            evLabel = "Sự kiện Nấu Bánh Chưng & Bánh Dầy (Rơi Cơm Nếp, Đậu Xanh, Thịt Tươi, Chả Lụa tại Nồi Bánh)";
+                        }
+                        case "firework" -> {
+                            EventManager.NEW_YEAR_FIREWORK = state;
+                            evLabel = "Sự kiện Pháo Hoa Lễ Hội (Rơi Pháo Bông & Pháo Bông VIP)";
                         }
                         case "topUp", "top_up" -> {
                             EventManager.TOP_UP = state;

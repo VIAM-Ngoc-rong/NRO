@@ -832,10 +832,29 @@ public class Mob {
                 candidateItems.add(new ItemMap(zone, 736, 1, x, yEnd, player.id)); // Hộp quà Trung Thu
             }
             if (EventManager.HUNG_VUONG && Util.isTrue(evDropRate, 100)) {
-                candidateItems.add(new ItemMap(zone, 569, 1, x, yEnd, player.id)); // Dưa hấu
+                int[] hvItems = {569, 1220, 1221, 1222, 1558}; // Dưa hấu, Ngà Voi, Cựa Gà, Hồng Mao, Tem
+                int hvItemId = hvItems[Util.nextInt(0, hvItems.length - 1)];
+                candidateItems.add(new ItemMap(zone, hvItemId, 1, x, yEnd, player.id));
             }
             if (EventManager.INTERNATIONAL_WOMANS_DAY && Util.isTrue(evDropRate, 100)) {
                 candidateItems.add(new ItemMap(zone, 589, 1, x, yEnd, player.id)); // Bông hoa
+            }
+            if (EventManager.SUMMER_NUOC_MIA && Util.isTrue(evDropRate, 100)) {
+                int[] summerItems = {1612, 1613, 1609}; // Khúc mía (1612), Nước đá (1613), Kem trái cây (1609)
+                int sId = summerItems[Util.nextInt(0, summerItems.length - 1)];
+                candidateItems.add(new ItemMap(zone, sId, 1, x, yEnd, player.id));
+            }
+            if (EventManager.CHILDREN_DAY && Util.isTrue(evDropRate, 100)) {
+                candidateItems.add(new ItemMap(zone, 1608, 1, x, yEnd, player.id)); // Hộp quà thiếu nhi (1608)
+            }
+            if (EventManager.COOKING_BANH && Util.isTrue(evDropRate, 100)) {
+                int[] banhMaterials = {1546, 1547, 1545, 1544, 1548, 1549}; // Cơm nếp, Bột gạo, Muối tiêu, Chả lụa, Đậu xanh, Thịt tươi
+                int bId = banhMaterials[Util.nextInt(0, banhMaterials.length - 1)];
+                candidateItems.add(new ItemMap(zone, bId, 1, x, yEnd, player.id));
+            }
+            if (EventManager.NEW_YEAR_FIREWORK && Util.isTrue(evDropRate, 100)) {
+                int fwId = Util.isTrue(80, 100) ? 1575 : 1576; // Pháo bông (1575) hoặc Pháo bông VIP (1576)
+                candidateItems.add(new ItemMap(zone, fwId, 1, x, yEnd, player.id));
             }
         }
 

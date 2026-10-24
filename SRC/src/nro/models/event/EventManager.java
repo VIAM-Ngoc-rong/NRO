@@ -29,6 +29,14 @@ public class EventManager {
 
     public static boolean DOUBLE_GOLD = false;
 
+    public static boolean SUMMER_NUOC_MIA = false;
+
+    public static boolean CHILDREN_DAY = false;
+
+    public static boolean COOKING_BANH = false;
+
+    public static boolean NEW_YEAR_FIREWORK = false;
+
     public static int EVENT_DROP_RATE = 5;
 
     public static EventManager gI() {
