@@ -869,7 +869,7 @@ public class Service {
 
             }
             ArrayList<Item> itemsBag = (ArrayList<Item>) pl.inventory.itemsBag;
-            int bagSize = pl.inventory.getActiveTabSize();
+            int bagSize = Math.min(itemsBag.size(), 100);
             msg.writer().writeByte(bagSize);
             for (int i = 0; i < bagSize; i++) {
                 Item item = itemsBag.get(i);

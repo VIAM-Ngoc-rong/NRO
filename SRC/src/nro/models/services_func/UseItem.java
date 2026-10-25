@@ -121,8 +121,7 @@ public class UseItem {
                 return true;
             }
             Item item = player.inventory.itemsBag.get(bagIndex);
-            if (item == null || !item.isNotNullItem() || item.template.id == 1998
-                    || (item.template.id >= 24989 && item.template.id <= 24995)) {
+            if (item == null || !item.isNotNullItem() || nro.models.data.ItemData.isQuickTabButtonTemplateId(item.template.id)) {
                 nro.models.npc.NpcFactory.openMenuBagTab(player);
                 return true;
             }
@@ -133,8 +132,7 @@ public class UseItem {
             return true;
         }
         Item item = player.inventory.itemsBag.get(index);
-        if (item == null || !item.isNotNullItem() || item.template.id == 1998
-                || (item.template.id >= 24989 && item.template.id <= 24995)) {
+        if (item == null || !item.isNotNullItem() || nro.models.data.ItemData.isQuickTabButtonTemplateId(item.template.id)) {
             nro.models.npc.NpcFactory.openMenuBagTab(player);
             return true;
         }
@@ -253,7 +251,7 @@ public class UseItem {
                             }
                             Item item = player.inventory.itemsBag.get(bagIndex);
                             if (item.isNotNullItem()) {
-                                if (item.template.id == 1998 || (item.template.id >= 24989 && item.template.id <= 24995)) {
+                                if (nro.models.data.ItemData.isQuickTabButtonTemplateId(item.template.id)) {
                                     nro.models.npc.NpcFactory.openMenuBagTab(player);
                                     return;
                                 }
@@ -292,15 +290,16 @@ public class UseItem {
                             }
                         } else {
                             int iditem = _msg.reader().readShort();
-                            if (iditem >= 24990 && iditem <= 24994) {
-                                int targetTab = iditem - 24990;
+                            int baseBtn = nro.models.server.Manager.ITEM_TEMPLATES.size();
+                            if ((iditem >= 24990 && iditem <= 24994) || (baseBtn > 0 && iditem >= baseBtn && iditem < baseBtn + 5)) {
+                                int targetTab = (iditem >= 24990 && iditem <= 24994) ? (iditem - 24990) : (iditem - baseBtn);
                                 player.inventory.switchBagTab(targetTab);
                                 InventoryService.gI().sendItemBags(player);
                                 InventoryService.gI().sendItemBody(player);
                                 Service.gI().sendThongBao(player, "Đã chuyển đầu túi sang Trang " + (targetTab + 1) + "/5 (Dùng chung 1 bể)!");
                                 return;
                             }
-                            if (iditem == 1998 || iditem == 24989 || iditem == 24995) {
+                            if (nro.models.data.ItemData.isQuickTabButtonTemplateId(iditem)) {
                                 nro.models.npc.NpcFactory.openMenuBagTab(player);
                                 return;
                             }

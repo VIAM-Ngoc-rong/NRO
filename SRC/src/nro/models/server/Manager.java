@@ -886,6 +886,8 @@ public final class Manager {
                 optionTemp.name = rs.getString("name");
                 if (optionTemp.id == 66) {
                     optionTemp.name = "+#% sát thương chiêu Laze";
+                } else if (optionTemp.id == 73) {
+                    optionTemp.name = "$Đang mở Trang # ở đầu Bể Chung";
                 } else if (optionTemp.id == 153) {
                     optionTemp.name = "+#% sát thương chiêu phát nổ";
                 } else if (optionTemp.id == 159) {

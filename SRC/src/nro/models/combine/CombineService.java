@@ -120,7 +120,7 @@ public class CombineService {
                 if (bagIndex >= 0 && bagIndex < player.inventory.itemsBag.size()) {
                     Item item = player.inventory.itemsBag.get(bagIndex);
                     if (item != null && item.isNotNullItem() && item.template != null
-                            && (item.template.id == 1998 || (item.template.id >= 24989 && item.template.id <= 24995))) {
+                            && nro.models.data.ItemData.isQuickTabButtonTemplateId(item.template.id)) {
                         clickedTabSwitch = true;
                         hadDuplicateOrInvalid = true;
                         continue;
