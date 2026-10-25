@@ -730,7 +730,9 @@ public class ItemService {
             InventoryService.gI().addItemBag(player, item);
             InventoryService.gI().sendItemBags(player);
             player.inventory.event++;
-            Service.gI().sendThongBao(player, "Bạn đã nhận được " + item.template.name);
+            player.point_sukien += 1;
+            player.event.addEventPoint(1);
+            Service.gI().sendThongBao(player, "Bạn đã nhận được " + item.template.name + " (+1 điểm sự kiện)");
             CombineService.gI().sendEffectOpenItem(player, icon[0], icon[1]);
         } catch (Exception e) {
             e.printStackTrace();
@@ -774,7 +776,9 @@ public class ItemService {
             InventoryService.gI().addItemBag(player, item);
             InventoryService.gI().sendItemBags(player);
             player.inventory.event++;
-            Service.gI().sendThongBao(player, "Bạn đã nhận được " + item.template.name);
+            player.point_sukien += 1;
+            player.event.addEventPoint(1);
+            Service.gI().sendThongBao(player, "Bạn đã nhận được " + item.template.name + " (+1 điểm sự kiện)");
             CombineService.gI().sendEffectOpenItem(player, icon[0], icon[1]);
         } catch (Exception e) {
             e.printStackTrace();

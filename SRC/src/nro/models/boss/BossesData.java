@@ -2049,7 +2049,7 @@ public class BossesData {
     public static final BossData NGUYETTHAN = new BossData(
             "Nguyệt thần", //name
             ConstPlayer.XAYDA, //gender
-            new short[]{2058, 2059, 2060, -1, -1, -1}, //outfit {head, body, leg, bag, aura, eff}
+            new short[]{1282, 1283, 1284, -1, -1, -1}, //outfit {head, body, leg, bag, aura, eff}
             1000, //dame
             new int[]{50000000}, //hp
             new int[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20}, //map join
@@ -2066,7 +2066,7 @@ public class BossesData {
     public static final BossData NHATTTHAN = new BossData(
             "Nhật thần", //name
             ConstPlayer.XAYDA, //gender
-            new short[]{2065, 2066, 2067, -1, -1, -1}, //outfit {head, body, leg, bag, aura, eff}
+            new short[]{1293, 1294, 1295, -1, -1, -1}, //outfit {head, body, leg, bag, aura, eff}
             1000, //dame
             new int[]{50000000}, //hp
             new int[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20}, //map join

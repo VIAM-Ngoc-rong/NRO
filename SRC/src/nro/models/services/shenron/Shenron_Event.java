@@ -141,6 +141,7 @@ public class Shenron_Event {
     public void confirmWish() {
         switch (player.idMark.getShenronType()) {
             case 0:
+            case 2:
                 switch (this.select) {
                      case 0: //thay chiêu 3-4 đệ tử
                         if (player.pet != null) {

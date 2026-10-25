@@ -100,11 +100,11 @@ public class VuaHung extends Npc {
                     switch (select) {
                         case 0 ->
                             createOtherMenu(pl, 10, "Muốn đổi ngọc thì mang Dưa Hấu và Tem đến đây?",
-                                    "5 thỏi\n1 Quả\n1 tem",
-                                    "40 thỏi\n10 Quả\n2 tem",
-                                    "120 thỏi\n20 Quả\n3 tem",
-                                    "185 thỏi\n25 Quả\n4 tem",
-                                    "250 thỏi\n30 Quả\n5 tem");
+                                    "5 Ngọc\n1 Quả\n1 Tem",
+                                    "40 Ngọc\n10 Quả\n2 Tem",
+                                    "120 Ngọc\n20 Quả\n3 Tem",
+                                    "185 Ngọc\n25 Quả\n4 Tem",
+                                    "250 Ngọc\n30 Quả\n5 Tem");
                         case 1 -> {
                             int q1 = getItemQuantity(pl, NGA_VOI);
                             int q2 = getItemQuantity(pl, CUA_GA);

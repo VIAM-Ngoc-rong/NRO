@@ -33,6 +33,9 @@ public class Shenron_Service {
     public static final short NGOC_RONG_TIM_1_SAO = 1827;
     public static final short NGOC_RONG_TIM_7_SAO = 1833;
 
+    public static final short NGOC_RONG_BANG_1_SAO = 925;
+    public static final short NGOC_RONG_BANG_7_SAO = 931;
+
     public static Shenron_Service gI() {
         if (instance == null) {
             instance = new Shenron_Service();
@@ -42,9 +45,11 @@ public class Shenron_Service {
 
     public void openMenuSummonShenron(Player pl, int type) {
         pl.idMark.setShenronType(type);
-        String title = (type == 1)
-                ? "Bạn có muốn gọi Rồng Thần Tím không ?"
-                : "Bạn có muốn gọi Rồng Xương Halloween không ?";
+        String title = switch (type) {
+            case 1 -> "Bạn có muốn gọi Rồng Thần Tím không ?";
+            case 2 -> "Bạn có muốn gọi Rồng Thần Băng Giáng Sinh không ?";
+            default -> "Bạn có muốn gọi Rồng Xương Halloween không ?";
+        };
         NpcService.gI().createMenuConMeo(pl, ConstNpc.SUMMON_SHENRON_EVENT, -1, title,
                 "Đồng ý", "Từ chối");
     }
@@ -59,8 +64,16 @@ public class Shenron_Service {
                 }
 
                 if (Util.canDoWithTime(player.lastTimeShenronAppeared, Shenron_Event.timeResummonShenron)) {
-                    int startId = (type == 1) ? NGOC_RONG_TIM_1_SAO : NGOC_RONG_1_SAO;
-                    int endId = (type == 1) ? NGOC_RONG_TIM_7_SAO : NGOC_RONG_7_SAO;
+                    int startId = switch (type) {
+                        case 1 -> NGOC_RONG_TIM_1_SAO;
+                        case 2 -> NGOC_RONG_BANG_1_SAO;
+                        default -> NGOC_RONG_1_SAO;
+                    };
+                    int endId = switch (type) {
+                        case 1 -> NGOC_RONG_TIM_7_SAO;
+                        case 2 -> NGOC_RONG_BANG_7_SAO;
+                        default -> NGOC_RONG_7_SAO;
+                    };
                     for (int i = startId; i <= endId; i++) {
                         try {
                             InventoryService.gI().subQuantityItemsBag(player, InventoryService.gI().findItemBag(player, i), 1);
@@ -86,8 +99,16 @@ public class Shenron_Service {
     }
 
     private boolean checkShenronBall(Player pl, int type) {
-        int startId = (type == 1) ? NGOC_RONG_TIM_1_SAO : NGOC_RONG_1_SAO;
-        int endId = (type == 1) ? NGOC_RONG_TIM_7_SAO : NGOC_RONG_7_SAO;
+        int startId = switch (type) {
+            case 1 -> NGOC_RONG_TIM_1_SAO;
+            case 2 -> NGOC_RONG_BANG_1_SAO;
+            default -> NGOC_RONG_1_SAO;
+        };
+        int endId = switch (type) {
+            case 1 -> NGOC_RONG_TIM_7_SAO;
+            case 2 -> NGOC_RONG_BANG_7_SAO;
+            default -> NGOC_RONG_7_SAO;
+        };
         for (int i = startId; i <= endId; i++) {
             if (!InventoryService.gI().isExistItemBag(pl, i)) {
                 Item it = ItemService.gI().createNewItem((short) i);

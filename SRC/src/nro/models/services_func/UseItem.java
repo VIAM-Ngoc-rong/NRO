@@ -918,6 +918,14 @@ public class UseItem {
                             case 649:
                                 UseItem.gI().useTatVoGiangSinh(pl, item);
                                 break;
+                            case 533:
+                                UseItem.gI().useKeoGiangSinh(pl, item);
+                                break;
+                            case 585:
+                            case 901:
+                            case 902:
+                                UseItem.gI().useBiNgoHalloween(pl, item);
+                                break;
                             case 717:
                                 UseItem.gI().useBaoLiXi(pl, item);
                                 break;
@@ -1453,22 +1461,16 @@ public class UseItem {
 
     private void PhaoBong(Player pl, Item item) {
         BadgesTaskService.updateCountBagesTask(pl, ConstTaskBadges.XSMAX, 1);
-        int[][] gold = {{5000, 20000}};
-        short[] icon = new short[2];
-        icon[0] = item.template.iconID;
-        pl.inventory.gold += Util.nextInt(gold[0][0], gold[0][1]);
-        if (pl.inventory.gold > Inventory.LIMIT_GOLD) {
-            pl.inventory.gold = Inventory.LIMIT_GOLD;
-        }
+        int goldGain = Util.nextInt(500_000, 2_000_000);
+        pl.inventory.addGold(goldGain);
         Service.gI().LogicEffect(pl, 62, 1, -1, 1, 1, 15000);
         Service.gI().LogicEffect(pl, 63, 1, -1, 1, 1, 5000);
-        Service.gI().LogicEffect(pl, 64, 1, -1, 1, 1, 5000); // eff này live
+        Service.gI().LogicEffect(pl, 64, 1, -1, 1, 1, 5000);
         Service.gI().LogicEffect(pl, 65, 1, -1, 1, 1, 5000);
 
-        /*    pl.point_sukien1 += 1;
-        if (!Manager.isTopSukien1Changed) {
-            Manager.isTopSukien1Changed = true;
-        } */
+        pl.point_sukien1 += 1;
+        pl.event.addEventPoint(1);
+        Manager.isTopSukien1Changed = true;
         Item removeItem = InventoryService.gI().findItemBag(pl, 1575);
         if (removeItem != null) {
             InventoryService.gI().subQuantityItemsBag(pl, removeItem, 1);
@@ -1476,30 +1478,27 @@ public class UseItem {
 
         PlayerService.gI().sendInfoHpMpMoney(pl);
         InventoryService.gI().sendItemBags(pl);
+        Service.gI().sendThongBao(pl, "Bắn Pháo Bông nhận được " + Util.formatNumber(goldGain) + " Vàng (+1 điểm sự kiện)!");
     }
 
     private void PhaoBongVip(Player pl, Item item) {
         BadgesTaskService.updateCountBagesTask(pl, ConstTaskBadges.XSMAX, 1);
-        int[][] gold = {{500000, 2000000}};
-        short[] icon = new short[2];
-        icon[0] = item.template.iconID;
-        pl.inventory.gold += Util.nextInt(gold[0][0], gold[0][1]);
-        if (pl.inventory.gold > Inventory.LIMIT_GOLD) {
-            pl.inventory.gold = Inventory.LIMIT_GOLD;
-        }
+        int goldGain = Util.nextInt(2_000_000, 5_000_000);
+        int gemGain = Util.nextInt(10, 30);
+        pl.inventory.addGold(goldGain);
+        pl.inventory.gem += gemGain;
         Service.gI().LogicEffect(pl, 62, 1, -1, 1, 1, 15000);
         Service.gI().LogicEffect(pl, 63, 1, -1, 1, 1, 5000);
-        Service.gI().LogicEffect(pl, 64, 1, -1, 1, 1, 5000); // eff này live
+        Service.gI().LogicEffect(pl, 64, 1, -1, 1, 1, 5000);
         Service.gI().LogicEffect(pl, 65, 1, -1, 1, 1, 5000);
         Service.gI().LogicEffect(pl, 65, 1, -1, 1, 1, 5000);
         Service.gI().LogicEffect(pl, 65, 1, -1, 1, 1, 5000);
         Service.gI().LogicEffect(pl, 65, 1, -1, 1, 1, 5000);
         Service.gI().LogicEffect(pl, 65, 1, -1, 1, 1, 5000);
 
-        /*  pl.point_sukien += 1;
-        if (!Manager.isTopSukienChanged) {
-            Manager.isTopSukienChanged = true;
-        }*/
+        pl.point_sukien += 1;
+        pl.event.addEventPoint(1);
+        Manager.isTopSukienChanged = true;
         Item removeItem = InventoryService.gI().findItemBag(pl, 1576);
         if (removeItem != null) {
             InventoryService.gI().subQuantityItemsBag(pl, removeItem, 1);
@@ -1507,11 +1506,12 @@ public class UseItem {
 
         PlayerService.gI().sendInfoHpMpMoney(pl);
         InventoryService.gI().sendItemBags(pl);
+        Service.gI().sendThongBao(pl, "Bắn Pháo Bông VIP nhận được " + Util.formatNumber(goldGain) + " Vàng & " + gemGain + " Ngọc Xanh (+1 điểm sự kiện)!");
     }
 
     private void KemTraiCay(Player player, Item item) {
         BadgesTaskService.updateCountBagesTask(player, ConstTaskBadges.XSMAX, 1);
-        if (InventoryService.gI().getCountEmptyBag(player) > 4) {
+        if (InventoryService.gI().getCountEmptyBag(player) > 0) {
             Item itemused = InventoryService.gI().findItemBag(player, 1609);
 
             if (itemused == null || itemused.quantity < 1) {
@@ -1519,7 +1519,7 @@ public class UseItem {
                 return;
             }
 
-            int[] itemIds = {1804};
+            int[] itemIds = {1803, 1804, 1806};
             int randomIndex = (int) (Math.random() * itemIds.length);
             short randomItemId = (short) itemIds[randomIndex];
 
@@ -1529,7 +1529,7 @@ public class UseItem {
             int dame = randomInRange(20, 28);
             int hp = randomInRange(20, 30);
             int ki = randomInRange(20, 30);
-            int khongthegiaodich = randomInRange(0, 0);
+            int khongthegiaodich = 0;
 
             newItem.itemOptions.add(new ItemOption(50, dame));
             newItem.itemOptions.add(new ItemOption(77, hp));
@@ -1545,18 +1545,22 @@ public class UseItem {
             InventoryService.gI().subQuantityItemsBag(player, itemused, 1);
 
             player.point_sukien2 += 1;
+            player.event.addEventPoint(1);
             if (!Manager.isTopSukien2Changed) {
                 Manager.isTopSukien2Changed = true;
             }
 
             PlayerService.gI().sendInfoHpMpMoney(player);
             InventoryService.gI().sendItemBags(player);
+            Service.gI().sendThongBao(player, "Thưởng thức Kem Trái Cây nhận được " + newItem.template.name + " (+1 điểm đua Top Kem Trái Cây)!");
+        } else {
+            Service.gI().sendThongBao(player, "Cần ít nhất 1 ô trống trong hành trang!");
         }
     }
 
     private void QuaThieuNhi(Player player, Item item) {
         BadgesTaskService.updateCountBagesTask(player, ConstTaskBadges.XSMAX, 1);
-        if (InventoryService.gI().getCountEmptyBag(player) >= 0) {
+        if (InventoryService.gI().getCountEmptyBag(player) > 0) {
             Item itemused = InventoryService.gI().findItemBag(player, 1608);
             if (itemused == null || itemused.quantity < 1) {
                 Service.gI().sendThongBao(player, "Bạn không có vật phẩm cần dùng!");
@@ -1593,12 +1597,14 @@ public class UseItem {
             InventoryService.gI().subQuantityItemsBag(player, itemused, 1);
 
             player.point_sukien += 1;
+            player.event.addEventPoint(1);
             Manager.isTopSukienChanged = true;
 
             PlayerService.gI().sendInfoHpMpMoney(player);
             InventoryService.gI().sendItemBags(player);
+            Service.gI().sendThongBao(player, "Mở Hộp Quà Thiếu Nhi nhận được " + newItem.template.name + " (+1 điểm đua Top Thiếu Nhi)!");
         } else {
-            Service.gI().sendThongBao(player, "Cần ít nhất 5 ô trống trong túi!");
+            Service.gI().sendThongBao(player, "Cần ít nhất 1 ô trống trong hành trang!");
         }
     }
 
@@ -1972,6 +1978,8 @@ public class UseItem {
             }
         } else if (tempId >= Shenron_Service.NGOC_RONG_1_SAO && tempId <= Shenron_Service.NGOC_RONG_7_SAO) {
             Shenron_Service.gI().openMenuSummonShenron(pl, 0);
+        } else if (tempId >= Shenron_Service.NGOC_RONG_BANG_1_SAO && tempId <= Shenron_Service.NGOC_RONG_BANG_7_SAO) {
+            Shenron_Service.gI().openMenuSummonShenron(pl, 2);
         } else if (tempId >= ConstItem.NGOC_RONG_TIM_1_SAO && tempId <= ConstItem.NGOC_RONG_TIM_7_SAO) {
             if (tempId == ConstItem.NGOC_RONG_TIM_1_SAO) {
                 Shenron_Service.gI().openMenuSummonShenron(pl, 1);
@@ -2307,7 +2315,7 @@ public class UseItem {
     }
 
     public void OpenHopQuaThuong(Player player, int itemUseiD) {
-        if (InventoryService.gI().getCountEmptyBag(player) > 1) {
+        if (InventoryService.gI().getCountEmptyBag(player) > 0) {
             Item itemused = InventoryService.gI().findItemBag(player, itemUseiD);
 
             int[] itemIds = {1772, 1773};
@@ -2333,7 +2341,7 @@ public class UseItem {
             InventoryService.gI().sendItemBags(player);
             Service.gI().sendThongBao(player, "Bạn đã nhận được " + newItem.template.name + " (chỉ số ngẫu nhiên)!");
         } else {
-            Service.gI().sendThongBao(player, "Yêu cầu có 5 ô trống trong hành trang.");
+            Service.gI().sendThongBao(player, "Cần ít nhất 1 ô trống trong hành trang!");
         }
     }
 
@@ -2383,10 +2391,10 @@ public class UseItem {
     }
 
     public void OpenHopQuaVip(Player player, int itemUseiD) {
-        if (InventoryService.gI().getCountEmptyBag(player) > 1) {
+        if (InventoryService.gI().getCountEmptyBag(player) > 0) {
             Item itemused = InventoryService.gI().findItemBag(player, itemUseiD);
 
-            int[] itemIds = {1761, 1731, 1732};
+            int[] itemIds = {1761, 1762, 1763, 1764, 1731, 1732};
             int randomIndex = (int) (Math.random() * itemIds.length);
             short randomItemId = (short) itemIds[randomIndex];
 
@@ -2409,7 +2417,7 @@ public class UseItem {
             InventoryService.gI().sendItemBags(player);
             Service.gI().sendThongBao(player, "Bạn đã nhận được " + newItem.template.name + " (chỉ số ngẫu nhiên)!");
         } else {
-            Service.gI().sendThongBao(player, "Yêu cầu có 5 ô trống trong hành trang.");
+            Service.gI().sendThongBao(player, "Cần ít nhất 1 ô trống trong hành trang!");
         }
     }
 
@@ -2666,12 +2674,78 @@ public class UseItem {
 
     }
 
-    public void useTatVoGiangSinh(Player pl, Item item) {
-        Item hopQuaNoel = InventoryService.gI().findItemBag(pl, 648);
-        if (hopQuaNoel != null && hopQuaNoel.quantity >= 1) {
-            NoelItemBox(pl, hopQuaNoel);
+    public void useBiNgoHalloween(Player pl, Item item) {
+        if (InventoryService.gI().getCountEmptyBag(pl) <= 0) {
+            Service.gI().sendThongBao(pl, "Cần ít nhất 1 ô trống trong hành trang!");
             return;
         }
+        InventoryService.gI().subQuantityItemsBag(pl, item, 1);
+        if (pl.effectSkill != null && pl.effectSkill.isHalloween) {
+            EffectSkillService.gI().removeHalloween(pl);
+        }
+        int roll = Util.nextInt(1, 100);
+        if (roll <= 35) {
+            int gold = Util.nextInt(2_000_000, 8_000_000);
+            pl.inventory.addGold(gold);
+            PlayerService.gI().sendInfoHpMpMoney(pl);
+            Service.gI().sendThongBao(pl, "Dùng " + item.template.name + " nhận được " + Util.formatNumber(gold) + " Vàng (+1 điểm sự kiện)!");
+        } else if (roll <= 60) {
+            int gem = Util.nextInt(10, 30);
+            pl.inventory.gem += gem;
+            PlayerService.gI().sendInfoHpMpMoney(pl);
+            Service.gI().sendThongBao(pl, "Dùng " + item.template.name + " nhận được " + gem + " Ngọc Xanh (+1 điểm sự kiện)!");
+        } else if (roll <= 80) {
+            int ruby = Util.nextInt(5, 20);
+            pl.inventory.ruby += ruby;
+            PlayerService.gI().sendInfoHpMpMoney(pl);
+            Service.gI().sendThongBao(pl, "Dùng " + item.template.name + " nhận được " + ruby + " Hồng Ngọc (+1 điểm sự kiện)!");
+        } else if (roll <= 92) {
+            short[] items = {1150, 1151, 1152, 1153, 1154, 1635};
+            Item rw = ItemService.gI().createNewItem(items[Util.nextInt(0, items.length - 1)], 1);
+            InventoryService.gI().addItemBag(pl, rw);
+            Service.gI().sendThongBao(pl, "Dùng " + item.template.name + " nhận được " + rw.template.name + " (+1 điểm sự kiện)!");
+        } else {
+            short[] costumes = {586, 587, 588, 739};
+            Item ct = ItemService.gI().createNewItem(costumes[Util.nextInt(0, costumes.length - 1)], 1);
+            ct.itemOptions.add(new ItemOption(50, Util.nextInt(18, 25)));
+            ct.itemOptions.add(new ItemOption(77, Util.nextInt(18, 25)));
+            ct.itemOptions.add(new ItemOption(103, Util.nextInt(18, 25)));
+            ct.itemOptions.add(new ItemOption(93, Util.nextInt(3, 15)));
+            InventoryService.gI().addItemBag(pl, ct);
+            Service.gI().sendThongBao(pl, "Dùng " + item.template.name + " nhận được Cải trang Halloween " + ct.template.name + " (+1 điểm sự kiện)!");
+        }
+        pl.point_sukien += 1;
+        pl.event.addEventPoint(1);
+        Manager.isTopSukienChanged = true;
+        InventoryService.gI().sendItemBags(pl);
+    }
+
+    public void useKeoGiangSinh(Player pl, Item item) {
+        InventoryService.gI().subQuantityItemsBag(pl, item, 1);
+        int roll = Util.nextInt(1, 100);
+        if (roll <= 45) {
+            int gold = Util.nextInt(1_000_000, 5_000_000);
+            pl.inventory.addGold(gold);
+            PlayerService.gI().sendInfoHpMpMoney(pl);
+            Service.gI().sendThongBao(pl, "Thưởng thức Kẹo Giáng Sinh nhận được " + Util.formatNumber(gold) + " Vàng (+1 điểm sự kiện)!");
+        } else if (roll <= 80) {
+            int gem = Util.nextInt(5, 15);
+            pl.inventory.gem += gem;
+            PlayerService.gI().sendInfoHpMpMoney(pl);
+            Service.gI().sendThongBao(pl, "Thưởng thức Kẹo Giáng Sinh nhận được " + gem + " Ngọc Xanh (+1 điểm sự kiện)!");
+        } else {
+            int ruby = Util.nextInt(5, 15);
+            pl.inventory.ruby += ruby;
+            PlayerService.gI().sendInfoHpMpMoney(pl);
+            Service.gI().sendThongBao(pl, "Thưởng thức Kẹo Giáng Sinh nhận được " + ruby + " Hồng Ngọc (+1 điểm sự kiện)!");
+        }
+        pl.point_sukien += 1;
+        pl.event.addEventPoint(1);
+        Manager.isTopSukienChanged = true;
+        InventoryService.gI().sendItemBags(pl);
+    }
+
+    public void useTatVoGiangSinh(Player pl, Item item) {
         if (item.quantity >= 10) {
             if (InventoryService.gI().getCountEmptyBag(pl) <= 0) {
                 Service.gI().sendThongBao(pl, "Cần ít nhất 1 ô trống trong hành trang!");
@@ -2682,9 +2756,14 @@ public class UseItem {
             InventoryService.gI().addItemBag(pl, hopQua);
             InventoryService.gI().sendItemBags(pl);
             Service.gI().sendThongBao(pl, "Đã ghép 10 Tất, vớ giáng sinh thành 1 Hộp quà giáng sinh!");
-        } else {
-            Service.gI().sendThongBao(pl, "Giữ Tất, vớ giáng sinh trong túi để nhặt Hộp quà giáng sinh, hoặc gom đủ 10 Tất vớ để đổi 1 Hộp quà!");
+            return;
         }
+        Item hopQuaNoel = InventoryService.gI().findItemBag(pl, 648);
+        if (hopQuaNoel != null && hopQuaNoel.quantity >= 1) {
+            NoelItemBox(pl, hopQuaNoel);
+            return;
+        }
+        Service.gI().sendThongBao(pl, "Giữ Tất, vớ giáng sinh trong túi để nhặt Hộp quà giáng sinh dưới đất, hoặc gom đủ 10 Tất vớ bấm Sử dụng để ghép 1 Hộp quà!");
     }
 
     public void useBaoLiXi(Player pl, Item item) {
@@ -2720,6 +2799,7 @@ public class UseItem {
             Service.gI().sendThongBao(pl, "Mở Bao Lì Xì nhận được " + rw.template.name + "!");
         }
         pl.point_sukien += 1;
+        pl.event.addEventPoint(1);
         Manager.isTopSukienChanged = true;
         InventoryService.gI().sendItemBags(pl);
     }
@@ -2754,6 +2834,7 @@ public class UseItem {
                 Service.gI().sendThongBao(pl, "Kết bó 10 Bông hoa nhận được " + rw.template.name + "!");
             }
             pl.point_sukien += 1;
+            pl.event.addEventPoint(1);
             Manager.isTopSukienChanged = true;
         } else {
             InventoryService.gI().subQuantityItemsBag(pl, item, 1);
@@ -2779,6 +2860,7 @@ public class UseItem {
         Item rw = ItemService.gI().createNewItem(rwId, 1);
         InventoryService.gI().addItemBag(pl, rw);
         pl.point_sukien += 1;
+        pl.event.addEventPoint(1);
         Manager.isTopSukienChanged = true;
         InventoryService.gI().sendItemBags(pl);
         Service.gI().sendThongBao(pl, "Thưởng thức " + item.template.name + " nhận được " + rw.template.name + "!");
@@ -2841,6 +2923,7 @@ public class UseItem {
             Item itemRandom = ItemService.gI().createNewItem(waterItems[Util.nextInt(0, waterItems.length - 1)], 1);
             InventoryService.gI().addItemBag(pl, itemRandom);
             pl.point_sukien1 += 1;
+            pl.event.addEventPoint(1);
             Manager.isTopSukien1Changed = true;
             Service.gI().sendMoney(pl);
             InventoryService.gI().sendItemBags(pl);
@@ -2859,6 +2942,7 @@ public class UseItem {
             int gem = Util.nextInt(10, 25);
             pl.inventory.gem += gem;
             pl.point_sukien += 1;
+            pl.event.addEventPoint(1);
             Manager.isTopSukienChanged = true;
             PlayerService.gI().sendInfoHpMpMoney(pl);
             InventoryService.gI().sendItemBags(pl);
@@ -2887,6 +2971,9 @@ public class UseItem {
             short boxId = (short) (Util.isTrue(30, 100) ? 1777 : 1776);
             Item hopQua = ItemService.gI().createNewItem(boxId, 1);
             InventoryService.gI().addItemBag(pl, hopQua);
+            pl.point_sukien += 1;
+            pl.event.addEventPoint(1);
+            Manager.isTopSukienChanged = true;
             Service.gI().sendMoney(pl);
             InventoryService.gI().sendItemBags(pl);
             Service.gI().sendThongBao(pl, "Dâng sính lễ thành công! Nhận được 1 " + hopQua.template.name + "!");
@@ -2902,16 +2989,21 @@ public class UseItem {
             int nr = Util.nextInt(17, 20);
             int nrBang = Util.nextInt(925, 931);
             int mts = Util.nextInt(1066, 1070);
+            int ctNoel = Util.nextInt(387, 393);
 
-            if (Util.isTrue(5, 90)) {
-                int ruby = Util.nextInt(10, 20);
-                pl.inventory.gem += ruby;
+            pl.point_sukien += 1;
+            pl.event.addEventPoint(1);
+            Manager.isTopSukienChanged = true;
+
+            if (Util.isTrue(15, 100)) {
+                int gem = Util.nextInt(10, 25);
+                pl.inventory.gem += gem;
                 PlayerService.gI().sendInfoHpMpMoney(pl);
                 InventoryService.gI().subQuantityItemsBag(pl, item, 1);
                 InventoryService.gI().sendItemBags(pl);
-                Service.gI().sendThongBao(pl, "Bạn nhận được " + ruby + "  Ngọc");
+                Service.gI().sendThongBao(pl, "Mở Hộp quà Giáng Sinh nhận được " + gem + " Ngọc Xanh (+1 điểm sự kiện)!");
             } else {
-                int[] temp = {spl, dnc, nr, nrBang, mts, 533, 380};
+                int[] temp = {spl, dnc, nr, nrBang, mts, 533, 380, ctNoel, 936, 822, 746};
                 byte index = (byte) Util.nextInt(0, temp.length - 1);
                 short[] icon = new short[2];
                 icon[0] = item.template.iconID;
@@ -2981,9 +3073,10 @@ public class UseItem {
                 icon[1] = it.template.iconID;
                 InventoryService.gI().addItemBag(pl, it);
                 InventoryService.gI().sendItemBags(pl);
+                Service.gI().sendThongBao(pl, "Mở Hộp quà Giáng Sinh nhận được " + it.template.name + " x" + it.quantity + " (+1 điểm sự kiện)!");
             }
         } else {
-            Service.gI().sendThongBao(pl, "Hàng trang đã đầy");
+            Service.gI().sendThongBao(pl, "Hành trang đã đầy!");
         }
     }
 
