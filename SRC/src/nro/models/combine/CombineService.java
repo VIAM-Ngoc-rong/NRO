@@ -88,13 +88,37 @@ public class CombineService {
             return;
         }
         player.combineNew.clearItemCombine();
-        if (index.length > 0) {
+        boolean hadDuplicateOrInvalid = false;
+        if (index != null && index.length > 0) {
+            java.util.Set<Integer> addedBagIndices = new java.util.HashSet<>();
             for (int i = 0; i < index.length; i++) {
                 int bagIndex = player.inventory.resolveBagIndex(index[i]);
                 if (bagIndex >= 0 && bagIndex < player.inventory.itemsBag.size()) {
-                    player.combineNew.itemsCombine.add(player.inventory.itemsBag.get(bagIndex));
+                    Item item = player.inventory.itemsBag.get(bagIndex);
+                    if (item != null && item.isNotNullItem() && item.quantity > 0
+                            && item.template != null && item.template.id != 1998) {
+                        boolean alreadyAddedRef = false;
+                        for (Item existing : player.combineNew.itemsCombine) {
+                            if (existing == item) {
+                                alreadyAddedRef = true;
+                                break;
+                            }
+                        }
+                        if (addedBagIndices.add(bagIndex) && !alreadyAddedRef) {
+                            player.combineNew.itemsCombine.add(item);
+                        } else {
+                            hadDuplicateOrInvalid = true;
+                        }
+                    } else {
+                        hadDuplicateOrInvalid = true;
+                    }
+                } else {
+                    hadDuplicateOrInvalid = true;
                 }
             }
+        }
+        if (hadDuplicateOrInvalid) {
+            reOpenItemCombine(player);
         }
         switch (player.combineNew.typeCombine) {
             case EP_SAO_TRANG_BI:
@@ -355,11 +379,22 @@ public class CombineService {
             msg.writer().writeShort(npcId);
             player.sendMessage(msg);
             msg.cleanup();
+            java.util.List<Byte> validIndices = new java.util.ArrayList<>();
+            if (items != null) {
+                for (Item item : items) {
+                    if (item != null && item.isNotNullItem() && item.quantity > 0) {
+                        byte clientIdx = InventoryService.gI().getIndexBag(player, item);
+                        if (clientIdx >= 0 && !validIndices.contains(clientIdx)) {
+                            validIndices.add(clientIdx);
+                        }
+                    }
+                }
+            }
             msg = new Message(-81);
             msg.writer().writeByte(1);
-            msg.writer().writeByte(items.length);
-            for (Item item : items) {
-                msg.writer().writeByte(InventoryService.gI().getIndexItemBag(player, item));
+            msg.writer().writeByte(validIndices.size());
+            for (byte idx : validIndices) {
+                msg.writer().writeByte(idx);
             }
             player.sendMessage(msg);
             msg.cleanup();
@@ -606,17 +641,42 @@ public class CombineService {
      * @param player
      */
     public void reOpenItemCombine(Player player) {
+        if (player == null || player.combineNew == null || player.inventory == null) {
+            return;
+        }
         Message msg = null;
         try {
-            msg = new Message(-81);
-            msg.writer().writeByte(REOPEN_TAB_COMBINE);
-            msg.writer().writeByte(player.combineNew.itemsCombine.size());
+            java.util.List<Item> validItems = new java.util.ArrayList<>();
+            java.util.List<Byte> validClientIndices = new java.util.ArrayList<>();
             for (Item it : player.combineNew.itemsCombine) {
-                for (int j = 0; j < player.inventory.itemsBag.size(); j++) {
-                    if (it == player.inventory.itemsBag.get(j)) {
-                        msg.writer().writeByte(j);
+                if (it == null || !it.isNotNullItem() || it.quantity <= 0
+                        || (it.template != null && it.template.id == 1998)) {
+                    continue;
+                }
+                boolean alreadyAdded = false;
+                for (Item existing : validItems) {
+                    if (existing == it) {
+                        alreadyAdded = true;
+                        break;
                     }
                 }
+                if (alreadyAdded) {
+                    continue;
+                }
+                byte clientIdx = InventoryService.gI().getIndexBag(player, it);
+                if (clientIdx >= 0 && !validClientIndices.contains(clientIdx)) {
+                    validItems.add(it);
+                    validClientIndices.add(clientIdx);
+                }
+            }
+            player.combineNew.itemsCombine.clear();
+            player.combineNew.itemsCombine.addAll(validItems);
+
+            msg = new Message(-81);
+            msg.writer().writeByte(REOPEN_TAB_COMBINE);
+            msg.writer().writeByte(validClientIndices.size());
+            for (byte idx : validClientIndices) {
+                msg.writer().writeByte(idx);
             }
             player.sendMessage(msg);
         } catch (Exception e) {

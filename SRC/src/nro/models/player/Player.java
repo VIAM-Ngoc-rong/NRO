@@ -1771,6 +1771,12 @@ public class Player implements Runnable {
     }
 
     public void move(int _toX, int _toY) {
+        if (this.isBoss && this.zone != null && this.zone.map != null
+                && !(this instanceof nro.models.boss.Boss b && !b.isSubjectToSafeMapBounds())) {
+            int[] safeLoc = this.zone.map.getSafeBossLocation(this.zone, _toX, _toY);
+            _toX = safeLoc[0];
+            _toY = safeLoc[1];
+        }
         if (_toX != this.location.x) {
             this.location.x = _toX;
         }

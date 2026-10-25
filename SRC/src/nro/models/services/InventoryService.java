@@ -855,6 +855,9 @@ public class InventoryService {
                 msg.writer().writeByte(30);
                 msg.writer().writeShort(0);
             }
+            for (int empty = nonNullCount + virtualButtons; empty < displaySlots; empty++) {
+                msg.writer().writeShort(-1);
+            }
 
             player.sendMessage(msg);
             msg.cleanup();
@@ -1240,20 +1243,23 @@ public class InventoryService {
     }
 
     public byte getIndexBag(Player pl, Item it) {
+        if (pl == null || pl.inventory == null || it == null || !it.isNotNullItem()) {
+            return -1;
+        }
         List<Integer> displayed = pl.inventory.displayedBagIndices;
         for (int i = 0; i < displayed.size(); i++) {
             int idx = displayed.get(i);
             if (idx >= 0 && idx < pl.inventory.itemsBag.size()) {
                 Item item = pl.inventory.itemsBag.get(idx);
-                if (item != null && it.equals(item)) {
+                if (item != null && item.isNotNullItem() && it.equals(item)) {
                     return (byte) i;
                 }
             }
         }
         int limit = pl.inventory.getActiveTabSize();
-        for (int i = 0; i < limit; ++i) {
+        for (int i = 0; i < limit && i < pl.inventory.itemsBag.size(); ++i) {
             Item item = pl.inventory.itemsBag.get(i);
-            if (item != null && it.equals(item)) {
+            if (item != null && item.isNotNullItem() && it.equals(item)) {
                 return (byte) i;
             }
         }

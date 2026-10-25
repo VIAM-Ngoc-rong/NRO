@@ -532,6 +532,7 @@ public class EffectSkin {
             this.lastTimeAddTimeTrainArmor = System.currentTimeMillis();
         }
         if (Util.canDoWithTime(lastTimeSubTimeTrainArmor, 60000)) {
+            boolean updatedBagTrainArmor = false;
             for (Item item : this.player.inventory.itemsBag) {
                 if (item.isNotNullItem()) {
                     if (ItemService.gI().isTrainArmor(item)) {
@@ -539,6 +540,7 @@ public class EffectSkin {
                             if (io.optionTemplate.id == 9) {
                                 if (io.param > 0) {
                                     io.param--;
+                                    updatedBagTrainArmor = true;
                                 }
                             }
                         }
@@ -563,7 +565,9 @@ public class EffectSkin {
                 }
             }
             this.lastTimeSubTimeTrainArmor = System.currentTimeMillis();
-            InventoryService.gI().sendItemBags(player);
+            if (updatedBagTrainArmor) {
+                InventoryService.gI().sendItemBags(player);
+            }
             Service.gI().point(this.player);
         }
     }

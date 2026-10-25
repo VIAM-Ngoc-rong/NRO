@@ -679,6 +679,7 @@ public class Boss extends Player implements IBoss {
             case JOIN_MAP ->
                 this.joinMap();
             case CHAT_S -> {
+                this.ensureSafeBossLocation();
                 if (chatS()) {
                     this.doneChatS();
                     this.lastTimeChatM = System.currentTimeMillis();
@@ -691,6 +692,7 @@ public class Boss extends Player implements IBoss {
             case AFK ->
                 this.afk();
             case ACTIVE -> {
+                this.ensureSafeBossLocation();
                 this.chatM();
                 if (this.effectSkill.isCharging && !Util.isTrue(1, 20) || this.effectSkill.useTroi) {
                     return;
@@ -777,17 +779,18 @@ public class Boss extends Player implements IBoss {
                             checked++;
                         }
                         this.zone = this.zone.map.zones.get(zoneid);
-                        int x = this.zone.map.mapWidth > 100 ? Util.nextInt(100, this.zone.map.mapWidth - 100) : Util.nextInt(100);
-                        int y = this.zone.map.yPhysicInTop(x, 100);
-                        ChangeMapService.gI().changeMap(this, this.zone, x, y);
+                        int x = this.zone.map.mapWidth > 200 ? Util.nextInt(120, this.zone.map.mapWidth - 120) : Util.nextInt(100);
+                        int[] safeLoc = this.zone.map.getSafeBossLocation(this.zone, x, 150);
+                        ChangeMapService.gI().changeMap(this, this.zone, safeLoc[0], safeLoc[1]);
                     } else {
                         int x = this.parentBoss.location.x - (this.lv + 1) * 30;
-                        int y = this.zone.map.yPhysicInTop(x, 100);
-                        ChangeMapService.gI().changeMap(this, this.zone, x, y);
+                        int[] safeLoc = this.zone.map.getSafeBossLocation(this.zone, x, this.parentBoss.location.y);
+                        ChangeMapService.gI().changeMap(this, this.zone, safeLoc[0], safeLoc[1]);
                     }
                     this.wakeupAnotherBossWhenAppear();
                 } else {
-                    ChangeMapService.gI().changeMap(this, this.zone, this.location.x, this.location.y);
+                    int[] safeLoc = this.zone.map.getSafeBossLocation(this.zone, this.location.x, this.location.y);
+                    ChangeMapService.gI().changeMap(this, this.zone, safeLoc[0], safeLoc[1]);
                 }
                 Service.gI().sendFlagBag(this);
                 this.notifyJoinMap();
@@ -807,9 +810,27 @@ public class Boss extends Player implements IBoss {
     public void joinMapByZone(Zone zone) {
         if (zone != null) {
             this.zone = zone;
-            int x = this.zone.map.mapWidth > 100 ? Util.nextInt(100, this.zone.map.mapWidth - 100) : Util.nextInt(100);
-            int y = this.zone.map.yPhysicInTop(x, 100);
-            ChangeMapService.gI().changeMap(this, this.zone, x, y);
+            int x = this.zone.map.mapWidth > 200 ? Util.nextInt(120, this.zone.map.mapWidth - 120) : Util.nextInt(100);
+            int[] safeLoc = this.zone.map.getSafeBossLocation(this.zone, x, 150);
+            ChangeMapService.gI().changeMap(this, this.zone, safeLoc[0], safeLoc[1]);
+        }
+    }
+
+    public boolean isSubjectToSafeMapBounds() {
+        return this.id != BossID.DEATH_BEAM_1 && this.id != BossID.DEATH_BEAM_2
+                && this.id != BossID.DEATH_BEAM_3 && this.id != BossID.DEATH_BEAM_4
+                && this.id != BossID.DEATH_BEAM_5 && !"$".equals(this.name);
+    }
+
+    public void ensureSafeBossLocation() {
+        if (!isSubjectToSafeMapBounds() || this.isDie() || this.zone == null || this.zone.map == null || this.location == null) {
+            return;
+        }
+        int curX = this.location.x;
+        int curY = this.location.y;
+        int[] safeLoc = this.zone.map.getSafeBossLocation(this.zone, curX, curY);
+        if (Math.abs(curX - safeLoc[0]) > 4 || Math.abs(curY - safeLoc[1]) > 12) {
+            PlayerService.gI().playerMove(this, safeLoc[0], safeLoc[1]);
         }
     }
 
@@ -1130,8 +1151,9 @@ public class Boss extends Player implements IBoss {
         if (plOwner == null) {
             plOwner = plKill;
         }
-        int x = this.location.x;
-        int y = this.zone.map.yPhysicInTop(x, this.location.y - 24);
+        int[] safeDropLoc = this.zone.map.getSafeBossLocation(this.zone, this.location.x, this.location.y);
+        int x = safeDropLoc[0];
+        int y = safeDropLoc[1];
 
         // Rớt Hồng Ngọc (ID 861) khi tiêu diệt Boss (phục vụ mua Cải trang tối ưu hành tinh >1000 Hồng ngọc)
         long bossHpForRuby = this.nPoint != null ? Math.max(1L, (long) this.nPoint.hpMax) : 1L;
@@ -1351,7 +1373,14 @@ public class Boss extends Player implements IBoss {
     public void moveTo(int x, int y) {
         byte dir = (byte) (this.location.x - x < 0 ? 1 : -1);
         byte move = (byte) Util.nextInt(40, 60);
-        PlayerService.gI().playerMove(this, this.location.x + (dir == 1 ? move : -move), y + (Util.isTrue(3, 10) ? -50 : 0));
+        int nextX = this.location.x + (dir == 1 ? move : -move);
+        int nextY = y;
+        if (this.zone != null && this.zone.map != null && isSubjectToSafeMapBounds()) {
+            int[] safeLoc = this.zone.map.getSafeBossLocation(this.zone, nextX, nextY);
+            nextX = safeLoc[0];
+            nextY = safeLoc[1];
+        }
+        PlayerService.gI().playerMove(this, nextX, nextY);
     }
 
     public void chat(String text) {

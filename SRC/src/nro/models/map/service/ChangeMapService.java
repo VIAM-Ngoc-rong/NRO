@@ -396,6 +396,12 @@ public class ChangeMapService {
                 return;
             }
 
+            if (pl.isBoss && zoneJoin.map != null
+                    && !(pl instanceof nro.models.boss.Boss b && !b.isSubjectToSafeMapBounds())) {
+                int[] safeLoc = zoneJoin.map.getSafeBossLocation(zoneJoin, pl.location.x, y);
+                pl.location.x = safeLoc[0];
+                y = safeLoc[1];
+            }
             pl.location.y = y;
             this.goToMap(pl, zoneJoin);
             if (pl.pet != null) {

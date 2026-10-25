@@ -387,12 +387,14 @@ public class Map implements Runnable {
 
             int rYIndex = y / SIZE;
 
-            if (rYIndex < 0 || rYIndex >= tileMap.length) {
-                return y;
+            if (rYIndex < 0) {
+                rYIndex = 0;
+            } else if (rYIndex >= tileMap.length) {
+                rYIndex = tileMap.length - 1;
             }
 
             if (isTileTop(tileMap[rYIndex][rX])) {
-                return y;
+                return rYIndex * SIZE;
             }
 
             for (int i = rYIndex; i < tileMap.length; i++) {
@@ -401,11 +403,264 @@ public class Map implements Runnable {
                     break;
                 }
             }
-            return rY;
+            if (rY == 0) {
+                for (int i = rYIndex - 1; i >= 1; i--) {
+                    if (isTileTop(tileMap[i][rX])) {
+                        rY = i * SIZE;
+                        break;
+                    }
+                }
+            }
+            return rY > 0 ? rY : y;
         } catch (Exception e) {
             e.printStackTrace();
             return y;
         }
+    }
+
+    public boolean isInsideAnyWaypointBox(int x, int y, int marginX, int marginY) {
+        if (this.wayPoints == null || this.wayPoints.isEmpty()) {
+            return false;
+        }
+        int width = this.mapWidth > 0 ? this.mapWidth : (this.pxw > 0 ? this.pxw : 1200);
+        for (WayPoint wp : this.wayPoints) {
+            if (wp == null) {
+                continue;
+            }
+            if (wp.minX <= 160 && wp.maxX < width / 2 && x <= wp.maxX + marginX) {
+                return true;
+            }
+            if (wp.maxX >= width - 160 && wp.minX > width / 2 && x >= wp.minX - marginX) {
+                return true;
+            }
+            if (x >= wp.minX - marginX && x <= wp.maxX + marginX
+                    && y >= wp.minY - marginY && y <= wp.maxY + marginY) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private int findWalkableGroundAtCol(int col, int preferY, int minY, int maxY) {
+        if (this.tileMap == null || this.tileMap.length < 3 || col < 0 || col >= this.tileMap[0].length) {
+            return -1;
+        }
+        int minRow = Math.max(1, minY / SIZE);
+        int maxRow = Math.min(this.tileMap.length - 2, maxY / SIZE);
+        if (minRow > maxRow) {
+            return -1;
+        }
+        int preferRow = Math.max(minRow, Math.min(maxRow, preferY / SIZE));
+
+        int downRow = -1;
+        for (int r = preferRow; r <= maxRow; r++) {
+            if (isTileTop(this.tileMap[r][col]) && !isTileTop(this.tileMap[r - 1][col])) {
+                downRow = r;
+                break;
+            }
+        }
+
+        int upRow = -1;
+        for (int r = preferRow - 1; r >= minRow; r--) {
+            if (isTileTop(this.tileMap[r][col]) && !isTileTop(this.tileMap[r - 1][col])) {
+                upRow = r;
+                break;
+            }
+        }
+
+        if (downRow != -1 && upRow != -1) {
+            if ((preferRow - upRow) <= 2 && (downRow - preferRow) > (preferRow - upRow)) {
+                return upRow * SIZE;
+            }
+            return downRow * SIZE;
+        }
+        if (downRow != -1) {
+            return downRow * SIZE;
+        }
+        if (upRow != -1) {
+            return upRow * SIZE;
+        }
+        return -1;
+    }
+
+    public int[] getSafeBossLocation(Zone zone, int targetX, int targetY) {
+        int width = this.mapWidth > 0 ? this.mapWidth : (this.pxw > 0 ? this.pxw : 1200);
+        int height = this.mapHeight > 0 ? this.mapHeight : (this.pxh > 0 ? this.pxh : 600);
+
+        int marginEdgeX = Math.min(120, Math.max(48, width / 6));
+        int minSafeX = marginEdgeX;
+        int maxSafeX = Math.max(minSafeX, width - marginEdgeX);
+
+        final int wpMarginX = 96;
+        final int wpMarginY = 72;
+
+        if (this.wayPoints != null) {
+            for (WayPoint wp : this.wayPoints) {
+                if (wp == null) {
+                    continue;
+                }
+                if (wp.minX <= 160 && wp.maxX < width / 2) {
+                    int candidateMin = wp.maxX + wpMarginX;
+                    if (candidateMin < width - marginEdgeX) {
+                        minSafeX = Math.max(minSafeX, candidateMin);
+                    }
+                }
+                if (wp.maxX >= width - 160 && wp.minX > width / 2) {
+                    int candidateMax = wp.minX - wpMarginX;
+                    if (candidateMax > minSafeX) {
+                        maxSafeX = Math.min(maxSafeX, candidateMax);
+                    }
+                }
+            }
+        }
+        if (minSafeX > maxSafeX) {
+            int mid = width / 2;
+            minSafeX = Math.max(48, mid - 60);
+            maxSafeX = Math.min(width - 48, mid + 60);
+        }
+
+        int x = Math.max(minSafeX, Math.min(maxSafeX, targetX));
+
+        if (this.wayPoints != null) {
+            for (WayPoint wp : this.wayPoints) {
+                if (wp == null) {
+                    continue;
+                }
+                int leftBound = wp.minX - wpMarginX;
+                int rightBound = wp.maxX + wpMarginX;
+                if (x > leftBound && x < rightBound) {
+                    boolean canGoLeft = leftBound >= minSafeX;
+                    boolean canGoRight = rightBound <= maxSafeX;
+                    if (canGoLeft && canGoRight) {
+                        x = (Math.abs(x - leftBound) <= Math.abs(rightBound - x)) ? leftBound : rightBound;
+                    } else if (canGoLeft) {
+                        x = leftBound;
+                    } else if (canGoRight) {
+                        x = rightBound;
+                    }
+                }
+            }
+        }
+
+        int minRefY = Integer.MAX_VALUE;
+        int maxRefY = 0;
+        if (zone != null && zone.mobs != null) {
+            for (Mob mob : zone.mobs) {
+                if (mob != null && mob.location != null && mob.location.y > 24 && mob.location.y < height - 24) {
+                    int my = mob.location.y;
+                    int gy = yPhysicInTop(mob.location.x, my);
+                    if (gy > 24 && gy < height - 24) {
+                        my = gy;
+                    }
+                    minRefY = Math.min(minRefY, my);
+                    maxRefY = Math.max(maxRefY, my);
+                }
+            }
+        }
+        if (this.npcs != null) {
+            for (Npc npc : this.npcs) {
+                if (npc != null && npc.cy > 24 && npc.cy < height - 24) {
+                    minRefY = Math.min(minRefY, (int) npc.cy);
+                    maxRefY = Math.max(maxRefY, (int) npc.cy);
+                }
+            }
+        }
+        if (maxRefY == 0 && this.wayPoints != null) {
+            for (WayPoint wp : this.wayPoints) {
+                if (wp != null && wp.maxY > 24 && wp.maxY < height - 24) {
+                    minRefY = Math.min(minRefY, (int) wp.minY);
+                    maxRefY = Math.max(maxRefY, (int) wp.maxY);
+                }
+            }
+        }
+
+        int strictMinY = Math.max(48, (minRefY < Integer.MAX_VALUE) ? Math.max(48, minRefY - 120) : 48);
+        int strictMaxY = Math.min(height - 48, (maxRefY > 0) ? Math.min(height - 48, maxRefY + 72) : height - 48);
+        if (strictMinY > strictMaxY) {
+            strictMinY = 48;
+            strictMaxY = Math.max(48, height - 48);
+        }
+
+        int preferY = targetY;
+        if (preferY <= 48 || preferY >= height - 48) {
+            preferY = (maxRefY > 0) ? maxRefY : (height / 2);
+        } else {
+            preferY = Math.max(strictMinY, Math.min(strictMaxY, preferY));
+        }
+
+        if (this.tileMap != null && this.tileMap.length > 0 && this.tileMap[0].length > 0) {
+            int totalCols = this.tileMap[0].length;
+            int minCol = Math.max(1, minSafeX / SIZE);
+            int maxCol = Math.min(totalCols - 2, maxSafeX / SIZE);
+            int startCol = Math.max(minCol, Math.min(maxCol, x / SIZE));
+
+            int bestY = findWalkableGroundAtCol(startCol, preferY, strictMinY, strictMaxY);
+            int bestX = x;
+            if (bestY == -1 || isInsideAnyWaypointBox(bestX, bestY, wpMarginX, wpMarginY)) {
+                bestY = -1;
+                int maxDelta = Math.max(startCol - minCol, maxCol - startCol);
+                for (int d = 1; d <= maxDelta; d++) {
+                    int colLeft = startCol - d;
+                    if (colLeft >= minCol) {
+                        int candX = Math.max(minSafeX, Math.min(maxSafeX, colLeft * SIZE + SIZE / 2));
+                        int candY = findWalkableGroundAtCol(colLeft, preferY, strictMinY, strictMaxY);
+                        if (candY != -1 && !isInsideAnyWaypointBox(candX, candY, wpMarginX, wpMarginY)) {
+                            bestX = candX;
+                            bestY = candY;
+                            break;
+                        }
+                    }
+                    int colRight = startCol + d;
+                    if (colRight <= maxCol) {
+                        int candX = Math.max(minSafeX, Math.min(maxSafeX, colRight * SIZE + SIZE / 2));
+                        int candY = findWalkableGroundAtCol(colRight, preferY, strictMinY, strictMaxY);
+                        if (candY != -1 && !isInsideAnyWaypointBox(candX, candY, wpMarginX, wpMarginY)) {
+                            bestX = candX;
+                            bestY = candY;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (bestY == -1) {
+                bestY = findWalkableGroundAtCol(startCol, preferY, 48, Math.max(48, height - 48));
+                bestX = x;
+                if (bestY == -1) {
+                    int maxDelta = Math.max(startCol - minCol, maxCol - startCol);
+                    for (int d = 1; d <= maxDelta; d++) {
+                        int colLeft = startCol - d;
+                        if (colLeft >= minCol) {
+                            int candY = findWalkableGroundAtCol(colLeft, preferY, 48, Math.max(48, height - 48));
+                            if (candY != -1) {
+                                bestX = Math.max(minSafeX, Math.min(maxSafeX, colLeft * SIZE + SIZE / 2));
+                                bestY = candY;
+                                break;
+                            }
+                        }
+                        int colRight = startCol + d;
+                        if (colRight <= maxCol) {
+                            int candY = findWalkableGroundAtCol(colRight, preferY, 48, Math.max(48, height - 48));
+                            if (candY != -1) {
+                                bestX = Math.max(minSafeX, Math.min(maxSafeX, colRight * SIZE + SIZE / 2));
+                                bestY = candY;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (bestY != -1) {
+                return new int[]{bestX, bestY};
+            }
+        }
+
+        int fallbackY = yPhysicInTop(x, preferY);
+        if (fallbackY <= 24 || fallbackY >= height - 24) {
+            fallbackY = (maxRefY > 0) ? maxRefY : Math.max(96, height / 2);
+        }
+        return new int[]{x, fallbackY};
     }
 
     public int LastY(int cx, int cy) {

@@ -159,6 +159,12 @@ public class PlayerService {
             return;
         }
         if (!player.isDie()) {
+            if (player.isBoss && player.zone.map != null
+                    && !(player instanceof nro.models.boss.Boss b && !b.isSubjectToSafeMapBounds())) {
+                int[] safeLoc = player.zone.map.getSafeBossLocation(player.zone, x, y);
+                x = safeLoc[0];
+                y = safeLoc[1];
+            }
             if (player.effectSkill.isCharging) {
                 EffectSkillService.gI().stopCharge(player);
             }

@@ -454,6 +454,12 @@ public class MapService {
     }
 
     public void sendPlayerMove(Player player) {
+        if (player != null && player.isBoss && player.zone != null && player.zone.map != null && player.location != null
+                && !(player instanceof nro.models.boss.Boss b && !b.isSubjectToSafeMapBounds())) {
+            int[] safeLoc = player.zone.map.getSafeBossLocation(player.zone, player.location.x, player.location.y);
+            player.location.x = safeLoc[0];
+            player.location.y = safeLoc[1];
+        }
         Message msg;
         try {
             msg = new Message(-7);
