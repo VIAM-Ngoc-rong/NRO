@@ -77,6 +77,9 @@ public class AdminWebServer {
     private static final int MAX_BOSS_KILL_HISTORY = 150;
     private static final List<BossKillRecord> BOSS_KILL_HISTORY = Collections.synchronizedList(new ArrayList<>());
     private static volatile boolean bossKillStatsHydrated = false;
+    private static volatile String cachedIntrinsicsJson = null;
+    private static volatile String cachedTasksJson = null;
+    private static volatile long lastAutoGcTimeMs = 0L;
 
     public static class BossKillRecord {
         public final long timeMs;
@@ -240,17 +243,15 @@ public class AdminWebServer {
             loadBossKillHistoryFromDb();
             server = HttpServer.create(new InetSocketAddress("0.0.0.0", WEB_PORT), 0);
             server.createContext("/", AdminWebServer::handleDashboardHtml);
-            server.createContext("/api/public/home", AdminWebServer::handlePublicHome);
-            server.createContext("/api/public/account", AdminWebServer::handlePublicAccount);
             server.createContext("/api/status", AdminWebServer::handleStatus);
             server.createContext("/api/accounts", AdminWebServer::handleAccounts);
             server.createContext("/api/items", AdminWebServer::handleItems);
             server.createContext("/api/system", AdminWebServer::handleSystem);
             server.createContext("/api/action", AdminWebServer::handleAction);
             server.createContext("/api/backup/download", AdminWebServer::handleBackupDownload);
-            server.setExecutor(Executors.newFixedThreadPool(4));
+            server.setExecutor(Executors.newFixedThreadPool(2));
             server.start();
-            Logger.success("Admin Web Monitor API & Public Homepage started on port " + WEB_PORT + "\n");
+            Logger.success("Admin Web Monitor API started on port " + WEB_PORT + "\n");
         } catch (Exception e) {
             Logger.error("Không thể khởi động AdminWebServer trên port " + WEB_PORT + ": " + e.getMessage() + "\n");
         }
@@ -265,30 +266,55 @@ public class AdminWebServer {
 
     /**
      * Multiplexes HTTP requests arriving on the main game port (14445) directly
-     * to the local HttpServer (127.0.0.1:14446) so external cloud firewalls never block the dashboard.
+     * to the local HttpServer (127.0.0.1:14446) without spawning extra threads.
      */
     public static void relaySocketToLocalHttp(java.net.Socket clientSocket, InputStream clientIn) {
         try {
-            clientSocket.setSoTimeout(8000);
+            clientSocket.setSoTimeout(3000);
             try (java.net.Socket local = new java.net.Socket("127.0.0.1", WEB_PORT)) {
-                local.setSoTimeout(8000);
+                local.setSoTimeout(5000);
                 OutputStream localOut = local.getOutputStream();
                 InputStream localIn = local.getInputStream();
                 OutputStream clientOut = clientSocket.getOutputStream();
 
-                Thread reqPipe = new Thread(() -> {
-                    try {
-                        byte[] buf = new byte[4096];
-                        int n;
-                        while ((n = clientIn.read(buf)) != -1) {
-                            localOut.write(buf, 0, n);
-                            localOut.flush();
-                        }
-                    } catch (Exception ignored) {
+                java.io.ByteArrayOutputStream reqBuf = new java.io.ByteArrayOutputStream(2048);
+                byte[] tmp = new byte[2048];
+                int headerEnd = -1;
+                int contentLength = 0;
+                while (headerEnd == -1 && reqBuf.size() < 32768) {
+                    int n = clientIn.read(tmp);
+                    if (n <= 0) {
+                        break;
                     }
-                }, "AdminHttpRelayReq");
-                reqPipe.setDaemon(true);
-                reqPipe.start();
+                    reqBuf.write(tmp, 0, n);
+                    byte[] arr = reqBuf.toByteArray();
+                    for (int i = 0; i <= arr.length - 4; i++) {
+                        if (arr[i] == '\r' && arr[i + 1] == '\n' && arr[i + 2] == '\r' && arr[i + 3] == '\n') {
+                            headerEnd = i + 4;
+                            String hdrs = new String(arr, 0, headerEnd, StandardCharsets.ISO_8859_1);
+                            for (String line : hdrs.split("\r\n")) {
+                                if (line.regionMatches(true, 0, "Content-Length:", 0, 15)) {
+                                    try {
+                                        contentLength = Integer.parseInt(line.substring(15).trim());
+                                    } catch (Exception ignored) {
+                                    }
+                                }
+                            }
+                            break;
+                        }
+                    }
+                }
+                while (headerEnd != -1 && reqBuf.size() < headerEnd + contentLength && reqBuf.size() < 65536) {
+                    int n = clientIn.read(tmp, 0, Math.min(tmp.length, (headerEnd + contentLength) - reqBuf.size()));
+                    if (n <= 0) {
+                        break;
+                    }
+                    reqBuf.write(tmp, 0, n);
+                }
+
+                localOut.write(reqBuf.toByteArray());
+                localOut.flush();
+                local.shutdownOutput();
 
                 byte[] buf = new byte[8192];
                 int n;
@@ -316,442 +342,13 @@ public class AdminWebServer {
         return true;
     }
 
-    private static String guessContentType(String path) {
-        String lower = path.toLowerCase();
-        if (lower.endsWith(".html") || lower.endsWith(".htm")) return "text/html; charset=UTF-8";
-        if (lower.endsWith(".css")) return "text/css; charset=UTF-8";
-        if (lower.endsWith(".js")) return "application/javascript; charset=UTF-8";
-        if (lower.endsWith(".png")) return "image/png";
-        if (lower.endsWith(".gif")) return "image/gif";
-        if (lower.endsWith(".jpg") || lower.endsWith(".jpeg")) return "image/jpeg";
-        if (lower.endsWith(".ico")) return "image/x-icon";
-        if (lower.endsWith(".webp")) return "image/webp";
-        if (lower.endsWith(".svg")) return "image/svg+xml";
-        if (lower.endsWith(".woff2")) return "font/woff2";
-        if (lower.endsWith(".woff")) return "font/woff";
-        if (lower.endsWith(".ttf")) return "font/ttf";
-        return "application/octet-stream";
-    }
-
     private static void handleDashboardHtml(HttpExchange exchange) throws IOException {
         addCorsHeaders(exchange);
         if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {
             exchange.sendResponseHeaders(204, -1);
             return;
         }
-        String reqPath = exchange.getRequestURI().getPath();
-        if (reqPath == null || reqPath.isEmpty()) {
-            reqPath = "/";
-        }
-
-        // Phục vụ tài nguyên tĩnh trong thư mục web/ (hình ảnh, GIF, CSS, JS của Trang Chủ)
-        if (reqPath.startsWith("/web/") && !reqPath.contains("..")) {
-            String rel = reqPath.substring(1); // "web/..."
-            File w1 = new File(rel);
-            File w2 = new File("../" + rel);
-            File asset = (w1.exists() && w1.isFile()) ? w1 : ((w2.exists() && w2.isFile()) ? w2 : null);
-            if (asset != null) {
-                byte[] bytes = Files.readAllBytes(asset.toPath());
-                exchange.getResponseHeaders().set("Content-Type", guessContentType(asset.getName()));
-                exchange.getResponseHeaders().set("Cache-Control", "public, max-age=86400");
-                exchange.sendResponseHeaders(200, bytes.length);
-                try (OutputStream os = exchange.getResponseBody()) {
-                    os.write(bytes);
-                }
-                return;
-            }
-            exchange.sendResponseHeaders(404, -1);
-            return;
-        }
-
-        // Mặc định phục vụ Trang Chủ Chính Thức (trang_chu_nro.html)
-        File f1 = new File("trang_chu_nro.html");
-        File f2 = new File("../trang_chu_nro.html");
-        File target = f1.exists() ? f1 : (f2.exists() ? f2 : null);
-        if (target != null) {
-            byte[] bytes = Files.readAllBytes(target.toPath());
-            exchange.getResponseHeaders().set("Content-Type", "text/html; charset=UTF-8");
-            exchange.sendResponseHeaders(200, bytes.length);
-            try (OutputStream os = exchange.getResponseBody()) {
-                os.write(bytes);
-            }
-        } else {
-            String fallback = "<html><head><meta charset='UTF-8'></head><body style='font-family:sans-serif;background:#0f172a;color:#fff;padding:24px;'>"
-                    + "<h2>Trang Chủ Ngọc Rồng VIAM đang hoạt động!</h2>"
-                    + "</body></html>";
-            byte[] bytes = fallback.getBytes(StandardCharsets.UTF_8);
-            exchange.getResponseHeaders().set("Content-Type", "text/html; charset=UTF-8");
-            exchange.sendResponseHeaders(200, bytes.length);
-            try (OutputStream os = exchange.getResponseBody()) {
-                os.write(bytes);
-            }
-        }
-    }
-
-    private static void handlePublicHome(HttpExchange exchange) throws IOException {
-        addCorsHeaders(exchange);
-        if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {
-            exchange.sendResponseHeaders(204, -1);
-            return;
-        }
-
-        long uptimeSec = (System.currentTimeMillis() - START_TIME_MS) / 1000;
-        List<Player> onlinePlayers = new ArrayList<>(Client.gI().getPlayers());
-        List<Boss> allBosses = new ArrayList<>(BossManager.gI().getBosses());
-
-        StringBuilder sb = new StringBuilder(8192);
-        sb.append("{\"ok\":true");
-        sb.append(",\"serverName\":").append(jsonStr("Ngọc Rồng VIAM"));
-        sb.append(",\"uptimeSeconds\":").append(uptimeSec);
-        sb.append(",\"onlineCount\":").append(onlinePlayers.size());
-        sb.append(",\"maxPlayers\":1000");
-        sb.append(",\"expRate\":").append(Manager.RATE_EXP_SERVER);
-
-        // Danh sách Boss đang sống công khai
-        sb.append(",\"bosses\":[");
-        boolean firstBoss = true;
-        for (Boss b : allBosses) {
-            if (b == null || b.data == null || b.data.length == 0) {
-                continue;
-            }
-            if (b.id == nro.models.boss.BossID.DEATH_BEAM_1 || b.id == nro.models.boss.BossID.DEATH_BEAM_2
-                    || b.id == nro.models.boss.BossID.DEATH_BEAM_3 || b.id == nro.models.boss.BossID.DEATH_BEAM_4
-                    || b.id == nro.models.boss.BossID.DEATH_BEAM_5 || "$".equals(b.data[0].getName())) {
-                continue;
-            }
-            boolean alive = b.zone != null && !b.isDie();
-            if (!alive) {
-                continue;
-            }
-            int lv = (b.currentLevel >= 0 && b.currentLevel < b.data.length) ? b.currentLevel : 0;
-            String bName = b.name != null ? b.name : b.data[lv].getName();
-            String mapName = (b.zone.map != null) ? b.zone.map.mapName : "Chưa xuất hiện";
-            int zoneId = b.zone.zoneId;
-            if (!firstBoss) {
-                sb.append(",");
-            }
-            firstBoss = false;
-            sb.append("{\"name\":").append(jsonStr(bName))
-              .append(",\"mapName\":").append(jsonStr(mapName))
-              .append(",\"zoneId\":").append(zoneId)
-              .append("}");
-        }
-        sb.append("]");
-
-        sb.append(",\"giftcodes\":").append(serializeGiftCodes());
-
-        // Bảng xếp hạng nhân vật công khai (không lộ username/password)
-        int totalAccounts = 0;
-        sb.append(",\"players\":[");
-        boolean firstAcc = true;
-        try (Connection con = LocalManager.getConnection()) {
-            try (PreparedStatement countPs = con.prepareStatement("SELECT COUNT(*) FROM account");
-                 ResultSet crs = countPs.executeQuery()) {
-                if (crs.next()) {
-                    totalAccounts = crs.getInt(1);
-                }
-            }
-            String sql = "SELECT a.id, a.tongnap, p.id AS player_id, p.name AS player_name, p.gender, "
-                    + "p.data_inventory, p.data_point, p.data_intrinsic, p.data_task "
-                    + "FROM account a INNER JOIN player p ON p.account_id = a.id ORDER BY a.id DESC LIMIT 150";
-            try (PreparedStatement ps = con.prepareStatement(sql);
-                 ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    int accId = rs.getInt("id");
-                    int tongnap = rs.getInt("tongnap");
-                    String playerName = rs.getString("player_name");
-                    if (playerName == null || playerName.trim().isEmpty()) {
-                        continue;
-                    }
-                    int gender = rs.getInt("gender");
-                    long gold = 0, ruby = 0, power = 0;
-                    String inName = "Chưa mở";
-                    int taskId = 0, taskIndex = 0;
-
-                    Player livePl = Client.gI().getPlayerByUser(accId);
-                    boolean isOnline = (livePl != null);
-                    if (isOnline && livePl.inventory != null && livePl.nPoint != null) {
-                        gold = livePl.inventory.gold;
-                        ruby = livePl.inventory.ruby;
-                        power = livePl.nPoint.power;
-                        if (livePl.playerIntrinsic != null && livePl.playerIntrinsic.intrinsic != null && livePl.playerIntrinsic.intrinsic.id > 0) {
-                            inName = livePl.playerIntrinsic.intrinsic.getName();
-                        }
-                        if (livePl.playerTask != null && livePl.playerTask.taskMain != null) {
-                            taskId = livePl.playerTask.taskMain.id;
-                            taskIndex = livePl.playerTask.taskMain.index;
-                        }
-                    } else {
-                        try {
-                            String invStr = rs.getString("data_inventory");
-                            if (invStr != null && !invStr.isEmpty()) {
-                                JSONArray arr = (JSONArray) JSONValue.parse(invStr);
-                                if (arr != null && arr.size() >= 3) {
-                                    gold = Long.parseLong(String.valueOf(arr.get(0)));
-                                    ruby = Long.parseLong(String.valueOf(arr.get(2)));
-                                }
-                            }
-                        } catch (Exception ignored) {
-                        }
-                        try {
-                            String ptStr = rs.getString("data_point");
-                            if (ptStr != null && !ptStr.isEmpty()) {
-                                JSONArray arr = (JSONArray) JSONValue.parse(ptStr);
-                                if (arr != null && arr.size() >= 2) {
-                                    power = Long.parseLong(String.valueOf(arr.get(1)));
-                                }
-                            }
-                        } catch (Exception ignored) {
-                        }
-                        try {
-                            String inStr = rs.getString("data_intrinsic");
-                            if (inStr != null && !inStr.isEmpty()) {
-                                JSONArray arr = (JSONArray) JSONValue.parse(inStr);
-                                if (arr != null && arr.size() >= 3) {
-                                    int inId = Integer.parseInt(String.valueOf(arr.get(0)));
-                                    int inP1 = Integer.parseInt(String.valueOf(arr.get(1)));
-                                    int inP2 = Integer.parseInt(String.valueOf(arr.get(2)));
-                                    inName = formatIntrinsicInfo(inId, inP1, inP2);
-                                }
-                            }
-                        } catch (Exception ignored) {
-                        }
-                        try {
-                            String taskStr = rs.getString("data_task");
-                            if (taskStr != null && !taskStr.isEmpty()) {
-                                JSONArray arr = (JSONArray) JSONValue.parse(taskStr);
-                                if (arr != null && arr.size() >= 2) {
-                                    taskId = Integer.parseInt(String.valueOf(arr.get(0)));
-                                    taskIndex = Integer.parseInt(String.valueOf(arr.get(1)));
-                                }
-                            }
-                        } catch (Exception ignored) {
-                        }
-                    }
-                    String genderName = gender == 0 ? "Trái Đất" : (gender == 1 ? "Namek" : "Xayda");
-                    String taskName = formatTaskInfo(taskId, taskIndex);
-                    if (!firstAcc) {
-                        sb.append(",");
-                    }
-                    firstAcc = false;
-                    sb.append("{")
-                      .append("\"playerName\":").append(jsonStr(playerName))
-                      .append(",\"gender\":").append(jsonStr(genderName))
-                      .append(",\"power\":").append(power)
-                      .append(",\"intrinsicName\":").append(jsonStr(inName))
-                      .append(",\"taskId\":").append(taskId)
-                      .append(",\"taskIndex\":").append(taskIndex)
-                      .append(",\"taskName\":").append(jsonStr(taskName))
-                      .append(",\"tongnap\":").append(tongnap)
-                      .append(",\"ruby\":").append(ruby)
-                      .append(",\"gold\":").append(gold)
-                      .append(",\"online\":").append(isOnline)
-                      .append("}");
-                }
-            }
-        } catch (Exception ignored) {
-        }
-        sb.append("],\"totalAccounts\":").append(totalAccounts).append("}");
-        sendJson(exchange, 200, sb.toString());
-    }
-
-    private static void handlePublicAccount(HttpExchange exchange) throws IOException {
-        addCorsHeaders(exchange);
-        if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {
-            exchange.sendResponseHeaders(204, -1);
-            return;
-        }
-        Map<String, String> params = new HashMap<>(parseQuery(exchange.getRequestURI().getRawQuery()));
-        if ("POST".equalsIgnoreCase(exchange.getRequestMethod())) {
-            String body = new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
-            params.putAll(parseQuery(body));
-        }
-
-        String action = params.getOrDefault("action", "").trim();
-        try {
-            switch (action) {
-                case "register" -> {
-                    String u = params.getOrDefault("username", "").trim();
-                    String p = params.getOrDefault("password", "").trim();
-                    if (u.length() < 3 || u.length() > 20 || p.length() < 3 || p.length() > 30) {
-                        sendJson(exchange, 400, "{\"ok\":false,\"message\":\"Tài khoản (3-20 ký tự) và mật khẩu (3-30 ký tự) không hợp lệ!\"}");
-                        return;
-                    }
-                    if (!u.matches("^[a-zA-Z0-9_]+$")) {
-                        sendJson(exchange, 400, "{\"ok\":false,\"message\":\"Tên tài khoản chỉ được chứa chữ cái, số và dấu gạch dưới!\"}");
-                        return;
-                    }
-                    try (Connection con = LocalManager.getConnection()) {
-                        try (PreparedStatement psMode = con.prepareStatement("SET SESSION sql_mode = ''")) {
-                            psMode.executeUpdate();
-                        } catch (Exception ignored) {
-                        }
-                        try (PreparedStatement check = con.prepareStatement("SELECT id FROM account WHERE username = ? LIMIT 1")) {
-                            check.setString(1, u);
-                            try (ResultSet rs = check.executeQuery()) {
-                                if (rs.next()) {
-                                    sendJson(exchange, 400, "{\"ok\":false,\"message\":\"Tên tài khoản này đã có người đăng ký!\"}");
-                                    return;
-                                }
-                            }
-                        }
-                        try (PreparedStatement ins = con.prepareStatement(
-                                "INSERT INTO account (username, password, active, vnd, tongnap, ruong_skh) VALUES (?, ?, 1, 0, 0, 5)")) {
-                            ins.setString(1, u);
-                            ins.setString(2, p);
-                            ins.executeUpdate();
-                        } catch (Exception exFallback) {
-                            try (PreparedStatement ins2 = con.prepareStatement(
-                                    "INSERT INTO account (username, password, active, vnd, tongnap) VALUES (?, ?, 1, 0, 0)")) {
-                                ins2.setString(1, u);
-                                ins2.setString(2, p);
-                                ins2.executeUpdate();
-                            }
-                        }
-                    }
-                    sendJson(exchange, 200, "{\"ok\":true,\"message\":" + jsonStr("Đăng ký tài khoản [" + u + "] thành công (Đã Mở Thành Viên & tặng +5 Rương SKH)!") + "}");
-                }
-                case "login", "activate", "change_password" -> {
-                    String u = params.getOrDefault("username", "").trim();
-                    String p = params.getOrDefault("password", "").trim();
-                    if (u.isEmpty() || p.isEmpty()) {
-                        sendJson(exchange, 400, "{\"ok\":false,\"message\":\"Vui lòng nhập đầy đủ tài khoản và mật khẩu!\"}");
-                        return;
-                    }
-                    try (Connection con = LocalManager.getConnection()) {
-                        String sql = "SELECT a.*, p.id AS player_id, p.name AS player_name, p.gender, "
-                                + "p.data_inventory, p.data_point, p.data_task "
-                                + "FROM account a LEFT JOIN player p ON p.account_id = a.id "
-                                + "WHERE a.username = ? AND a.password = ? LIMIT 1";
-                        try (PreparedStatement ps = con.prepareStatement(sql)) {
-                            ps.setString(1, u);
-                            ps.setString(2, p);
-                            try (ResultSet rs = ps.executeQuery()) {
-                                if (!rs.next()) {
-                                    sendJson(exchange, 401, "{\"ok\":false,\"message\":\"Tài khoản hoặc mật khẩu không chính xác!\"}");
-                                    return;
-                                }
-                                int accId = rs.getInt("id");
-                                boolean active = rs.getBoolean("active");
-                                int vnd = rs.getInt("vnd");
-                                int tongnap = rs.getInt("tongnap");
-                                int ruongSkh = 5;
-                                try {
-                                    ruongSkh = rs.getInt("ruong_skh");
-                                } catch (Exception ignored) {
-                                }
-                                String playerName = rs.getString("player_name");
-                                int gender = rs.getInt("gender");
-                                long gold = 0, gem = 0, ruby = 0, power = 0;
-                                int taskId = 0, taskIndex = 0;
-
-                                if ("activate".equals(action)) {
-                                    try (PreparedStatement up = con.prepareStatement("UPDATE account SET active = 1 WHERE id = ?")) {
-                                        up.setInt(1, accId);
-                                        up.executeUpdate();
-                                    }
-                                    active = true;
-                                    Player livePl = Client.gI().getPlayerByUser(accId);
-                                    if (livePl != null && livePl.getSession() != null) {
-                                        livePl.getSession().actived = true;
-                                        Service.gI().sendThongBao(livePl, "Tài khoản của bạn đã được Mở Thành Viên trên Trang Chủ!");
-                                    }
-                                    sendJson(exchange, 200, "{\"ok\":true,\"message\":\"Đã kích hoạt Mở Thành Viên thành công!\"}");
-                                    return;
-                                }
-
-                                if ("change_password".equals(action)) {
-                                    String newPass = params.getOrDefault("newPassword", "").trim();
-                                    if (newPass.length() < 3 || newPass.length() > 30) {
-                                        sendJson(exchange, 400, "{\"ok\":false,\"message\":\"Mật khẩu mới phải từ 3 đến 30 ký tự!\"}");
-                                        return;
-                                    }
-                                    try (PreparedStatement up = con.prepareStatement("UPDATE account SET password = ? WHERE id = ?")) {
-                                        up.setString(1, newPass);
-                                        up.setInt(2, accId);
-                                        up.executeUpdate();
-                                    }
-                                    sendJson(exchange, 200, "{\"ok\":true,\"message\":\"Đã đổi mật khẩu mới thành công!\"}");
-                                    return;
-                                }
-
-                                Player livePl = Client.gI().getPlayerByUser(accId);
-                                if (livePl != null && livePl.inventory != null && livePl.nPoint != null) {
-                                    gold = livePl.inventory.gold;
-                                    gem = livePl.inventory.gem;
-                                    ruby = livePl.inventory.ruby;
-                                    power = livePl.nPoint.power;
-                                    if (livePl.getSession() != null) {
-                                        vnd = livePl.getSession().vnd;
-                                        ruongSkh = livePl.getSession().ruongSkh;
-                                    }
-                                    if (livePl.playerTask != null && livePl.playerTask.taskMain != null) {
-                                        taskId = livePl.playerTask.taskMain.id;
-                                        taskIndex = livePl.playerTask.taskMain.index;
-                                    }
-                                } else {
-                                    try {
-                                        String invStr = rs.getString("data_inventory");
-                                        if (invStr != null && !invStr.isEmpty()) {
-                                            JSONArray arr = (JSONArray) JSONValue.parse(invStr);
-                                            if (arr != null && arr.size() >= 3) {
-                                                gold = Long.parseLong(String.valueOf(arr.get(0)));
-                                                gem = Long.parseLong(String.valueOf(arr.get(1)));
-                                                ruby = Long.parseLong(String.valueOf(arr.get(2)));
-                                            }
-                                        }
-                                    } catch (Exception ignored) {
-                                    }
-                                    try {
-                                        String ptStr = rs.getString("data_point");
-                                        if (ptStr != null && !ptStr.isEmpty()) {
-                                            JSONArray arr = (JSONArray) JSONValue.parse(ptStr);
-                                            if (arr != null && arr.size() >= 2) {
-                                                power = Long.parseLong(String.valueOf(arr.get(1)));
-                                            }
-                                        }
-                                    } catch (Exception ignored) {
-                                    }
-                                    try {
-                                        String taskStr = rs.getString("data_task");
-                                        if (taskStr != null && !taskStr.isEmpty()) {
-                                            JSONArray arr = (JSONArray) JSONValue.parse(taskStr);
-                                            if (arr != null && arr.size() >= 2) {
-                                                taskId = Integer.parseInt(String.valueOf(arr.get(0)));
-                                                taskIndex = Integer.parseInt(String.valueOf(arr.get(1)));
-                                            }
-                                        }
-                                    } catch (Exception ignored) {
-                                    }
-                                }
-                                String genderName = playerName == null ? "Chưa tạo NV" : (gender == 0 ? "Trái Đất" : (gender == 1 ? "Namek" : "Xayda"));
-                                String taskName = playerName != null ? formatTaskInfo(taskId, taskIndex) : "Chưa có";
-                                String profileJson = "{\"ok\":true,\"account\":{"
-                                        + "\"accId\":" + accId
-                                        + ",\"username\":" + jsonStr(u)
-                                        + ",\"active\":" + (active ? 1 : 0)
-                                        + ",\"vnd\":" + vnd
-                                        + ",\"tongnap\":" + tongnap
-                                        + ",\"ruongSkh\":" + ruongSkh
-                                        + ",\"playerName\":" + jsonStr(playerName != null ? playerName : "(Chưa tạo nhân vật)")
-                                        + ",\"gender\":" + jsonStr(genderName)
-                                        + ",\"power\":" + power
-                                        + ",\"gold\":" + gold
-                                        + ",\"gem\":" + gem
-                                        + ",\"ruby\":" + ruby
-                                        + ",\"taskId\":" + taskId
-                                        + ",\"taskName\":" + jsonStr(taskName)
-                                        + "}}";
-                                sendJson(exchange, 200, profileJson);
-                            }
-                        }
-                    }
-                }
-                default -> sendJson(exchange, 400, "{\"ok\":false,\"message\":\"Yêu cầu không hợp lệ!\"}");
-            }
-        } catch (Exception e) {
-            sendJson(exchange, 500, "{\"ok\":false,\"message\":" + jsonStr("Lỗi hệ thống: " + e.getMessage()) + "}");
-        }
+        sendJson(exchange, 200, "{\"ok\":true,\"service\":\"Ngoc Rong VIAM Admin API\"}");
     }
 
     private static void handleStatus(HttpExchange exchange) throws IOException {
@@ -766,6 +363,12 @@ public class AdminWebServer {
         }
 
         Runtime rt = Runtime.getRuntime();
+        long nowGcCheck = System.currentTimeMillis();
+        long rawUsedMb = (rt.totalMemory() - rt.freeMemory()) / (1024 * 1024);
+        if (rawUsedMb > 400 && (nowGcCheck - lastAutoGcTimeMs) > 20000L) {
+            lastAutoGcTimeMs = nowGcCheck;
+            System.gc();
+        }
         long usedRamMb = (rt.totalMemory() - rt.freeMemory()) / (1024 * 1024);
         long maxRamMb = rt.maxMemory() / (1024 * 1024);
         int cpuCores = rt.availableProcessors();
@@ -2783,7 +2386,10 @@ public class AdminWebServer {
     }
 
     private static String serializeTasks() {
-        if (Manager.TASKS == null) {
+        if (cachedTasksJson != null) {
+            return cachedTasksJson;
+        }
+        if (Manager.TASKS == null || Manager.TASKS.isEmpty()) {
             return "[]";
         }
         StringBuilder sb = new StringBuilder(4096);
@@ -2816,7 +2422,8 @@ public class AdminWebServer {
             sb.append("}");
         }
         sb.append("]");
-        return sb.toString();
+        cachedTasksJson = sb.toString();
+        return cachedTasksJson;
     }
 
     private static String formatIntrinsicInfo(int id, int p1, int p2) {
@@ -2833,7 +2440,10 @@ public class AdminWebServer {
     }
 
     private static String serializeIntrinsics() {
-        if (Manager.INTRINSICS == null) {
+        if (cachedIntrinsicsJson != null) {
+            return cachedIntrinsicsJson;
+        }
+        if (Manager.INTRINSICS == null || Manager.INTRINSICS.isEmpty()) {
             return "[]";
         }
         StringBuilder sb = new StringBuilder(2048);
@@ -2861,7 +2471,8 @@ public class AdminWebServer {
             sb.append("}");
         }
         sb.append("]");
-        return sb.toString();
+        cachedIntrinsicsJson = sb.toString();
+        return cachedIntrinsicsJson;
     }
 
     private static String serializeItemList(List<Item> items) {

@@ -450,13 +450,7 @@ public class ChangeMapService {
             checkJoinSpecialMap(pl);
             checkJoinMapMaBu(pl);
         } else {
-            int plX = pl.location.x;
-            if (pl.location.x >= pl.zone.map.mapWidth - 60) {
-                plX = pl.zone.map.mapWidth - 60;
-            } else if (pl.location.x <= 60) {
-                plX = 60;
-            }
-            Service.gI().resetPoint(pl, plX, pl.location.y);
+            resetPoint(pl);
             Service.gI().sendThongBao(pl, "Bạn chưa thể đến khu vực này");
         }
     }
@@ -482,6 +476,22 @@ public class ChangeMapService {
                 if (zoneJoin != null) {
                     xGo = wp.goX;
                     yGo = wp.goY;
+                    if (zoneJoin.map != null && zoneJoin.map.wayPoints != null) {
+                        for (WayPoint destWp : zoneJoin.map.wayPoints) {
+                            if (destWp != null && xGo >= destWp.minX - 10 && xGo <= destWp.maxX + 10
+                                    && yGo >= destWp.minY - 24 && yGo <= destWp.maxY + 24) {
+                                int mapW = zoneJoin.map.mapWidth;
+                                int wpCenter = (destWp.minX + destWp.maxX) / 2;
+                                if (wpCenter >= mapW / 2) {
+                                    xGo = Math.max(60, destWp.minX - 50);
+                                } else {
+                                    xGo = Math.min(mapW - 60, destWp.maxX + 50);
+                                }
+                                yGo = zoneJoin.map.yPhysicInTop(xGo, yGo);
+                                break;
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -521,13 +531,26 @@ public class ChangeMapService {
     }
 
     public void resetPoint(Player player) {
+        if (player == null || player.zone == null || player.zone.map == null) {
+            return;
+        }
         int x = player.location.x;
-        if (player.location.x >= player.zone.map.mapWidth - 60) {
-            x = player.zone.map.mapWidth - 60;
-        } else if (player.location.x <= 60) {
+        int mapW = player.zone.map.mapWidth;
+        WayPoint wp = MapService.gI().getWaypointPlayerIn(player);
+        if (wp != null) {
+            int wpCenter = (wp.minX + wp.maxX) / 2;
+            if (wpCenter >= mapW / 2) {
+                x = Math.max(60, wp.minX - 45);
+            } else {
+                x = Math.min(mapW - 60, wp.maxX + 45);
+            }
+        } else if (x >= mapW - 60) {
+            x = mapW - 60;
+        } else if (x <= 60) {
             x = 60;
         }
-        Service.gI().resetPoint(player, x, player.location.y);
+        int y = player.zone.map.yPhysicInTop(x, player.location.y);
+        Service.gI().resetPoint(player, x, y);
     }
 
     public void finishLoadMap(Player player) {

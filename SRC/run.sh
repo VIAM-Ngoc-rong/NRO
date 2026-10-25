@@ -110,22 +110,26 @@ sysctl -w vm.swappiness=20 >/dev/null 2>&1 || true
 sysctl -w vm.overcommit_memory=1 >/dev/null 2>&1 || true
 sysctl -w vm.overcommit_ratio=100 >/dev/null 2>&1 || true
 
-# Cấp phát Heap tối ưu (1536MB) để JVM gom rác (GC) cực nhanh trong RAM vật lý + tận dụng mượt 3GB Swap khi tải cao
+# Cấp phát Heap gọn nhẹ (1024MB) và thu gom rác (G1GC) liên tục để RAM luôn nhẹ (~200-350MB)
 TOTAL_RAM_MB=$(awk '/MemTotal/ {printf "%d", $2/1024}' /proc/meminfo 2>/dev/null || echo 1536)
 TOTAL_SWAP_MB=$(awk '/SwapTotal/ {printf "%d", $2/1024}' /proc/meminfo 2>/dev/null || echo 3072)
-MAX_HEAP_MB=1536
+MAX_HEAP_MB=1024
 
 if [ "$1" = "--fg" ]; then
     exec java -server \
       -XX:ActiveProcessorCount=2 \
       -XX:ParallelGCThreads=2 \
       -XX:ConcGCThreads=1 \
-      -Xms512M -Xmx${MAX_HEAP_MB}M \
+      -Xms256M -Xmx${MAX_HEAP_MB}M \
       -XX:-UseGCOverheadLimit \
       -XX:MinHeapFreeRatio=10 \
-      -XX:MaxHeapFreeRatio=30 \
+      -XX:MaxHeapFreeRatio=25 \
       -XX:+UseG1GC \
-      -XX:MaxGCPauseMillis=100 \
+      -XX:G1NewSizePercent=5 \
+      -XX:G1MaxNewSizePercent=20 \
+      -XX:InitiatingHeapOccupancyPercent=30 \
+      -XX:+ExplicitGCInvokesConcurrent \
+      -XX:MaxGCPauseMillis=50 \
       -XX:+UseStringDeduplication \
       -Djava.awt.headless=true \
       -Dfile.encoding=UTF-8 \
@@ -133,17 +137,21 @@ if [ "$1" = "--fg" ]; then
       nro.models.server.ServerManager
 fi
 
-echo "Đang khởi động Ngọc Rồng VIAM (Bung tối đa RAM + Swap: Heap 512MB ~ ${MAX_HEAP_MB}MB trên tổng ${TOTAL_RAM_MB}MB RAM + ${TOTAL_SWAP_MB}MB Swap)..."
+echo "Đang khởi động Ngọc Rồng VIAM (Heap gọn nhẹ: 256MB ~ ${MAX_HEAP_MB}MB trên tổng ${TOTAL_RAM_MB}MB RAM + ${TOTAL_SWAP_MB}MB Swap)..."
 nohup java -server \
   -XX:ActiveProcessorCount=2 \
   -XX:ParallelGCThreads=2 \
   -XX:ConcGCThreads=1 \
-  -Xms512M -Xmx${MAX_HEAP_MB}M \
+  -Xms256M -Xmx${MAX_HEAP_MB}M \
   -XX:-UseGCOverheadLimit \
   -XX:MinHeapFreeRatio=10 \
-  -XX:MaxHeapFreeRatio=30 \
+  -XX:MaxHeapFreeRatio=25 \
   -XX:+UseG1GC \
-  -XX:MaxGCPauseMillis=100 \
+  -XX:G1NewSizePercent=5 \
+  -XX:G1MaxNewSizePercent=20 \
+  -XX:InitiatingHeapOccupancyPercent=30 \
+  -XX:+ExplicitGCInvokesConcurrent \
+  -XX:MaxGCPauseMillis=50 \
   -XX:+UseStringDeduplication \
   -Djava.awt.headless=true \
   -Dfile.encoding=UTF-8 \

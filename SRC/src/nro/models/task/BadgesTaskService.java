@@ -28,14 +28,17 @@ public class BadgesTaskService {
 
     public static void updateDoneTask(Player player) {
         for (BadgesTask data : player.dataTaskBadges) {
-            if (data.isDone()) {
+            if (data.countMax > 0 && data.isDone()) {
+                boolean exists = false;
                 for (BadgesData bg : player.dataBadges) {
                     if (bg.idBadGes == data.idBadgesReward) {
-                        return;
+                        exists = true;
+                        break;
                     }
                 }
-                BadgesData danhHieu = new BadgesData(player, data.idBadgesReward, 30);
-                player.dataBadges.add(danhHieu);
+                if (!exists) {
+                    new BadgesData(player, data.idBadgesReward, 30);
+                }
                 data.count = 0;
             }
         }
