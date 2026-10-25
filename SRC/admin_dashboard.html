@@ -608,7 +608,7 @@
       <div class="stat-card">
         <div class="stat-card-top">
           <div class="stat-label">Người chơi trực tuyến</div>
-          <div class="stat-icon-box"><img src="admin_icons/td.png" alt="Online" /></div>
+          <div class="stat-icon-box"><img src="admin_icons/td.png?v=2" alt="Online" /></div>
         </div>
         <div class="stat-value"><span id="statOnline">0</span> <span style="font-size:14px;font-weight:500;color:var(--muted);">/ <span id="statBotCount">0</span> Bot</span></div>
         <div class="stat-sub" id="statStartTime">Khởi chạy: --</div>
@@ -670,7 +670,7 @@
     <div class="workspace-layout">
       <div class="tabs">
         <button id="tabBtnPlayers" class="tab-btn active" onclick="switchTab('players')">
-          <span class="tab-label-wrap"><img src="admin_icons/td.png" class="nro-ico" alt="" /> 1. Người Chơi Online</span>
+          <span class="tab-label-wrap"><img src="admin_icons/td.png?v=2" class="nro-ico" alt="" /> 1. Người Chơi Online</span>
           <span class="badge badge-dead" id="countPlayersTab">0</span>
         </button>
         <button id="tabBtnAccounts" class="tab-btn" onclick="switchTab('accounts')">
@@ -720,8 +720,8 @@
         <div class="sidebar-section">
           <div class="sidebar-label"><img src="admin_icons/detu.png" class="nro-ico-sm" alt="" /> Điều khiển Bot & Boss</div>
           <div class="sidebar-grid-2">
-            <button class="btn-muted btn-sm" onclick="spawnBots(0)"><img src="admin_icons/td.png" class="nro-ico-sm" alt="" /> +Bot Quái</button>
-            <button class="btn-muted btn-sm" onclick="spawnBots(2)"><img src="admin_icons/xd.png" class="nro-ico-sm" alt="" /> +Bot Boss</button>
+            <button class="btn-muted btn-sm" onclick="spawnBots(0)"><img src="admin_icons/td.png?v=2" class="nro-ico-sm" alt="" /> +Bot Quái</button>
+            <button class="btn-muted btn-sm" onclick="spawnBots(2)"><img src="admin_icons/xd.png?v=2" class="nro-ico-sm" alt="" /> +Bot Boss</button>
           </div>
           <div class="sidebar-grid-2">
             <button class="btn-muted btn-sm" onclick="spawnAllBosses()"><img src="admin_icons/radar.png" class="nro-ico-sm" alt="" /> Gọi All Boss</button>
@@ -1651,11 +1651,12 @@
     }
 
     function getPlanetAvatarSrc(genderOrId, isAdminOrTop1 = false) {
-      if (isAdminOrTop1) return 'admin_icons/admin_vip.gif';
       const g = normalizeVi(String(genderOrId ?? ''));
-      if (g === '1' || g.includes('namek')) return 'admin_icons/nm.png';
-      if (g === '2' || g.includes('xayda')) return 'admin_icons/xd.png';
-      if (g === '0' || g.includes('trai dat')) return 'admin_icons/td.png';
+      if (g.includes('chua tao')) return 'admin_icons/admin_avatar.png';
+      if (g === '1' || g.includes('namek') || g.includes('nm')) return 'admin_icons/nm.png?v=2';
+      if (g === '2' || g.includes('xayda') || g.includes('xd')) return 'admin_icons/xd.png?v=2';
+      if (g === '0' || g.includes('trai dat') || g.includes('td')) return 'admin_icons/td.png?v=2';
+      if (isAdminOrTop1) return 'admin_icons/admin_vip.gif';
       return 'admin_icons/admin_avatar.png';
     }
 
@@ -1890,9 +1891,9 @@
             <td style="color:var(--muted);font-family:monospace;">${escapeHtml(a.password)}</td>
             <td class="text-name">
               <div style="display:flex;align-items:center;gap:8px;">
-                <img src="${getPlanetAvatarSrc(a.genderId ?? a.gender, a.isAdmin)}" class="nro-avatar" alt="" />
+                <img src="${getPlanetAvatarSrc(a.playerId > 0 ? (a.gender || a.genderId) : 'chua_tao', false)}" class="nro-avatar" alt="" />
                 <div>
-                  ${escapeHtml(a.playerName)} <span style="font-size:11.5px;color:var(--muted);font-weight:400;">(${escapeHtml(a.gender)})</span>
+                  ${escapeHtml(a.playerName)} <span style="font-size:11.5px;color:var(--muted);font-weight:400;">(${a.playerId > 0 ? `<img src="${getPlanetAvatarSrc(a.gender || a.genderId, false)}" class="nro-ico-sm" alt="" />` : ''}${escapeHtml(a.gender)})</span>
                   ${a.playerId > 0 ? `<br/><span style="font-size:11.5px;color:var(--muted);font-weight:400;"><img src="admin_icons/intrinsic_atk.png" class="nro-ico-sm" alt="" /> Nội tại: ${escapeHtml(a.intrinsicName || 'Chưa mở')}</span>` : ''}
                   ${a.playerId > 0 ? `<br/><span style="font-size:11.5px;color:var(--muted);font-weight:400;"><img src="admin_icons/nr4s.png" class="nro-ico-sm" alt="" /> ${escapeHtml(a.taskName || ('NV #' + (a.taskId ?? 0)))}</span>` : ''}
                 </div>
