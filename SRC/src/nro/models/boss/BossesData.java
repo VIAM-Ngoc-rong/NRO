@@ -2798,7 +2798,7 @@ public class BossesData {
     public static final BossData ZAMASU_HOP_THE = new BossData(
             "Zamasu Hợp Thể",
             ConstPlayer.TRAI_DAT,
-            new short[]{1578, 1581, 1582, -1, -1, -1},
+            new short[]{903, 904, 905, -1, -1, -1},
             100000,
             new int[]{2_000_000_000},
             new int[]{102, 92, 93, 94, 96, 97, 98, 99, 100},

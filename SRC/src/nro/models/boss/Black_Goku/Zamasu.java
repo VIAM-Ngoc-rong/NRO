@@ -28,18 +28,20 @@ public class Zamasu extends Boss {
     @Override
     public void initBase() {
         super.initBase();
-        if (this.currentLevel == 0) {
-            try {
-                for (Template.ItemTemplate it : Manager.ITEM_TEMPLATES) {
-                    if (it != null && it.id == 1553 && it.head > 0 && it.body > 0 && it.leg > 0) {
-                        this.data[0].getOutfit()[0] = (short) it.head;
-                        this.data[0].getOutfit()[1] = (short) it.body;
-                        this.data[0].getOutfit()[2] = (short) it.leg;
-                        break;
+        try {
+            for (Template.ItemTemplate it : Manager.ITEM_TEMPLATES) {
+                if (it != null && it.id == 898 && it.head > 0 && it.body > 0 && it.leg > 0) {
+                    for (int i = 0; i < this.data.length; i++) {
+                        if (this.data[i] != null && this.data[i].getOutfit() != null && this.data[i].getOutfit().length >= 3) {
+                            this.data[i].getOutfit()[0] = (short) it.head;
+                            this.data[i].getOutfit()[1] = (short) it.body;
+                            this.data[i].getOutfit()[2] = (short) it.leg;
+                        }
                     }
+                    break;
                 }
-            } catch (Exception ignored) {
             }
+        } catch (Exception ignored) {
         }
     }
 
