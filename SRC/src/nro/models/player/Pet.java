@@ -1022,9 +1022,6 @@ public class Pet extends Player {
                 this.playerSkill.skills.set(4, SkillUtil.createEmptySkill());
                 changed = true;
             }
-            if (changed && this.master != null) {
-                Service.gI().showInfoPet(this.master);
-            }
         }
     }
 

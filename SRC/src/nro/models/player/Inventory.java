@@ -34,6 +34,10 @@ public class Inventory {
         public int getFirstChunkSize() {
             return owner.getActiveTabSize();
         }
+
+        public Inventory getOwner() {
+            return owner;
+        }
     }
 
     public int currentBagTab = 0;

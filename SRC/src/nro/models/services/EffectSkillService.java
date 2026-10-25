@@ -351,6 +351,7 @@ public class EffectSkillService {
             for (Mob mobMap : player.newSkill.mobsTaget) {
                 mobMap.effectSkill.setBinh(player, System.currentTimeMillis(), 11000 * (player.effectSkill.typeBinh == 0 ? 1 : 2));
             }
+            player.newSkill.closeSkillSpecial();
         }
     }
 

@@ -948,6 +948,7 @@ public class Controller implements IMessageHandler {
             player.setClothes.setup();
             if (player.pet != null) {
                 player.pet.setClothes.setup();
+                Service.gI().showInfoPet(player);
             }
             ItemTimeService.gI().sendCanAutoPlay(player);
             player.start();

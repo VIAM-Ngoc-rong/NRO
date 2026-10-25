@@ -80,6 +80,12 @@ public class SkillService {
         if (player.playerSkill == null) {
             return false;
         }
+        if (status == 20 && skillId != -1 && (player.playerSkill.skillSelect == null || player.playerSkill.skillSelect.template.id != skillId)) {
+            selectSkill(player, skillId);
+        }
+        if (player.playerSkill.skillSelect == null) {
+            return false;
+        }
         if (player.playerSkill.skillSelect.template.type == 2 && canUseSkillWithMana(player) && canUseSkillWithCooldown(player)) {
             useSkillBuffToPlayer(player, plTarget);
             return true;
@@ -99,20 +105,15 @@ public class SkillService {
         if (player.effectSkill != null && player.effectSkill.isCharging) {
             EffectSkillService.gI().stopCharge(player);
         }
-        if (status == 20 && skillId != -1 && player.playerSkill.skillSelect.template.id != skillId) {
-            selectSkill(player, skillId);
-            return false;
-        } else {
-            switch (player.playerSkill.skillSelect.template.type) {
-                case 1 ->
-                    useSkillAttack(player, plTarget, mobTarget);
-                case 3 ->
-                    useSkillAlone(player);
-                case 4 ->
-                    useNewSkillNotFocus(player, plTarget, mobTarget, status, skillId, dx, dy, dir, x, y);
-                default -> {
-                    return false;
-                }
+        switch (player.playerSkill.skillSelect.template.type) {
+            case 1 ->
+                useSkillAttack(player, plTarget, mobTarget);
+            case 3 ->
+                useSkillAlone(player);
+            case 4 ->
+                useNewSkillNotFocus(player, plTarget, mobTarget, status, skillId, dx, dy, dir, x, y);
+            default -> {
+                return false;
             }
         }
         return true;
@@ -151,6 +152,10 @@ public class SkillService {
                 return;
             }
             if (player.isDie() || player.effectSkill.isHaveEffectSkill()) {
+                if (player.newSkill.isStartSkillSpecial && player.newSkill.stepSkillSpecial == 0 && player.newSkill.skillSelect != null) {
+                    player.newSkill.stepSkillSpecial = 1;
+                    newSkillNotFocus(player, 21);
+                }
                 player.newSkill.closeSkillSpecial();
                 return;
             }
@@ -161,7 +166,8 @@ public class SkillService {
                         player.setDie();
                     }
                     player.newSkill.lastTimeSkillSpecial = System.currentTimeMillis();
-                    player.newSkill.closeSkillSpecial();
+                    player.newSkill.playersTaget.clear();
+                    player.newSkill.mobsTaget.clear();
                     List<Player> playersMap;
                     if (player.isBoss) {
                         playersMap = player.zone.getNotBosses();
@@ -195,6 +201,7 @@ public class SkillService {
                             }
                         }
                     }
+                    player.newSkill.stopTimerOnly();
                     newSkillNotFocus(player, 21);
                     EffectSkillService.gI().startUseMafuba(player, 4000);
                 }

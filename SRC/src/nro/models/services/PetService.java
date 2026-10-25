@@ -232,6 +232,8 @@ public class PetService {
                 if (limitPower != null && limitPower.length == 1) {
                     player.pet.nPoint.limitPower = limitPower[0];
                 }
+                Service.gI().sendHavePet(player);
+                Service.gI().showInfoPet(player);
                 Thread.sleep(1000);
                 Service.gI().chatJustForMe(player, player.pet, "Grrr... Sức mạnh của ta là vô địch!");
             } catch (Exception e) {
@@ -390,6 +392,8 @@ public class PetService {
 
         pet.nPoint.setFullHpMp();
         player.pet = pet;
+        Service.gI().sendHavePet(player);
+        Service.gI().showInfoPet(player);
     }
 
     public static void Pet2(Player pl, int h, int b, int l) {

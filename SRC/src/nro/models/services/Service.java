@@ -1593,83 +1593,108 @@ public class Service {
     }
 
     public void showInfoPet(Player pl) {
-        if (pl != null && pl.pet != null) {
-            Message msg;
-            try {
-                msg = new Message(-107);
-                msg.writer().writeByte(2);
-                msg.writer().writeShort(pl.pet.getAvatar());
-                msg.writer().writeByte(pl.pet.inventory.itemsBody.size());
+        if (pl == null) {
+            return;
+        }
+        if (pl.pet == null) {
+            sendHavePet(pl);
+            return;
+        }
+        Message msg;
+        try {
+            pl.pet.updatePower();
+            if (pl.pet.nPoint != null) {
+                pl.pet.nPoint.calPoint();
+            }
+            msg = new Message(-107);
+            msg.writer().writeByte(2);
+            msg.writer().writeShort(pl.pet.getAvatar());
+            msg.writer().writeByte(pl.pet.inventory.itemsBody.size());
 
-                for (Item item : pl.pet.inventory.itemsBody) {
-                    if (!item.isNotNullItem()) {
-                        msg.writer().writeShort(-1);
+            for (Item item : pl.pet.inventory.itemsBody) {
+                if (!item.isNotNullItem()) {
+                    msg.writer().writeShort(-1);
+                } else {
+                    msg.writer().writeShort(item.template.id);
+                    msg.writer().writeInt(item.quantity);
+                    msg.writer().writeUTF(item.getInfo());
+                    msg.writer().writeUTF(item.getContent());
+
+                    if (item.itemOptions == null || item.itemOptions.isEmpty()) {
+                        msg.writer().writeByte(1);
+                        msg.writer().writeByte(73);
+                        msg.writer().writeShort(0);
                     } else {
-                        msg.writer().writeShort(item.template.id);
-                        msg.writer().writeInt(item.quantity);
-                        msg.writer().writeUTF(item.getInfo());
-                        msg.writer().writeUTF(item.getContent());
-
                         int countOption = item.itemOptions.size();
                         msg.writer().writeByte(countOption);
                         for (ItemOption iop : item.itemOptions) {
-                            msg.writer().writeByte(iop.optionTemplate.id);
-                            msg.writer().writeShort(iop.param);
+                            int id = iop.optionTemplate.id;
+                            int param = iop.param;
+                            if (id == 213 && param > 1000) {
+                                int tier = param / 1000;
+                                param = param % 1000;
+                                if (tier == 1) {
+                                    id = 222;
+                                } else if (tier >= 2) {
+                                    id = 223;
+                                }
+                            }
+                            msg.writer().writeByte(id);
+                            msg.writer().writeShort(param);
                         }
                     }
                 }
-
-                msg.writer().writeInt(pl.pet.nPoint.hp); //hp
-                msg.writer().writeInt(pl.pet.nPoint.hpMax); //hpfull
-                msg.writer().writeInt(pl.pet.nPoint.mp); //mp
-                msg.writer().writeInt(pl.pet.nPoint.mpMax); //mpfull
-                msg.writer().writeInt(pl.pet.nPoint.dame); //damefull
-                msg.writer().writeUTF(pl.pet.name); //name
-                msg.writer().writeUTF(getCurrStrLevel(pl.pet)); //curr level
-                msg.writer().writeLong(pl.pet.nPoint.power); //power
-                msg.writer().writeLong(pl.pet.nPoint.tiemNang); //tiềm năng
-                msg.writer().writeByte(pl.pet.getStatus()); //status
-                msg.writer().writeShort(pl.pet.nPoint.stamina); //stamina
-                msg.writer().writeShort(pl.pet.nPoint.maxStamina); //stamina full
-                msg.writer().writeByte(pl.pet.nPoint.crit); //crit
-                msg.writer().writeShort(pl.pet.nPoint.def); //def
-                pl.pet.updatePower();
-                int sizeSkill = Math.min(5, pl.pet.playerSkill.skills.size());
-                msg.writer().writeByte(5); //count pet skill
-                for (int i = 0; i < 5; i++) {
-                    if (i < sizeSkill && pl.pet.playerSkill.skills.get(i).skillId != -1) {
-                        msg.writer().writeShort(pl.pet.playerSkill.skills.get(i).skillId);
-                    } else {
-                        switch (i) {
-                            case 1:
-                                msg.writer().writeShort(-1);
-                                msg.writer().writeUTF("Cần đạt sức mạnh 150tr để mở");
-                                break;
-                            case 2:
-                                msg.writer().writeShort(-1);
-                                msg.writer().writeUTF("Cần đạt sức mạnh 1tỷ5 để mở");
-                                break;
-                            case 3:
-                                msg.writer().writeShort(-1);
-                                msg.writer().writeUTF("Cần đạt sức mạnh 20tỷ để mở");
-                                break;
-                            case 4:
-                                msg.writer().writeShort(-1);
-                                msg.writer().writeUTF("Cần đạt sức mạnh 100tỷ để mở");
-                                break;
-                            default:
-                                msg.writer().writeShort(-1);
-                                msg.writer().writeUTF("Cần đạt sức mạnh 100tỷ để mở");
-                                break;
-                        }
-                    }
-                }
-                pl.sendMessage(msg);
-                msg.cleanup();
-
-            } catch (Exception e) {
-                Logger.logException(Service.class, e);
             }
+
+            msg.writer().writeInt(pl.pet.nPoint.hp); //hp
+            msg.writer().writeInt(pl.pet.nPoint.hpMax); //hpfull
+            msg.writer().writeInt(pl.pet.nPoint.mp); //mp
+            msg.writer().writeInt(pl.pet.nPoint.mpMax); //mpfull
+            msg.writer().writeInt(pl.pet.nPoint.dame); //damefull
+            msg.writer().writeUTF(pl.pet.name); //name
+            msg.writer().writeUTF(getCurrStrLevel(pl.pet)); //curr level
+            msg.writer().writeLong(pl.pet.nPoint.power); //power
+            msg.writer().writeLong(pl.pet.nPoint.tiemNang); //tiềm năng
+            msg.writer().writeByte(pl.pet.getStatus()); //status
+            msg.writer().writeShort(pl.pet.nPoint.stamina); //stamina
+            msg.writer().writeShort(pl.pet.nPoint.maxStamina); //stamina full
+            msg.writer().writeByte(pl.pet.nPoint.crit); //crit
+            msg.writer().writeShort(pl.pet.nPoint.def); //def
+            int sizeSkill = Math.min(5, pl.pet.playerSkill.skills.size());
+            msg.writer().writeByte(5); //count pet skill
+            for (int i = 0; i < 5; i++) {
+                if (i < sizeSkill && pl.pet.playerSkill.skills.get(i) != null && pl.pet.playerSkill.skills.get(i).skillId != -1) {
+                    msg.writer().writeShort(pl.pet.playerSkill.skills.get(i).skillId);
+                } else {
+                    switch (i) {
+                        case 1:
+                            msg.writer().writeShort(-1);
+                            msg.writer().writeUTF("Cần đạt sức mạnh 150tr để mở");
+                            break;
+                        case 2:
+                            msg.writer().writeShort(-1);
+                            msg.writer().writeUTF("Cần đạt sức mạnh 1tỷ5 để mở");
+                            break;
+                        case 3:
+                            msg.writer().writeShort(-1);
+                            msg.writer().writeUTF("Cần đạt sức mạnh 20tỷ để mở");
+                            break;
+                        case 4:
+                            msg.writer().writeShort(-1);
+                            msg.writer().writeUTF("Cần đạt sức mạnh 100tỷ để mở");
+                            break;
+                        default:
+                            msg.writer().writeShort(-1);
+                            msg.writer().writeUTF("Cần đạt sức mạnh 100tỷ để mở");
+                            break;
+                    }
+                }
+            }
+            pl.sendMessage(msg);
+            msg.cleanup();
+
+        } catch (Exception e) {
+            Logger.logException(Service.class, e);
         }
     }
 

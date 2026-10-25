@@ -55,48 +55,24 @@ public class NewSkill {
     public long lastTimeSkillSpecial;
 
     public byte getTypePaint() {
-        int index = player.isPet ? 8 : 10;
-        if (player.inventory.itemsBody.size() > index) {
-            Item item = player.inventory.itemsBody.get(index);
-            if (item != null && item.isNotNullItem()) {
-                int itemId = item.template.id;
-                if (itemId == 1044 || itemId == 1211 || itemId == 1212) {
-                    return 2;
-                }
-                if (itemId == 1278 || itemId == 1279 || itemId == 1280) {
-                    return 3;
-                }
-            }
-        }
         return 0;
     }
 
     public byte getTypeItem() {
-        int index = player.isPet ? 8 : 10;
-        if (player.inventory.itemsBody.size() > index) {
-            Item item = player.inventory.itemsBody.get(index);
-            if (item != null && item.isNotNullItem()) {
-                if (item.template.id == 1279 && player.gender == 1) {
-                    return 2;
-                }
-                return 1;
-            }
-        }
         return 0;
     }
 
     private void update() {
-        if (this.isStartSkillSpecial = true) {
+        if (this.isStartSkillSpecial) {
             SkillService.gI().updateSkillSpecial(player);
         }
     }
 
     public void setSkillSpecial(byte dir, short _xPlayer, short _yPlayer, short _xObjTaget, short _yObjTaget) {
-        if (player.itemTime != null && player.itemTime.isUseNCD) {
-            typeItem = 2;
-        } else {
-            typeItem = getTypeItem();
-        }
+        this.close();
+        this.playersTaget.clear();
+        this.mobsTaget.clear();
+        this.typeItem = getTypeItem();
         this.typePaint = getTypePaint();
         this.skillSelect = this.player.playerSkill.skillSelect;
         if ((this.player.isPl() || this.player.isPet) && skillSelect.currLevel < 1000) {
@@ -121,7 +97,7 @@ public class NewSkill {
             this._xObjTaget = 75;
         }
         this._xObjTaget = (short) Math.abs(this._xObjTaget);
-        this._yObjTaget = (short) Math.abs(_yObjTaget);
+        this._yObjTaget = (short) Math.max(50, Math.min(150, Math.abs(_yObjTaget)));
         this.isStartSkillSpecial = true;
         this.stepSkillSpecial = 0;
         this.lastTimeSkillSpecial = System.currentTimeMillis();
@@ -139,6 +115,12 @@ public class NewSkill {
         this.stepSkillSpecial = 0;
         this.playersTaget.clear();
         this.mobsTaget.clear();
+        this.close();
+    }
+
+    public void stopTimerOnly() {
+        this.isStartSkillSpecial = false;
+        this.stepSkillSpecial = 0;
         this.close();
     }
 

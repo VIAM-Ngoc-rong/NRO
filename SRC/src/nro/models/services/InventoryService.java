@@ -216,16 +216,123 @@ public class InventoryService {
         //**********************************************************************
     }
 
+    public boolean isStackableItem(Item item) {
+        if (item == null || !item.isNotNullItem() || item.template == null) {
+            return false;
+        }
+        int id = item.template.id;
+        int type = item.template.type;
+        // Không gộp các vật phẩm đặc biệt đơn chiếc
+        if (id == 570 || id == 454 || id == 921 || id == 1819 || id == 193 || id == 194 || id == 361 || id == 379 || id == 992) {
+            return false;
+        }
+        if (isItemIncrementalOption(item)[0] != -1) {
+            return false;
+        }
+        // Không bao giờ gộp trang bị mặc trên người / đệ tử / thú cưỡi / sách tuyệt kỹ
+        switch (type) {
+            case 0, 1, 2, 3, 4, 5, 11, 21, 23, 24, 25, 32, 35, 36, 72 -> {
+                return false;
+            }
+            case 27 -> {
+                if (item.template.isUpToUp) {
+                    return true;
+                }
+                if (item.itemOptions != null) {
+                    for (ItemOption io : item.itemOptions) {
+                        if (io != null && io.optionTemplate != null) {
+                            int opId = io.optionTemplate.id;
+                            if (opId != 30 && opId != 73 && opId != 174 && opId != 86 && opId != 87) {
+                                return false;
+                            }
+                        }
+                    }
+                }
+                return true;
+            }
+            default -> {
+                return true;
+            }
+        }
+    }
+
+    private boolean tryMergeStack(Item target, Item source) {
+        if (target == null || source == null || !target.isNotNullItem() || !source.isNotNullItem()) {
+            return false;
+        }
+        if (target.template == null || source.template == null || target.template.id != source.template.id) {
+            return false;
+        }
+        int[] idParamT = isItemIncrementalOption(target);
+        int[] idParamS = isItemIncrementalOption(source);
+        if (idParamT[0] != -1 && idParamT[0] == idParamS[0] && idParamS[1] > 0) {
+            for (ItemOption io : target.itemOptions) {
+                if (io != null && io.optionTemplate != null && io.optionTemplate.id == idParamT[0]) {
+                    if (io.param + idParamS[1] <= 30000) {
+                        io.param += idParamS[1];
+                        source.quantity = 0;
+                        return true;
+                    }
+                    return false;
+                }
+            }
+            return false;
+        }
+        if (!isStackableItem(target) || !isStackableItem(source)) {
+            return false;
+        }
+        if (!checkListsEqual(target.itemOptions, source.itemOptions)
+                && target.template.id != 2074 && target.template.id != 380
+                && !target.isDaNangCap() && !target.isManhTS()) {
+            return false;
+        }
+        int maxStack = ((target.template.id >= 1066 && target.template.id <= 1070) || target.template.id == 457
+                || target.template.id == 610 || target.template.type == 14 || target.template.id == 2048
+                || (target.template.id > 2049 && target.template.id < 2056) || target.template.id == 821
+                || target.template.id == 2075) ? 100_000_000 : 99999;
+        if (target.quantity >= maxStack) {
+            return false;
+        }
+        int canAdd = maxStack - target.quantity;
+        if (source.quantity <= canAdd) {
+            target.quantity += source.quantity;
+            source.quantity = 0;
+            return true;
+        } else {
+            target.quantity = maxStack;
+            source.quantity -= canAdd;
+            return false;
+        }
+    }
+
     public void sortItems(List<Item> list) {
         int totalSize = list.size();
         if (totalSize <= 1) {
             return;
         }
+        // 1. Gộp các vật phẩm trùng ID có thể cộng dồn trong toàn bộ danh sách
+        for (int i = 0; i < totalSize - 1; i++) {
+            Item current = list.get(i);
+            if (current == null || !current.isNotNullItem()) {
+                continue;
+            }
+            for (int j = i + 1; j < totalSize; j++) {
+                Item candidate = list.get(j);
+                if (candidate == null || !candidate.isNotNullItem()) {
+                    continue;
+                }
+                if (tryMergeStack(current, candidate)) {
+                    list.set(j, ItemService.gI().createItemNull());
+                }
+            }
+        }
+
+        // 2. Dồn các ô trống để thu gọn hành trang
         int firstChunk = totalSize;
         if (list instanceof Inventory.BagList bagList) {
-            firstChunk = Math.min(totalSize, Math.max(1, bagList.getFirstChunkSize()));
-        } else if (totalSize > Inventory.BAG_TAB_SIZE) {
-            firstChunk = Inventory.BAG_TAB_SIZE;
+            if (bagList.getOwner() != null && bagList.getOwner().currentBagTab > 0) {
+                firstChunk = Math.min(totalSize, Math.max(1, bagList.getFirstChunkSize()));
+            }
         }
         int start = 0;
         while (start < totalSize) {
@@ -582,21 +689,10 @@ public class InventoryService {
             int tabSize = player.inventory.getActiveTabSize();
             List<Integer> displayIndices = player.inventory.displayedBagIndices;
             displayIndices.clear();
-            Set<Integer> presentTemplateIds = new HashSet<>();
             for (int i = 0; i < tabSize && i < player.inventory.itemsBag.size(); i++) {
                 Item item = player.inventory.itemsBag.get(i);
                 if (item != null && item.isNotNullItem()) {
                     displayIndices.add(i);
-                    if (item.template != null) {
-                        presentTemplateIds.add((int) item.template.id);
-                    }
-                }
-            }
-            for (int i = tabSize; i < player.inventory.itemsBag.size() && displayIndices.size() < 118; i++) {
-                Item item = player.inventory.itemsBag.get(i);
-                if (player.inventory.isLinkedUtilityItem(item) && !presentTemplateIds.contains((int) item.template.id)) {
-                    displayIndices.add(i);
-                    presentTemplateIds.add((int) item.template.id);
                 }
             }
             int nonNullCount = displayIndices.size();
@@ -928,7 +1024,7 @@ public class InventoryService {
                 }
             }
         }
-        if (itemAdd.template.isUpToUp) {
+        if (itemAdd.template.isUpToUp || isStackableItem(itemAdd)) {
             for (Item it : items) {
                 if (!it.isNotNullItem() || it.template.id != itemAdd.template.id || (!checkListsEqual(it.itemOptions, itemAdd.itemOptions) && itemAdd.template.id != 2074 && itemAdd.template.id != 380 && !itemAdd.isDaNangCap() && !itemAdd.isManhTS()) || it.quantity >= 100_000_000) {
                     continue;
@@ -980,21 +1076,30 @@ public class InventoryService {
         }
         List<ItemOption> f1 = new ArrayList<>();
         for (ItemOption io : list1) {
-            if (io != null && io.optionTemplate != null && io.optionTemplate.id != 30 && io.optionTemplate.id != 73) {
+            if (io != null && io.optionTemplate != null && io.optionTemplate.id != 30 && io.optionTemplate.id != 73 && io.optionTemplate.id != 174) {
                 f1.add(io);
             }
         }
         List<ItemOption> f2 = new ArrayList<>();
         for (ItemOption io : list2) {
-            if (io != null && io.optionTemplate != null && io.optionTemplate.id != 30 && io.optionTemplate.id != 73) {
+            if (io != null && io.optionTemplate != null && io.optionTemplate.id != 30 && io.optionTemplate.id != 73 && io.optionTemplate.id != 174) {
                 f2.add(io);
             }
         }
         if (f1.size() != f2.size()) {
             return false;
         }
-        for (int i = 0; i < f1.size(); i++) {
-            if (f1.get(i).optionTemplate.id != f2.get(i).optionTemplate.id || f1.get(i).param != f2.get(i).param) {
+        boolean[] matched = new boolean[f2.size()];
+        for (ItemOption io1 : f1) {
+            boolean found = false;
+            for (int j = 0; j < f2.size(); j++) {
+                if (!matched[j] && io1.optionTemplate.id == f2.get(j).optionTemplate.id && io1.param == f2.get(j).param) {
+                    matched[j] = true;
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
                 return false;
             }
         }
