@@ -131,7 +131,7 @@ public class InventoryService {
                 sortItems(player.inventory.itemsBag);
                 sendItemBags(player);
             } else {
-                Service.gI().sendThongBao(player, "Bỏ cái địt mẹ mày thằng ngu");
+                Service.gI().sendThongBao(player, "Không thể vứt bỏ Thỏi vàng!");
             }
         }
         if (itemThrow == null) {
@@ -265,15 +265,26 @@ public class InventoryService {
         }
         int[] idParamT = isItemIncrementalOption(target);
         int[] idParamS = isItemIncrementalOption(source);
-        if (idParamT[0] != -1 && idParamT[0] == idParamS[0] && idParamS[1] > 0) {
-            for (ItemOption io : target.itemOptions) {
-                if (io != null && io.optionTemplate != null && io.optionTemplate.id == idParamT[0]) {
-                    if (io.param + idParamS[1] <= 30000) {
-                        io.param += idParamS[1];
-                        source.quantity = 0;
-                        return true;
+        if (idParamT[0] != -1 || idParamS[0] != -1) {
+            int optId = idParamT[0] != -1 ? idParamT[0] : idParamS[0];
+            if ((idParamT[0] == -1 || idParamT[0] == optId) && (idParamS[0] == -1 || idParamS[0] == optId)) {
+                int valT = idParamT[0] != -1 ? idParamT[1] : Math.max(1, target.quantity);
+                int valS = idParamS[0] != -1 ? idParamS[1] : Math.max(1, source.quantity);
+                if (valT > 0 && valS > 0 && valT + valS <= 30000) {
+                    ItemOption found = null;
+                    for (ItemOption io : target.itemOptions) {
+                        if (io != null && io.optionTemplate != null && io.optionTemplate.id == optId) {
+                            found = io;
+                            break;
+                        }
                     }
-                    return false;
+                    if (found != null) {
+                        found.param = valT + valS;
+                    } else {
+                        target.itemOptions.add(new ItemOption(optId, valT + valS));
+                    }
+                    source.quantity = 0;
+                    return true;
                 }
             }
             return false;
@@ -676,9 +687,32 @@ public class InventoryService {
         //**********************************************************************
     }
 
+    public static void sanitizeStarOptions(Item item) {
+        if (item == null || !item.isNotNullItem() || item.itemOptions == null || item.itemOptions.isEmpty()) {
+            return;
+        }
+        int maxStar = 0;
+        boolean has228 = false;
+        for (Item.ItemOption io : item.itemOptions) {
+            if (io != null && io.optionTemplate != null) {
+                if (io.optionTemplate.id == 107) {
+                    maxStar = io.param;
+                } else if (io.optionTemplate.id == 228) {
+                    has228 = true;
+                }
+            }
+        }
+        if (has228 && maxStar <= 7) {
+            item.itemOptions.removeIf(io -> io != null && io.optionTemplate != null && io.optionTemplate.id == 228);
+        }
+    }
+
     public void sendItemBags(Player player) {
         if (player == null || player.inventory == null || player.inventory.itemsBag == null) {
             return;
+        }
+        for (Item it : player.inventory.itemsBag) {
+            sanitizeStarOptions(it);
         }
         sortItems(player.inventory.itemsBag);
         if (player.getSession() == null) {
@@ -767,6 +801,7 @@ public class InventoryService {
                     if (!item.isNotNullItem()) {
                         msg.writer().writeShort(-1);
                     } else {
+                        sanitizeStarOptions(item);
                         msg.writer().writeShort(item.template.id);
                         msg.writer().writeInt(item.quantity);
                         msg.writer().writeUTF(item.getInfo());
@@ -810,6 +845,10 @@ public class InventoryService {
         if (player == null || player.getSession() == null || player.inventory == null) {
             return;
         }
+        for (Item it : player.inventory.itemsBox) {
+            sanitizeStarOptions(it);
+        }
+        sortItems(player.inventory.itemsBox);
         Message msg;
         try {
             msg = new Message(-35);
