@@ -35,6 +35,22 @@ public class Shenron_Event {
     @Getter
     private Zone zone;
 
+    public Player getPlayer() {
+        return this.player;
+    }
+
+    public void setPlayer(Player player) {
+        this.player = player;
+    }
+
+    public Zone getZone() {
+        return this.zone;
+    }
+
+    public void setZone(Zone zone) {
+        this.zone = zone;
+    }
+
     public long playerId;
     public boolean isPlayerDisconnect;
     public byte select;
