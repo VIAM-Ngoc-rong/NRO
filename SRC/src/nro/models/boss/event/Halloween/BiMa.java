@@ -27,6 +27,10 @@ public class BiMa extends Boss {
         Service.gI().dropItemMap(this.zone, it);
         ItemMap ngocHalloween = new ItemMap(this.zone, Util.nextInt(702, 708), 1, this.location.x + 15, y, plKill.id);
         Service.gI().dropItemMap(this.zone, ngocHalloween);
+        if (plKill != null && plKill.event != null) {
+            plKill.event.addEventPoint(2);
+            Service.gI().sendThongBao(plKill, "Hạ Bí Ma nhận +2 Điểm Sự Kiện!");
+        }
     }
 
     public void halloween(Player player) {

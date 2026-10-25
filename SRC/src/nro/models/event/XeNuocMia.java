@@ -88,6 +88,10 @@ public class XeNuocMia extends Npc {
     }
 
     private void MuaNuocMia(Player player) {
+        if (InventoryService.gI().getCountEmptyBag(player) <= 0) {
+            Service.gI().sendThongBao(player, "Cần ít nhất 1 ô trống trong hành trang!");
+            return;
+        }
         Item khucMia = InventoryService.gI().findItemBag(player, KHUC_MIA);
         Item nuocDa = InventoryService.gI().findItemBag(player, NUOC_DA);
 
@@ -109,17 +113,22 @@ public class XeNuocMia extends Npc {
             InventoryService.gI().addItemBag(player, itemRandom);
             InventoryService.gI().sendItemBags(player);
             player.point_sukien1 += 1;
+            player.event.addEventPoint(1);
             if (!Manager.isTopSukien1Changed) {
                 Manager.isTopSukien1Changed = true;
             }
 
-            Service.gI().sendThongBao(player, "Bạn đã nhận được " + itemRandom.template.name + "!");
+            Service.gI().sendThongBao(player, "Bạn đã nhận được " + itemRandom.template.name + " (+1 điểm sự kiện)!");
         } else {
             Service.gI().sendThongBao(player, "Bạn không đủ nguyên liệu hoặc vàng để mua nước mía!");
         }
     }
 
     private void MuaNuocMiaX10(Player player) {
+        if (InventoryService.gI().getCountEmptyBag(player) < 3) {
+            Service.gI().sendThongBao(player, "Cần ít nhất 3 ô trống trong hành trang!");
+            return;
+        }
         Item khucMia = InventoryService.gI().findItemBag(player, KHUC_MIA);
         Item nuocDa = InventoryService.gI().findItemBag(player, NUOC_DA);
 
@@ -153,11 +162,12 @@ public class XeNuocMia extends Npc {
             InventoryService.gI().sendItemBags(player);
             Service.gI().sendMoney(player);
             player.point_sukien1 += 10;
+            player.event.addEventPoint(10);
             if (!Manager.isTopSukien1Changed) {
                 Manager.isTopSukien1Changed = true;
             }
 
-            Service.gI().sendThongBao(player, rewardMsg.toString());
+            Service.gI().sendThongBao(player, rewardMsg.toString() + "(+10 điểm sự kiện)");
         } else {
             Service.gI().sendThongBao(player, "Bạn không đủ nguyên liệu hoặc vàng để mua nước mía!");
         }

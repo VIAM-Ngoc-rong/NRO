@@ -214,6 +214,10 @@ public class VuaHung extends Npc {
     }
 
     private void NhanQuaThuong(Player player) {
+        if (InventoryService.gI().getCountEmptyBag(player) <= 0) {
+            Service.gI().sendThongBao(player, "Cần ít nhất 1 ô trống trong hành trang!");
+            return;
+        }
         Item ngaVoi = InventoryService.gI().findItemBag(player, NGA_VOI);
         Item cuaGa = InventoryService.gI().findItemBag(player, CUA_GA);
         Item hongMao = InventoryService.gI().findItemBag(player, HONG_MAO);
@@ -231,15 +235,21 @@ public class VuaHung extends Npc {
 
             Item hopQua = ItemService.gI().createNewItem((short) HOP_QUA_THUONG);
             InventoryService.gI().addItemBag(player, hopQua);
+            player.point_sukien += 1;
+            player.event.addEventPoint(1);
             InventoryService.gI().sendItemBags(player);
 
-            Service.gI().sendThongBao(player, "Bạn đã nhận được 1 Hộp Quà Thường!");
+            Service.gI().sendThongBao(player, "Bạn đã nhận được 1 Hộp Quà Thường (+1 điểm sự kiện)!");
         } else {
             Service.gI().sendThongBao(player, "Bạn không đủ nguyên liệu hoặc vàng!");
         }
     }
 
     private void NhanQuaVip(Player player) {
+        if (InventoryService.gI().getCountEmptyBag(player) <= 0) {
+            Service.gI().sendThongBao(player, "Cần ít nhất 1 ô trống trong hành trang!");
+            return;
+        }
         Item ngaVoi = InventoryService.gI().findItemBag(player, NGA_VOI);
         Item cuaGa = InventoryService.gI().findItemBag(player, CUA_GA);
         Item hongMao = InventoryService.gI().findItemBag(player, HONG_MAO);
@@ -257,15 +267,21 @@ public class VuaHung extends Npc {
 
             Item hopQua = ItemService.gI().createNewItem((short) HOP_QUA_VIP);
             InventoryService.gI().addItemBag(player, hopQua);
+            player.point_sukien += 2;
+            player.event.addEventPoint(2);
             InventoryService.gI().sendItemBags(player);
 
-            Service.gI().sendThongBao(player, "Bạn đã nhận được 1 Hộp Quà VIP!");
+            Service.gI().sendThongBao(player, "Bạn đã nhận được 1 Hộp Quà VIP (+2 điểm sự kiện)!");
         } else {
             Service.gI().sendThongBao(player, "Bạn không đủ nguyên liệu hoặc ngọc!");
         }
     }
 
     private void BanhDay(Player player) {
+        if (InventoryService.gI().getCountEmptyBag(player) <= 0) {
+            Service.gI().sendThongBao(player, "Cần ít nhất 1 ô trống trong hành trang!");
+            return;
+        }
         Item banhDay = InventoryService.gI().findItemBag(player, BANH_DAY);
         if (banhDay != null && banhDay.quantity >= 1) {
             InventoryService.gI().subQuantityItemsBag(player, banhDay, 1);
@@ -275,15 +291,21 @@ public class VuaHung extends Npc {
             Item randomItem = ItemService.gI().createNewItem((short) randomItemId);
 
             InventoryService.gI().addItemBag(player, randomItem);
+            player.point_sukien += 1;
+            player.event.addEventPoint(1);
             InventoryService.gI().sendItemBags(player);
 
-            Service.gI().sendThongBao(player, "Bạn đã nhận được một món quà ngẫu nhiên từ Bánh Dầy!");
+            Service.gI().sendThongBao(player, "Dâng Bánh Dầy nhận được " + randomItem.template.name + " (+1 điểm sự kiện)!");
         } else {
             Service.gI().sendThongBao(player, "Bạn không đủ Bánh Dầy!");
         }
     }
 
     private void BanhChung(Player player) {
+        if (InventoryService.gI().getCountEmptyBag(player) <= 0) {
+            Service.gI().sendThongBao(player, "Cần ít nhất 1 ô trống trong hành trang!");
+            return;
+        }
         Item banhChung = InventoryService.gI().findItemBag(player, BANH_CHUNG);
         if (banhChung != null && banhChung.quantity >= 1) {
             InventoryService.gI().subQuantityItemsBag(player, banhChung, 1);
@@ -293,9 +315,11 @@ public class VuaHung extends Npc {
             Item randomItem = ItemService.gI().createNewItem((short) randomItemId);
 
             InventoryService.gI().addItemBag(player, randomItem);
+            player.point_sukien += 1;
+            player.event.addEventPoint(1);
             InventoryService.gI().sendItemBags(player);
 
-            Service.gI().sendThongBao(player, "Bạn đã nhận được một món quà ngẫu nhiên từ Bánh Chưng!");
+            Service.gI().sendThongBao(player, "Dâng Bánh Chưng nhận được " + randomItem.template.name + " (+1 điểm sự kiện)!");
         } else {
             Service.gI().sendThongBao(player, "Bạn không đủ Bánh Chưng!");
         }
@@ -328,9 +352,11 @@ public class VuaHung extends Npc {
             InventoryService.gI().sendItemBags(player);
 
             player.inventory.gem += gems[select];
+            player.point_sukien += temNeeded[select];
+            player.event.addEventPoint(temNeeded[select]);
             Service.gI().sendMoney(player);
 
-            Service.gI().sendThongBao(player, "Bạn đã nhận được " + gems[select] + " Ngọc!");
+            Service.gI().sendThongBao(player, "Bạn đã nhận được " + gems[select] + " Ngọc Xanh (+" + temNeeded[select] + " điểm sự kiện)!");
         } else {
             Service.gI().sendThongBao(player, "Bạn không đủ nguyên liệu để đổi Ngọc!");
         }

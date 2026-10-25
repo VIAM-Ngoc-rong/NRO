@@ -46,8 +46,8 @@ public class ThuyTinh extends Boss {
     @Override
     public void afk() {
         if (playerReward.isPl() && !isReward && this.zone != null) {
-            ItemMap it = new ItemMap(this.zone, 422, 1, this.location.x, this.zone.map.yPhysicInTop(this.location.x,
-                    this.location.y - 24), playerReward.id);
+            int y = this.zone.map.yPhysicInTop(this.location.x, this.location.y - 24);
+            ItemMap it = new ItemMap(this.zone, 422, 1, this.location.x, y, playerReward.id);
             it.options.add(new Item.ItemOption(77, Util.nextInt(15, 20)));
             it.options.add(new Item.ItemOption(103, Util.nextInt(15, 20)));
             it.options.add(new Item.ItemOption(50, Util.nextInt(15, 20)));
@@ -56,6 +56,9 @@ public class ThuyTinh extends Boss {
             it.options.add(new Item.ItemOption(154, 0));
             it.options.add(new Item.ItemOption(93, Util.nextInt(1, 15)));
             Service.gI().dropItemMap(this.zone, it);
+            int[] sinhLe = {1220, 1221, 1222};
+            ItemMap sl = new ItemMap(this.zone, sinhLe[Util.nextInt(0, 2)], Util.nextInt(1, 3), this.location.x + 15, y, playerReward.id);
+            Service.gI().dropItemMap(this.zone, sl);
             isReward = true;
             lastTimeReward = System.currentTimeMillis();
             this.chat("Được! hảo hán!");

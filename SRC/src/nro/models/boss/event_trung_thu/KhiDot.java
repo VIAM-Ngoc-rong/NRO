@@ -19,9 +19,15 @@ public class KhiDot extends Boss {
 
     @Override
     public void reward(Player plKill) {
-        ItemMap it = new ItemMap(this.zone, 1045, 1, this.location.x, this.zone.map.yPhysicInTop(this.location.x,
-                this.location.y - 24), plKill.id);
+        int y = this.zone.map.yPhysicInTop(this.location.x, this.location.y - 24);
+        ItemMap it = new ItemMap(this.zone, 1045, 1, this.location.x, y, plKill.id);
         Service.gI().dropItemMap(this.zone, it);
+        ItemMap box = new ItemMap(this.zone, 736, 1, this.location.x + 15, y, plKill.id);
+        Service.gI().dropItemMap(this.zone, box);
+        if (plKill != null && plKill.event != null) {
+            plKill.event.addEventPoint(2);
+            Service.gI().sendThongBao(plKill, "Hạ Khỉ Đột nhận +2 Điểm Sự Kiện!");
+        }
     }
 
     @Override

@@ -23,10 +23,16 @@ public class Doi extends Boss {
     @Override
     public void reward(Player plKill) {
         int y = this.zone.map.yPhysicInTop(this.location.x, this.location.y - 24);
-        ItemMap it = new ItemMap(this.zone, 585, 1, this.location.x, y, plKill.id);
+        ItemMap it = new ItemMap(this.zone, 902, 1, this.location.x, y, plKill.id);
         Service.gI().dropItemMap(this.zone, it);
+        ItemMap biNgo = new ItemMap(this.zone, 585, 1, this.location.x - 15, y, plKill.id);
+        Service.gI().dropItemMap(this.zone, biNgo);
         ItemMap ngocHalloween = new ItemMap(this.zone, Util.nextInt(702, 708), 1, this.location.x + 15, y, plKill.id);
         Service.gI().dropItemMap(this.zone, ngocHalloween);
+        if (plKill != null && plKill.event != null) {
+            plKill.event.addEventPoint(2);
+            Service.gI().sendThongBao(plKill, "Hạ Dơi nhận +2 Điểm Sự Kiện!");
+        }
     }
 
     public void halloween(Player player) {

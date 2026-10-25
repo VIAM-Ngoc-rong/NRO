@@ -871,7 +871,7 @@ public class ItemService {
     }
 
     public Item randomRac2() {
-        short[] racs = {585, 704, 2048, 379, 384, 385, 381, 828, 829, 830, 831, 832, 833, 834, 835, 836, 837, 838, 839, 840, 841, 842, 934, 935};
+        short[] racs = {585, 704, 379, 384, 385, 381, 828, 829, 830, 831, 832, 833, 834, 835, 836, 837, 838, 839, 840, 841, 842, 934, 935};
         int idItem = racs[Util.nextInt(racs.length - 1)];
         if (Util.isTrue(1, 100)) {
             idItem = 956;
@@ -911,7 +911,7 @@ public class ItemService {
     }
 
     public Item vatphamsk(boolean hsd) {
-        int[] itemId = {2025, 2026, 2036, 2037, 2038, 2039, 2040, 2019, 2020, 2021, 2022, 2023, 2024, 954, 955, 952, 953, 924, 860, 742};
+        int[] itemId = {954, 955, 952, 953, 924, 860, 742, 822, 745};
         byte[] option = {77, 80, 81, 103, 50, 94, 5};
         byte[] option_v2 = {14, 16, 17, 19, 27, 28, 47, 87}; //77 %hp // 80 //81 //103 //50 //94 //5 % sdcm
         byte optionid = 0;

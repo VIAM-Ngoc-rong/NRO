@@ -41,6 +41,10 @@ public class NoiBanh extends Npc {
                 case 1 -> {
                     switch (select) {
                         case 0:// banh day
+                            if (InventoryService.gI().getCountEmptyBag(pl) <= 0) {
+                                Service.gI().sendThongBao(pl, "Cần ít nhất 1 ô trống trong hành trang!");
+                                break;
+                            }
                             Item comnep = InventoryService.gI().findItemBag(pl, 1546);
                             Item botgao = InventoryService.gI().findItemBag(pl, 1547);// ga
                             Item muoitieu = InventoryService.gI().findItemBag(pl, 1545);// trung
@@ -56,13 +60,19 @@ public class NoiBanh extends Npc {
                                 Item banh_day = ItemService.gI().createNewItem((short) 1542);
                                 banh_day.itemOptions.add(new ItemOption(93, 30));
                                 InventoryService.gI().addItemBag(pl, banh_day);
+                                pl.point_sukien += 1;
+                                pl.event.addEventPoint(1);
                                 InventoryService.gI().sendItemBags(pl);
-                                Service.gI().sendThongBao(pl, "Bạn nhận được Bánh Dầy!");
+                                Service.gI().sendThongBao(pl, "Bạn nhận được Bánh Dầy (+1 điểm sự kiện)!");
                             } else {
                                 Service.gI().sendThongBao(pl, "Cần 10 Cơm nếp, 5 Bột gạo, 5 Muối tiêu và 1 Chả lụa!");
                             }
                             break;
                         case 1:// banh chung
+                            if (InventoryService.gI().getCountEmptyBag(pl) <= 0) {
+                                Service.gI().sendThongBao(pl, "Cần ít nhất 1 ô trống trong hành trang!");
+                                break;
+                            }
                             Item comnep1 = InventoryService.gI().findItemBag(pl, 1546);
                             Item dauxanh = InventoryService.gI().findItemBag(pl, 1548);// ga
                             Item thittuoi = InventoryService.gI().findItemBag(pl, 1549);// trung
@@ -75,8 +85,10 @@ public class NoiBanh extends Npc {
                                 Item banh_chung = ItemService.gI().createNewItem((short) 1556);
                                 banh_chung.itemOptions.add(new ItemOption(93, 30));
                                 InventoryService.gI().addItemBag(pl, banh_chung);
+                                pl.point_sukien += 1;
+                                pl.event.addEventPoint(1);
                                 InventoryService.gI().sendItemBags(pl);
-                                Service.gI().sendThongBao(pl, "Bạn nhận được Bánh Chưng!");
+                                Service.gI().sendThongBao(pl, "Bạn nhận được Bánh Chưng (+1 điểm sự kiện)!");
                             } else {
                                 Service.gI().sendThongBao(pl, "Cần 10 Cơm nếp, 10 Đậu xanh và 10 Thịt tươi!");
                             }

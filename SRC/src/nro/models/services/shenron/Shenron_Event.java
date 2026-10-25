@@ -51,7 +51,12 @@ public class Shenron_Event {
     public static int timeShenronWait = 60000;
 
     public static final String SHENRONEVENT_SAY
-            = "Ta sẽ ban cho người 1 điều ước, ngươi có 5 phút, hãy chọn đi:\n1) Đổi skill 3, 4 đệ tử (có thể trùng skill trước đó).\n2) Thay đổi nội tại.\n3) Cải trang siêu thần HSD 90 ngày.\n4) Cải trang Black Gohan Rose HSD 90 ngày.\n5) Tăng 10% HP, KI, SĐ trong 30 phút.";
+            = "Ta là Rồng Xương Halloween! Ta sẽ ban cho ngươi 1 điều ước, ngươi có 5 phút, hãy chọn đi:\n"
+            + "1) Đổi skill 3, 4 đệ tử (có thể trùng skill trước đó).\n"
+            + "2) Thay đổi nội tại (Yêu cầu 10 Tỷ Sức mạnh).\n"
+            + "3) Cải trang Siêu Thần HSD 90 ngày.\n"
+            + "4) Cải trang Black Gohan Rose HSD 90 ngày.\n"
+            + "5) Tăng 10% HP, KI, SĐ trong 30 phút.";
 
     public static final String SHENRON_TIM_SAY
             = "Ta là Rồng Thần Tím! Ta sẽ ban cho ngươi 1 điều ước cao cấp, hãy chọn đi:\n"
@@ -60,6 +65,14 @@ public class Shenron_Event {
             + "3) Găng tay đang đeo lên 1 cấp (Tối đa cấp 8).\n"
             + "4) Đổi ngẫu nhiên Chiêu 2, 3, 4 Đệ tử.\n"
             + "5) Tăng 10% HP, KI, SĐ trong 60 phút & 5 Đá Hematite.";
+
+    public static final String SHENRON_BANG_SAY
+            = "Ta là Rồng Thần Băng Giáng Sinh! Ta sẽ ban cho ngươi 1 điều ước lễ hội, hãy chọn đi:\n"
+            + "1) Cải trang Noel VIP (35% SĐ/HP/KI, Kháng lạnh, HSD 30-90 ngày).\n"
+            + "2) Lễ hội Hồng Ngọc: +20.000 Hồng Ngọc & +10 Điểm Sự Kiện.\n"
+            + "3) Phú quý Giáng Sinh: +1.000 Ngọc Xanh & 10 Thỏi Vàng.\n"
+            + "4) Đổi ngẫu nhiên Chiêu 2, 3, 4 Đệ tử.\n"
+            + "5) Quần đang mặc lên 1 cấp (Tối đa cấp 7) & +10% HP, KI, SĐ (30 phút).";
 
     public static final String[] SHENRON_WISHES
             = new String[]{"Điều ước 1", "Điều ước 2", "Điều ước 3", "Điều ước 4", "Điều ước 5"};
@@ -100,7 +113,11 @@ public class Shenron_Event {
     }
 
     public void sendBlackGokuhesShenron() {
-        String say = player.idMark.getShenronType() == 1 ? SHENRON_TIM_SAY : SHENRONEVENT_SAY;
+        String say = switch (player.idMark.getShenronType()) {
+            case 1 -> SHENRON_TIM_SAY;
+            case 2 -> SHENRON_BANG_SAY;
+            default -> SHENRONEVENT_SAY;
+        };
         NpcService.gI().createMenuRongThieng(player, ConstNpc.SHOW_SHENRON_EVENT_CONFIRM, say, SHENRON_WISHES);
     }
 
@@ -140,10 +157,9 @@ public class Shenron_Event {
 
     public void confirmWish() {
         switch (player.idMark.getShenronType()) {
-            case 0:
-            case 2:
+            case 0: // Rồng Xương Halloween (Bí Ngô 1-7 sao)
                 switch (this.select) {
-                     case 0: //thay chiêu 3-4 đệ tử
+                    case 0: //thay chiêu 3-4 đệ tử
                         if (player.pet != null) {
                             if (player.pet.playerSkill.skills.get(2).skillId != -1) {
                                 player.pet.openSkill3();
@@ -163,14 +179,13 @@ public class Shenron_Event {
                         break;
                     case 1:
                         if (player.getSession().player.nPoint.power >= 10_000_000_000L) {
-                        IntrinsicService.gI().doinoitai(player);
-                          } else {
-                            Service.gI().sendThongBao(player, "10Tỷ Sức Mạnh?");
+                            IntrinsicService.gI().doinoitai(player);
+                        } else {
+                            Service.gI().sendThongBao(player, "Yêu cầu đạt 10 Tỷ Sức Mạnh!");
                             sendBlackGokuhesShenron();
                             return;
                         }
                         break;
-                        
                     case 2:
                         if (InventoryService.gI().getCountEmptyBag(player) > 0) {
                             byte gender = this.player.gender;
@@ -185,15 +200,13 @@ public class Shenron_Event {
                             InventoryService.gI().sendItemBags(player);
                         } else {
                             Service.gI().sendThongBao(player, "Hành trang đã đầy");
-                            reSummonShenron();
+                            sendBlackGokuhesShenron();
                             return;
                         }
                         break;
                     case 3:
                         if (InventoryService.gI().getCountEmptyBag(player) > 0) {
-                            byte gender = this.player.gender;
-                            Item avtVip = ItemService.gI().createNewItem((short) (gender == ConstPlayer.TRAI_DAT ? 883
-                                    : gender == ConstPlayer.NAMEC ? 883 : 883));
+                            Item avtVip = ItemService.gI().createNewItem((short) 883);
                             avtVip.itemOptions.add(new Item.ItemOption(50, 24));
                             avtVip.itemOptions.add(new Item.ItemOption(14, 3));
                             avtVip.itemOptions.add(new Item.ItemOption(103, 19));
@@ -203,7 +216,7 @@ public class Shenron_Event {
                             InventoryService.gI().sendItemBags(player);
                         } else {
                             Service.gI().sendThongBao(player, "Hành trang đã đầy");
-                            reSummonShenron();
+                            sendBlackGokuhesShenron();
                             return;
                         }
                         break;
@@ -225,7 +238,72 @@ public class Shenron_Event {
                         Service.gI().point(player);
                         Service.gI().Send_Info_NV(player);
                         break;
-                    case 99: //quần đang đeo lên 1 cấp
+                }
+                break;
+            case 2: // Rồng Thần Băng Giáng Sinh (Ngọc Rồng Băng 1-7 sao: 925-931)
+                switch (this.select) {
+                    case 0: // Cải trang Noel VIP (35% SĐ/HP/KI, Kháng lạnh, HSD 30-90 ngày)
+                        if (InventoryService.gI().getCountEmptyBag(player) > 0) {
+                            byte gender = this.player.gender;
+                            short ctId = (short) (gender == ConstPlayer.TRAI_DAT ? 387
+                                    : gender == ConstPlayer.NAMEC ? 390 : 393);
+                            Item ctNoel = ItemService.gI().createNewItem(ctId);
+                            ctNoel.itemOptions.add(new Item.ItemOption(50, 35));
+                            ctNoel.itemOptions.add(new Item.ItemOption(77, 35));
+                            ctNoel.itemOptions.add(new Item.ItemOption(103, 35));
+                            ctNoel.itemOptions.add(new Item.ItemOption(80, 20));
+                            ctNoel.itemOptions.add(new Item.ItemOption(106, 0));
+                            ctNoel.itemOptions.add(new Item.ItemOption(93, Util.nextInt(30, 90)));
+                            InventoryService.gI().addItemBag(player, ctNoel);
+                            InventoryService.gI().sendItemBags(player);
+                        } else {
+                            Service.gI().sendThongBao(player, "Hành trang cần ít nhất 1 ô trống");
+                            sendBlackGokuhesShenron();
+                            return;
+                        }
+                        break;
+                    case 1: // +20.000 Hồng Ngọc & +10 Điểm Sự Kiện
+                        this.player.inventory.ruby += 20000;
+                        this.player.point_sukien += 10;
+                        this.player.event.addEventPoint(10);
+                        PlayerService.gI().sendInfoHpMpMoney(this.player);
+                        Service.gI().sendThongBao(player, "Bạn nhận được 20.000 Hồng Ngọc và +10 Điểm Sự Kiện!");
+                        break;
+                    case 2: // +1.000 Ngọc Xanh & 10 Thỏi Vàng
+                        if (InventoryService.gI().getCountEmptyBag(player) > 0) {
+                            this.player.inventory.gem += 1000;
+                            PlayerService.gI().sendInfoHpMpMoney(this.player);
+                            Item thoiVang = ItemService.gI().createNewItem((short) 457, 10);
+                            InventoryService.gI().addItemBag(player, thoiVang);
+                            InventoryService.gI().sendItemBags(player);
+                        } else {
+                            Service.gI().sendThongBao(player, "Hành trang cần ít nhất 1 ô trống");
+                            sendBlackGokuhesShenron();
+                            return;
+                        }
+                        break;
+                    case 3: // Đổi ngẫu nhiên Chiêu 2, 3, 4 Đệ tử
+                        if (player.pet != null) {
+                            if (player.pet.playerSkill.skills.get(1).skillId != -1) {
+                                player.pet.openSkill2();
+                                if (player.pet.playerSkill.skills.get(2).skillId != -1) {
+                                    player.pet.openSkill3();
+                                }
+                                if (player.pet.playerSkill.skills.get(3).skillId != -1) {
+                                    player.pet.openSkill4();
+                                }
+                            } else {
+                                Service.gI().sendThongBao(player, "Ít nhất đệ tử ngươi phải mở chiêu 2 chứ!");
+                                sendBlackGokuhesShenron();
+                                return;
+                            }
+                        } else {
+                            Service.gI().sendThongBao(player, "Ngươi làm gì có đệ tử?");
+                            sendBlackGokuhesShenron();
+                            return;
+                        }
+                        break;
+                    case 4: // Quần đang mặc lên 1 cấp (Tối đa cấp 7) & +10% HP, KI, SĐ (30 phút)
                         Item item = this.player.inventory.itemsBody.get(1);
                         if (item.isNotNullItem()) {
                             int level = 0;
@@ -249,15 +327,29 @@ public class Shenron_Event {
                                 }
                                 InventoryService.gI().sendItemBody(player);
                             } else {
-                                Service.gI().sendThongBao(player, "Quần của ngươi đã đạt cấp tối đa");
+                                Service.gI().sendThongBao(player, "Quần của ngươi đã đạt cấp tối đa (Cấp 7)");
                                 sendBlackGokuhesShenron();
                                 return;
                             }
                         } else {
-                            Service.gI().sendThongBao(player, "Ngươi hiện tại có mang quần đâu");
+                            Service.gI().sendThongBao(player, "Ngươi hiện tại có mặc quần đâu!");
                             sendBlackGokuhesShenron();
                             return;
                         }
+                        int timeRB = player.itemTime.timeRX / 1000 + 1800;
+                        if (timeRB >= 32767) {
+                            timeRB = 32766;
+                        }
+                        player.itemTime.isUseRX = true;
+                        player.itemTime.timeRX = timeRB * 1000;
+                        player.itemTime.lastTimeUseRX = System.currentTimeMillis();
+                        ItemTimeService.gI().sendItemTime(player, 6581, timeRB);
+                        player.nPoint.calPoint();
+                        player.nPoint.setHp((int) player.nPoint.hpMax);
+                        player.nPoint.setMp((int) player.nPoint.mpMax);
+                        Service.gI().point(player);
+                        Service.gI().Send_Info_NV(player);
+                        break;
                 }
                 break;
             case 1: // Rồng Thần Tím (Ngọc Rồng Tím 1-7 sao)

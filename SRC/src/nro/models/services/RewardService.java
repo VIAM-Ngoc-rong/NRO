@@ -202,7 +202,8 @@ public class RewardService {
             item.itemOptions.add(new Item.ItemOption(30, 0));
             InventoryService.gI().addItemBag(player, item);
             InventoryService.gI().sendItemBags(player);
-            Service.gI().sendThongBao(player, "Bạn vừa nhận được " + item.template.name);
+            player.event.addEventPoint(5);
+            Service.gI().sendThongBao(player, "Giao Lân Con thành công! Bạn nhận được " + item.template.name + " (+5 Điểm Sự Kiện)");
         } else {
             Service.gI().sendThongBao(player, "Cần 1 ô hành trang trống");
         }
