@@ -144,10 +144,6 @@ public class CombineService {
             return;
         }
 
-        if (autoExpandSameTemplateItems(player, prevCountByTemplate)) {
-            hadDuplicateOrInvalid = true;
-        }
-
         if (hadDuplicateOrInvalid) {
             reOpenItemCombine(player);
         }
@@ -349,7 +345,8 @@ public class CombineService {
             return;
         }
         int type = player.combineNew.typeCombine;
-        if (type == PHAN_RA_TRANG_BI_KH || type == PHAN_RA_DO_SAO || type == PHAN_RA_DO_THAN_LINH) {
+        if (type == PHAN_RA_TRANG_BI_KH || type == PHAN_RA_DO_SAO
+                || type == PHAN_RA_DO_THAN_LINH || type == DAP_DO_KICH_HOAT) {
             if (n == 10) {
                 selectAllValidItemsInCurrentTab(player);
                 openTabCombine(player, type, true);
@@ -491,6 +488,17 @@ public class CombineService {
                 }
             }
             if (!exists) {
+                if (type == DAP_DO_KICH_HOAT) {
+                    int skhCount = 0;
+                    for (Item ex : player.combineNew.itemsCombine) {
+                        if (DapDoKichHoat.isItemKichHoat(ex)) {
+                            skhCount++;
+                        }
+                    }
+                    if (skhCount >= 3 || player.combineNew.itemsCombine.size() >= 4) {
+                        break;
+                    }
+                }
                 player.combineNew.itemsCombine.add(it);
             }
         }
@@ -522,6 +530,7 @@ public class CombineService {
     public void openTabCombine(Player player, int type, boolean keepExistingSelection) {
         if (!keepExistingSelection) {
             player.combineNew.setTypeCombine(type);
+            InventoryService.gI().sendItemBags(player);
         } else {
             player.combineNew.typeCombine = type;
         }
@@ -541,11 +550,6 @@ public class CombineService {
             if (msg != null) {
                 msg.cleanup();
             }
-        }
-        // Tự động chọn sẵn tất cả Đồ Kích Hoạt ở Trang hiện tại khi mở Phân rã Đồ Kích Hoạt
-        // để tránh lỗi client chặn chọn trùng tên ("Đã có vật phẩm này")
-        if (type == PHAN_RA_TRANG_BI_KH && !keepExistingSelection) {
-            selectAllValidItemsInCurrentTab(player);
         }
         if (!player.combineNew.itemsCombine.isEmpty()) {
             reOpenItemCombine(player);

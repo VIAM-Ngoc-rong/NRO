@@ -835,15 +835,70 @@ public class InventoryService {
             int nonNullCount = displayIndices.size();
             int rawSlots = Math.max(tabSize, nonNullCount + 1);
             int displaySlots = Math.min(120, ((rawSlots + 5) / 6) * 6);
+
+            // Cấp ID template ảo (25000+) cho các món trang bị không xếp chồng bị trùng template.id trong túi
+            // giúp Client không bao giờ báo "Đã có vật phẩm này" khi chọn nhiều món trùng tên ở Bà Hạt Mít
+            Set<Short> seenEquipTemplates = new HashSet<>();
+            List<nro.models.player_system.Template.ItemTemplate> aliasTemplates = new ArrayList<>();
+            short[] slotTempIds = new short[nonNullCount];
+            for (int idx = 0; idx < nonNullCount; idx++) {
+                int bagIdx = displayIndices.get(idx);
+                Item item = player.inventory.itemsBag.get(bagIdx);
+                if (item == null || !item.isNotNullItem() || item.template == null) {
+                    slotTempIds[idx] = -1;
+                    continue;
+                }
+                short realTempId = item.template.id;
+                boolean isNonStackEquip = !item.template.isUpToUp
+                        && ((item.template.type >= 0 && item.template.type <= 5)
+                        || item.template.type == 11 || item.template.type == 32);
+                if (isNonStackEquip) {
+                    if (!seenEquipTemplates.add(realTempId)) {
+                        short aliasId = (short) (25000 + aliasTemplates.size());
+                        aliasTemplates.add(item.template);
+                        slotTempIds[idx] = aliasId;
+                    } else {
+                        slotTempIds[idx] = realTempId;
+                    }
+                } else {
+                    slotTempIds[idx] = realTempId;
+                }
+            }
+
+            if (!aliasTemplates.isEmpty()) {
+                Message msgAlias = new Message(-28);
+                msgAlias.writer().writeByte(8);
+                msgAlias.writer().writeByte(nro.models.data.DataGame.vsItem - 1);
+                msgAlias.writer().writeByte(2);
+                msgAlias.writer().writeShort(25000);
+                msgAlias.writer().writeShort(25000 + aliasTemplates.size());
+                for (nro.models.player_system.Template.ItemTemplate it : aliasTemplates) {
+                    String name = it.name != null ? it.name : "";
+                    String desc = it.description != null ? it.description : "";
+                    msgAlias.writer().writeByte(it.type);
+                    msgAlias.writer().writeByte(it.gender);
+                    msgAlias.writer().writeUTF(name);
+                    msgAlias.writer().writeUTF(desc);
+                    msgAlias.writer().writeByte(it.level);
+                    msgAlias.writer().writeInt(it.strRequire);
+                    msgAlias.writer().writeShort(it.iconID);
+                    msgAlias.writer().writeShort(it.part);
+                    msgAlias.writer().writeBoolean(it.isUpToUp);
+                }
+                player.sendMessage(msgAlias);
+                msgAlias.cleanup();
+            }
+
             msg = new Message(-36);
             msg.writer().writeByte(0);
             msg.writer().writeByte(displaySlots);
-            for (int bagIdx : displayIndices) {
+            for (int idx = 0; idx < nonNullCount; idx++) {
+                int bagIdx = displayIndices.get(idx);
                 Item item = player.inventory.itemsBag.get(bagIdx);
                 if (item == null || !item.isNotNullItem()) {
                     continue;
                 }
-                msg.writer().writeShort(item.template.id);
+                msg.writer().writeShort(slotTempIds[idx]);
                 msg.writer().writeInt(item.quantity);
                 msg.writer().writeUTF(item.getInfo());
                 msg.writer().writeUTF(item.getContent());

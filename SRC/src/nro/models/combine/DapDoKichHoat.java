@@ -68,15 +68,18 @@ public class DapDoKichHoat {
 
     public static void showInfoCombine(Player player) {
         if (player.combineNew.itemsCombine.size() != 4) {
-            CombineService.gI().baHatMit.createOtherMenu(player, ConstNpc.IGNORE_MENU,
-                    "Cần đặt đúng 4 vật phẩm gồm:\n- 3 món trang bị Kích Hoạt bất kỳ\n- 1 món Đồ Phôi muốn lên SKH (VD: Găng Thần Linh, Áo Hủy Diệt...)", "Đóng");
+            CombineService.gI().baHatMit.createOtherMenu(player, ConstNpc.MENU_START_COMBINE,
+                    "Cần đặt đúng 4 vật phẩm gồm:\n- 3 món trang bị Kích Hoạt bất kỳ\n- 1 món Đồ Phôi muốn lên SKH (VD: Găng Thần Linh, Áo Hủy Diệt...)\n"
+                    + "|7|(Mẹo: Bạn có thể chọn nhiều món trùng tên thoải mái hoặc bấm các nút bên dưới)",
+                    "Đóng", "Chọn nhanh\n3 Đồ KH", "Đổi sang\nTrang kế");
             return;
         }
 
         Item phoiItem = findPhoiItem(player.combineNew.itemsCombine);
         if (phoiItem == null) {
-            CombineService.gI().baHatMit.createOtherMenu(player, ConstNpc.IGNORE_MENU,
-                    "Vật phẩm không hợp lệ! Cần có đúng 3 món đồ Kích Hoạt + 1 món trang bị Phôi (Áo, Quần, Găng, Giày, Rada/Nhẫn).", "Đóng");
+            CombineService.gI().baHatMit.createOtherMenu(player, ConstNpc.MENU_START_COMBINE,
+                    "Vật phẩm không hợp lệ! Cần có đúng 3 món đồ Kích Hoạt + 1 món trang bị Phôi (Áo, Quần, Găng, Giày, Rada/Nhẫn).",
+                    "Đóng", "Chọn nhanh\n3 Đồ KH", "Đổi sang\nTrang kế");
             return;
         }
 
@@ -98,7 +101,10 @@ public class DapDoKichHoat {
             CombineService.gI().baHatMit.createOtherMenu(player, ConstNpc.IGNORE_MENU, npcSay, "Đóng");
         } else {
             CombineService.gI().baHatMit.createOtherMenu(player, ConstNpc.MENU_START_COMBINE, npcSay,
-                    "Đập đồ\n" + Util.numberToMoney(GOLD_DAP_DO) + " vàng", "Từ chối");
+                    "Đập đồ\n" + Util.numberToMoney(GOLD_DAP_DO) + " vàng",
+                    "Chọn nhanh\n3 Đồ KH",
+                    "Đổi sang\nTrang kế",
+                    "Từ chối");
         }
     }
 

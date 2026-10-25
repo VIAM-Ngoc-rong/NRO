@@ -44,12 +44,10 @@ public class BaHatMit extends Npc {
                             "Chức năng\npha lê",
                             "Chuyển hóa\nTrang bị",
                             "Võ đài\nSinh tử",
-                            "Phân rã\nTrang bị\nKích hoạt",
+                            "Phân rã\nTrang bị",
                             "Tái tạo\nCapsule\nKích hoạt",
                             "Đập đồ\nKích hoạt",
-                            "Phân rã\nĐồ Sao",
                             "Tinh luyện\nĐá Ngũ Sắc",
-                            "Tái chế\nĐồ Thần",
                             "Xóa dòng\nSKH"
                     );
 
@@ -157,19 +155,29 @@ public class BaHatMit extends Npc {
                             case 2 ->
                                 ChangeMapService.gI().changeMapNonSpaceship(player, 112, 200 + Util.nextInt(-100, 100), 408);
                             case 3 ->
-                                CombineService.gI().openTabCombine(player, CombineService.PHAN_RA_TRANG_BI_KH);
+                                createOtherMenu(player, 5,
+                                        "Ngươi muốn phân rã loại trang bị nào?",
+                                        "Phân rã\nTrang bị\nKích hoạt",
+                                        "Phân rã\nĐồ Sao",
+                                        "Tái chế\nĐồ Thần",
+                                        "Đóng");
                             case 4 ->
                                 CombineService.gI().openTabCombine(player, CombineService.TAI_TAO_CAPSULE_KH);
                             case 5 ->
                                 CombineService.gI().openTabCombine(player, CombineService.DAP_DO_KICH_HOAT);
                             case 6 ->
-                                CombineService.gI().openTabCombine(player, CombineService.PHAN_RA_DO_SAO);
-                            case 7 ->
                                 CombineService.gI().openTabCombine(player, CombineService.TINH_LUYEN_DA_NGU_SAC);
-                            case 8 ->
-                                CombineService.gI().openTabCombine(player, CombineService.PHAN_RA_DO_THAN_LINH);
-                            case 9 ->
+                            case 7 ->
                                 CombineService.gI().openTabCombine(player, CombineService.XOA_THUOC_TINH_SKH);
+                        }
+                    } else if (player.idMark.getIndexMenu() == 5) {
+                        switch (select) {
+                            case 0 ->
+                                CombineService.gI().openTabCombine(player, CombineService.PHAN_RA_TRANG_BI_KH);
+                            case 1 ->
+                                CombineService.gI().openTabCombine(player, CombineService.PHAN_RA_DO_SAO);
+                            case 2 ->
+                                CombineService.gI().openTabCombine(player, CombineService.PHAN_RA_DO_THAN_LINH);
                         }
                     } else if (player.idMark.getIndexMenu() == 3) {
                         switch (select) {
