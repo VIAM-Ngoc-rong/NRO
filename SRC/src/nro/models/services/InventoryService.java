@@ -806,27 +806,24 @@ public class InventoryService {
                 }
             }
 
-            // Đưa Trang đang chọn (1..5, mỗi trang 200 ô) lên ngay đầu bể chung!
-            // Nếu bấm lại cùng 1 nút Trang khi trang đó có > 100 món thì lật sang nửa sau (ô 101..200) của trang đó.
+            // Hiển thị ĐÚNG các vật phẩm thuộc Trang đang chọn (1..5, mỗi trang 200 ô),
+            // KHÔNG lặp lại / xoay vòng vật phẩm của Trang 1 sang Trang 2, 3, 4, 5!
             int activeTab = Math.max(0, Math.min(Inventory.NUM_QUICK_TABS - 1, player.inventory.currentBagTab));
+            int tabStart = activeTab * Inventory.BAG_PAGE_SIZE;
+            int tabEnd = Math.min(allNonNull.size(), (activeTab + 1) * Inventory.BAG_PAGE_SIZE);
             int subPage = player.inventory.currentBagSubPage;
-            int startOffset = activeTab * Inventory.BAG_PAGE_SIZE + (subPage * Inventory.BAG_SUBPAGE_SIZE);
-            if (startOffset >= allNonNull.size() && subPage > 0) {
+            int startOffset = tabStart + (subPage * Inventory.BAG_SUBPAGE_SIZE);
+            if (startOffset >= tabEnd && subPage > 0) {
                 player.inventory.currentBagSubPage = 0;
-                startOffset = activeTab * Inventory.BAG_PAGE_SIZE;
-            }
-            if (startOffset >= allNonNull.size() && !allNonNull.isEmpty()) {
-                int step = Math.max(12, allNonNull.size() / Inventory.NUM_QUICK_TABS);
-                startOffset = Math.min(allNonNull.size() - 1, activeTab * step);
+                startOffset = tabStart;
             }
 
-            for (int i = startOffset; i < allNonNull.size() && displayIndices.size() < 126; i++) {
+            for (int i = startOffset; i < tabEnd && displayIndices.size() < 126; i++) {
                 displayIndices.add(allNonNull.get(i));
             }
-            for (int i = 0; i < startOffset && displayIndices.size() < 126; i++) {
-                int bagIdx = allNonNull.get(i);
-                if (!displayIndices.contains(bagIdx)) {
-                    displayIndices.add(bagIdx);
+            if (subPage > 0) {
+                for (int i = tabStart; i < startOffset && displayIndices.size() < 126; i++) {
+                    displayIndices.add(allNonNull.get(i));
                 }
             }
 

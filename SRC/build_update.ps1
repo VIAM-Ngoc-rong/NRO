@@ -3,6 +3,7 @@ Set-Location $PSScriptRoot
 
 Write-Host "1. Dang bien dich cac file Java..." -ForegroundColor Cyan
 javac -proc:none -encoding UTF-8 -d build/classes -cp "build/classes;lib/*" `
+    src/nro/models/data/LocalManager.java `
     src/nro/models/data/DataGame.java `
     src/nro/models/data/ItemData.java `
     src/nro/models/server/Manager.java `
