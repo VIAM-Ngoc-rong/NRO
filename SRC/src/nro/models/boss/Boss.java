@@ -1199,36 +1199,67 @@ public class Boss extends Player implements IBoss {
             Service.gI().dropItemMap(this.zone, goldMap);
         }
 
-        // 1. Chỉ các Boss từ Nappa trở đi mới có cơ hội rơi Đồ (Trang bị).
+        // 1. Chỉ các Boss từ Nappa trở đi (hoặc Boss > 250tr HP) mới rơi Đồ (Trang bị).
         // Các Boss hằng ngày như TDST Namek, Bojack không rơi đồ, chỉ rơi Ngọc Rồng.
         boolean droppedEquip = false;
-        boolean canDropEquip = isBossFromNappaOnwards();
+        boolean isHighHpBoss = bossHp > 250_000_000L;
+        boolean canDropEquip = isBossFromNappaOnwards()
+                || (isHighHpBoss && !isDailyEarlyBoss() && !isMiniBoss() && !isBrolyBoss());
 
-        if (canDropEquip && isBossFromFutureOnwards()) {
+        if (canDropEquip && (isHighHpBoss || isBossFromFutureOnwards())) {
             long hpBoss = Math.max(1L, (long) this.nPoint.hpMax);
-            int ratePer1000 = (int) Math.min(250L, 20L + (hpBoss / 10_000_000L));
+            // Boss > 250tr HP có tỷ lệ rớt Đồ Thần Linh (15-17 tỷ SM) cao vượt trội (25% - 45%)
+            int ratePer1000 = isHighHpBoss
+                    ? (int) Math.min(450L, 220L + (hpBoss / 8_000_000L))
+                    : (int) Math.min(250L, 20L + (hpBoss / 10_000_000L));
             if (Util.isTrue(ratePer1000, 1000)) {
                 ItemMap godItem = ItemService.gI().randDoTLBoss(this.zone, 1, x, y, plOwner.id);
                 if (godItem != null) {
+                    if (isHighHpBoss) {
+                        int randTlStar = Util.nextInt(1, 100);
+                        int tlStars = randTlStar <= 65 ? Util.nextInt(3, 4) : (randTlStar <= 90 ? 5 : Util.nextInt(6, 7));
+                        godItem.options.add(new Item.ItemOption(107, tlStars));
+                    }
                     Service.gI().dropItemMap(this.zone, godItem);
                     droppedEquip = true;
                 }
             }
         }
 
-        if (canDropEquip && !droppedEquip && Util.isTrue(50, 100)) {
+        int equipDropChance = isHighHpBoss ? 75 : 50;
+        if (canDropEquip && !droppedEquip && Util.isTrue(equipDropChance, 100)) {
             int group = Util.nextInt(1, 100) <= 70 ? 0 : 1;
-            int[][] shopHighValueDrops = {
-                {230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 266, 267, 268, 269, 270, 271, 272, 273, 274, 275, 276, 277},
-                {254, 255, 256, 257, 258, 259, 260, 261, 262, 263, 264, 265, 278, 279, 280, 281}
-            };
-            int dropItemId = shopHighValueDrops[group][Util.nextInt(0, shopHighValueDrops[group].length - 1)];
+            int[][] dropPool;
+            if (isHighHpBoss) {
+                // Boss > 250tr HP: Tối thiểu chỉ rớt đồ cấp 12 (từ 1 tỷ 500tr SM trở lên: Kaio, Lưỡng Long, Jean, Rada cấp 12)
+                // Tuyệt đối không rớt đồ 20tr - 170tr SM!
+                dropPool = new int[][]{
+                    {233, 237, 241, 245, 249, 253, 269, 273, 277}, // Áo, Quần, Giày cấp 12 (>= 1 tỷ 500tr SM)
+                    {257, 261, 265, 281}                           // Găng & Rada cấp 12 (>= 1 tỷ 500tr SM)
+                };
+            } else {
+                dropPool = new int[][]{
+                    {231, 232, 233, 235, 236, 237, 239, 240, 241, 243, 244, 245, 247, 248, 249, 251, 252, 253, 267, 268, 269, 271, 272, 273, 275, 276, 277},
+                    {255, 256, 257, 259, 260, 261, 263, 264, 265, 279, 280, 281}
+                };
+            }
+            int dropItemId = dropPool[group][Util.nextInt(0, dropPool[group].length - 1)];
             ItemMap shopItemMap = new ItemMap(this.zone, dropItemId, 1, x, y, plOwner.id);
             List<Item.ItemOption> shopOps = ItemService.gI().getListOptionItemShop((short) dropItemId);
-            shopOps.forEach(option -> option.param = (int) (option.param * Util.nextInt(100, 115) / 100.0));
+            if (shopOps.isEmpty() && shopItemMap.itemTemplate != null) {
+                nro.models.services.RewardService.gI().initBaseOptionClothes(null, dropItemId, shopItemMap.itemTemplate.type, shopOps);
+            } else {
+                shopOps.forEach(option -> option.param = (int) (option.param * Util.nextInt(100, 115) / 100.0));
+            }
             shopItemMap.options.addAll(shopOps);
             int randStar = Util.nextInt(1, 100);
-            int stars = randStar <= 75 ? Util.nextInt(1, 3) : (randStar <= 95 ? Util.nextInt(4, 5) : 6);
+            int stars;
+            if (isHighHpBoss) {
+                // Boss > 250tr HP: Tỷ lệ có Sao Pha Lê luôn từ 3 sao trở lên (3s - 7s)
+                stars = randStar <= 55 ? Util.nextInt(3, 4) : (randStar <= 85 ? 5 : Util.nextInt(6, 7));
+            } else {
+                stars = randStar <= 75 ? Util.nextInt(1, 3) : (randStar <= 95 ? Util.nextInt(4, 5) : 6);
+            }
             shopItemMap.options.add(new Item.ItemOption(107, stars));
             Service.gI().dropItemMap(this.zone, shopItemMap);
             droppedEquip = true;
@@ -1236,10 +1267,9 @@ public class Boss extends Player implements IBoss {
 
         // 2. Khi rớt Ngọc Rồng (hoặc Boss chỉ rớt Ngọc Rồng):
         // - Một khi rớt Ngọc Rồng Tím (1832/1833) thì KHÔNG rớt Ngọc Rồng Thường và ngược lại.
-        // - Khi rớt Ngọc Rồng Thường: chỉ rớt từ 4 sao trở lên (1s, 2s, 3s, 4s - ID 14..17), tuyệt đối KHÔNG rớt 5s trở xuống (18..20).
-        // - Các Boss hằng ngày như TDST Namek, Bojack: tỷ lệ rớt 1-2s thấp.
+        // - Với Boss > 250tr HP (và Boss từ Nappa trở đi): Ngọc Rồng Thường chỉ rớt 1 sao, 2 sao, 3 sao (ID 14, 15, 16).
         if (!droppedEquip) {
-            boolean canDropPurpleBall = isDailyBossDropNgocRongTim() || isBossFromNappaOnwards();
+            boolean canDropPurpleBall = isDailyBossDropNgocRongTim() || isBossFromNappaOnwards() || isHighHpBoss;
             boolean dropPurpleBall = canDropPurpleBall && Util.isTrue(50, 100);
 
             if (dropPurpleBall) {
@@ -1249,27 +1279,32 @@ public class Boss extends Player implements IBoss {
             } else {
                 int nroId;
                 int rdNro = Util.nextInt(1, 100);
-                if (isDailyEarlyBoss() || !isBossFromNappaOnwards()) {
-                    // Boss hằng ngày (TDST Namek, Bojack, ...): chỉ rớt 1s-4s nhưng tỷ lệ 1s-2s thấp
-                    if (rdNro <= 3) {
-                        nroId = 14; // Ngọc rồng 1 sao (3%)
-                    } else if (rdNro <= 10) {
-                        nroId = 15; // Ngọc rồng 2 sao (7%)
-                    } else if (rdNro <= 45) {
-                        nroId = 16; // Ngọc rồng 3 sao (35%)
+                if (isHighHpBoss) {
+                    // Boss > 250tr HP: chỉ rớt Ngọc Rồng 1 sao, 2 sao, 3 sao
+                    if (rdNro <= 25) {
+                        nroId = 14; // Ngọc rồng 1 sao (25%)
+                    } else if (rdNro <= 60) {
+                        nroId = 15; // Ngọc rồng 2 sao (35%)
                     } else {
-                        nroId = 17; // Ngọc rồng 4 sao (55%)
+                        nroId = 16; // Ngọc rồng 3 sao (40%)
+                    }
+                } else if (isDailyEarlyBoss() || !isBossFromNappaOnwards()) {
+                    // Boss hằng ngày (TDST Namek, Bojack, ...): rớt 1s, 2s, 3s (tỷ lệ 1s-2s thấp)
+                    if (rdNro <= 5) {
+                        nroId = 14; // Ngọc rồng 1 sao (5%)
+                    } else if (rdNro <= 25) {
+                        nroId = 15; // Ngọc rồng 2 sao (20%)
+                    } else {
+                        nroId = 16; // Ngọc rồng 3 sao (75%)
                     }
                 } else {
-                    // Các Boss từ Nappa trở đi: chỉ rớt từ 4 sao trở lên (1s, 2s, 3s, 4s), không rớt 5s-7s
-                    if (rdNro <= 10) {
-                        nroId = 14; // Ngọc rồng 1 sao (10%)
-                    } else if (rdNro <= 25) {
-                        nroId = 15; // Ngọc rồng 2 sao (15%)
-                    } else if (rdNro <= 60) {
-                        nroId = 16; // Ngọc rồng 3 sao (35%)
+                    // Các Boss từ Nappa trở đi (<= 250tr HP): chỉ rớt 1 sao, 2 sao, 3 sao
+                    if (rdNro <= 15) {
+                        nroId = 14; // Ngọc rồng 1 sao (15%)
+                    } else if (rdNro <= 45) {
+                        nroId = 15; // Ngọc rồng 2 sao (30%)
                     } else {
-                        nroId = 17; // Ngọc rồng 4 sao (40%)
+                        nroId = 16; // Ngọc rồng 3 sao (55%)
                     }
                 }
                 ItemMap nroMap = new ItemMap(this.zone, nroId, 1, x, y, plOwner.id);

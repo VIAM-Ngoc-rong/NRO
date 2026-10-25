@@ -374,37 +374,25 @@ public class InventoryService {
             }
         }
 
-        // 2. Dồn các ô trống để thu gọn hành trang
-        int firstChunk = totalSize;
-        if (list instanceof Inventory.BagList bagList) {
-            if (bagList.getOwner() != null && bagList.getOwner().currentBagTab > 0) {
-                firstChunk = Math.min(totalSize, Math.max(1, bagList.getFirstChunkSize()));
-            }
-        }
-        int start = 0;
-        while (start < totalSize) {
-            int chunkLen = (start == 0) ? firstChunk : Inventory.BAG_TAB_SIZE;
-            int end = Math.min(start + chunkLen, totalSize);
-            for (int i = start; i < end - 1; i++) {
-                Item current = list.get(i);
-                if (current == null || !current.isNotNullItem()) {
-                    int indexSwap = -1;
-                    for (int j = i + 1; j < end; j++) {
-                        Item candidate = list.get(j);
-                        if (candidate != null && candidate.isNotNullItem()) {
-                            indexSwap = j;
-                            break;
-                        }
-                    }
-                    if (indexSwap != -1) {
-                        list.set(i, list.get(indexSwap));
-                        list.set(indexSwap, ItemService.gI().createItemNull());
-                    } else {
+        // 2. Dồn các ô trống để thu gọn toàn bộ bể chung hành trang về đầu danh sách
+        for (int i = 0; i < totalSize - 1; i++) {
+            Item current = list.get(i);
+            if (current == null || !current.isNotNullItem()) {
+                int indexSwap = -1;
+                for (int j = i + 1; j < totalSize; j++) {
+                    Item candidate = list.get(j);
+                    if (candidate != null && candidate.isNotNullItem()) {
+                        indexSwap = j;
                         break;
                     }
                 }
+                if (indexSwap != -1) {
+                    list.set(i, list.get(indexSwap));
+                    list.set(indexSwap, ItemService.gI().createItemNull());
+                } else {
+                    break;
+                }
             }
-            start = end;
         }
     }
 
@@ -796,65 +784,99 @@ public class InventoryService {
         }
         Message msg;
         try {
-            int tabSize = player.inventory.getActiveTabSize();
             List<Integer> displayIndices = player.inventory.displayedBagIndices;
             displayIndices.clear();
-            Set<Integer> presentTemplateIds = new HashSet<>();
-            for (int i = 0; i < tabSize && i < player.inventory.itemsBag.size(); i++) {
+
+            // Hàng đầu tiên (6 ô: 0..5) ngay dưới khung Trang bị là thanh nút bấm nhanh: [1] [2] [3] [4] [5] [+]
+            for (int t = 0; t < Inventory.NUM_QUICK_TABS; t++) {
+                displayIndices.add(-101 - t); // -101..-105 -> Trang 1..5
+            }
+            displayIndices.add(-106); // -106 -> Nút [+] Mở rộng / Tiện ích túi đồ
+
+            // Gom toàn bộ vật phẩm thực trong bể chung (itemsBag)
+            List<Integer> allNonNull = new ArrayList<>();
+            for (int i = 0; i < player.inventory.itemsBag.size(); i++) {
                 Item item = player.inventory.itemsBag.get(i);
-                if (item != null && item.isNotNullItem()) {
-                    displayIndices.add(i);
-                    if (item.template != null) {
-                        presentTemplateIds.add((int) item.template.id);
-                    }
+                if (item != null && item.isNotNullItem() && item.template != null && item.template.id != 1998) {
+                    allNonNull.add(i);
                 }
             }
-            // Giữ các vật phẩm đã chọn trong Bà Hạt Mít khi chuyển sang Tab khác để gom đồ xuyên Tab
+
+            // Đưa Trang đang chọn (1..5, mỗi trang 30 ô = 5 hàng) lên ngay đầu bể chung,
+            // các vật phẩm ở các trang còn lại nối tiếp ngay bên dưới trong cùng 1 bể chung!
+            int activeTab = Math.max(0, Math.min(Inventory.NUM_QUICK_TABS - 1, player.inventory.currentBagTab));
+            int startOffset = activeTab * Inventory.BAG_PAGE_SIZE;
+            if (startOffset >= allNonNull.size() && !allNonNull.isEmpty()) {
+                int lastPage = Math.max(0, (allNonNull.size() - 1) / Inventory.BAG_PAGE_SIZE);
+                startOffset = lastPage * Inventory.BAG_PAGE_SIZE;
+            }
+
+            for (int i = startOffset; i < allNonNull.size() && displayIndices.size() < 120; i++) {
+                displayIndices.add(allNonNull.get(i));
+            }
+            for (int i = 0; i < startOffset && displayIndices.size() < 120; i++) {
+                int bagIdx = allNonNull.get(i);
+                if (!displayIndices.contains(bagIdx)) {
+                    displayIndices.add(bagIdx);
+                }
+            }
+
+            // Đảm bảo mọi vật phẩm đang chọn trong Bà Hạt Mít luôn nằm trong danh sách hiển thị (< 120)
             if (player.combineNew != null && player.combineNew.itemsCombine != null && !player.combineNew.itemsCombine.isEmpty()) {
                 for (Item combItem : player.combineNew.itemsCombine) {
                     if (combItem != null && combItem.isNotNullItem()) {
-                        for (int i = tabSize; i < player.inventory.itemsBag.size() && displayIndices.size() < 118; i++) {
+                        for (int i = 0; i < player.inventory.itemsBag.size(); i++) {
                             if (player.inventory.itemsBag.get(i) == combItem && !displayIndices.contains(i)) {
-                                displayIndices.add(i);
+                                if (displayIndices.size() >= 120) {
+                                    displayIndices.set(displayIndices.size() - 1, i);
+                                } else {
+                                    displayIndices.add(i);
+                                }
                                 break;
                             }
                         }
                     }
                 }
             }
-            // Luôn hiển thị các vật phẩm tiện ích thiết yếu (Capsule, Bông tai Porata, Đậu thần, TĐLT...) ở mọi Tab
-            for (int i = tabSize; i < player.inventory.itemsBag.size() && displayIndices.size() < 118; i++) {
-                Item item = player.inventory.itemsBag.get(i);
-                if (player.inventory.isLinkedUtilityItem(item)
-                        && !displayIndices.contains(i)
-                        && !presentTemplateIds.contains((int) item.template.id)) {
-                    displayIndices.add(i);
-                    presentTemplateIds.add((int) item.template.id);
-                }
-            }
-            int nonNullCount = displayIndices.size();
-            int rawSlots = Math.max(tabSize, nonNullCount + 1);
+
+            int totalEntries = displayIndices.size();
+            int rawSlots = Math.max(42, totalEntries + 6);
             int displaySlots = Math.min(120, ((rawSlots + 5) / 6) * 6);
 
-            // Cấp ID template ảo (25000+) cho các món trang bị không xếp chồng bị trùng template.id trong túi
-            // giúp Client không bao giờ báo "Đã có vật phẩm này" khi chọn nhiều món trùng tên ở Bà Hạt Mít
+            // Cấp ID template ảo:
+            // - 24989: Thanh chuyển nhanh Trang ở ô trống cuối Trang bị (itemsBody)
+            // - 24990..24994: 5 nút bấm [1] [2] [3] [4] [5] ngay đầu Hành trang
+            // - 24995: Nút [+] Mở rộng / Quản lý túi đồ chung
+            // - 24996+: Các món trang bị trùng tên để Bà Hạt Mít không bao giờ báo "Đã có vật phẩm này"
             Set<Short> seenEquipTemplates = new HashSet<>();
             List<nro.models.player_system.Template.ItemTemplate> aliasTemplates = new ArrayList<>();
-            short[] slotTempIds = new short[nonNullCount];
-            for (int idx = 0; idx < nonNullCount; idx++) {
+            short[] slotTempIds = new short[totalEntries];
+            for (int idx = 0; idx < totalEntries; idx++) {
                 int bagIdx = displayIndices.get(idx);
+                if (bagIdx <= -101 && bagIdx >= -106) {
+                    int btnIdx = -101 - bagIdx; // 0..5
+                    slotTempIds[idx] = (short) (24990 + btnIdx);
+                    continue;
+                }
+                if (bagIdx < 0 || bagIdx >= player.inventory.itemsBag.size()) {
+                    slotTempIds[idx] = -1;
+                    continue;
+                }
                 Item item = player.inventory.itemsBag.get(bagIdx);
                 if (item == null || !item.isNotNullItem() || item.template == null) {
                     slotTempIds[idx] = -1;
                     continue;
                 }
                 short realTempId = item.template.id;
-                boolean isNonStackEquip = !item.template.isUpToUp
+                boolean isEquip = !isStackableItem(item)
                         && ((item.template.type >= 0 && item.template.type <= 5)
-                        || item.template.type == 11 || item.template.type == 32);
-                if (isNonStackEquip) {
+                        || item.template.type == 11 || item.template.type == 21
+                        || item.template.type == 23 || item.template.type == 24
+                        || item.template.type == 27 || item.template.type == 32
+                        || item.template.type == 35 || item.template.type == 72);
+                if (isEquip) {
                     if (!seenEquipTemplates.add(realTempId)) {
-                        short aliasId = (short) (25000 + aliasTemplates.size());
+                        short aliasId = (short) (24996 + aliasTemplates.size());
                         aliasTemplates.add(item.template);
                         slotTempIds[idx] = aliasId;
                     } else {
@@ -865,37 +887,116 @@ public class InventoryService {
                 }
             }
 
-            if (!aliasTemplates.isEmpty()) {
-                Message msgAlias = new Message(-28);
-                msgAlias.writer().writeByte(8);
-                msgAlias.writer().writeByte(nro.models.data.DataGame.vsItem - 1);
-                msgAlias.writer().writeByte(2);
-                msgAlias.writer().writeShort(25000);
-                msgAlias.writer().writeShort(25000 + aliasTemplates.size());
-                for (nro.models.player_system.Template.ItemTemplate it : aliasTemplates) {
-                    String name = it.name != null ? it.name : "";
-                    String desc = it.description != null ? it.description : "";
-                    msgAlias.writer().writeByte(it.type);
-                    msgAlias.writer().writeByte(it.gender);
-                    msgAlias.writer().writeUTF(name);
-                    msgAlias.writer().writeUTF(desc);
-                    msgAlias.writer().writeByte(it.level);
-                    msgAlias.writer().writeInt(it.strRequire);
-                    msgAlias.writer().writeShort(it.iconID);
-                    msgAlias.writer().writeShort(it.part);
-                    msgAlias.writer().writeBoolean(it.isUpToUp);
-                }
-                player.sendMessage(msgAlias);
-                msgAlias.cleanup();
+            short bagBtnIcon = 4340;
+            nro.models.player_system.Template.ItemTemplate tpl517 = ItemService.gI().getTemplate(517);
+            if (tpl517 != null && tpl517.iconID > 0) {
+                bagBtnIcon = tpl517.iconID;
             }
+            int curTab = activeTab + 1;
+            int usedBag = allNonNull.size();
+            int maxBag = player.inventory.itemsBag.size();
+
+            Message msgAlias = new Message(-28);
+            msgAlias.writer().writeByte(8);
+            msgAlias.writer().writeByte(nro.models.data.DataGame.vsItem - 1);
+            msgAlias.writer().writeByte(2);
+            msgAlias.writer().writeShort(24989);
+            msgAlias.writer().writeShort(24996 + aliasTemplates.size());
+
+            // 24989: Thanh đổi Tab trên Trang bị (khung màu vàng dưới Ghế bay)
+            msgAlias.writer().writeByte(27);
+            msgAlias.writer().writeByte(3);
+            msgAlias.writer().writeUTF("Túi Đồ Chung 1 Bể [Trang " + curTab + "/5]");
+            msgAlias.writer().writeUTF("Bấm [Tháo ra] để đổi Trang kế hoặc bấm nút [1] [2] [3] [4] [5] bên dưới");
+            msgAlias.writer().writeByte(1);
+            msgAlias.writer().writeInt(0);
+            msgAlias.writer().writeShort(bagBtnIcon);
+            msgAlias.writer().writeShort(-1);
+            msgAlias.writer().writeBoolean(false);
+
+            // 24990..24994: 5 nút bấm [1] [2] [3] [4] [5]
+            for (int t = 0; t < Inventory.NUM_QUICK_TABS; t++) {
+                int tabNum = t + 1;
+                int sSlot = t * Inventory.BAG_PAGE_SIZE + 1;
+                int eSlot = (t + 1) * Inventory.BAG_PAGE_SIZE;
+                boolean isCur = (t == activeTab);
+                String tName = isCur
+                        ? ("Trang " + tabNum + " [Đang mở - Ô " + sSlot + "-" + eSlot + "]")
+                        : ("Nút [" + tabNum + "] - Đổi sang Trang " + tabNum + " (Ô " + sSlot + "-" + eSlot + ")");
+                String tDesc = "Bể chung: " + usedBag + "/" + maxBag + " ô. Bấm Sử dụng / Chọn để đưa Trang " + tabNum + " lên đầu!";
+                msgAlias.writer().writeByte(27);
+                msgAlias.writer().writeByte(3);
+                msgAlias.writer().writeUTF(tName);
+                msgAlias.writer().writeUTF(tDesc);
+                msgAlias.writer().writeByte(1);
+                msgAlias.writer().writeInt(0);
+                msgAlias.writer().writeShort(bagBtnIcon);
+                msgAlias.writer().writeShort(-1);
+                msgAlias.writer().writeBoolean(false);
+            }
+
+            // 24995: Nút thứ 6 [+] Quản lý / Mở rộng bể chung
+            msgAlias.writer().writeByte(27);
+            msgAlias.writer().writeByte(3);
+            msgAlias.writer().writeUTF("Bể Chung Túi Đồ (" + usedBag + "/" + maxBag + " ô)");
+            msgAlias.writer().writeUTF("Bấm Sử dụng / Chọn để mở rộng thêm ô Hành Trang (Tối đa " + Inventory.MAX_ITEMS_BAG + " ô)");
+            msgAlias.writer().writeByte(1);
+            msgAlias.writer().writeInt(0);
+            msgAlias.writer().writeShort((short) 4340);
+            msgAlias.writer().writeShort(-1);
+            msgAlias.writer().writeBoolean(false);
+
+            // 24996+: Các trang bị trùng ID trong túi
+            for (nro.models.player_system.Template.ItemTemplate it : aliasTemplates) {
+                String name = it.name != null ? it.name : "";
+                String desc = it.description != null ? it.description : "";
+                msgAlias.writer().writeByte(it.type);
+                msgAlias.writer().writeByte(it.gender);
+                msgAlias.writer().writeUTF(name);
+                msgAlias.writer().writeUTF(desc);
+                msgAlias.writer().writeByte(it.level);
+                msgAlias.writer().writeInt(it.strRequire);
+                msgAlias.writer().writeShort(it.iconID);
+                msgAlias.writer().writeShort(it.part);
+                msgAlias.writer().writeBoolean(false);
+            }
+            player.sendMessage(msgAlias);
+            msgAlias.cleanup();
 
             msg = new Message(-36);
             msg.writer().writeByte(0);
             msg.writer().writeByte(displaySlots);
-            for (int idx = 0; idx < nonNullCount; idx++) {
+            for (int idx = 0; idx < totalEntries; idx++) {
                 int bagIdx = displayIndices.get(idx);
+                if (bagIdx <= -101 && bagIdx >= -105) {
+                    int tabNum = -100 - bagIdx; // 1..5
+                    boolean isCur = (tabNum == curTab);
+                    msg.writer().writeShort(slotTempIds[idx]);
+                    msg.writer().writeInt(1);
+                    msg.writer().writeUTF("Trang " + tabNum + (isCur ? " [Đang hiển thị ở đầu túi]" : " [Bấm để nhảy tới Trang " + tabNum + "]"));
+                    msg.writer().writeUTF("Dùng chung 1 bể hành trang (" + usedBag + "/" + maxBag + " ô)");
+                    msg.writer().writeByte(2);
+                    msg.writer().writeByte(72); // Hiển thị số +1..+5 ngay trên ô
+                    msg.writer().writeShort(tabNum);
+                    msg.writer().writeByte(41); // Đổi màu chữ số (4 = Xanh lá khi đang mở, 0 = Vàng)
+                    msg.writer().writeShort(isCur ? 4 : 0);
+                    continue;
+                }
+                if (bagIdx == -106) {
+                    msg.writer().writeShort(slotTempIds[idx]);
+                    msg.writer().writeInt(1);
+                    msg.writer().writeUTF("Quản lý & Mở rộng Hành trang (" + usedBag + "/" + maxBag + " ô)");
+                    msg.writer().writeUTF("Bấm để mở thêm ô túi đồ hoặc bật Menu Tiện Ích");
+                    msg.writer().writeByte(2);
+                    msg.writer().writeByte(72);
+                    msg.writer().writeShort(Inventory.NUM_QUICK_TABS);
+                    msg.writer().writeByte(41);
+                    msg.writer().writeShort(3);
+                    continue;
+                }
                 Item item = player.inventory.itemsBag.get(bagIdx);
                 if (item == null || !item.isNotNullItem()) {
+                    msg.writer().writeShort(-1);
                     continue;
                 }
                 msg.writer().writeShort(slotTempIds[idx]);
@@ -924,20 +1025,7 @@ public class InventoryService {
                 }
             }
 
-            // Ô nút bấm ảo ngay trong Hành Trang để chuyển Trang Hành Trang tức thì
-            int curTab = player.inventory.currentBagTab + 1;
-            int totalTabs = player.inventory.getTotalBagTabs();
-            int virtualButtons = (nonNullCount >= tabSize) ? Math.max(1, displaySlots - nonNullCount) : 1;
-            for (int b = 0; b < virtualButtons; b++) {
-                msg.writer().writeShort(1998);
-                msg.writer().writeInt(curTab);
-                msg.writer().writeUTF("Đang mở: Trang " + curTab + "/" + totalTabs);
-                msg.writer().writeUTF("Bấm Sử dụng để chuyển sang Trang Hành Trang khác hoặc mở thêm Trang mới");
-                msg.writer().writeByte(1);
-                msg.writer().writeByte(30);
-                msg.writer().writeShort(0);
-            }
-            for (int empty = nonNullCount + virtualButtons; empty < displaySlots; empty++) {
+            for (int empty = totalEntries; empty < displaySlots; empty++) {
                 msg.writer().writeShort(-1);
             }
 
@@ -954,11 +1042,30 @@ public class InventoryService {
         if (player.getSession() != null) {
             Message msg;
             try {
+                int bodySize = player.inventory.itemsBody.size();
+                boolean lastSlotOccupied = bodySize > 0
+                        && player.inventory.itemsBody.get(bodySize - 1) != null
+                        && player.inventory.itemsBody.get(bodySize - 1).isNotNullItem();
+                int sendBodySlots = lastSlotOccupied ? Math.min(12, bodySize + 1) : bodySize;
+                int virtualBodyIndex = sendBodySlots - 1;
+                int curTab = Math.max(0, Math.min(Inventory.NUM_QUICK_TABS - 1, player.inventory.currentBagTab)) + 1;
+
                 msg = new Message(-37);
                 msg.writer().writeByte(0);
                 msg.writer().writeShort(player.getHead());
-                msg.writer().writeByte(player.inventory.itemsBody.size());
-                for (Item item : player.inventory.itemsBody) {
+                msg.writer().writeByte(sendBodySlots);
+                for (int i = 0; i < sendBodySlots; i++) {
+                    if (i == virtualBodyIndex && (i >= bodySize || !player.inventory.itemsBody.get(i).isNotNullItem())) {
+                        msg.writer().writeShort(24989);
+                        msg.writer().writeInt(1);
+                        msg.writer().writeUTF("Túi Đồ Chung 1 Bể [Trang " + curTab + "/5]");
+                        msg.writer().writeUTF("Bấm [Tháo ra] để đổi Trang kế hoặc bấm [1] [2] [3] [4] [5] bên dưới");
+                        msg.writer().writeByte(1);
+                        msg.writer().writeByte(72);
+                        msg.writer().writeShort(curTab);
+                        continue;
+                    }
+                    Item item = player.inventory.itemsBody.get(i);
                     if (!item.isNotNullItem()) {
                         msg.writer().writeShort(-1);
                     } else {

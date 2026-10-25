@@ -22,6 +22,8 @@ public class Inventory {
     public static final int DEFAULT_ITEMS_BAG = 200;
     public static final int MAX_ITEMS_BAG = 500;
     public static final int BAG_TAB_SIZE = 100;
+    public static final int BAG_PAGE_SIZE = 30;
+    public static final int NUM_QUICK_TABS = 5;
     public static final int MAX_ITEMS_BOX = 120;
 
     public static class BagList extends ArrayList<Item> {
@@ -32,7 +34,7 @@ public class Inventory {
         }
 
         public int getFirstChunkSize() {
-            return owner.getActiveTabSize();
+            return this.size();
         }
 
         public Inventory getOwner() {
@@ -68,64 +70,37 @@ public class Inventory {
     }
 
     public int getTotalBagTabs() {
-        if (this.itemsBag == null || this.itemsBag.isEmpty()) {
-            return 1;
-        }
-        return Math.max(1, (this.itemsBag.size() + BAG_TAB_SIZE - 1) / BAG_TAB_SIZE);
+        return NUM_QUICK_TABS;
     }
 
     public int getTabSize(int tabIndex) {
         if (this.itemsBag == null || tabIndex < 0) {
             return 0;
         }
-        int start = tabIndex * BAG_TAB_SIZE;
+        int perTab = Math.max(BAG_PAGE_SIZE, (this.itemsBag.size() + NUM_QUICK_TABS - 1) / NUM_QUICK_TABS);
+        int start = tabIndex * perTab;
         if (start >= this.itemsBag.size()) {
             return 0;
         }
-        return Math.min(BAG_TAB_SIZE, this.itemsBag.size() - start);
+        return Math.min(perTab, this.itemsBag.size() - start);
     }
 
     public int getActiveTabSize() {
-        int size = getTabSize(this.currentBagTab);
-        return size > 0 ? size : Math.min(BAG_TAB_SIZE, this.itemsBag != null ? this.itemsBag.size() : 0);
+        return this.itemsBag != null ? this.itemsBag.size() : 0;
     }
 
     public synchronized void restoreBagLogicalOrder() {
-        if (this.itemsBag == null || this.currentBagTab <= 0) {
-            this.currentBagTab = 0;
-            return;
-        }
-        int t = this.currentBagTab;
-        int start = t * BAG_TAB_SIZE;
-        int tabSize = getTabSize(t);
-        int end = start + tabSize;
-        if (tabSize > 0 && end <= this.itemsBag.size()) {
-            Collections.rotate(this.itemsBag.subList(0, end), -tabSize);
-        }
-        this.currentBagTab = 0;
+        // Bể chung 1 túi: không còn xoay vật lý danh sách itemsBag
     }
 
     public synchronized boolean switchBagTab(int newTab) {
         if (this.itemsBag == null) {
             return false;
         }
-        int totalTabs = getTotalBagTabs();
-        if (newTab < 0 || newTab >= totalTabs) {
+        if (newTab < 0 || newTab >= NUM_QUICK_TABS) {
             return false;
         }
-        if (newTab == this.currentBagTab) {
-            return true;
-        }
-        restoreBagLogicalOrder();
-        if (newTab > 0) {
-            int start = newTab * BAG_TAB_SIZE;
-            int tabSize = getTabSize(newTab);
-            int end = start + tabSize;
-            if (tabSize > 0 && end <= this.itemsBag.size()) {
-                Collections.rotate(this.itemsBag.subList(0, end), tabSize);
-                this.currentBagTab = newTab;
-            }
-        }
+        this.currentBagTab = newTab;
         return true;
     }
 
@@ -133,28 +108,31 @@ public class Inventory {
         if (this.itemsBag == null || logicalIndex < 0 || logicalIndex >= this.itemsBag.size()) {
             return null;
         }
-        int t = this.currentBagTab;
-        if (t > 0) {
-            int start = t * BAG_TAB_SIZE;
-            int tabSize = getTabSize(t);
-            int end = start + tabSize;
-            if (tabSize > 0 && end <= this.itemsBag.size()) {
-                if (logicalIndex < start) {
-                    return this.itemsBag.get(logicalIndex + tabSize);
-                } else if (logicalIndex < end) {
-                    return this.itemsBag.get(logicalIndex - start);
-                }
-            }
-        }
         return this.itemsBag.get(logicalIndex);
     }
 
-    public int getUsedSlotsInTab(int tabIndex) {
-        int start = tabIndex * BAG_TAB_SIZE;
-        int tabSize = getTabSize(tabIndex);
+    public int getUsedSlotsInBag() {
+        if (this.itemsBag == null) {
+            return 0;
+        }
         int used = 0;
-        for (int i = start; i < start + tabSize; i++) {
-            Item it = getBagItemInLogicalOrder(i);
+        for (Item it : this.itemsBag) {
+            if (it != null && it.isNotNullItem()) {
+                used++;
+            }
+        }
+        return used;
+    }
+
+    public int getUsedSlotsInTab(int tabIndex) {
+        if (this.itemsBag == null || tabIndex < 0 || tabIndex >= NUM_QUICK_TABS) {
+            return 0;
+        }
+        int start = tabIndex * BAG_PAGE_SIZE;
+        int end = (tabIndex == NUM_QUICK_TABS - 1) ? this.itemsBag.size() : Math.min(this.itemsBag.size(), start + BAG_PAGE_SIZE);
+        int used = 0;
+        for (int i = start; i < end; i++) {
+            Item it = this.itemsBag.get(i);
             if (it != null && it.isNotNullItem()) {
                 used++;
             }

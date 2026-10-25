@@ -800,17 +800,18 @@ public class NpcFactory {
                         }
                     }
                     case 9903 -> {
-                        int totalTabs = player.inventory.getTotalBagTabs();
+                        int totalTabs = nro.models.player.Inventory.NUM_QUICK_TABS;
                         boolean canExpand = player.inventory.itemsBag.size() < nro.models.player.Inventory.MAX_ITEMS_BAG;
                         if (select >= 0 && select < totalTabs) {
                             player.inventory.switchBagTab(select);
                             InventoryService.gI().sendItemBags(player);
-                            int startSlot = select * nro.models.player.Inventory.BAG_TAB_SIZE + 1;
-                            int endSlot = Math.min(player.inventory.itemsBag.size(), (select + 1) * nro.models.player.Inventory.BAG_TAB_SIZE);
-                            Service.gI().sendThongBao(player, "Đã chuyển sang Hành trang Tab " + (select + 1) + " (Ô " + startSlot + " - " + endSlot + ")!");
+                            InventoryService.gI().sendItemBody(player);
+                            int startSlot = select * nro.models.player.Inventory.BAG_PAGE_SIZE + 1;
+                            int endSlot = (select + 1) * nro.models.player.Inventory.BAG_PAGE_SIZE;
+                            Service.gI().sendThongBao(player, "Đã chuyển đầu túi sang Trang " + (select + 1) + "/5 (Ô " + startSlot + " - " + endSlot + ", Dùng chung 1 bể)!");
                         } else if (canExpand && select == totalTabs) {
                             if (player.inventory.gem < 50_000) {
-                                Service.gI().sendThongBao(player, "Cần 50.000 Ngọc xanh để mở thêm 1 Tab Hành trang (+" + nro.models.player.Inventory.BAG_TAB_SIZE + " ô)!");
+                                Service.gI().sendThongBao(player, "Cần 50.000 Ngọc xanh để mở rộng Bể Chung Hành trang (+" + nro.models.player.Inventory.BAG_TAB_SIZE + " ô)!");
                                 openMenuBagTab(player);
                                 return;
                             }
@@ -818,16 +819,13 @@ public class NpcFactory {
                                     nro.models.player.Inventory.MAX_ITEMS_BAG - player.inventory.itemsBag.size());
                             player.inventory.gem -= 50_000;
                             Service.gI().sendMoney(player);
-                            player.inventory.restoreBagLogicalOrder();
                             for (int k = 0; k < canAdd; k++) {
                                 player.inventory.itemsBag.add(ItemService.gI().createItemNull());
                             }
-                            int newTab = Math.max(0, player.inventory.getTotalBagTabs() - 1);
-                            player.inventory.switchBagTab(newTab);
                             InventoryService.gI().sendItemBags(player);
-                            Service.gI().sendThongBao(player, "Đã mở rộng thêm " + canAdd + " ô! Tổng: "
-                                    + player.inventory.itemsBag.size() + "/" + nro.models.player.Inventory.MAX_ITEMS_BAG
-                                    + " ô (Đang mở Tab " + (newTab + 1) + "/" + player.inventory.getTotalBagTabs() + ").");
+                            InventoryService.gI().sendItemBody(player);
+                            Service.gI().sendThongBao(player, "Đã mở rộng Bể Chung thêm " + canAdd + " ô! Tổng sức chứa: "
+                                    + player.inventory.itemsBag.size() + "/" + nro.models.player.Inventory.MAX_ITEMS_BAG + " ô.");
                             openMenuBagTab(player);
                         } else {
                             openMenuTienIch(player);
@@ -940,36 +938,40 @@ public class NpcFactory {
     }
 
     public static void openMenuBagTab(Player player) {
-        int totalTabs = player.inventory.getTotalBagTabs();
+        int totalTabs = nro.models.player.Inventory.NUM_QUICK_TABS;
         int curTab = player.inventory.currentBagTab + 1;
+        int totalUsed = player.inventory.getUsedSlotsInBag();
         StringBuilder sb = new StringBuilder();
-        sb.append("|7|=== QUẢN LÝ TAB HÀNH TRANG (100 Ô / TAB) ===\n");
-        sb.append("|2|Đang mở: |1|Tab ").append(curTab).append("/").append(totalTabs)
-                .append(" (Tổng: ").append(player.inventory.itemsBag.size()).append("/")
-                .append(nro.models.player.Inventory.MAX_ITEMS_BAG).append(" ô)\n");
+        sb.append("|7|=== TÚI ĐỒ DÙNG CHUNG 1 BỂ (NÚT 1 - 2 - 3 - 4 - 5) ===\n");
+        sb.append("|2|Đang ghim đầu túi: |1|Trang ").append(curTab).append("/").append(totalTabs)
+                .append(" |2|(Đang chứa: |1|").append(totalUsed).append("/").append(player.inventory.itemsBag.size())
+                .append(" |2|vật phẩm, Tối đa: ").append(nro.models.player.Inventory.MAX_ITEMS_BAG).append(" ô)\n");
         for (int t = 0; t < totalTabs; t++) {
             int used = player.inventory.getUsedSlotsInTab(t);
             int cap = player.inventory.getTabSize(t);
+            int startSlot = t * nro.models.player.Inventory.BAG_PAGE_SIZE + 1;
+            int endSlot = (t + 1) * nro.models.player.Inventory.BAG_PAGE_SIZE;
             sb.append(t == player.inventory.currentBagTab ? "|1|► " : "|2|• ")
-                    .append("Tab ").append(t + 1).append(": ").append(used).append("/").append(cap).append(" ô");
+                    .append("Nút [").append(t + 1).append("] (Ô ").append(startSlot).append("-").append(endSlot).append("): ")
+                    .append(used).append("/").append(cap);
             if (t % 2 == 1 || t == totalTabs - 1) {
                 sb.append("\n");
             } else {
                 sb.append("   ");
             }
         }
-        sb.append("|0|(Mẹo: Chat 'tab 1', 'tab 2'... hoặc 't1', 't2'... để chuyển Tab tức thì)");
+        sb.append("|0|(Mẹo: Bấm thẳng các nút +1 +2 +3 +4 +5 ngay đầu Hành trang để nhảy trang tức thì!)");
 
         boolean canExpand = player.inventory.itemsBag.size() < nro.models.player.Inventory.MAX_ITEMS_BAG;
         String[] options = new String[totalTabs + (canExpand ? 2 : 1)];
         for (int t = 0; t < totalTabs; t++) {
-            int used = player.inventory.getUsedSlotsInTab(t);
-            int cap = player.inventory.getTabSize(t);
-            options[t] = (t == player.inventory.currentBagTab ? "[Đang mở]\n" : "")
-                    + "Tab " + (t + 1) + "\n(" + used + "/" + cap + ")";
+            int startSlot = t * nro.models.player.Inventory.BAG_PAGE_SIZE + 1;
+            int endSlot = (t + 1) * nro.models.player.Inventory.BAG_PAGE_SIZE;
+            options[t] = (t == player.inventory.currentBagTab ? "[Đang chọn]\n" : "")
+                    + "Trang " + (t + 1) + "\n(Ô " + startSlot + "-" + endSlot + ")";
         }
         if (canExpand) {
-            options[totalTabs] = "Mở thêm Tab\n(+100 ô / 50k Ngọc)";
+            options[totalTabs] = "Mở rộng Bể\n(+100 ô / 50k Ngọc)";
             options[totalTabs + 1] = "Menu\nTiện Ích";
         } else {
             options[totalTabs] = "Menu\nTiện Ích";

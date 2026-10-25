@@ -88,16 +88,12 @@ public class CombineService {
             return;
         }
         java.util.List<Item> prevItems = new java.util.ArrayList<>(player.combineNew.itemsCombine);
-        java.util.Map<Integer, Integer> prevCountByTemplate = new java.util.HashMap<>();
-        for (Item prev : prevItems) {
-            if (prev != null && prev.isNotNullItem() && prev.template != null) {
-                prevCountByTemplate.merge((int) prev.template.id, 1, Integer::sum);
-            }
-        }
 
         player.combineNew.clearItemCombine();
         boolean hadDuplicateOrInvalid = false;
         boolean clickedTabSwitch = false;
+        boolean openExpandMenu = false;
+        int targetTab = -1;
 
         if (index != null && index.length > 0) {
             java.util.Set<Integer> addedBagIndices = new java.util.HashSet<>();
@@ -109,9 +105,22 @@ public class CombineService {
                     continue;
                 }
                 int bagIndex = player.inventory.resolveBagIndex(clientIdx);
+                if (bagIndex <= -101 && bagIndex >= -105) {
+                    targetTab = -101 - bagIndex;
+                    clickedTabSwitch = true;
+                    hadDuplicateOrInvalid = true;
+                    continue;
+                }
+                if (bagIndex == -106) {
+                    openExpandMenu = true;
+                    clickedTabSwitch = true;
+                    hadDuplicateOrInvalid = true;
+                    continue;
+                }
                 if (bagIndex >= 0 && bagIndex < player.inventory.itemsBag.size()) {
                     Item item = player.inventory.itemsBag.get(bagIndex);
-                    if (item != null && item.isNotNullItem() && item.template != null && item.template.id == 1998) {
+                    if (item != null && item.isNotNullItem() && item.template != null
+                            && (item.template.id == 1998 || (item.template.id >= 24989 && item.template.id <= 24995))) {
                         clickedTabSwitch = true;
                         hadDuplicateOrInvalid = true;
                         continue;
@@ -140,12 +149,38 @@ public class CombineService {
         }
 
         if (clickedTabSwitch) {
-            switchBagTabInCombine(player);
+            for (Item prev : prevItems) {
+                if (prev != null && prev.isNotNullItem() && prev.quantity > 0) {
+                    boolean exists = false;
+                    for (Item cur : player.combineNew.itemsCombine) {
+                        if (cur == prev) {
+                            exists = true;
+                            break;
+                        }
+                    }
+                    if (!exists) {
+                        player.combineNew.itemsCombine.add(prev);
+                    }
+                }
+            }
+            if (openExpandMenu) {
+                reOpenItemCombine(player);
+                nro.models.npc.NpcFactory.openMenuBagTab(player);
+                return;
+            }
+            switchBagTabInCombine(player, targetTab, false);
             return;
         }
 
         if (hadDuplicateOrInvalid) {
             reOpenItemCombine(player);
+        }
+        refreshCombineInfoDisplay(player);
+    }
+
+    public void refreshCombineInfoDisplay(Player player) {
+        if (player == null || player.combineNew == null) {
+            return;
         }
         switch (player.combineNew.typeCombine) {
             case EP_SAO_TRANG_BI:
@@ -459,8 +494,7 @@ public class CombineService {
         }
         int type = player.combineNew.typeCombine;
         int count = 0;
-        int limit = player.inventory.getActiveTabSize();
-        for (int i = 0; i < limit && i < player.inventory.itemsBag.size(); i++) {
+        for (int i = 0; i < player.inventory.itemsBag.size(); i++) {
             Item it = player.inventory.itemsBag.get(i);
             if (isItemValidForBulkCombine(type, it)) {
                 count++;
@@ -474,8 +508,7 @@ public class CombineService {
             return;
         }
         int type = player.combineNew.typeCombine;
-        int limit = player.inventory.getActiveTabSize();
-        for (int i = 0; i < limit && i < player.inventory.itemsBag.size(); i++) {
+        for (int i = 0; i < player.inventory.itemsBag.size(); i++) {
             Item it = player.inventory.itemsBag.get(i);
             if (!isItemValidForBulkCombine(type, it)) {
                 continue;
@@ -505,16 +538,33 @@ public class CombineService {
     }
 
     public void switchBagTabInCombine(Player player) {
+        switchBagTabInCombine(player, -1, true);
+    }
+
+    public void switchBagTabInCombine(Player player, int targetTab, boolean reopenFullTab) {
         if (player == null || player.inventory == null || player.combineNew == null) {
             return;
         }
-        int totalTabs = player.inventory.getTotalBagTabs();
-        int nextTab = (player.inventory.currentBagTab + 1) % Math.max(1, totalTabs);
+        int totalTabs = nro.models.player.Inventory.NUM_QUICK_TABS;
+        int nextTab = (targetTab >= 0 && targetTab < totalTabs)
+                ? targetTab
+                : ((player.inventory.currentBagTab + 1) % totalTabs);
         player.inventory.switchBagTab(nextTab);
         InventoryService.gI().sendItemBags(player);
-        openTabCombine(player, player.combineNew.typeCombine, true);
+        InventoryService.gI().sendItemBody(player);
+        if (reopenFullTab) {
+            openTabCombine(player, player.combineNew.typeCombine, true);
+            if (!player.combineNew.itemsCombine.isEmpty()) {
+                refreshCombineInfoDisplay(player);
+            }
+        } else {
+            reOpenItemCombine(player);
+            if (!player.combineNew.itemsCombine.isEmpty()) {
+                refreshCombineInfoDisplay(player);
+            }
+        }
         nro.models.services.Service.gI().sendThongBao(player,
-                "Đã chuyển sang Hành trang Trang " + (nextTab + 1) + "/" + totalTabs + " để tiếp tục chọn đồ!");
+                "Đã chuyển đầu túi sang Trang " + (nextTab + 1) + "/" + totalTabs + " (Dùng chung 1 bể)!");
     }
 
     /**

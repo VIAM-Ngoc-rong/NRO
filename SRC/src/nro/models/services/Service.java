@@ -923,6 +923,8 @@ public class Service {
             msg.writer().writeShort(pl.getHat());
             pl.sendMessage(msg);
             msg.cleanup();
+            InventoryService.gI().sendItemBags(pl);
+            InventoryService.gI().sendItemBody(pl);
         } catch (Exception e) {
             Logger.logException(Service.class, e);
         }

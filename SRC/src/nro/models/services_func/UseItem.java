@@ -90,27 +90,70 @@ public class UseItem {
         return instance;
     }
 
-    private boolean isVirtualBagSwitchSlot(Player player, int index) {
+    private boolean handleVirtualBagSlotClick(Player player, int index) {
         if (player == null || player.inventory == null || player.inventory.itemsBag == null || index < 0) {
             return false;
         }
+        int bagIndex = player.inventory.resolveBagIndex(index);
+        if (bagIndex <= -101 && bagIndex >= -105) {
+            int targetTab = -101 - bagIndex;
+            player.inventory.switchBagTab(targetTab);
+            InventoryService.gI().sendItemBags(player);
+            InventoryService.gI().sendItemBody(player);
+            if (player.combineNew != null && !player.combineNew.itemsCombine.isEmpty()) {
+                nro.models.combine.CombineService.gI().reOpenItemCombine(player);
+            }
+            Service.gI().sendThongBao(player, "Đã chuyển đầu túi sang Trang " + (targetTab + 1) + "/"
+                    + nro.models.player.Inventory.NUM_QUICK_TABS + " (Dùng chung 1 bể)!");
+            return true;
+        }
+        if (bagIndex == -106) {
+            nro.models.npc.NpcFactory.openMenuBagTab(player);
+            return true;
+        }
         if (!player.inventory.displayedBagIndices.isEmpty()) {
             if (index >= player.inventory.displayedBagIndices.size()) {
+                nro.models.npc.NpcFactory.openMenuBagTab(player);
                 return true;
             }
-            int bagIndex = player.inventory.resolveBagIndex(index);
             if (bagIndex < 0 || bagIndex >= player.inventory.itemsBag.size()) {
+                nro.models.npc.NpcFactory.openMenuBagTab(player);
                 return true;
             }
             Item item = player.inventory.itemsBag.get(bagIndex);
-            return item == null || !item.isNotNullItem() || item.template.id == 1998;
+            if (item == null || !item.isNotNullItem() || item.template.id == 1998
+                    || (item.template.id >= 24989 && item.template.id <= 24995)) {
+                nro.models.npc.NpcFactory.openMenuBagTab(player);
+                return true;
+            }
+            return false;
         }
-        int activeTabSize = player.inventory.getActiveTabSize();
-        if (index >= activeTabSize || index >= player.inventory.itemsBag.size()) {
+        if (index >= player.inventory.itemsBag.size()) {
+            nro.models.npc.NpcFactory.openMenuBagTab(player);
             return true;
         }
         Item item = player.inventory.itemsBag.get(index);
-        return item == null || !item.isNotNullItem() || item.template.id == 1998;
+        if (item == null || !item.isNotNullItem() || item.template.id == 1998
+                || (item.template.id >= 24989 && item.template.id <= 24995)) {
+            nro.models.npc.NpcFactory.openMenuBagTab(player);
+            return true;
+        }
+        return false;
+    }
+
+    private void cycleBagQuickTab(Player player) {
+        if (player == null || player.inventory == null) {
+            return;
+        }
+        int nextTab = (player.inventory.currentBagTab + 1) % nro.models.player.Inventory.NUM_QUICK_TABS;
+        player.inventory.switchBagTab(nextTab);
+        InventoryService.gI().sendItemBags(player);
+        InventoryService.gI().sendItemBody(player);
+        if (player.combineNew != null && !player.combineNew.itemsCombine.isEmpty()) {
+            nro.models.combine.CombineService.gI().reOpenItemCombine(player);
+        }
+        Service.gI().sendThongBao(player, "Đã chuyển đầu túi sang Trang " + (nextTab + 1) + "/"
+                + nro.models.player.Inventory.NUM_QUICK_TABS + " (Dùng chung 1 bể)!");
     }
 
     public void getItem(MySession session, Message msg) {
@@ -125,9 +168,15 @@ public class UseItem {
             if (index == -1) {
                 return;
             }
+            if (type == ITEM_BODY_TO_BAG || type == ITEM_BODY_TO_BOX) {
+                if (index < 0 || index >= player.inventory.itemsBody.size()
+                        || !player.inventory.itemsBody.get(index).isNotNullItem()) {
+                    cycleBagQuickTab(player);
+                    return;
+                }
+            }
             if ((type == ITEM_BAG_TO_BOX || type == ITEM_BAG_TO_BODY || type == ITEM_BAG_TO_PET_BODY)
-                    && isVirtualBagSwitchSlot(player, index)) {
-                nro.models.npc.NpcFactory.openMenuBagTab(player);
+                    && handleVirtualBagSlotClick(player, index)) {
                 return;
             }
             int bagIndex = player.inventory.resolveBagIndex(index);
@@ -195,8 +244,7 @@ public class UseItem {
                             if (index < 0) {
                                 return;
                             }
-                            if (isVirtualBagSwitchSlot(player, index)) {
-                                nro.models.npc.NpcFactory.openMenuBagTab(player);
+                            if (handleVirtualBagSlotClick(player, index)) {
                                 return;
                             }
                             int bagIndex = player.inventory.resolveBagIndex(index);
@@ -205,7 +253,7 @@ public class UseItem {
                             }
                             Item item = player.inventory.itemsBag.get(bagIndex);
                             if (item.isNotNullItem()) {
-                                if (item.template.id == 1998) {
+                                if (item.template.id == 1998 || (item.template.id >= 24989 && item.template.id <= 24995)) {
                                     nro.models.npc.NpcFactory.openMenuBagTab(player);
                                     return;
                                 }
@@ -244,7 +292,15 @@ public class UseItem {
                             }
                         } else {
                             int iditem = _msg.reader().readShort();
-                            if (iditem == 1998) {
+                            if (iditem >= 24990 && iditem <= 24994) {
+                                int targetTab = iditem - 24990;
+                                player.inventory.switchBagTab(targetTab);
+                                InventoryService.gI().sendItemBags(player);
+                                InventoryService.gI().sendItemBody(player);
+                                Service.gI().sendThongBao(player, "Đã chuyển đầu túi sang Trang " + (targetTab + 1) + "/5 (Dùng chung 1 bể)!");
+                                return;
+                            }
+                            if (iditem == 1998 || iditem == 24989 || iditem == 24995) {
                                 nro.models.npc.NpcFactory.openMenuBagTab(player);
                                 return;
                             }
@@ -260,13 +316,14 @@ public class UseItem {
                             return;
                         }
                         if (where == 0) {
-                            if (index >= player.inventory.itemsBody.size()) {
+                            if (index >= player.inventory.itemsBody.size()
+                                    || !player.inventory.itemsBody.get(index).isNotNullItem()) {
+                                cycleBagQuickTab(player);
                                 return;
                             }
                             item = player.inventory.itemsBody.get(index);
                         } else {
-                            if (isVirtualBagSwitchSlot(player, index)) {
-                                nro.models.npc.NpcFactory.openMenuBagTab(player);
+                            if (handleVirtualBagSlotClick(player, index)) {
                                 return;
                             }
                             int bagIndex = player.inventory.resolveBagIndex(index);
@@ -294,8 +351,7 @@ public class UseItem {
                     }
                 }
                 case ACCEPT_THROW_ITEM -> {
-                    if (where != 0 && isVirtualBagSwitchSlot(player, index)) {
-                        nro.models.npc.NpcFactory.openMenuBagTab(player);
+                    if (where != 0 && handleVirtualBagSlotClick(player, index)) {
                         return;
                     }
                     int throwIndex = (where == 0) ? index : player.inventory.resolveBagIndex(index);
@@ -307,8 +363,7 @@ public class UseItem {
                     InventoryService.gI().sendItemBags(player);
                 }
                 case ACCEPT_USE_ITEM -> {
-                    if (isVirtualBagSwitchSlot(player, index)) {
-                        nro.models.npc.NpcFactory.openMenuBagTab(player);
+                    if (handleVirtualBagSlotClick(player, index)) {
                         return;
                     }
                     int bagIndex = player.inventory.resolveBagIndex(index);
