@@ -1049,6 +1049,13 @@ public class PlayerDAO {
                         dataKol,
                         player.point_sukien2,
                         player.id);
+                if (player.getSession() != null && player.getSession().userId > 0) {
+                    try {
+                        long totalPlaySec = player.getSession().flushPlayTimeSec();
+                        LocalManager.executeUpdate("update account set total_play_sec = ? where id = ?", totalPlaySec, player.getSession().userId);
+                    } catch (Exception ignored) {
+                    }
+                }
                 SuperRankDAO.updateData(player);
                 if (player.isOffline) {
                     Logger.log(Logger.PURPLE, TimeUtil.getCurrHour() + "h" + TimeUtil.getCurrMin() + "m: Player " + player.name + " updated successfully! " + (System.currentTimeMillis() - st) + "ms\n");

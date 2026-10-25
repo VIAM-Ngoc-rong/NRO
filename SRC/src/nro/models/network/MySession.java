@@ -63,8 +63,34 @@ public class MySession extends Session {
     public int vip;
     public int luotquay;
     public int ruongSkh = 5;
+    public long loginTimeMs = System.currentTimeMillis();
+    public long lastSavedPlayTimeMs = System.currentTimeMillis();
+    public long totalPlaySec = 0L;
 
     public boolean finishUpdate;
+
+    public long getCurrentSessionPlaySec() {
+        return loginTimeMs > 0 ? Math.max(0L, (System.currentTimeMillis() - loginTimeMs) / 1000L) : 0L;
+    }
+
+    public long getLiveTotalPlaySec() {
+        long unsaved = lastSavedPlayTimeMs > 0 ? Math.max(0L, (System.currentTimeMillis() - lastSavedPlayTimeMs) / 1000L) : 0L;
+        return Math.max(0L, totalPlaySec + unsaved);
+    }
+
+    public synchronized long flushPlayTimeSec() {
+        long now = System.currentTimeMillis();
+        if (lastSavedPlayTimeMs <= 0) {
+            lastSavedPlayTimeMs = now;
+            return totalPlaySec;
+        }
+        long delta = Math.max(0L, (now - lastSavedPlayTimeMs) / 1000L);
+        if (delta > 0) {
+            totalPlaySec += delta;
+            lastSavedPlayTimeMs = now;
+        }
+        return totalPlaySec;
+    }
 
     public MySession(Socket socket) {
         super(socket);

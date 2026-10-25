@@ -121,6 +121,24 @@ public class AdminWebServer {
                 + ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4")) {
             ps.executeUpdate();
         }
+        try (PreparedStatement ps = con.prepareStatement(
+                "ALTER TABLE account ADD COLUMN total_play_sec BIGINT NOT NULL DEFAULT 0")) {
+            ps.executeUpdate();
+        } catch (Exception ignored) {
+        }
+        try (PreparedStatement ps = con.prepareStatement(
+                "UPDATE account SET total_play_sec = GREATEST(60, LEAST(86400 * 30, TIMESTAMPDIFF(SECOND, last_time_login, last_time_logout))) "
+                + "WHERE total_play_sec = 0 AND last_time_logout > last_time_login")) {
+            ps.executeUpdate();
+        } catch (Exception ignored) {
+        }
+        try (PreparedStatement ps = con.prepareStatement(
+                "UPDATE account a INNER JOIN player p ON p.account_id = a.id "
+                + "SET a.total_play_sec = GREATEST(60, LEAST(14400, TIMESTAMPDIFF(SECOND, a.create_time, GREATEST(a.last_time_login, a.last_time_logout)))) "
+                + "WHERE a.total_play_sec = 0")) {
+            ps.executeUpdate();
+        } catch (Exception ignored) {
+        }
     }
 
     public static void loadBossKillHistoryFromDb() {
@@ -418,6 +436,9 @@ public class AdminWebServer {
             int taskId = (pl.playerTask != null && pl.playerTask.taskMain != null) ? pl.playerTask.taskMain.id : 0;
             int taskIndex = (pl.playerTask != null && pl.playerTask.taskMain != null) ? pl.playerTask.taskMain.index : 0;
             String taskName = formatTaskInfo(taskId, taskIndex);
+            long sessionPlaySec = pl.getSession() != null ? pl.getSession().getCurrentSessionPlaySec() : 0L;
+            long totalPlaySec = pl.getSession() != null ? pl.getSession().getLiveTotalPlaySec() : sessionPlaySec;
+            double playHours = Math.round((totalPlaySec / 3600.0) * 100.0) / 100.0;
             sb.append("{");
             sb.append("\"id\":").append(pl.id);
             sb.append(",\"name\":").append(jsonStr(pl.name));
@@ -446,6 +467,9 @@ public class AdminWebServer {
             sb.append(",\"taskId\":").append(taskId);
             sb.append(",\"taskIndex\":").append(taskIndex);
             sb.append(",\"taskName\":").append(jsonStr(taskName));
+            sb.append(",\"sessionPlaySec\":").append(sessionPlaySec);
+            sb.append(",\"totalPlaySec\":").append(totalPlaySec);
+            sb.append(",\"playHours\":").append(playHours);
             sb.append("}");
         }
         sb.append("]");
@@ -706,6 +730,12 @@ public class AdminWebServer {
                             ruongSkh = rs.getInt("ruong_skh");
                         } catch (Exception ignored) {
                         }
+                        long totalPlaySec = 0L;
+                        try {
+                            totalPlaySec = rs.getLong("total_play_sec");
+                        } catch (Exception ignored) {
+                        }
+                        long sessionPlaySec = 0L;
                         String lastLogin = rs.getString("last_time_login");
                         long playerId = rs.getLong("player_id");
                         String playerName = rs.getString("player_name");
@@ -726,6 +756,8 @@ public class AdminWebServer {
                             if (livePl.getSession() != null) {
                                 vnd = livePl.getSession().vnd;
                                 ruongSkh = livePl.getSession().ruongSkh;
+                                sessionPlaySec = livePl.getSession().getCurrentSessionPlaySec();
+                                totalPlaySec = Math.max(totalPlaySec, livePl.getSession().getLiveTotalPlaySec());
                             }
                             if (livePl.playerIntrinsic != null && livePl.playerIntrinsic.intrinsic != null) {
                                 inId = livePl.playerIntrinsic.intrinsic.id;
@@ -790,6 +822,7 @@ public class AdminWebServer {
 
                         String taskName = playerId > 0 ? formatTaskInfo(taskId, taskIndex) : "Chưa có";
                         String genderName = playerName == null ? "Chưa tạo NV" : (gender == 0 ? "Trái Đất" : (gender == 1 ? "Namek" : "Xayda"));
+                        double playHours = Math.round((totalPlaySec / 3600.0) * 100.0) / 100.0;
                         sb.append("{");
                         sb.append("\"accId\":").append(accId);
                         sb.append(",\"username\":").append(jsonStr(username));
@@ -817,6 +850,9 @@ public class AdminWebServer {
                         sb.append(",\"taskId\":").append(taskId);
                         sb.append(",\"taskIndex\":").append(taskIndex);
                         sb.append(",\"taskName\":").append(jsonStr(taskName));
+                        sb.append(",\"sessionPlaySec\":").append(sessionPlaySec);
+                        sb.append(",\"totalPlaySec\":").append(totalPlaySec);
+                        sb.append(",\"playHours\":").append(playHours);
                         sb.append("}");
                     }
                 }
@@ -932,7 +968,7 @@ public class AdminWebServer {
         // Top players by power
         List<Map<String, Object>> rankList = new ArrayList<>();
         try (Connection con = LocalManager.getConnection();
-             PreparedStatement ps = con.prepareStatement("SELECT p.id, p.name, p.gender, p.data_point, p.data_inventory, a.vnd, a.tongnap FROM player p LEFT JOIN account a ON a.id = p.account_id LIMIT 300");
+             PreparedStatement ps = con.prepareStatement("SELECT p.id, p.account_id, p.name, p.gender, p.data_point, p.data_inventory, a.vnd, a.tongnap, a.total_play_sec FROM player p LEFT JOIN account a ON a.id = p.account_id LIMIT 300");
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 long power = 0, gold = 0, gem = 0, ruby = 0;
@@ -952,6 +988,20 @@ public class AdminWebServer {
                     }
                 } catch (Exception ignored) {
                 }
+                int accId = rs.getInt("account_id");
+                long totalPlaySec = 0L;
+                try {
+                    totalPlaySec = rs.getLong("total_play_sec");
+                } catch (Exception ignored) {
+                }
+                Player livePl = Client.gI().getPlayerByUser(accId);
+                if (livePl != null && livePl.getSession() != null) {
+                    totalPlaySec = Math.max(totalPlaySec, livePl.getSession().getLiveTotalPlaySec());
+                    if (livePl.nPoint != null) {
+                        power = Math.max(power, livePl.nPoint.power);
+                    }
+                }
+                double playHours = Math.round((totalPlaySec / 3600.0) * 100.0) / 100.0;
                 Map<String, Object> row = new HashMap<>();
                 row.put("id", rs.getLong("id"));
                 row.put("name", rs.getString("name"));
@@ -963,6 +1013,8 @@ public class AdminWebServer {
                 row.put("ruby", ruby);
                 row.put("vnd", rs.getInt("vnd"));
                 row.put("tongnap", rs.getInt("tongnap"));
+                row.put("totalPlaySec", totalPlaySec);
+                row.put("playHours", playHours);
                 rankList.add(row);
             }
         } catch (Exception ignored) {
@@ -986,6 +1038,8 @@ public class AdminWebServer {
             sb.append(",\"ruby\":").append(r.get("ruby"));
             sb.append(",\"vnd\":").append(r.get("vnd"));
             sb.append(",\"tongnap\":").append(r.get("tongnap"));
+            sb.append(",\"totalPlaySec\":").append(r.get("totalPlaySec"));
+            sb.append(",\"playHours\":").append(r.get("playHours"));
             sb.append("}");
         }
         sb.append("]");

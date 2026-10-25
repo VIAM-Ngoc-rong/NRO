@@ -81,6 +81,13 @@ public class MrBlue {
                 } catch (Exception ignored) {
                     session.ruongSkh = 5;
                 }
+                try {
+                    session.totalPlaySec = rs.getLong("total_play_sec");
+                } catch (Exception ignored) {
+                    session.totalPlaySec = 0L;
+                }
+                session.loginTimeMs = System.currentTimeMillis();
+                session.lastSavedPlayTimeMs = session.loginTimeMs;
                 long lastTimeLogin = rs.getTimestamp("last_time_login").getTime();
                 int secondsPass1 = (int) ((System.currentTimeMillis() - lastTimeLogin) / 1000);
                 long lastTimeLogout = rs.getTimestamp("last_time_logout").getTime();

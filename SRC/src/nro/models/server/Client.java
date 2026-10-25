@@ -74,7 +74,12 @@ public class Client implements Runnable {
         if (session.joinedGame) {
             session.joinedGame = false;
             try {
-                LocalManager.executeUpdate("update account set last_time_logout = ? where id = ?", new Timestamp(System.currentTimeMillis()), session.userId);
+                long totalPlaySec = session.flushPlayTimeSec();
+                try {
+                    LocalManager.executeUpdate("update account set last_time_logout = ?, total_play_sec = ? where id = ?", new Timestamp(System.currentTimeMillis()), totalPlaySec, session.userId);
+                } catch (Exception ex) {
+                    LocalManager.executeUpdate("update account set last_time_logout = ? where id = ?", new Timestamp(System.currentTimeMillis()), session.userId);
+                }
             } catch (Exception e) {
                 Logger.logException(Client.class, e);
             }
