@@ -493,6 +493,8 @@ public class EffectSkillService {
         }
         if (!player.effectSkill.isCharging) {
             player.effectSkill.isCharging = true;
+            player.effectSkill.countCharging = 0;
+            sendEffectStartCharge(player);
             sendEffectCharge(player);
         }
     }

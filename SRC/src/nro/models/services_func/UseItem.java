@@ -93,6 +93,17 @@ public class UseItem {
         if (player == null || player.inventory == null || player.inventory.itemsBag == null || index < 0) {
             return false;
         }
+        if (!player.inventory.displayedBagIndices.isEmpty()) {
+            if (index >= player.inventory.displayedBagIndices.size()) {
+                return true;
+            }
+            int bagIndex = player.inventory.resolveBagIndex(index);
+            if (bagIndex < 0 || bagIndex >= player.inventory.itemsBag.size()) {
+                return true;
+            }
+            Item item = player.inventory.itemsBag.get(bagIndex);
+            return item == null || !item.isNotNullItem() || item.template.id == 1998;
+        }
         int activeTabSize = player.inventory.getActiveTabSize();
         if (index >= activeTabSize || index >= player.inventory.itemsBag.size()) {
             return true;
@@ -118,25 +129,26 @@ public class UseItem {
                 nro.models.npc.NpcFactory.openMenuBagTab(player);
                 return;
             }
+            int bagIndex = player.inventory.resolveBagIndex(index);
             switch (type) {
                 case ITEM_BOX_TO_BODY_OR_BAG:
                     InventoryService.gI().itemBoxToBodyOrBag(player, index);
                     TaskService.gI().checkDoneTaskGetItemBox(player);
                     break;
                 case ITEM_BAG_TO_BOX:
-                    InventoryService.gI().itemBagToBox(player, index);
+                    InventoryService.gI().itemBagToBox(player, bagIndex);
                     break;
                 case ITEM_BODY_TO_BOX:
                     InventoryService.gI().itemBodyToBox(player, index);
                     break;
                 case ITEM_BAG_TO_BODY:
-                    InventoryService.gI().itemBagToBody(player, index);
+                    InventoryService.gI().itemBagToBody(player, bagIndex);
                     break;
                 case ITEM_BODY_TO_BAG:
                     InventoryService.gI().itemBodyToBag(player, index);
                     break;
                 case ITEM_BAG_TO_PET_BODY:
-                    InventoryService.gI().itemBagToPetBody(player, index);
+                    InventoryService.gI().itemBagToPetBody(player, bagIndex);
                     break;
                 case ITEM_BODY_PET_TO_BAG:
                     InventoryService.gI().itemPetBodyToBag(player, index);
@@ -186,7 +198,11 @@ public class UseItem {
                                 nro.models.npc.NpcFactory.openMenuBagTab(player);
                                 return;
                             }
-                            Item item = player.inventory.itemsBag.get(index);
+                            int bagIndex = player.inventory.resolveBagIndex(index);
+                            if (bagIndex < 0 || bagIndex >= player.inventory.itemsBag.size()) {
+                                return;
+                            }
+                            Item item = player.inventory.itemsBag.get(bagIndex);
                             if (item.isNotNullItem()) {
                                 if (item.template.id == 1998) {
                                     nro.models.npc.NpcFactory.openMenuBagTab(player);
@@ -197,7 +213,7 @@ public class UseItem {
                                     msg.writer().writeByte(type);
                                     msg.writer().writeByte(where);
                                     msg.writer().writeByte(index);
-                                    msg.writer().writeUTF("Bạn chắc chắn học " + player.inventory.itemsBag.get(index).template.name + "?");
+                                    msg.writer().writeUTF("Bạn chắc chắn học " + item.template.name + "?");
                                     player.sendMessage(msg);
                                 } else if (item.template.id == 570) {
                                     if (!Util.isAfterMidnight(player.lastTimeRewardWoodChest)) {
@@ -208,7 +224,7 @@ public class UseItem {
                                     msg.writer().writeByte(type);
                                     msg.writer().writeByte(where);
                                     msg.writer().writeByte(index);
-                                    msg.writer().writeUTF("Bạn chắc muốn mở\n" + player.inventory.itemsBag.get(index).template.name + " ?");
+                                    msg.writer().writeUTF("Bạn chắc muốn mở\n" + item.template.name + " ?");
                                     player.sendMessage(msg);
                                 } else if (item.template.type == 22) {
                                     if (player.zone.items.stream().filter(it -> it != null && it.itemTemplate.type == 22).count() > 2) {
@@ -219,10 +235,10 @@ public class UseItem {
                                     msg.writer().writeByte(type);
                                     msg.writer().writeByte(where);
                                     msg.writer().writeByte(index);
-                                    msg.writer().writeUTF("Bạn chắc muốn dùng\n" + player.inventory.itemsBag.get(index).template.name + " ?");
+                                    msg.writer().writeUTF("Bạn chắc muốn dùng\n" + item.template.name + " ?");
                                     player.sendMessage(msg);
                                 } else {
-                                    UseItem.gI().useItem(player, item, index);
+                                    UseItem.gI().useItem(player, item, bagIndex);
                                 }
                             }
                         } else {
@@ -252,7 +268,11 @@ public class UseItem {
                                 nro.models.npc.NpcFactory.openMenuBagTab(player);
                                 return;
                             }
-                            item = player.inventory.itemsBag.get(index);
+                            int bagIndex = player.inventory.resolveBagIndex(index);
+                            if (bagIndex < 0 || bagIndex >= player.inventory.itemsBag.size()) {
+                                return;
+                            }
+                            item = player.inventory.itemsBag.get(bagIndex);
                         }
 
                         if (item.isNotNullItem() && item.template.id == 570) {
@@ -277,7 +297,11 @@ public class UseItem {
                         nro.models.npc.NpcFactory.openMenuBagTab(player);
                         return;
                     }
-                    InventoryService.gI().throwItem(player, where, index);
+                    int throwIndex = (where == 0) ? index : player.inventory.resolveBagIndex(index);
+                    if (throwIndex < 0) {
+                        return;
+                    }
+                    InventoryService.gI().throwItem(player, where, throwIndex);
                     Service.gI().point(player);
                     InventoryService.gI().sendItemBags(player);
                 }
@@ -286,7 +310,11 @@ public class UseItem {
                         nro.models.npc.NpcFactory.openMenuBagTab(player);
                         return;
                     }
-                    UseItem.gI().useItem(player, player.inventory.itemsBag.get(index), index);
+                    int bagIndex = player.inventory.resolveBagIndex(index);
+                    if (bagIndex < 0 || bagIndex >= player.inventory.itemsBag.size()) {
+                        return;
+                    }
+                    UseItem.gI().useItem(player, player.inventory.itemsBag.get(bagIndex), bagIndex);
                 }
             }
         } catch (Exception e) {

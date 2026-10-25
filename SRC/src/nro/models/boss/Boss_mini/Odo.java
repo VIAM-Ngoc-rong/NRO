@@ -64,7 +64,9 @@ public class Odo extends Boss {
     @Override
     public int injured(Player plAtt, long damage, boolean piercing, boolean isMobAttack) {
         if (!this.isDie()) {
-            damage = 50000;
+            boolean isSpecialSkill = SkillUtil.isUseSkillSpecial(plAtt)
+                    || (this.effectSkill != null && this.effectSkill.isBinh);
+            damage = isSpecialSkill ? 150000 : 50000;
             this.nPoint.subHP(damage);
             if (isDie()) {
                 this.setDie(plAtt);
@@ -199,9 +201,6 @@ public class Odo extends Boss {
             this.changeToTypePK();
         }
         this.attack();
-        if (Util.canDoWithTime(st, 900000)) {
-            this.changeStatus(BossStatus.LEAVE_MAP);
-        }
     }
 
     @Override

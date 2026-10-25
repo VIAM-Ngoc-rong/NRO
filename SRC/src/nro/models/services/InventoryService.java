@@ -580,20 +580,34 @@ public class InventoryService {
         Message msg;
         try {
             int tabSize = player.inventory.getActiveTabSize();
-            int nonNullCount = 0;
-            for (int i = 0; i < tabSize; i++) {
-                if (player.inventory.itemsBag.get(i).isNotNullItem()) {
-                    nonNullCount++;
+            List<Integer> displayIndices = player.inventory.displayedBagIndices;
+            displayIndices.clear();
+            Set<Integer> presentTemplateIds = new HashSet<>();
+            for (int i = 0; i < tabSize && i < player.inventory.itemsBag.size(); i++) {
+                Item item = player.inventory.itemsBag.get(i);
+                if (item != null && item.isNotNullItem()) {
+                    displayIndices.add(i);
+                    if (item.template != null) {
+                        presentTemplateIds.add((int) item.template.id);
+                    }
                 }
             }
+            for (int i = tabSize; i < player.inventory.itemsBag.size() && displayIndices.size() < 118; i++) {
+                Item item = player.inventory.itemsBag.get(i);
+                if (player.inventory.isLinkedUtilityItem(item) && !presentTemplateIds.contains((int) item.template.id)) {
+                    displayIndices.add(i);
+                    presentTemplateIds.add((int) item.template.id);
+                }
+            }
+            int nonNullCount = displayIndices.size();
             int rawSlots = Math.max(tabSize, nonNullCount + 1);
             int displaySlots = Math.min(120, ((rawSlots + 5) / 6) * 6);
             msg = new Message(-36);
             msg.writer().writeByte(0);
             msg.writer().writeByte(displaySlots);
-            for (int i = 0; i < tabSize; i++) {
-                Item item = player.inventory.itemsBag.get(i);
-                if (!item.isNotNullItem()) {
+            for (int bagIdx : displayIndices) {
+                Item item = player.inventory.itemsBag.get(bagIdx);
+                if (item == null || !item.isNotNullItem()) {
                     continue;
                 }
                 msg.writer().writeShort(item.template.id);
@@ -1038,6 +1052,16 @@ public class InventoryService {
     }
 
     public byte getIndexBag(Player pl, Item it) {
+        List<Integer> displayed = pl.inventory.displayedBagIndices;
+        for (int i = 0; i < displayed.size(); i++) {
+            int idx = displayed.get(i);
+            if (idx >= 0 && idx < pl.inventory.itemsBag.size()) {
+                Item item = pl.inventory.itemsBag.get(idx);
+                if (item != null && it.equals(item)) {
+                    return (byte) i;
+                }
+            }
+        }
         int limit = pl.inventory.getActiveTabSize();
         for (int i = 0; i < limit; ++i) {
             Item item = pl.inventory.itemsBag.get(i);

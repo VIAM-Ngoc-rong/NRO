@@ -2249,11 +2249,14 @@ public class NPoint {
     public void update() {
         if (player != null && player.effectSkill != null) {
             if (player.effectSkill.isCharging && player.effectSkill.countCharging < 10) {
-                int tiLeHoiPhuc = SkillUtil.getPercentCharge(player.playerSkill.skillSelect.point);
+                Skill skillTTNL = SkillUtil.getSkillbyId(player, Skill.TAI_TAO_NANG_LUONG);
+                int point = (skillTTNL != null) ? skillTTNL.point
+                        : (player.playerSkill.skillSelect != null ? player.playerSkill.skillSelect.point : 1);
+                int tiLeHoiPhuc = SkillUtil.getPercentCharge(point);
                 if (player.effectSkill.isCharging && !player.isDie() && !player.effectSkill.isHaveEffectSkill()
                         && (hp < hpMax || mp < mpMax)) {
-                    long hpRecovered = hpMax / 100 * tiLeHoiPhuc;
-                    long mpRecovered = mpMax / 100 * tiLeHoiPhuc;
+                    long hpRecovered = Math.max(1, hpMax / 100 * tiLeHoiPhuc);
+                    long mpRecovered = Math.max(1, mpMax / 100 * tiLeHoiPhuc);
 
                     if (hp + hpRecovered > 2_147_483_647) {
                         hpRecovered = 2_147_483_647 - hp;
@@ -2263,6 +2266,14 @@ public class NPoint {
                     }
 
                     PlayerService.gI().hoiPhuc(player, hpRecovered, mpRecovered);
+
+                    if (player.isPet) {
+                        EffectSkillService.gI().sendEffectCharge(player);
+                        Pet pet = (Pet) player;
+                        if (pet.master != null) {
+                            Service.gI().showInfoPet(pet.master);
+                        }
+                    }
 
                     if (player.effectSkill.countCharging % 3 == 0) {
                         Service.gI().chat(player, "Phục hồi năng lượng " + getCurrPercentHP() + "%");

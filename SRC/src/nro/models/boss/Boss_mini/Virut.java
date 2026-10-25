@@ -188,16 +188,14 @@ public class Virut extends Boss {
             this.changeToTypePK();
         }
         this.attack();
-        if (Util.canDoWithTime(st, 900000)) {
-            this.changeStatus(BossStatus.LEAVE_MAP);
-            this.checkGlobalEffects();
-        }
     }
 
     @Override
     public synchronized int injured(Player plAtt, long damage, boolean piercing, boolean isMobAttack) {
         if (!this.isDie()) {
-            int actualDamage = 1;
+            boolean isSpecialSkill = nro.models.utils.SkillUtil.isUseSkillSpecial(plAtt)
+                    || (this.effectSkill != null && this.effectSkill.isBinh);
+            int actualDamage = isSpecialSkill ? 3 : 1;
             this.nPoint.subHP(actualDamage);
 
             if (this.nPoint.hp <= 0) {

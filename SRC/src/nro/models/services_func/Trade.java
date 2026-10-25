@@ -102,11 +102,24 @@ public class Trade {
                     goldTrade2 = quantity;
                 }
             } else { // Giao dịch vật phẩm
+                int bagIndex = pl.inventory.resolveBagIndex(index);
+                if (bagIndex < 0) {
+                    removeItemTrade(pl, index);
+                    return;
+                }
                 Item item = null;
                 if (pl.equals(this.player1)) {
-                    item = itemsBag1.get(index);
+                    if (bagIndex >= itemsBag1.size()) {
+                        removeItemTrade(pl, index);
+                        return;
+                    }
+                    item = itemsBag1.get(bagIndex);
                 } else {
-                    item = itemsBag2.get(index);
+                    if (bagIndex >= itemsBag2.size()) {
+                        removeItemTrade(pl, index);
+                        return;
+                    }
+                    item = itemsBag2.get(bagIndex);
                 }
                 if (item.template.id == 570) {
                     Service.gI().sendThongBao(pl, "Không thể giao dịch Rương Gỗ");

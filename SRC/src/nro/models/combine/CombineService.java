@@ -90,7 +90,10 @@ public class CombineService {
         player.combineNew.clearItemCombine();
         if (index.length > 0) {
             for (int i = 0; i < index.length; i++) {
-                player.combineNew.itemsCombine.add(player.inventory.itemsBag.get(index[i]));
+                int bagIndex = player.inventory.resolveBagIndex(index[i]);
+                if (bagIndex >= 0 && bagIndex < player.inventory.itemsBag.size()) {
+                    player.combineNew.itemsCombine.add(player.inventory.itemsBag.get(bagIndex));
+                }
             }
         }
         switch (player.combineNew.typeCombine) {

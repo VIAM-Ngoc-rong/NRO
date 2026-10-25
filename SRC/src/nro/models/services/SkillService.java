@@ -1047,6 +1047,9 @@ public class SkillService {
 
     public boolean canUseSkillWithMana(Player player) {
         if (player.playerSkill.skillSelect != null) {
+            if (player.playerSkill.skillSelect.template.id == Skill.TAI_TAO_NANG_LUONG) {
+                return true;
+            }
             if (player.playerSkill.skillSelect.template.id == Skill.KAIOKEN) {
                 long hpUse = player.nPoint.hpMax / 100 * 10;
                 if (player.isBoss && player instanceof Rival) {
@@ -1111,6 +1114,9 @@ public class SkillService {
 
     private void setMpAffterUseSkill(Player player) {
         if (player.playerSkill.skillSelect != null) {
+            if (player.playerSkill.skillSelect.template.id == Skill.TAI_TAO_NANG_LUONG) {
+                return;
+            }
             switch (player.playerSkill.skillSelect.template.manaUseType) {
                 case 0 -> {
                     if (player.nPoint.mp >= player.playerSkill.skillSelect.manaUse) {

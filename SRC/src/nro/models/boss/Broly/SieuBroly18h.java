@@ -97,14 +97,15 @@ public class SieuBroly18h extends Boss {
                 return 1;
             }
             damage = this.nPoint.subDameInjureWithDeff(damage);
-            // Đánh theo % máu giống Super Broly nhưng giảm dần từ 0.5% xuống 0.1% theo lượng máu hiện tại
+            // Đánh theo % máu giống Super Broly nhưng giảm dần từ 0.5% xuống 0.1% (chiêu đặc biệt gấp 3 lần %)
             boolean isTuSat = plAtt != null && plAtt.playerSkill != null
                     && plAtt.playerSkill.skillSelect != null
                     && plAtt.playerSkill.skillSelect.template.id == Skill.TU_SAT;
-            boolean isSpecialSkill = SkillUtil.isUseSkillSpecial(plAtt);
-            if (!piercing && !isTuSat && !isSpecialSkill && this.nPoint.hpMax > 0) {
+            boolean isSpecialSkill = SkillUtil.isUseSkillSpecial(plAtt)
+                    || (this.effectSkill != null && this.effectSkill.isBinh);
+            if (!isTuSat && this.nPoint.hpMax > 0) {
                 double hpRatio = Math.max(0.0, Math.min(1.0, (double) this.nPoint.hp / (double) this.nPoint.hpMax));
-                double maxPercent = 0.001 + (0.004 * hpRatio); // 0.5% ở 100% HP giảm dần về 0.1% khi cạn máu
+                double maxPercent = (0.001 + (0.004 * hpRatio)) * (isSpecialSkill ? 3.0 : 1.0);
                 long maxDamage = Math.max(1L, (long) (this.nPoint.hpMax * maxPercent));
                 if (damage > maxDamage) {
                     damage = maxDamage;

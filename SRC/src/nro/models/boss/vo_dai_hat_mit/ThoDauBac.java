@@ -59,8 +59,11 @@ public class ThoDauBac extends DeathOrAliveArena {
             if (plAtt != null && plAtt.idNRNM != -1) {
                 return 1;
             }
-            if (!piercing && damage > this.nPoint.hpMax / 10) {
-                damage = this.nPoint.hpMax / 10;
+            boolean isSpecialSkill = SkillUtil.isUseSkillSpecial(plAtt)
+                    || (this.effectSkill != null && this.effectSkill.isBinh);
+            long maxDamage = Math.max(1L, (long) this.nPoint.hpMax * (isSpecialSkill ? 3L : 1L) / 10L);
+            if (damage > maxDamage) {
+                damage = maxDamage;
             }
 
             this.nPoint.subHP(damage);

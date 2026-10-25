@@ -1136,7 +1136,11 @@ public class ShopService {
             if (pl.getSession().version < 220) {
                 index -= (pl.inventory.itemsBody.size() - 7);
             }
-            item = pl.inventory.itemsBag.get(index);
+            int bagIndex = pl.inventory.resolveBagIndex(index);
+            if (bagIndex < 0 || bagIndex >= pl.inventory.itemsBag.size()) {
+                return;
+            }
+            item = pl.inventory.itemsBag.get(bagIndex);
         }
         if (item != null && item.isNotNullItem()) {
             if (item.template.id == 570) {
@@ -1191,7 +1195,11 @@ public class ShopService {
         if (where == 0) {
             item = pl.inventory.itemsBody.get(index);
         } else {
-            item = pl.inventory.itemsBag.get(index);
+            int bagIndex = pl.inventory.resolveBagIndex(index);
+            if (bagIndex < 0 || bagIndex >= pl.inventory.itemsBag.size()) {
+                return;
+            }
+            item = pl.inventory.itemsBag.get(bagIndex);
         }
         if (item != null) {
             if (item.template.id == 570) {

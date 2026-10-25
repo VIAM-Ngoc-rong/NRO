@@ -355,10 +355,15 @@ public class Pet extends Player {
                 }
 
                 masterDoesNotAttack();
-                moveIdle();
+                if (!this.effectSkill.isCharging) {
+                    moveIdle();
+                }
 
                 switch (status) {
                     case FOLLOW:
+                        if (Util.getDistance(this, master) <= 100 && useSkill3()) {
+                            break;
+                        }
                         followMaster(60);
                         break;
 
@@ -618,12 +623,16 @@ public class Pet extends Player {
                     }
                     return false;
                 case Skill.TAI_TAO_NANG_LUONG:
-                    if (this.effectSkill.isCharging && this.countTTNL < Util.nextInt(3, 5)) {
-                        this.countTTNL++;
+                    if (this.effectSkill.isCharging) {
+                        if (this.nPoint.hp >= this.nPoint.hpMax && this.nPoint.mp >= this.nPoint.mpMax) {
+                            nro.models.services.EffectSkillService.gI().stopCharge(this);
+                            return false;
+                        }
                         return true;
                     }
-                    if (SkillService.gI().canUseSkillWithCooldown(this) && SkillService.gI().canUseSkillWithMana(this)
-                            && (this.nPoint.getCurrPercentHP() <= 20 || this.nPoint.getCurrPercentMP() <= 20)) {
+                    if (SkillService.gI().canUseSkillWithCooldown(this)
+                            && (this.nPoint.getCurrPercentHP() <= 30 || this.nPoint.getCurrPercentMP() <= 30)) {
+                        this.idle = false;
                         SkillService.gI().useSkill(this, null, null, -1, null);
                         this.countTTNL = 0;
                         return true;

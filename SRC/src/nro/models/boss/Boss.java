@@ -634,32 +634,6 @@ public class Boss extends Player implements IBoss {
                 this.startBossTTNL();
             }
         }
-        if (!this.isDie() && this.zone != null && this.zone.map != null
-                && (this.bossStatus == BossStatus.ACTIVE || this.bossStatus == BossStatus.AFK || this.bossStatus == BossStatus.CHAT_S)
-                && !this.isExcludedFrom5MinReset() && !this.isMiniBoss()) {
-            Boss root = this.parentBoss != null ? this.parentBoss : this;
-            if (root.pendingIdleDespawn) {
-                if (Util.canDoWithTime(root.timeTriggerIdleDespawn, 2000L)) {
-                    this.despawnIdleBossGroup();
-                }
-                return;
-            } else if (Util.canDoWithTime(this.getGroupLastTimeAttacked(), 600_000L) && this.hasRealPlayerInZone()) {
-                root.pendingIdleDespawn = true;
-                root.timeTriggerIdleDespawn = System.currentTimeMillis();
-                this.pendingIdleDespawn = true;
-                this.chat("Đợi lâu quá không ai đánh, ta đi đây! Hẹn gặp lại sau!");
-                List<Player> playersInZone = this.zone.getNotBosses();
-                if (playersInZone != null) {
-                    for (int i = playersInZone.size() - 1; i >= 0; i--) {
-                        Player pl = playersInZone.get(i);
-                        if (pl != null && !pl.isBot && pl.isPl()) {
-                            Service.gI().sendThongBao(pl, "BOSS " + root.name + " đã rời đi vì quá 10 phút không ai đánh!");
-                        }
-                    }
-                }
-                return;
-            }
-        }
         if (this.isUsingTTNL) {
             if (this.isDie() || this.zone == null
                     || (this.effectSkill != null && (this.effectSkill.anTroi || this.effectSkill.isHaveEffectSkill() || this.effectSkill.isBinh || this.effectSkill.isSocola))) {
@@ -1453,10 +1427,7 @@ public class Boss extends Player implements IBoss {
     }
 
     public void leaveMapNew() {
-        if (this.data != null) {
-            this.currentLevel = this.data.length;
-        }
-        this.changeStatus(BossStatus.LEAVE_MAP);
+        // Không tự biến mất theo thời gian; Boss chỉ biến mất khi bị tiêu diệt
     }
 
     @Override

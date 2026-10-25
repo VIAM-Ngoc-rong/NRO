@@ -109,8 +109,16 @@ public class SuperBroly extends Boss {
                 SkillService.gI().useSkill(this, null, null, -1, null);
             }
             damage = this.nPoint.subDameInjureWithDeff(damage);
-            if (!piercing && !SkillUtil.isUseSkillSpecial(plAtt) && plAtt.playerSkill.skillSelect.template.id != Skill.TU_SAT && damage > this.nPoint.hpMax / 100) {
-                damage = this.nPoint.hpMax / 100;
+            boolean isTuSat = plAtt != null && plAtt.playerSkill != null
+                    && plAtt.playerSkill.skillSelect != null
+                    && plAtt.playerSkill.skillSelect.template.id == Skill.TU_SAT;
+            boolean isSpecialSkill = SkillUtil.isUseSkillSpecial(plAtt)
+                    || (this.effectSkill != null && this.effectSkill.isBinh);
+            if (!isTuSat) {
+                long maxDamage = Math.max(1L, (long) this.nPoint.hpMax * (isSpecialSkill ? 3L : 1L) / 100L);
+                if (damage > maxDamage) {
+                    damage = maxDamage;
+                }
             }
             this.nPoint.subHP(damage);
             if (isDie()) {

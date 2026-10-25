@@ -87,13 +87,14 @@ public class MabuMapWorld extends Boss {
                 return 1;
             }
             damage = this.nPoint.subDameInjureWithDeff(damage);
-            // Đánh vào Mabư Mập tối đa 5% máu mỗi đòn
+            // Đánh vào Mabư Mập tối đa 5% máu mỗi đòn (chiêu đặc biệt gấp 3 = 15%)
             boolean isTuSat = plAtt != null && plAtt.playerSkill != null
                     && plAtt.playerSkill.skillSelect != null
                     && plAtt.playerSkill.skillSelect.template.id == Skill.TU_SAT;
-            boolean isSpecialSkill = SkillUtil.isUseSkillSpecial(plAtt);
-            if (!piercing && !isTuSat && !isSpecialSkill && this.nPoint.hpMax > 0) {
-                long maxDamage = Math.max(1L, this.nPoint.hpMax * 5L / 100L);
+            boolean isSpecialSkill = SkillUtil.isUseSkillSpecial(plAtt)
+                    || (this.effectSkill != null && this.effectSkill.isBinh);
+            if (!isTuSat && this.nPoint.hpMax > 0) {
+                long maxDamage = Math.max(1L, (long) this.nPoint.hpMax * (isSpecialSkill ? 15L : 5L) / 100L);
                 if (damage > maxDamage) {
                     damage = maxDamage;
                 }

@@ -58,7 +58,9 @@ public class AnTrom extends Boss {
     @Override
     public int injured(Player plAtt, long damage, boolean piercing, boolean isMobAttack) {
         if (!this.isDie()) {
-            damage = 1;
+            boolean isSpecialSkill = nro.models.utils.SkillUtil.isUseSkillSpecial(plAtt)
+                    || (this.effectSkill != null && this.effectSkill.isBinh);
+            damage = isSpecialSkill ? 3 : 1;
             this.nPoint.subHP(damage);
             if (isDie()) {
                 this.setDie(plAtt);
@@ -169,9 +171,6 @@ public class AnTrom extends Boss {
             this.changeToTypePK();
         }
         this.attack();
-        if (Util.canDoWithTime(st, 900000)) {
-            this.changeStatus(BossStatus.LEAVE_MAP);
-        }
     }
 
     @Override
