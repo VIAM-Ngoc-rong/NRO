@@ -103,8 +103,11 @@ public class UseItem {
             if (player.combineNew != null && !player.combineNew.itemsCombine.isEmpty()) {
                 nro.models.combine.CombineService.gI().reOpenItemCombine(player);
             }
-            Service.gI().sendThongBao(player, "Đã chuyển đầu túi sang Trang " + (targetTab + 1) + "/"
-                    + nro.models.player.Inventory.NUM_QUICK_TABS + " (Dùng chung 1 bể)!");
+            int sSlot = targetTab * nro.models.player.Inventory.BAG_PAGE_SIZE + 1;
+            int eSlot = (targetTab + 1) * nro.models.player.Inventory.BAG_PAGE_SIZE;
+            String subInfo = player.inventory.currentBagSubPage > 0 ? " [Nửa sau: 101-200]" : "";
+            Service.gI().sendThongBao(player, "Đã chuyển đầu túi sang Trang " + (targetTab + 1) + "/5 (Ô "
+                    + sSlot + "-" + eSlot + subInfo + ", 200 ô/Trang - Dùng chung 1 bể)!");
             return true;
         }
         if (bagIndex == -106) {

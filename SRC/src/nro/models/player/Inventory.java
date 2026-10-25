@@ -19,10 +19,11 @@ import nro.models.task.BadgesTaskService;
 public class Inventory {
 
     public static final long LIMIT_GOLD = 100_000_000_000L;
-    public static final int DEFAULT_ITEMS_BAG = 200;
-    public static final int MAX_ITEMS_BAG = 500;
-    public static final int BAG_TAB_SIZE = 100;
-    public static final int BAG_PAGE_SIZE = 30;
+    public static final int DEFAULT_ITEMS_BAG = 1000;
+    public static final int MAX_ITEMS_BAG = 1000;
+    public static final int BAG_TAB_SIZE = 200;
+    public static final int BAG_PAGE_SIZE = 200;
+    public static final int BAG_SUBPAGE_SIZE = 100;
     public static final int NUM_QUICK_TABS = 5;
     public static final int MAX_ITEMS_BOX = 120;
 
@@ -43,6 +44,7 @@ public class Inventory {
     }
 
     public int currentBagTab = 0;
+    public int currentBagSubPage = 0;
     public final List<Integer> displayedBagIndices = new ArrayList<>();
     public Item trainArmor;
     public List<String> giftCode;
@@ -100,7 +102,12 @@ public class Inventory {
         if (newTab < 0 || newTab >= NUM_QUICK_TABS) {
             return false;
         }
-        this.currentBagTab = newTab;
+        if (this.currentBagTab == newTab) {
+            this.currentBagSubPage = (this.currentBagSubPage == 0) ? 1 : 0;
+        } else {
+            this.currentBagTab = newTab;
+            this.currentBagSubPage = 0;
+        }
         return true;
     }
 

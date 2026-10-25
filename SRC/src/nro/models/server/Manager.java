@@ -649,6 +649,11 @@ public final class Manager {
                 psAlterEmail.executeUpdate();
             } catch (Exception ignored) {
             }
+            try (PreparedStatement psAlterBag = ConnectionDatabase.prepareStatement(
+                    "ALTER TABLE player MODIFY COLUMN items_bag LONGTEXT NOT NULL")) {
+                psAlterBag.executeUpdate();
+            } catch (Exception ignored) {
+            }
 
             // Điều chỉnh phần thưởng Thành Tích Bò Mộng hợp lý (Thưởng bằng Thỏi Vàng)
             int[][] balancedAchievements = {

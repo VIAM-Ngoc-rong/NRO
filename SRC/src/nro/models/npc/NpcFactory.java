@@ -923,9 +923,9 @@ public class NpcFactory {
         String npcSay = "|7|=== BẢNG ĐIỀU KHIỂN TIỆN ÍCH ===\n"
                 + "|2|Auto Buff Đậu (Sư phụ & Đệ): " + (player.isAutoBuffPea ? "|1|[Đang Bật]" : "|7|[Đang Tắt]") + "\n"
                 + "|2|Auto Treo Quái (Chống đầy túi): " + (player.isAutoCleanBag ? "|1|[Đang Bật]" : "|7|[Đang Tắt]") + "\n"
-                + "|2|Hành trang: |1|Tab " + curTab + "/" + totalTabs + " (" + player.inventory.itemsBag.size() + "/" + nro.models.player.Inventory.MAX_ITEMS_BAG + " ô - 100 ô/Tab)\n"
+                + "|2|Hành trang: |1|Trang " + curTab + "/" + totalTabs + " (" + player.inventory.getUsedSlotsInBag() + "/" + player.inventory.itemsBag.size() + " ô - 200 ô/Trang)\n"
                 + "|2|Điểm Săn Boss hiện có: |1|" + player.pointSanBoss + " điểm\n"
-                + "|0|(Mẹo: Bấm nút Lá Cờ hoặc gõ 'tab 1'..'tab 5' để đổi Tab Hành trang nhanh)";
+                + "|0|(Mẹo: Bấm thẳng nút 1★ 2★ 3★ 4★ 5★ ở đầu Hành trang để đổi Trang nhanh)";
         NpcService.gI().createMenuConMeo(player, 9900, -1, npcSay,
                 "Auto Đậu\n" + (player.isAutoBuffPea ? "[Tắt]" : "[Bật]"),
                 "Treo Quái\n" + (player.isAutoCleanBag ? "[Tắt]" : "[Bật]"),
@@ -971,7 +971,7 @@ public class NpcFactory {
                     + "Trang " + (t + 1) + "\n(Ô " + startSlot + "-" + endSlot + ")";
         }
         if (canExpand) {
-            options[totalTabs] = "Mở rộng Bể\n(+100 ô / 50k Ngọc)";
+            options[totalTabs] = "Mở rộng Bể\n(+200 ô / 50k Ngọc)";
             options[totalTabs + 1] = "Menu\nTiện Ích";
         } else {
             options[totalTabs] = "Menu\nTiện Ích";

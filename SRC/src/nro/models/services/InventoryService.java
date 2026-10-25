@@ -775,6 +775,9 @@ public class InventoryService {
         if (player == null || player.inventory == null || player.inventory.itemsBag == null) {
             return;
         }
+        while (player.inventory.itemsBag.size() < Inventory.DEFAULT_ITEMS_BAG) {
+            player.inventory.itemsBag.add(ItemService.gI().createItemNull());
+        }
         for (Item it : player.inventory.itemsBag) {
             sanitizeStarOptions(it);
         }
@@ -789,45 +792,51 @@ public class InventoryService {
 
             // Hàng đầu tiên (6 ô: 0..5) ngay dưới khung Trang bị là thanh nút bấm nhanh: [1] [2] [3] [4] [5] [+]
             for (int t = 0; t < Inventory.NUM_QUICK_TABS; t++) {
-                displayIndices.add(-101 - t); // -101..-105 -> Trang 1..5
+                displayIndices.add(-101 - t); // -101..-105 -> Trang 1..5 (mỗi trang 200 ô)
             }
-            displayIndices.add(-106); // -106 -> Nút [+] Mở rộng / Tiện ích túi đồ
+            displayIndices.add(-106); // -106 -> Nút [+] Quản lý / Tiện ích túi đồ
 
-            // Gom toàn bộ vật phẩm thực trong bể chung (itemsBag)
+            // Gom toàn bộ vật phẩm thực trong bể chung (itemsBag: 5 trang x 200 ô = 1000 ô)
             List<Integer> allNonNull = new ArrayList<>();
             for (int i = 0; i < player.inventory.itemsBag.size(); i++) {
                 Item item = player.inventory.itemsBag.get(i);
-                if (item != null && item.isNotNullItem() && item.template != null && item.template.id != 1998) {
+                if (item != null && item.isNotNullItem() && item.template != null
+                        && !nro.models.data.ItemData.isQuickTabButtonTemplateId(item.template.id)) {
                     allNonNull.add(i);
                 }
             }
 
-            // Đưa Trang đang chọn (1..5, mỗi trang 30 ô = 5 hàng) lên ngay đầu bể chung,
-            // các vật phẩm ở các trang còn lại nối tiếp ngay bên dưới trong cùng 1 bể chung!
+            // Đưa Trang đang chọn (1..5, mỗi trang 200 ô) lên ngay đầu bể chung!
+            // Nếu bấm lại cùng 1 nút Trang khi trang đó có > 100 món thì lật sang nửa sau (ô 101..200) của trang đó.
             int activeTab = Math.max(0, Math.min(Inventory.NUM_QUICK_TABS - 1, player.inventory.currentBagTab));
-            int startOffset = activeTab * Inventory.BAG_PAGE_SIZE;
+            int subPage = player.inventory.currentBagSubPage;
+            int startOffset = activeTab * Inventory.BAG_PAGE_SIZE + (subPage * Inventory.BAG_SUBPAGE_SIZE);
+            if (startOffset >= allNonNull.size() && subPage > 0) {
+                player.inventory.currentBagSubPage = 0;
+                startOffset = activeTab * Inventory.BAG_PAGE_SIZE;
+            }
             if (startOffset >= allNonNull.size() && !allNonNull.isEmpty()) {
-                int lastPage = Math.max(0, (allNonNull.size() - 1) / Inventory.BAG_PAGE_SIZE);
-                startOffset = lastPage * Inventory.BAG_PAGE_SIZE;
+                int step = Math.max(12, allNonNull.size() / Inventory.NUM_QUICK_TABS);
+                startOffset = Math.min(allNonNull.size() - 1, activeTab * step);
             }
 
-            for (int i = startOffset; i < allNonNull.size() && displayIndices.size() < 120; i++) {
+            for (int i = startOffset; i < allNonNull.size() && displayIndices.size() < 126; i++) {
                 displayIndices.add(allNonNull.get(i));
             }
-            for (int i = 0; i < startOffset && displayIndices.size() < 120; i++) {
+            for (int i = 0; i < startOffset && displayIndices.size() < 126; i++) {
                 int bagIdx = allNonNull.get(i);
                 if (!displayIndices.contains(bagIdx)) {
                     displayIndices.add(bagIdx);
                 }
             }
 
-            // Đảm bảo mọi vật phẩm đang chọn trong Bà Hạt Mít luôn nằm trong danh sách hiển thị (< 120)
+            // Đảm bảo mọi vật phẩm đang chọn trong Bà Hạt Mít luôn nằm trong danh sách hiển thị (< 126)
             if (player.combineNew != null && player.combineNew.itemsCombine != null && !player.combineNew.itemsCombine.isEmpty()) {
                 for (Item combItem : player.combineNew.itemsCombine) {
                     if (combItem != null && combItem.isNotNullItem()) {
                         for (int i = 0; i < player.inventory.itemsBag.size(); i++) {
                             if (player.inventory.itemsBag.get(i) == combItem && !displayIndices.contains(i)) {
-                                if (displayIndices.size() >= 120) {
+                                if (displayIndices.size() >= 126) {
                                     displayIndices.set(displayIndices.size() - 1, i);
                                 } else {
                                     displayIndices.add(i);
@@ -841,7 +850,7 @@ public class InventoryService {
 
             int totalEntries = displayIndices.size();
             int rawSlots = Math.max(42, totalEntries + 6);
-            int displaySlots = Math.min(120, ((rawSlots + 5) / 6) * 6);
+            int displaySlots = Math.min(126, ((rawSlots + 5) / 6) * 6);
 
             // Cấp ID template đã đăng ký sẵn trong ItemData (NRitem2):
             // - Nút [1]..[5] và Nút [+]
