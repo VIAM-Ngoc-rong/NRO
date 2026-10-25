@@ -1,0 +1,1483 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trang Chủ Chính Thức - Chú Bé Rồng Online (Ngọc Rồng VIAM)</title>
+    <link rel="icon" href="web/favicon.ico" type="image/x-icon" />
+    <link rel="shortcut icon" href="web/favicon.ico" type="image/x-icon" />
+    <link rel="apple-touch-icon" href="web/images/favicon-32x32.png" />
+    <link rel="icon" type="image/png" href="web/images/favicon-32x32.png" sizes="32x32" />
+
+    <!-- CSS gốc từ thư mục /web -->
+    <link rel="stylesheet" href="web/assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="web/assets/fontawesome-free/all.min.css">
+    <link rel="stylesheet" href="web/view/static/css/template.css">
+    <link rel="stylesheet" href="web/view/static/css/eff.css">
+    <link rel="stylesheet" href="web/view/static/css/w3.css">
+    <link rel="stylesheet" href="web/view/static/css/forum.css">
+    <link rel="stylesheet" href="web/view/static/css/css-info.css">
+    <link rel="stylesheet" href="web/view/static/style/stylesheet.css">
+
+    <script src="web/assets/jquery/jquery.min.js"></script>
+    <script src="web/view/static/js/ThreeCanvas.js" type="text/javascript"></script>
+    <script src="web/view/static/js/Snow3d.js" type="text/javascript"></script>
+    <script src="web/view/static/js/animation.js" type="text/javascript"></script>
+
+    <style>
+        body {
+            background: radial-gradient(circle at top left, rgba(255, 213, 119, .35), transparent 28rem),
+                        linear-gradient(180deg, #7a341b 0%, #d98237 45%, #b3afaf 100%);
+            background-attachment: fixed;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 9.5pt;
+            color: #212529;
+        }
+        .body_body {
+            max-width: 650px;
+            margin: 8px auto 30px;
+            position: relative;
+            z-index: 10;
+        }
+        /* Thanh kết nối VPS phía trên cùng */
+        .vps-topbar {
+            background: rgba(54, 20, 6, 0.94);
+            border: 1px solid #f39c12;
+            color: #fff;
+            padding: 6px 10px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            font-size: 11.5px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 6px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.35);
+        }
+        .vps-topbar input {
+            background: #1e0b03;
+            border: 1px solid #a04000;
+            color: #ffeb3b;
+            border-radius: 4px;
+            padding: 2px 6px;
+            font-size: 11px;
+        }
+        .live-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 3px 9px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        .live-online { background: #1e8449; color: #fff; }
+        .live-offline { background: #c0392b; color: #fff; }
+        .pulse-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #2ecc71;
+            display: inline-block;
+            box-shadow: 0 0 6px #2ecc71;
+        }
+        /* Menu chính chuẩn NRO */
+        tr.menu td {
+            width: 20% !important;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+        tr.menu td a {
+            display: block;
+            padding: 5px 2px !important;
+            font-weight: bold !important;
+            font-size: 12px;
+        }
+        .tab-pane-nro {
+            display: none;
+        }
+        .tab-pane-nro.active {
+            display: block;
+        }
+        /* Khung trạng thái Server trực tiếp */
+        .server-live-box {
+            background: #ffe5bd;
+            border: 2px solid #924C31;
+            border-radius: 6px;
+            padding: 10px;
+            margin-bottom: 6px;
+        }
+        .stat-card {
+            background: #fff8ef;
+            border: 1px solid #d98237;
+            border-radius: 5px;
+            padding: 6px 4px;
+            text-align: center;
+        }
+        .boss-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: #6b200c;
+            color: #ffeb3b;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 11.5px;
+            margin: 2px;
+            font-weight: bold;
+        }
+        .gift-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: #fff3cd;
+            border: 1px solid #b7410e;
+            color: #7b1d00;
+            font-weight: bold;
+            padding: 4px 10px;
+            border-radius: 5px;
+            margin: 3px;
+            font-size: 12px;
+            cursor: pointer;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+        }
+        .gift-chip:hover {
+            background: #ffe082;
+            transform: translateY(-1px);
+        }
+        /* Bảng xếp hạng chuẩn bang-xep-hang.php */
+        .bxh-hero {
+            padding: 12px 10px;
+            background: linear-gradient(135deg, #561d00 0%, #a14418 52%, #f0a33b 100%);
+            color: #fff7d5;
+            text-align: center;
+            border-radius: 6px 6px 0 0;
+        }
+        .bxh-hero h4 {
+            margin: 0;
+            font-size: 15px;
+            font-weight: 800;
+            color: #ffeb3b;
+        }
+        .nro-rank-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 5px;
+            font-size: 12px;
+        }
+        .nro-rank-table thead th {
+            background: #5b250d;
+            color: #fff1bd;
+            padding: 7px 6px;
+            text-align: center;
+            border: none;
+        }
+        .nro-rank-table tbody tr {
+            background: #fffaf0;
+            box-shadow: 0 1px 4px rgba(104, 48, 18, .12);
+        }
+        .nro-rank-table tbody tr:nth-of-type(odd) {
+            background: #fff1d3;
+        }
+        .nro-rank-table td {
+            padding: 6px;
+            vertical-align: middle;
+        }
+        .rank-badge {
+            display: inline-flex;
+            width: 24px;
+            height: 24px;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: #7a3a1b;
+            color: #fff;
+            font-weight: 800;
+            font-size: 11px;
+        }
+        .top_1 .rank-badge { background: linear-gradient(180deg, #ffe88c, #d69516); color: #4a2600; }
+        .top_2 .rank-badge { background: linear-gradient(180deg, #f5f7ff, #9ca8b8); color: #243044; }
+        .top_3 .rank-badge { background: linear-gradient(180deg, #ffc58a, #b96521); color: #3f1e09; }
+        /* Sửa đường dẫn ảnh slide trong css-info.css sang ảnh local */
+        .slide1 { background-image: url("web/images/screen/4-2.png") !important; color: #ffeb3b !important; text-shadow: 1px 1px 4px #000; }
+        .slide2 { background-image: url("web/images/screen/4-3.png") !important; color: #ffeb3b !important; text-shadow: 1px 1px 4px #000; }
+        .slide3 { background-image: url("web/images/screen/4-1.png") !important; color: #ffeb3b !important; text-shadow: 1px 1px 4px #000; }
+        /* Tránh button toàn cục của css-info.css làm hỏng button thường */
+        .normal-btn {
+            position: static !important;
+            width: auto !important;
+            height: auto !important;
+            border-radius: 5px !important;
+            box-shadow: none !important;
+            overflow: visible !important;
+        }
+        .carousel-page-btn {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            line-height: 24px;
+            text-align: center;
+            border-radius: 50%;
+            background: #561d00;
+            color: #fff !important;
+            font-weight: bold;
+            margin: 0 2px;
+            cursor: pointer;
+            text-decoration: none !important;
+        }
+        .carousel-page-btn.active-2 {
+            background: #ffeb3b !important;
+            color: #561d00 !important;
+            border: 1px solid #561d00;
+        }
+    </style>
+</head>
+<body>
+    <!-- Hiệu ứng Tuyết rơi 3D gốc từ /web -->
+    <div class="snowEffect" style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:999;">
+        <canvas id="snowcanvas" height="100%" width="100%"></canvas>
+    </div>
+
+    <div class="body_body">
+        <!-- Thanh trạng thái kết nối trực tiếp Máy Chủ -->
+        <div class="vps-topbar">
+            <div>
+                <span id="connBadge" class="live-badge live-offline">
+                    <span class="pulse-dot"></span>
+                    <span id="connText">Đang kết nối Máy Chủ...</span>
+                </span>
+                <span class="ml-2">Online: <b class="text-warning" id="liveOnlineCount">0</b></span>
+                <span class="ml-2">EXP: <b class="text-info" id="liveExpRate">x1</b></span>
+                <span class="ml-2">Boss sống: <b class="text-danger" id="liveBossCount">0</b></span>
+            </div>
+            <div class="d-flex align-items-center" style="gap:6px;">
+                <button class="btn btn-sm btn-warning py-0 px-2 font-weight-bold normal-btn" onclick="refreshAllLive()">
+                    <i class="fas fa-sync-alt"></i> Làm mới
+                </button>
+            </div>
+        </div>
+
+        <!-- Cảnh báo 18+ chuẩn /web/trang-chu.php -->
+        <div class="div-12" style="color:#fff; margin-bottom:2px;">
+            <img height="12" src="web/images/18-1.png" style="vertical-align: middle;" />
+            <span style="vertical-align: middle;">Dành cho người chơi trên 18 tuổi. Chơi quá 180 phút mỗi ngày sẽ hại sức khỏe.</span>
+        </div>
+
+        <div class="left_top"></div>
+        <div class="bg_top">
+            <div class="right_top"></div>
+        </div>
+
+        <div class="body-content">
+            <div class="bg-content2">
+                <!-- Logo chính thức từ web/images/logo_sk_he.png -->
+                <h1 class="a">
+                    <a href="javascript:void(0)" onclick="switchTab('tab-home')" title="Ngọc Rồng VIAM">
+                        <img height="90" src="web/images/logo_sk_he.png" alt="Ngọc Rồng VIAM" />
+                    </a>
+                </h1>
+
+                <!-- Menu chính & Banner mùa hè từ web/images/banner_Summer.png -->
+                <div id="top">
+                    <div class="link-more">
+                        <div class="h">
+                            <div class="bg_noel"></div>
+                            <div class="menu2">
+                                <table width="100%" cellspacing="4">
+                                    <tr class="menu">
+                                        <td id="selected" class="menu-tab-cell" data-tab="tab-home" onclick="switchTab('tab-home')">
+                                            <a href="javascript:void(0)">Trang Chủ</a>
+                                        </td>
+                                        <td class="menu-tab-cell" data-tab="tab-intro" onclick="switchTab('tab-intro')">
+                                            <a href="javascript:void(0)">Giới Thiệu</a>
+                                        </td>
+                                        <td class="menu-tab-cell" data-tab="tab-forum" onclick="switchTab('tab-forum')">
+                                            <a href="javascript:void(0)">Diễn Đàn</a>
+                                        </td>
+                                        <td class="menu-tab-cell" data-tab="tab-rank" onclick="switchTab('tab-rank')">
+                                            <a href="javascript:void(0)">Đua Top</a>
+                                        </td>
+                                        <td class="menu-tab-cell" data-tab="tab-account" onclick="switchTab('tab-account')">
+                                            <a href="javascript:void(0)">Tài Khoản</a>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="bg_top_22">
+                                <img src="web/images/banner_Summer.png" width="100%" alt="Banner Ngọc Rồng">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Khung Nút Tải Game gốc từ web/images/ -->
+                <div class="download">
+                    <div class="bg-content text-center" style="padding: 10px 5px;">
+                        <div id="columns" style="text-align:center; display:flex; justify-content:center; gap:14px; flex-wrap:wrap; align-items:center;">
+                            <figure style="margin:0;">
+                                <a href="web/down/JAR.jar" download title="Tải Bản JAVA (.JAR)">
+                                    <img height="35" src="web/images/jar.png" alt="JAVA JAR">
+                                </a>
+                                <figcaption style="font-size:10px;color:#924C31;font-weight:bold;">Bản JAVA</figcaption>
+                            </figure>
+                            <figure style="margin:0;">
+                                <a href="web/down/NRO.apk" download title="Tải Bản Android (.APK)">
+                                    <img height="35" src="web/images/android.png" alt="Android APK">
+                                </a>
+                                <figcaption style="font-size:10px;color:#924C31;font-weight:bold;">Android APK</figcaption>
+                            </figure>
+                            <figure style="margin:0;">
+                                <a href="web/down/NRO.apk" download title="Tải Bản Google Play">
+                                    <img height="35" src="web/images/play.png" alt="Google Play">
+                                </a>
+                                <figcaption style="font-size:10px;color:#924C31;font-weight:bold;">Play Store</figcaption>
+                            </figure>
+                            <figure style="margin:0;">
+                                <a href="web/down/PC.rar" download title="Tải Bản PC Windows">
+                                    <img height="35" src="web/images/pc.png" alt="PC Windows">
+                                </a>
+                                <figcaption style="font-size:10px;color:#924C31;font-weight:bold;">Bản PC (.RAR)</figcaption>
+                            </figure>
+                            <figure style="margin:0;">
+                                <a href="https://testflight.apple.com/join/FWEJoZEB" target="_blank" title="Tải Bản iPhone iOS">
+                                    <img height="35" src="web/images/ip.png" alt="iPhone iOS">
+                                </a>
+                                <figcaption style="font-size:10px;color:#924C31;font-weight:bold;">Bản iOS</figcaption>
+                            </figure>
+                            <figure style="margin:0;">
+                                <a href="javascript:void(0)" onclick="switchTab('tab-account')" title="Quản lý Tài Khoản & Nạp Ngọc">
+                                    <img height="35" src="web/images/napngoc.png" alt="Nạp Ngọc">
+                                </a>
+                                <figcaption style="font-size:10px;color:#d10932;font-weight:bold;">Nạp / ĐKý</figcaption>
+                            </figure>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ==================== TAB 1: TRANG CHỦ ==================== -->
+                <div id="tab-home" class="tab-pane-nro active">
+                    <div class="bg-content">
+                        <!-- Bảng Trạng Thái Máy Chủ Live -->
+                        <div class="server-live-box">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <div style="color:#924C31;font-weight:bold;font-size:13px;">
+                                    <img src="web/images/favicon-32x32.png" height="18" class="mr-1">
+                                    TRẠNG THÁI MÁY CHỦ NGỌC RỒNG VIAM (TRỰC TIẾP)
+                                </div>
+                                <span class="badge badge-danger" id="serverUptimeBadge">Uptime: --</span>
+                            </div>
+                            <div class="row no-gutters text-center mb-2">
+                                <div class="col-3 pr-1">
+                                    <div class="stat-card">
+                                        <div style="font-size:10px;color:#666;font-weight:bold;">ONLINE</div>
+                                        <div style="font-size:14px;color:#1e8449;font-weight:bold;" id="statOnline">0</div>
+                                    </div>
+                                </div>
+                                <div class="col-3 px-1">
+                                    <div class="stat-card">
+                                        <div style="font-size:10px;color:#666;font-weight:bold;">TÀI KHOẢN</div>
+                                        <div style="font-size:14px;color:#0056b3;font-weight:bold;" id="statTotalAcc">0</div>
+                                    </div>
+                                </div>
+                                <div class="col-3 px-1">
+                                    <div class="stat-card">
+                                        <div style="font-size:10px;color:#666;font-weight:bold;">TỶ LỆ EXP</div>
+                                        <div style="font-size:14px;color:#c0392b;font-weight:bold;" id="statExp">x1</div>
+                                    </div>
+                                </div>
+                                <div class="col-3 pl-1">
+                                    <div class="stat-card">
+                                        <div style="font-size:10px;color:#666;font-weight:bold;">BOSS SỐNG</div>
+                                        <div style="font-size:14px;color:#4a235a;font-weight:bold;" id="statBoss">0</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div style="font-size:11.5px;font-weight:bold;color:#7b1d00;margin-bottom:4px;">
+                                <img src="web/images/gif/hot.gif" alt="Hot"> Danh sách Boss đang xuất hiện trên Server (Tồn tại đến khi bị tiêu diệt):
+                            </div>
+                            <div id="homeLiveBossList" style="background:#fff8ef;border:1px solid #d98237;border-radius:4px;padding:6px;max-height:115px;overflow-y:auto;">
+                                <span class="text-muted small">Đang tải danh sách Boss từ VPS...</span>
+                            </div>
+                        </div>
+
+                        <!-- Phần Giới Thiệu & GIF Kỹ Năng chuẩn trang-chu.php -->
+                        <div>
+                            <div class="title">
+                                <h4>Giới Thiệu</h4>
+                            </div>
+                            <div class="content">
+                                <p>
+                                    Ngọc Rồng Online là Trò Chơi Trực Tuyến với cốt truyện xoay quanh bộ truyện tranh 7 viên Ngọc Rồng. Người chơi sẽ hóa thân thành một trong những anh hùng của 3 hành tinh: Trái Đất, Xayda, Namếc. Cùng luyện tập, tăng cường sức mạnh và kỹ năng. Đoàn kết cùng chiến đấu chống lại các thế lực hung ác. Cùng nhau tranh tài.<br>
+                                    <b>Đặc điểm nổi bật tại Server Ngọc Rồng VIAM:</b><br>
+                                    - <b>Boss không tự mất theo thời gian:</b> Toàn bộ Boss giữ nguyên trên bản đồ cho tới khi bị hạ gục. Tiểu đội Bojack & Sát Thủ Namek rớt <b>20 - 30 Hồng Ngọc / Boss</b>.<br>
+                                    - <b>Chiêu thức đặc biệt X3 % HP:</b> Khi dùng <i>Super Kame, Liên Hoàn Chưởng, Ma Phong Ba</i> lên các Boss tính sát thương theo % máu, sát thương sẽ <b>gấp 3 lần</b> đòn đánh thường!<br>
+                                    - <b>Liên kết tất cả các Trang hành trang:</b> Vật phẩm ở Trang 1, Trang 2, Trang 3 dùng chung trực tiếp và đập đồ tại Đảo Kame không cần chuyển trang.<br>
+                                    - <b>Đệ tử thông minh:</b> Tự gồng <i>Tái Tạo Năng Lượng (TTNL)</i> hồi thực tế HP/KI theo nhịp và tự chuyển về chế độ <b>Bảo Vệ</b> khi tách hợp thể.
+                                </p>
+
+                                <p class="content-p" style="font-weight:bold;font-size:13px;margin-bottom:6px;">
+                                    Kỹ Năng Đặc Biệt Cơ Bản (X3 % HP Boss)
+                                </p>
+                                <p class="text-center">
+                                    <img alt="Ma Phong Ba" src="web/images/gif/gif_maphongba.gif" style="margin:2px;">
+                                    <img alt="Liên Hoàn Chưởng" src="web/images/gif/gif_gif_Saiyain.gif" style="margin:2px;">
+                                    <img alt="Super Kame" src="web/images/gif/gif_supber_kame.gif" style="margin:2px;">
+                                </p>
+
+                                <p class="content-p" style="font-weight:bold;font-size:13px;margin-bottom:6px;">
+                                    Kỹ Năng Đặc Biệt VIP (X3 % HP Boss)
+                                </p>
+                                <p class="text-center">
+                                    <img alt="Ma Phong Ba VIP" src="web/images/gif/gif_maphongba_VIP.gif" style="margin:2px;">
+                                    <img alt="Liên Hoàn Chưởng VIP" src="web/images/gif/gif_gif_Saiyain_VIP.gif" style="margin:2px;">
+                                    <img alt="Super Kame VIP" src="web/images/gif/gif_supber_kame_VIP.gif" style="margin:2px;">
+                                </p>
+                                <p class="text-center">
+                                    <a href="javascript:void(0)" onclick="switchTab('tab-intro')" style="font-weight:bold;">
+                                        👉 Xem đầy đủ 13 tính năng & hình ảnh chi tiết trong game
+                                    </a>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Hướng dẫn tân thủ chuẩn trang-chu.php -->
+                    <div class="bg-content">
+                        <div class="title">
+                            <h4>Hướng Dẫn Tân Thủ</h4>
+                        </div>
+                        <div class="content">
+                            <p><strong>1. Đăng ký tài khoản & Mở Thành Viên</strong></p>
+                            <p>
+                                Bạn có thể tạo tài khoản mới và kích hoạt <b>Mở Thành Viên miễn phí</b> ngay tại mục <a href="javascript:void(0)" onclick="switchTab('tab-account')"><b>Tài Khoản</b></a> trên trang web này (tặng kèm <b>+5 Rương SKH</b> ngay khi tạo).
+                            </p>
+                            <p><strong>2. Hướng dẫn điều khiển</strong></p>
+                            <p>
+                                - Đối với máy bàn phím: Dùng phím mũi tên, phím số, để điều khiển nhân vật. Phím chọn giữa để tương tác.<br>
+                                - Đối với máy cảm ứng: Dùng tay chạm vào màn hình cảm ứng để di chuyển. Chạm nhanh 2 lần vào 1 đối tượng để tương tác.<br>
+                                - Đối với PC: Dùng chuột, click chuột phải để di chuyển, click chuột trái để chọn, click đôi vào đối tượng để tương tác.
+                            </p>
+                            <p><strong>3. Một số thông tin căn bản</strong></p>
+                            <p>
+                                - Đậu thần dùng để tăng KI và HP ngay lập tức.<br>
+                                - Tất cả các sách kỹ năng đều có thể học tại Quy Lão Kame hoặc mua tại Santa.<br>
+                                - Đùi gà sẽ phục hồi 100% HP, KI. Cà chua phục hồi 100% KI. Cà rốt phục hồi 100% HP.<br>
+                                - Cây đậu thần kết một hạt sau một thời gian, cho dù bạn đang offline.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ==================== TAB 2: GIỚI THIỆU CHI TIẾT (ĐẦY ĐỦ ẢNH TỪ /web/images/screen) ==================== -->
+                <div id="tab-intro" class="tab-pane-nro">
+                    <div class="bg-content">
+                        <p><span style="font-size:medium"><strong>Sơ lược về Chú Bé Rồng Online</strong></span></p>
+                        <p>Chú Bé Rồng Online – game nhập vai trực tuyến với cốt truyện và nhân vật dựa trên bộ truyện tranh nổi tiếng Nhật Bản Dragon Ball. Bạn sẽ chọn theo hành tinh nào, Trái Đất, Namếc hay Xayda? Cuộc hành trình tìm kiếm ngọc rồng và chống kẻ hung ác sẽ bắt đầu nằm trong tay bạn.</p>
+
+                        <p style="color: #012699;"><strong>1. Class nhân vật (3 Hành Tinh):</strong></p>
+                        <p>Khi tham gia vào thế giới Chú Bé Rồng Online, bạn có thể chọn tham gia vào 1 trong 3 hành tinh: Trái Đất, Namếc, Xayda với hình dạng và những khả năng riêng biệt.</p>
+                        <div class="row text-center mb-3">
+                            <div class="col-md-4 mb-2">
+                                <img src="web/images/screen/4-2.png" class="img-fluid rounded border border-warning">
+                                <div class="small font-weight-bold mt-1">Trái Đất (Gohan, Krillin, Yamcha)</div>
+                            </div>
+                            <div class="col-md-4 mb-2">
+                                <img src="web/images/screen/4-3.png" class="img-fluid rounded border border-warning">
+                                <div class="small font-weight-bold mt-1">Namếc (Ốc Tiêu, Piccolo, Kami)</div>
+                            </div>
+                            <div class="col-md-4 mb-2">
+                                <img src="web/images/screen/4-1.png" class="img-fluid rounded border border-warning">
+                                <div class="small font-weight-bold mt-1">Xayda (Cađic, Rađic, Kakalot)</div>
+                            </div>
+                        </div>
+
+                        <p style="color: #012699;"><strong>2. Hệ thống nhà & Cây Đậu Thần:</strong></p>
+                        <p style="text-align:center"><img alt="Hệ thống nhà" src="web/images/screen/2-10.png" style="max-width:100%"></p>
+                        <p>- Nguồn hồi phục KI và HP của các chiến binh chính là bằng đậu thần. Đậu cấp càng cao thì khả năng hồi phục càng nhiều.<br>- Rương đồ dùng để chứa tài sản quý giá không tiện mang theo người.</p>
+
+                        <p style="color: #012699;"><strong>3. Hệ thống Map và NPC đa dạng (Bấm số 1-8 để xem ảnh):</strong></p>
+                        <p>- Những NPC nổi tiếng và gắn liền với cốt truyện của Dragon Ball: Thượng Đế, Thần Mèo, Thần Vũ Trụ, Quy Lão Kame, Bà Hạt Mít...</p>
+                        <div id="slider-map-wrap" class="text-center mb-2">
+                            <img id="slider-map-img" src="web/images/screen/2-1.png" style="width:100%;border-radius:6px;">
+                            <div class="mt-2" id="slider-map-btns"></div>
+                        </div>
+
+                        <p style="color: #012699;"><strong>4. Nhiệm vụ chính tuyến và nhiệm vụ thành tích:</strong></p>
+                        <p>- Game có các nhiệm vụ chính tuyến tiêu diệt quái, đạt sức mạnh, hạ boss, đa dạng phong phú đi theo cốt truyện.</p>
+                        <p style="text-align:center"><img src="web/images/screen/5-1.png" style="max-width:100%"></p>
+                        <p>- Nhiệm vụ hàng ngày у Bò Mộng từ dễ đến siêu khó:</p>
+                        <p style="text-align:center"><img src="web/images/screen/5-2.png" style="max-width:100%"></p>
+                        <p>- Hệ thống Thành Tựu nhận Hồng Ngọc miễn phí:</p>
+                        <p style="text-align:center"><img src="web/images/screen/5-3.png" style="max-width:100%"></p>
+
+                        <p style="color: #012699;"><strong>5. Vật phẩm, Sách Kỹ Năng & Cải Trang:</strong></p>
+                        <p style="text-align:center"><img src="web/images/screen/6-1.png" style="max-width:100%"></p>
+                        <p style="text-align:center"><img src="web/images/screen/6-2.png" style="max-width:100%"></p>
+                        <p style="text-align:center"><img src="web/images/screen/6-3.png" style="max-width:100%"></p>
+
+                        <p style="color: #012699;"><strong>6. Chức năng Thú Cưỡi / Vật Phẩm Bay:</strong></p>
+                        <p style="text-align:center"><img src="web/images/screen/7-1.png" style="max-width:100%"></p>
+
+                        <p style="color: #012699;"><strong>7. Hệ thống Đệ Tử & Đệ Tử Mabư:</strong></p>
+                        <p>- Hạ gục Super Broly nhận Đệ Tử thường, tiêu diệt Hirudegarn tầng 22h nhận Quả Trứng Mabư:</p>
+                        <p style="text-align:center"><img src="web/images/screen/8-2.png" style="max-width:100%"></p>
+                        <p style="text-align:center"><img src="web/images/screen/8-3.png" style="max-width:100%"></p>
+                        <p style="text-align:center"><img src="web/images/screen/8-4.png" style="max-width:100%"></p>
+
+                        <p style="color: #012699;"><strong>8. Đại Hội Võ Thuật & Võ Đài Bà Hạt Mít:</strong></p>
+                        <p style="text-align:center"><img src="web/images/screen/9-1.png" style="max-width:100%"></p>
+                        <p style="text-align:center"><img src="web/images/screen/9-2.png" style="max-width:100%"></p>
+                        <p style="text-align:center"><img src="web/images/screen/9-3.png" style="max-width:100%"></p>
+                        <p style="text-align:center"><img src="web/images/screen/9-4.png" style="max-width:100%"></p>
+                        <p style="text-align:center"><img src="web/images/screen/9-5.png" style="max-width:100%"></p>
+
+                        <p style="color: #012699;"><strong>9. Chiêu thức Lưỡng Long Nhất Thể & Bông Tai Porata:</strong></p>
+                        <p style="text-align:center"><img src="web/images/screen/10-1.png" style="max-width:100%"></p>
+
+                        <p style="color: #012699;"><strong>10. Trang bị Sao Pha Lê & Chuyển Hóa Trang Bị:</strong></p>
+                        <p style="text-align:center"><img src="web/images/screen/11-2.png" style="max-width:100%"></p>
+                        <p style="text-align:center"><img src="web/images/screen/11-3.png" style="max-width:100%"></p>
+                        <p style="text-align:center"><img src="web/images/screen/11-4.png" style="max-width:100%"></p>
+
+                        <p style="color: #012699;"><strong>11. Phó bản Doanh Trại Độc Nhãn (Bấm số 1-7 để xem ảnh):</strong></p>
+                        <div class="text-center mb-2">
+                            <img id="slider-dt-img" src="web/images/screen/12-1.png" style="width:100%;border-radius:6px;">
+                            <div class="mt-2" id="slider-dt-btns"></div>
+                        </div>
+
+                        <p style="color: #012699;"><strong>12. Hệ thống Boss Đa Dạng (Bấm số 1-8 để xem ảnh):</strong></p>
+                        <div class="text-center mb-2">
+                            <img id="slider-boss-img" src="web/images/screen/14-1.png" style="width:100%;border-radius:6px;">
+                            <div class="mt-2" id="slider-boss-btns"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ==================== TAB 3: DIỄN ĐÀN & GIFTCODE (CHUẨN forum.php) ==================== -->
+                <div id="tab-forum" class="tab-pane-nro">
+                    <div class="body" style="padding:10px;">
+                        <!-- Nút nhanh trên đầu Diễn Đàn giống forum.php -->
+                        <div class="box_button_login mb-2" style="text-align:center; display:flex; justify-content:center; gap:8px; flex-wrap:wrap;">
+                            <button class="w3-button w3-red w3-small w3-hover-green normal-btn" onclick="switchTab('tab-account')">
+                                <i class="fas fa-user-plus"></i> Đăng Ký / Quản Lý TK
+                            </button>
+                            <button class="w3-button w3-red w3-small w3-hover-green normal-btn" onclick="switchTab('tab-rank');switchRankMode('power')">
+                                <i class="fas fa-fist-raised"></i> Top Sức Mạnh
+                            </button>
+                            <button class="w3-button w3-red w3-small w3-hover-green normal-btn" onclick="switchTab('tab-rank');switchRankMode('task')">
+                                <i class="fas fa-tasks"></i> Top Nhiệm Vụ
+                            </button>
+                            <button class="w3-button w3-red w3-small w3-hover-green normal-btn" onclick="switchTab('tab-rank');switchRankMode('rich')">
+                                <i class="fas fa-gem"></i> Top Đại Gia
+                            </button>
+                        </div>
+
+                        <!-- Bảng Giftcode trực tiếp từ VPS -->
+                        <div class="server-live-box mb-2">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <div style="color:#7b1d00;font-weight:bold;font-size:12.5px;">
+                                    <img src="web/images/avatar/codee.png" height="22" class="mr-1" style="border-radius:4px;">
+                                    MÃ GIFTCODE ĐANG HOẠT ĐỘNG TRÊN SERVER (CLICK ĐỂ COPY)
+                                </div>
+                                <span class="badge badge-success" id="giftcodeCountBadge">0 mã</span>
+                            </div>
+                            <div id="liveGiftcodeContainer" style="background:#fff8ef;padding:6px;border-radius:5px;border:1px solid #d98237;">
+                                <span class="text-muted small">Đang tải danh sách Giftcode từ VPS...</span>
+                            </div>
+                        </div>
+
+                        <!-- Danh sách bài viết ghim chuẩn #stick trong forum.php -->
+                        <div id="box_forums" style="float:none;">
+                            <div class="box_list_chuyenmuc" style="float:none;">
+                                <div id="stick" style="float:none;padding:8px;border-radius:6px;">
+                                    <div class="forum-post-item" onclick="showForumPost('pin1')" style="cursor:pointer;">
+                                        <div class="post-avatar-wrapper">
+                                            <img src="web/images/avatar/6101.gif" alt="Admin Avatar">
+                                        </div>
+                                        <div class="post-content">
+                                            <span class="post-title-link">
+                                                Cập Nhật Mới: Boss Không Tự Mất, X3 Dame Skill Đặc Biệt & Link Tab Hành Trang
+                                                <img src="web/images/gif/hot.gif" class="hot-icon" alt="Hot">
+                                            </span>
+                                            <div class="post-meta-info" style="color:#4a2300;">
+                                                bởi <a href="javascript:void(0)" style="color:#b71c1c;">Admin VIAM</a>
+                                                <span style="color:red">★</span> <i>Ghim thông báo toàn máy chủ</i>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="forum-post-item" onclick="showForumPost('pin2')" style="cursor:pointer;">
+                                        <div class="post-avatar-wrapper">
+                                            <img src="web/images/avatar/codee.png" alt="Giftcode Avatar">
+                                        </div>
+                                        <div class="post-content">
+                                            <span class="post-title-link">
+                                                Tổng Hợp Giftcode Tân Thủ & Hướng Dẫn Mở Thành Viên Miễn Phí Trên Web
+                                                <img src="web/images/gif/hot.gif" class="hot-icon" alt="Hot">
+                                            </span>
+                                            <div class="post-meta-info" style="color:#4a2300;">
+                                                bởi <a href="javascript:void(0)" style="color:#b71c1c;">Admin VIAM</a>
+                                                <span style="color:red">★</span> <i>Đồng bộ trực tiếp từ VPS</i>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="forum-post-item" onclick="showForumPost('pin3')" style="cursor:pointer;margin-bottom:0;">
+                                        <div class="post-avatar-wrapper">
+                                            <img src="web/images/avatar/detu.png" alt="Đệ Tử Avatar">
+                                        </div>
+                                        <div class="post-content">
+                                            <span class="post-title-link">
+                                                Hướng Dẫn Săn Đệ Tử, Tái Tạo Năng Lượng & Săn Hồng Ngọc Tiểu Đội Bojack
+                                                <img src="web/images/gif/hot.gif" class="hot-icon" alt="Hot">
+                                            </span>
+                                            <div class="post-meta-info" style="color:#4a2300;">
+                                                bởi <a href="javascript:void(0)" style="color:#b71c1c;">Admin VIAM</a>
+                                                <span style="color:red">★</span> <i>Cẩm nang săn Boss</i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Khung hiển thị nội dung bài viết khi click -->
+                                <div id="forumPostDetail" class="server-live-box mb-2" style="display:none;background:#fff8ef;">
+                                    <div class="d-flex justify-content-between align-items-center border-bottom border-warning pb-1 mb-2">
+                                        <b style="color:#b71c1c;font-size:13.5px;" id="postDetailTitle">Tiêu đề</b>
+                                        <button class="btn btn-sm btn-danger py-0 px-2 normal-btn" onclick="document.getElementById('forumPostDetail').style.display='none'">Đóng</button>
+                                    </div>
+                                    <div id="postDetailBody" style="font-size:12.5px;"></div>
+                                </div>
+
+                                <!-- Nút Đăng bài mới & Danh sách bài thảo luận -->
+                                <div class="d-flex justify-content-between align-items-center mb-2 mt-2">
+                                    <b style="color:#561d00;"><i class="fas fa-comments"></i> BÀI VIẾT THẢO LUẬN CỘNG ĐỒNG</b>
+                                    <button class="btn btn-sm btn-danger font-weight-bold py-1 px-2 normal-btn" onclick="toggleNewPostForm()">
+                                        <i class="fas fa-pen"></i> Đăng Bài Mới
+                                    </button>
+                                </div>
+
+                                <div id="newPostForm" class="server-live-box mb-2" style="display:none;background:#fff8ef;">
+                                    <div class="form-row">
+                                        <div class="col-md-4 mb-1">
+                                            <input type="text" id="postAuthorInput" class="form-control form-control-sm" placeholder="Tên nhân vật của bạn...">
+                                        </div>
+                                        <div class="col-md-8 mb-1">
+                                            <input type="text" id="postTitleInput" class="form-control form-control-sm" placeholder="Tiêu đề bài viết...">
+                                        </div>
+                                    </div>
+                                    <textarea id="postContentInput" class="form-control form-control-sm mb-2" rows="2" placeholder="Nội dung bài viết..."></textarea>
+                                    <button class="btn btn-sm btn-success font-weight-bold normal-btn" onclick="submitLocalPost()">
+                                        <i class="fas fa-paper-plane"></i> Gửi Bài Viết
+                                    </button>
+                                </div>
+
+                                <div id="userPostsContainer"></div>
+                            </div>
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+                </div>
+
+                <!-- ==================== TAB 4: ĐUA TOP SERVER (CHUẨN bang-xep-hang.php) ==================== -->
+                <div id="tab-rank" class="tab-pane-nro">
+                    <div class="bg-content">
+                        <div class="d-flex justify-content-between align-items-center flex-wrap mb-2" style="gap:6px;">
+                            <div>
+                                <button class="btn btn-sm btn-danger font-weight-bold normal-btn" id="btnRankPower" onclick="switchRankMode('power')">
+                                    <i class="fas fa-fist-raised"></i> Top Sức Mạnh
+                                </button>
+                                <button class="btn btn-sm btn-warning font-weight-bold normal-btn" id="btnRankTask" onclick="switchRankMode('task')">
+                                    <i class="fas fa-tasks"></i> Top Nhiệm Vụ
+                                </button>
+                                <button class="btn btn-sm btn-warning font-weight-bold normal-btn" id="btnRankRich" onclick="switchRankMode('rich')">
+                                    <i class="fas fa-coins"></i> Top Đại Gia
+                                </button>
+                            </div>
+                            <button class="btn btn-sm btn-success font-weight-bold normal-btn" onclick="loadAccountsAndRenderRank()">
+                                <i class="fas fa-sync-alt"></i> Làm mới từ VPS
+                            </button>
+                        </div>
+
+                        <!-- BXH Sức Mạnh -->
+                        <div id="rankSectionPower">
+                            <div class="bxh-hero">
+                                <h4>BẢNG XẾP HẠNG ĐUA TOP SỨC MẠNH</h4>
+                                <div class="small">Dữ liệu thời gian thực từ Server Ngọc Rồng VIAM</div>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="nro-rank-table text-center">
+                                    <thead>
+                                        <tr>
+                                            <th style="width:48px;">TOP</th>
+                                            <th style="text-align:left;">Nhân Vật</th>
+                                            <th>Hành Tinh</th>
+                                            <th>Sức Mạnh</th>
+                                            <th>Nội Tại</th>
+                                            <th>Trạng Thái</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="rankPowerBody">
+                                        <tr><td colspan="6" class="text-center text-muted">Đang tải dữ liệu từ VPS...</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- BXH Nhiệm Vụ -->
+                        <div id="rankSectionTask" style="display:none;">
+                            <div class="bxh-hero">
+                                <h4>BẢNG XẾP HẠNG ĐUA TOP NHIỆM VỤ</h4>
+                                <div class="small">Xếp hạng tiến độ Nhiệm Vụ Chính Tuyến cao nhất</div>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="nro-rank-table text-center">
+                                    <thead>
+                                        <tr>
+                                            <th style="width:48px;">TOP</th>
+                                            <th style="text-align:left;">Nhân Vật</th>
+                                            <th>Hành Tinh</th>
+                                            <th>Mã NV</th>
+                                            <th style="text-align:left;">Tên Nhiệm Vụ Hiện Tại</th>
+                                            <th>Sức Mạnh</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="rankTaskBody">
+                                        <tr><td colspan="6" class="text-center text-muted">Đang tải dữ liệu từ VPS...</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- BXH Đại Gia -->
+                        <div id="rankSectionRich" style="display:none;">
+                            <div class="bxh-hero">
+                                <h4>BẢNG XẾP HẠNG TOP NẠP & PHÚ HỘ HỒNG NGỌC</h4>
+                                <div class="small">Xếp hạng theo Tổng Nạp, VNĐ và Hồng Ngọc</div>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="nro-rank-table text-center">
+                                    <thead>
+                                        <tr>
+                                            <th style="width:48px;">TOP</th>
+                                            <th style="text-align:left;">Nhân Vật (Tài Khoản)</th>
+                                            <th>Tổng Nạp</th>
+                                            <th>Số Dư VNĐ</th>
+                                            <th>Hồng Ngọc</th>
+                                            <th>Vàng</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="rankRichBody">
+                                        <tr><td colspan="6" class="text-center text-muted">Đang tải dữ liệu từ VPS...</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ==================== TAB 5: TÀI KHOẢN (ĐĂNG KÝ / MỞ THÀNH VIÊN / ĐỔI MẬT KHẨU AN TOÀN) ==================== -->
+                <div id="tab-account" class="tab-pane-nro">
+                    <div class="bg-content">
+                        <div class="row">
+                            <!-- Đăng ký tài khoản mới -->
+                            <div class="col-md-6 mb-2">
+                                <div class="server-live-box h-100" style="background:#fff8ef;">
+                                    <div style="color:#b71c1c;font-weight:bold;font-size:13px;border-bottom:1px solid #d98237;padding-bottom:5px;margin-bottom:8px;">
+                                        <img src="web/images/avatar/1.png" height="22" class="mr-1">
+                                        ĐĂNG KÝ TÀI KHOẢN MỚI
+                                    </div>
+                                    <div class="form-group mb-2">
+                                        <label class="small font-weight-bold mb-1">Tên tài khoản (3 - 20 ký tự chữ/số):</label>
+                                        <input type="text" id="regUsername" class="form-control form-control-sm" placeholder="Nhập tên tài khoản...">
+                                    </div>
+                                    <div class="form-group mb-2">
+                                        <label class="small font-weight-bold mb-1">Mật khẩu:</label>
+                                        <input type="password" id="regPassword" class="form-control form-control-sm" placeholder="Nhập mật khẩu...">
+                                    </div>
+                                    <div class="p-2 mb-2 rounded small" style="background:#fff1d3;border:1px dashed #d98237;color:#7b1d00;">
+                                        🎁 <b>Ưu đãi Tân Thủ:</b> Tự động kích hoạt <b>Mở Thành Viên</b> và tặng ngay <b>+5 Rương SKH</b> khi đăng ký!
+                                    </div>
+                                    <button class="btn btn-sm btn-danger btn-block font-weight-bold normal-btn" onclick="registerAccountLive()">
+                                        <i class="fas fa-user-check"></i> Đăng Ký Tài Khoản Ngay
+                                    </button>
+                                    <div id="regResultMsg" class="mt-2 small font-weight-bold"></div>
+                                </div>
+                            </div>
+
+                            <!-- Đăng nhập quản lý tài khoản / Mở TV / Đổi mật khẩu -->
+                            <div class="col-md-6 mb-2">
+                                <div class="server-live-box h-100" style="background:#fff8ef;">
+                                    <div style="color:#b71c1c;font-weight:bold;font-size:13px;border-bottom:1px solid #d98237;padding-bottom:5px;margin-bottom:8px;">
+                                        <img src="web/images/avatar/10.png" height="22" class="mr-1">
+                                        ĐĂNG NHẬP QUẢN LÝ TÀI KHOẢN
+                                    </div>
+                                    <div class="form-row mb-2">
+                                        <div class="col-6">
+                                            <input type="text" id="lookupUserInput" class="form-control form-control-sm" placeholder="Tài khoản...">
+                                        </div>
+                                        <div class="col-6">
+                                            <input type="password" id="lookupPassInput" class="form-control form-control-sm" placeholder="Mật khẩu...">
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-sm btn-danger btn-block font-weight-bold mb-2 normal-btn" onclick="lookupUserAccount()">
+                                        <i class="fas fa-sign-in-alt"></i> Đăng Nhập Kiểm Tra Nhân Vật
+                                    </button>
+
+                                    <div id="accountProfileBox" style="display:none;">
+                                        <div class="d-flex align-items-center p-2 mb-2 rounded" style="background:#fff1d3;border:1px solid #d98237;">
+                                            <img id="profAvatarImg" src="web/images/avatar/1.png" style="width:46px;height:46px;border-radius:8px;border:1px solid #924C31;margin-right:10px;background:#fff;object-fit:contain;">
+                                            <div style="font-size:12px;line-height:1.45;">
+                                                <div>TK: <b class="text-danger" id="profUsername">--</b> (<span id="profAccId">#0</span>)</div>
+                                                <div>NV: <b class="text-primary" id="profPlayerName">--</b> (<span id="profGender">--</span>)</div>
+                                                <div>Trạng thái: <span id="profActiveBadge"></span></div>
+                                            </div>
+                                        </div>
+
+                                        <div class="p-2 mb-2 rounded" style="background:#fff;border:1px solid #e0c39a;font-size:12px;">
+                                            <div>Sức mạnh: <b class="text-danger" id="profPower">0</b> | NV: <b id="profTask">--</b></div>
+                                            <div>Số dư VNĐ: <b class="text-success" id="profVnd">0</b> | Tổng nạp: <b id="profTongnap">0</b></div>
+                                            <div>Vàng: <b id="profGold">0</b> | Ngọc: <b id="profGem">0</b> | Hồng ngọc: <b class="text-danger" id="profRuby">0</b></div>
+                                            <div>Rương SKH: <b class="text-primary" id="profRuongSkh">0</b></div>
+                                        </div>
+
+                                        <div class="d-flex flex-wrap mb-2" style="gap:4px;">
+                                            <button class="btn btn-sm btn-success font-weight-bold flex-fill normal-btn" onclick="quickActivateAccount()">
+                                                <i class="fas fa-unlock"></i> Kích Hoạt Mở Thành Viên Miễn Phí
+                                            </button>
+                                        </div>
+
+                                        <div class="input-group input-group-sm">
+                                            <input type="password" id="newPassInput" class="form-control" placeholder="Nhập mật khẩu mới...">
+                                            <div class="input-group-append">
+                                                <button class="btn btn-dark font-weight-bold normal-btn" onclick="changeAccountPassword()">
+                                                    <i class="fas fa-key"></i> Đổi Mật Khẩu
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div id="profActionMsg" class="mt-2 small font-weight-bold"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <br>
+        <div class="bg_tree"></div>
+        <div class="foot_bg"></div>
+        <div class="left_b_bottom">
+            <div class="right_b_bottom">
+                <div class="footer">
+                    <div class="left_bottom"></div>
+                    <div class="right_bottom"></div>
+                </div>
+            </div>
+        </div>
+        <div class="copyright" style="line-height: 12px; color:#fff; text-shadow:1px 1px 2px #000;">
+            <p>Giấy phép thiết lập Mạng Xã Hội trên mạng số: 374/GP-BTTTT — Bộ Thông Tin và Truyền Thông</p>
+            <b>Bản Quyền Ngọc Rồng VIAM — Kết nối trực tiếp Máy Chủ VPS (103.179.190.242)</b>
+        </div>
+    </div>
+
+    <script>
+        let cachedStatus = null;
+        let cachedAccounts = [];
+        let selectedAccount = null;
+
+        const defaultPosts = [
+            {
+                author: "GokuSSJ",
+                avatar: "web/images/avatar/1000.png",
+                title: "Chiêu Super Kame đánh Boss tính theo % máu giờ x3 dame phê quá anh em!",
+                content: "Hôm nay đi săn Broly với Tiểu Đội Bojack bắn Super Kame 1 phát tụt 3% HP boss luôn, lại còn rớt 20-30 Hồng Ngọc mỗi con.",
+                time: "10 phút trước"
+            },
+            {
+                author: "PiccoloNamek",
+                avatar: "web/images/avatar/554.png",
+                title: "Đệ tử giờ tự gồng TTNL hồi máu với KI chuẩn đét",
+                content: "Tách hợp thể ra đệ tự chuyển sang chế độ Bảo Vệ luôn không bị chạy về nhà nữa, treo up đệ nhàn hẳn!",
+                time: "35 phút trước"
+            },
+            {
+                author: "VegetaXayda",
+                avatar: "web/images/avatar/709.png",
+                title: "Hành trang Trang 1 với Trang 2 đã thông nhau rồi nhé",
+                content: "Để Capsule bay ở Trang 2 vẫn bấm dùng được bình thường, đập đồ ở Đảo Kame cũng nhận nguyên liệu ở mọi trang luôn.",
+                time: "1 giờ trước"
+            }
+        ];
+
+        function initIntroSliders() {
+            // Slider 1: Hệ thống Map (2-1 -> 2-8)
+            const mapBtns = document.getElementById('slider-map-btns');
+            mapBtns.innerHTML = Array.from({length: 8}, (_, i) => i + 1).map(n =>
+                `<a class="carousel-page-btn ${n===1?'active-2':''}" id="map-btn-${n}" onclick="setMapSlide(${n})">${n}</a>`
+            ).join('');
+
+            // Slider 2: Doanh trại (12-1 -> 12-7)
+            const dtBtns = document.getElementById('slider-dt-btns');
+            dtBtns.innerHTML = Array.from({length: 7}, (_, i) => i + 1).map(n =>
+                `<a class="carousel-page-btn ${n===1?'active-2':''}" id="dt-btn-${n}" onclick="setDtSlide(${n})">${n}</a>`
+            ).join('');
+
+            // Slider 3: Boss (14-1 -> 14-8)
+            const bossBtns = document.getElementById('slider-boss-btns');
+            bossBtns.innerHTML = Array.from({length: 8}, (_, i) => i + 1).map(n =>
+                `<a class="carousel-page-btn ${n===1?'active-2':''}" id="boss-btn-${n}" onclick="setBossSlide(${n})">${n}</a>`
+            ).join('');
+        }
+
+        function setMapSlide(n) {
+            document.getElementById('slider-map-img').src = `web/images/screen/2-${n}.png`;
+            for (let i = 1; i <= 8; i++) {
+                document.getElementById(`map-btn-${i}`).classList.toggle('active-2', i === n);
+            }
+        }
+
+        function setDtSlide(n) {
+            document.getElementById('slider-dt-img').src = `web/images/screen/12-${n}.png`;
+            for (let i = 1; i <= 7; i++) {
+                document.getElementById(`dt-btn-${i}`).classList.toggle('active-2', i === n);
+            }
+        }
+
+        function setBossSlide(n) {
+            document.getElementById('slider-boss-img').src = `web/images/screen/14-${n}.png`;
+            for (let i = 1; i <= 8; i++) {
+                document.getElementById(`boss-btn-${i}`).classList.toggle('active-2', i === n);
+            }
+        }
+
+        function getAvatarByGender(genderStr, idx) {
+            const g = (genderStr || '').toLowerCase();
+            if (g.includes('namek') || g.includes('namếc')) return 'web/images/avatar/2.png';
+            if (g.includes('xayda')) return 'web/images/avatar/3.png';
+            if (idx === 0) return 'web/images/avatar/6101.gif';
+            return 'web/images/avatar/1.png';
+        }
+
+        function getApiBase() {
+            if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
+                return window.location.origin.replace(/\/+$/, '');
+            }
+            return 'http://103.179.190.242:14446';
+        }
+
+        function formatNum(n) {
+            return Number(n || 0).toLocaleString('vi-VN');
+        }
+
+        function formatUptime(sec) {
+            sec = Number(sec || 0);
+            const h = Math.floor(sec / 3600);
+            const m = Math.floor((sec % 3600) / 60);
+            return h > 0 ? `${h}h ${m}p` : `${m} phút`;
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-pane-nro').forEach(el => el.classList.remove('active'));
+            const target = document.getElementById(tabId);
+            if (target) target.classList.add('active');
+
+            document.querySelectorAll('.menu-tab-cell').forEach(td => {
+                if (td.getAttribute('data-tab') === tabId) {
+                    td.id = 'selected';
+                } else {
+                    td.removeAttribute('id');
+                }
+            });
+        }
+
+        function switchRankMode(mode) {
+            document.getElementById('rankSectionPower').style.display = (mode === 'power') ? 'block' : 'none';
+            document.getElementById('rankSectionTask').style.display = (mode === 'task') ? 'block' : 'none';
+            document.getElementById('rankSectionRich').style.display = (mode === 'rich') ? 'block' : 'none';
+
+            document.getElementById('btnRankPower').className = (mode === 'power') ? 'btn btn-sm btn-danger font-weight-bold normal-btn' : 'btn btn-sm btn-warning font-weight-bold normal-btn';
+            document.getElementById('btnRankTask').className = (mode === 'task') ? 'btn btn-sm btn-danger font-weight-bold normal-btn' : 'btn btn-sm btn-warning font-weight-bold normal-btn';
+            document.getElementById('btnRankRich').className = (mode === 'rich') ? 'btn btn-sm btn-danger font-weight-bold normal-btn' : 'btn btn-sm btn-warning font-weight-bold normal-btn';
+        }
+
+        function applyHomeDataToUi(data) {
+            const badge = document.getElementById('connBadge');
+            const text = document.getElementById('connText');
+            cachedStatus = data;
+
+            badge.className = 'live-badge live-online';
+            text.textContent = 'Ngọc Rồng VIAM (ONLINE)';
+
+            const onlineCount = data.onlineCount || 0;
+            const bosses = Array.isArray(data.bosses) ? data.bosses : [];
+            const giftcodes = Array.isArray(data.giftcodes) ? data.giftcodes : [];
+            const uptimeSec = data.uptimeSeconds !== undefined ? data.uptimeSeconds : (data.uptimeSec || 0);
+
+            document.getElementById('liveOnlineCount').textContent = onlineCount;
+            document.getElementById('liveExpRate').textContent = 'x' + (data.expRate || 1);
+
+            const spawnedBosses = bosses.filter(b => b.mapName && !b.mapName.includes('Chưa xuất hiện'));
+            const displayBosses = spawnedBosses.length > 0 ? spawnedBosses : bosses;
+
+            document.getElementById('liveBossCount').textContent = displayBosses.length;
+            document.getElementById('statOnline').textContent = onlineCount + ' / ' + (data.maxPlayers || 1000);
+            document.getElementById('statExp').textContent = 'x' + (data.expRate || 1);
+            document.getElementById('statBoss').textContent = displayBosses.length + ' Boss';
+            document.getElementById('serverUptimeBadge').textContent = 'Uptime: ' + formatUptime(uptimeSec);
+
+            if (data.totalAccounts !== undefined) {
+                document.getElementById('statTotalAcc').textContent = data.totalAccounts;
+            }
+
+            const bossBox = document.getElementById('homeLiveBossList');
+            if (displayBosses.length === 0) {
+                bossBox.innerHTML = '<span class="text-muted small">Hiện chưa có Boss nào xuất hiện trên bản đồ.</span>';
+            } else {
+                bossBox.innerHTML = displayBosses.slice(0, 40).map(b =>
+                    `<span class="boss-chip">
+                        <img src="web/images/favicon-32x32.png" height="13">
+                        ${b.name} - ${b.mapName} ${b.zoneId >= 0 ? '(Khu ' + b.zoneId + ')' : ''}
+                    </span>`
+                ).join('');
+            }
+
+            document.getElementById('giftcodeCountBadge').textContent = giftcodes.length + ' mã đang mở';
+            const gcBox = document.getElementById('liveGiftcodeContainer');
+            if (giftcodes.length === 0) {
+                gcBox.innerHTML = '<span class="text-muted small">Hiện không có Giftcode nào.</span>';
+            } else {
+                gcBox.innerHTML = giftcodes.map(g =>
+                    `<span class="gift-chip" onclick="copyGiftcode('${g.code}')" title="Còn ${g.countLeft} lượt nhập - Bấm để Copy">
+                        <img src="web/images/avatar/codee.png" height="16">
+                        ${g.code} <small class="text-muted">(${g.countLeft})</small>
+                    </span>`
+                ).join('');
+            }
+
+            if (Array.isArray(data.players) && data.players.length > 0 && data.players[0].playerName !== undefined) {
+                cachedAccounts = data.players;
+                renderRankTables();
+            }
+        }
+
+        async function fetchServerStatus() {
+            const badge = document.getElementById('connBadge');
+            const text = document.getElementById('connText');
+            try {
+                const res = await fetch(`${getApiBase()}/api/public/home`);
+                if (res.ok) {
+                    const data = await res.json();
+                    applyHomeDataToUi(data);
+                    return;
+                }
+                // Dự phòng khi VPS chưa khởi động lại bản mới
+                const fallbackRes = await fetch(`${getApiBase()}/api/status?key=viam2026`);
+                if (!fallbackRes.ok) throw new Error('HTTP ' + fallbackRes.status);
+                const fallbackData = await fallbackRes.json();
+                applyHomeDataToUi(fallbackData);
+            } catch (err) {
+                badge.className = 'live-badge live-offline';
+                text.textContent = 'Mất kết nối Máy Chủ (' + err.message + ')';
+            }
+        }
+
+        function copyGiftcode(code) {
+            navigator.clipboard.writeText(code);
+            alert('Đã sao chép mã Giftcode: ' + code + '\nHãy vào game tới NPC Quy Lão Kame ở Đảo Kame để nhập nhé!');
+        }
+
+        async function loadAccountsAndRenderRank() {
+            try {
+                const res = await fetch(`${getApiBase()}/api/public/home`);
+                if (res.ok) {
+                    const data = await res.json();
+                    applyHomeDataToUi(data);
+                    return;
+                }
+                const fallbackRes = await fetch(`${getApiBase()}/api/accounts?key=viam2026&q=`);
+                if (!fallbackRes.ok) throw new Error('HTTP ' + fallbackRes.status);
+                const data = await fallbackRes.json();
+                cachedAccounts = Array.isArray(data.accounts) ? data.accounts : [];
+                document.getElementById('statTotalAcc').textContent = data.totalAccounts || cachedAccounts.length;
+                renderRankTables();
+            } catch (err) {
+                console.warn('Không tải được BXH:', err);
+            }
+        }
+
+        function renderRankTables() {
+            const validPlayers = cachedAccounts.filter(a => a.playerName && a.playerName.trim() !== '' && a.playerName !== '(Chưa tạo nhân vật)');
+
+            // 1. BXH Sức mạnh
+            const byPower = [...validPlayers].sort((a, b) => Number(b.power || 0) - Number(a.power || 0)).slice(0, 50);
+            const powerBody = document.getElementById('rankPowerBody');
+            if (byPower.length === 0) {
+                powerBody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">Chưa có nhân vật nào.</td></tr>';
+            } else {
+                powerBody.innerHTML = byPower.map((p, idx) => {
+                    const rank = idx + 1;
+                    const topClass = rank <= 3 ? `top_${rank}` : '';
+                    const avatar = getAvatarByGender(p.gender, idx);
+                    const statusHtml = p.online
+                        ? '<span class="badge badge-success">Online</span>'
+                        : '<span class="badge badge-secondary">Offline</span>';
+                    return `<tr class="${topClass}">
+                        <td><span class="rank-badge">${rank}</span></td>
+                        <td style="text-align:left;">
+                            <img src="${avatar}" height="24" style="border-radius:50%;margin-right:5px;border:1px solid #924C31;">
+                            <b>${p.playerName}</b>
+                        </td>
+                        <td>${p.gender || 'Trái Đất'}</td>
+                        <td class="font-weight-bold text-danger">${formatNum(p.power)}</td>
+                        <td class="small">${p.intrinsicName || 'Chưa mở'}</td>
+                        <td>${statusHtml}</td>
+                    </tr>`;
+                }).join('');
+            }
+
+            // 2. BXH Nhiệm vụ
+            const byTask = [...validPlayers].sort((a, b) => {
+                if (Number(b.taskId || 0) !== Number(a.taskId || 0)) {
+                    return Number(b.taskId || 0) - Number(a.taskId || 0);
+                }
+                if (Number(b.taskIndex || 0) !== Number(a.taskIndex || 0)) {
+                    return Number(b.taskIndex || 0) - Number(a.taskIndex || 0);
+                }
+                return Number(b.power || 0) - Number(a.power || 0);
+            }).slice(0, 50);
+
+            const taskBody = document.getElementById('rankTaskBody');
+            if (byTask.length === 0) {
+                taskBody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">Chưa có dữ liệu nhiệm vụ.</td></tr>';
+            } else {
+                taskBody.innerHTML = byTask.map((p, idx) => {
+                    const rank = idx + 1;
+                    const topClass = rank <= 3 ? `top_${rank}` : '';
+                    const avatar = getAvatarByGender(p.gender, idx);
+                    return `<tr class="${topClass}">
+                        <td><span class="rank-badge">${rank}</span></td>
+                        <td style="text-align:left;">
+                            <img src="${avatar}" height="24" style="border-radius:50%;margin-right:5px;border:1px solid #924C31;">
+                            <b>${p.playerName}</b>
+                        </td>
+                        <td>${p.gender || 'Trái Đất'}</td>
+                        <td><span class="badge badge-danger">NV #${p.taskId || 0} (${p.taskIndex || 0})</span></td>
+                        <td style="text-align:left;"><b>${p.taskName || 'Nhiệm vụ Tân Thủ'}</b></td>
+                        <td>${formatNum(p.power)}</td>
+                    </tr>`;
+                }).join('');
+            }
+
+            // 3. BXH Đại Gia
+            const byRich = [...validPlayers].sort((a, b) => {
+                if (Number(b.tongnap || 0) !== Number(a.tongnap || 0)) {
+                    return Number(b.tongnap || 0) - Number(a.tongnap || 0);
+                }
+                return Number(b.ruby || 0) - Number(a.ruby || 0);
+            }).slice(0, 50);
+
+            const richBody = document.getElementById('rankRichBody');
+            if (byRich.length === 0) {
+                richBody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">Chưa có dữ liệu.</td></tr>';
+            } else {
+                richBody.innerHTML = byRich.map((p, idx) => {
+                    const rank = idx + 1;
+                    const topClass = rank <= 3 ? `top_${rank}` : '';
+                    const avatar = getAvatarByGender(p.gender, idx);
+                    return `<tr class="${topClass}">
+                        <td><span class="rank-badge">${rank}</span></td>
+                        <td style="text-align:left;">
+                            <img src="${avatar}" height="24" style="border-radius:50%;margin-right:5px;border:1px solid #924C31;">
+                            <b>${p.playerName}</b>
+                        </td>
+                        <td class="font-weight-bold text-success">${formatNum(p.tongnap)} đ</td>
+                        <td>${p.gender || 'Trái Đất'}</td>
+                        <td class="font-weight-bold text-danger">${formatNum(p.ruby)}</td>
+                        <td>${formatNum(p.gold)}</td>
+                    </tr>`;
+                }).join('');
+            }
+        }
+
+        function showForumPost(key) {
+            const box = document.getElementById('forumPostDetail');
+            const title = document.getElementById('postDetailTitle');
+            const body = document.getElementById('postDetailBody');
+            box.style.display = 'block';
+
+            if (key === 'pin1') {
+                title.textContent = 'Cập Nhật Tính Năng Mới Trên Server Ngọc Rồng VIAM';
+                body.innerHTML = `
+                    <div class="text-center mb-2">
+                        <img src="web/images/forum/sukiengoku.jpg" style="max-height:160px;border-radius:6px;">
+                    </div>
+                    <ul class="pl-3 mb-0">
+                        <li><b>Boss không tự mất theo thời gian:</b> Tất cả các Boss sẽ tồn tại vĩnh viễn trên bản đồ cho đến khi bị người chơi tiêu diệt!</li>
+                        <li><b>Chiêu đặc biệt X3 % HP lên Boss giới hạn sát thương:</b> Khi dùng <i>Super Kame, Liên Hoàn Chưởng, Ma Phong Ba</i> đánh các Boss tính dame theo tỷ lệ % HP (như Broly, Bojack, Bí Ma, Dơi, Ma Trơi, Yardart...), sát thương gây ra sẽ <b>gấp 3 lần</b> so với đòn đánh thường!</li>
+                        <li><b>Liên kết toàn bộ các Trang hành trang:</b> Vật phẩm ở Trang 1, Trang 2, Trang 3 đều dùng chung trực tiếp và nâng cấp tại Đảo Kame không cần chuyển về Trang 1.</li>
+                        <li><b>Đệ tử thông minh:</b> Chiêu Tái Tạo Năng Lượng hồi thực tế HP/KI theo từng nhịp và tự chuyển sang chế độ <b>Bảo Vệ</b> khi tách hợp thể.</li>
+                    </ul>
+                `;
+            } else if (key === 'pin2') {
+                title.textContent = 'Tổng Hợp Giftcode & Mở Thành Viên Miễn Phí Trên Web';
+                const codes = (cachedStatus && Array.isArray(cachedStatus.giftcodes)) ? cachedStatus.giftcodes : [];
+                body.innerHTML = `
+                    <div class="text-center mb-2">
+                        <img src="web/images/forum/sukienhe.jpg" style="max-height:150px;border-radius:6px;">
+                    </div>
+                    <p class="mb-1">Hiện có <b>${codes.length}</b> mã Giftcode đang mở trên Server. Hãy bấm trực tiếp vào từng mã ở khung phía trên để Copy mã và nhập tại NPC Quy Lão Kame (Đảo Kame)!</p>
+                    <p class="mb-0">Ngoài ra, bạn có thể sang mục <b>Tài Khoản</b> trên thanh menu để tạo tài khoản mới (tặng sẵn 5 Rương SKH) và bấm kích hoạt <b>Mở Thành Viên</b> miễn phí 100%.</p>
+                `;
+            } else if (key === 'pin3') {
+                title.textContent = 'Hướng Dẫn Săn Đệ Tử & Săn Hồng Ngọc Tiểu Đội Bojack / Sát Thủ Namek';
+                body.innerHTML = `
+                    <div class="text-center mb-2">
+                        <img src="web/images/detu.png" style="max-height:150px;border-radius:6px;">
+                    </div>
+                    <ul class="pl-3 mb-0">
+                        <li><b>Tiểu Đội Bojack & Tiểu Đội Sát Thủ Namek:</b> Mỗi Boss khi bị hạ gục sẽ rớt ngẫu nhiên từ <b>20 đến 30 Hồng Ngọc</b>.</li>
+                        <li><b>Săn Đệ Tử Super Broly:</b> Boss Broly xuất hiện cố định không tự biến mất, dùng các chiêu đặc biệt (Super Kame / Ma Phong Ba / Liên Hoàn Chưởng) sẽ gây <b>x3 % HP</b> mỗi phát chưởng!</li>
+                    </ul>
+                `;
+            }
+        }
+
+        function toggleNewPostForm() {
+            const f = document.getElementById('newPostForm');
+            f.style.display = (f.style.display === 'none') ? 'block' : 'none';
+        }
+
+        function renderForumPosts() {
+            const saved = JSON.parse(localStorage.getItem('nro_forum_posts_v2') || 'null') || defaultPosts;
+            const container = document.getElementById('userPostsContainer');
+            container.innerHTML = saved.map(p => `
+                <div class="forum-post-item" style="background:#fff3e0;border-color:#d98237;">
+                    <div class="post-avatar-wrapper" style="border-color:#924C31;background:#fff;">
+                        <img src="${p.avatar || 'web/images/avatar/1.png'}" alt="Avatar">
+                    </div>
+                    <div class="post-content">
+                        <span class="post-title-link" style="white-space:normal;">${p.title}</span>
+                        <div style="font-size:12px;color:#333;margin-top:2px;">${p.content}</div>
+                        <div class="post-meta-info" style="color:#666;">
+                            bởi <a href="javascript:void(0)" style="color:#924C31;">${p.author}</a>
+                            <span style="color:red">☆</span> <i>${p.time}</i>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function submitLocalPost() {
+            const author = document.getElementById('postAuthorInput').value.trim() || 'Chiến Binh NRO';
+            const title = document.getElementById('postTitleInput').value.trim();
+            const content = document.getElementById('postContentInput').value.trim();
+            if (!title || !content) {
+                alert('Vui lòng nhập đầy đủ tiêu đề và nội dung bài viết!');
+                return;
+            }
+            const saved = JSON.parse(localStorage.getItem('nro_forum_posts_v2') || 'null') || defaultPosts;
+            const avatars = [
+                'web/images/avatar/1.png',
+                'web/images/avatar/2.png',
+                'web/images/avatar/3.png',
+                'web/images/avatar/554.png',
+                'web/images/avatar/709.png',
+                'web/images/avatar/1000.png'
+            ];
+            saved.unshift({
+                author,
+                avatar: avatars[Math.floor(Math.random() * avatars.length)],
+                title,
+                content,
+                time: 'Vừa xong'
+            });
+            localStorage.setItem('nro_forum_posts_v2', JSON.stringify(saved));
+            document.getElementById('postTitleInput').value = '';
+            document.getElementById('postContentInput').value = '';
+            document.getElementById('newPostForm').style.display = 'none';
+            renderForumPosts();
+        }
+
+        async function registerAccountLive() {
+            const u = document.getElementById('regUsername').value.trim();
+            const p = document.getElementById('regPassword').value.trim();
+            const msgBox = document.getElementById('regResultMsg');
+
+            if (!u || !p) {
+                msgBox.className = 'mt-2 small font-weight-bold text-danger';
+                msgBox.textContent = 'Vui lòng nhập đầy đủ Tên tài khoản và Mật khẩu!';
+                return;
+            }
+
+            msgBox.className = 'mt-2 small font-weight-bold text-dark';
+            msgBox.textContent = 'Đang gửi yêu cầu đăng ký lên Máy Chủ...';
+
+            try {
+                const body = new URLSearchParams({
+                    action: 'register',
+                    username: u,
+                    password: p
+                });
+                const res = await fetch(`${getApiBase()}/api/public/account`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+                    body: body.toString()
+                });
+                const data = await res.json();
+                if (data.ok) {
+                    msgBox.className = 'mt-2 small font-weight-bold text-success';
+                    msgBox.textContent = '✅ ' + data.message + ' Bạn có thể vào game đăng nhập ngay!';
+                    loadAccountsAndRenderRank();
+                } else {
+                    msgBox.className = 'mt-2 small font-weight-bold text-danger';
+                    msgBox.textContent = '❌ ' + (data.message || 'Không thể tạo tài khoản');
+                }
+            } catch (err) {
+                msgBox.className = 'mt-2 small font-weight-bold text-danger';
+                msgBox.textContent = '❌ Lỗi kết nối Máy Chủ: ' + err.message;
+            }
+        }
+
+        async function lookupUserAccount() {
+            const u = document.getElementById('lookupUserInput').value.trim();
+            const p = document.getElementById('lookupPassInput').value.trim();
+            if (!u || !p) {
+                alert('Vui lòng nhập đầy đủ Tài khoản và Mật khẩu của bạn để đăng nhập!');
+                return;
+            }
+            try {
+                const body = new URLSearchParams({
+                    action: 'login',
+                    username: u,
+                    password: p
+                });
+                const res = await fetch(`${getApiBase()}/api/public/account`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+                    body: body.toString()
+                });
+                const data = await res.json();
+                if (!data.ok || !data.account) {
+                    alert(data.message || 'Tài khoản hoặc mật khẩu không chính xác!');
+                    return;
+                }
+                selectedAccount = { ...data.account, password: p };
+                renderSelectedAccount();
+            } catch (err) {
+                alert('Lỗi kết nối Máy Chủ: ' + err.message);
+            }
+        }
+
+        function renderSelectedAccount() {
+            if (!selectedAccount) return;
+            const box = document.getElementById('accountProfileBox');
+            box.style.display = 'block';
+            document.getElementById('profAvatarImg').src = getAvatarByGender(selectedAccount.gender, 1);
+            document.getElementById('profUsername').textContent = selectedAccount.username;
+            document.getElementById('profAccId').textContent = '#' + selectedAccount.accId;
+            document.getElementById('profPlayerName').textContent = selectedAccount.playerName || '(Chưa tạo nhân vật)';
+            document.getElementById('profGender').textContent = selectedAccount.gender || '--';
+            document.getElementById('profPower').textContent = formatNum(selectedAccount.power);
+            document.getElementById('profTask').textContent = selectedAccount.taskName || ('NV #' + (selectedAccount.taskId || 0));
+            document.getElementById('profVnd').textContent = formatNum(selectedAccount.vnd) + ' đ';
+            document.getElementById('profTongnap').textContent = formatNum(selectedAccount.tongnap) + ' đ';
+            document.getElementById('profGold').textContent = formatNum(selectedAccount.gold);
+            document.getElementById('profGem').textContent = formatNum(selectedAccount.gem);
+            document.getElementById('profRuby').textContent = formatNum(selectedAccount.ruby);
+            document.getElementById('profRuongSkh').textContent = formatNum(selectedAccount.ruongSkh);
+            document.getElementById('profActiveBadge').innerHTML = (Number(selectedAccount.active) === 1)
+                ? '<span class="badge badge-success">Đã Mở Thành Viên</span>'
+                : '<span class="badge badge-warning">Chưa Mở Thành Viên</span>';
+        }
+
+        async function quickActivateAccount() {
+            if (!selectedAccount) return;
+            const msg = document.getElementById('profActionMsg');
+            msg.className = 'mt-2 small font-weight-bold text-dark';
+            msg.textContent = 'Đang kích hoạt Mở Thành Viên...';
+
+            try {
+                const body = new URLSearchParams({
+                    action: 'activate',
+                    username: selectedAccount.username,
+                    password: selectedAccount.password
+                });
+                const res = await fetch(`${getApiBase()}/api/public/account`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+                    body: body.toString()
+                });
+                const data = await res.json();
+                if (data.ok) {
+                    msg.className = 'mt-2 small font-weight-bold text-success';
+                    msg.textContent = '✅ ' + data.message;
+                    selectedAccount.active = 1;
+                    renderSelectedAccount();
+                } else {
+                    msg.className = 'mt-2 small font-weight-bold text-danger';
+                    msg.textContent = '❌ ' + (data.message || 'Thao tác thất bại');
+                }
+            } catch (err) {
+                msg.className = 'mt-2 small font-weight-bold text-danger';
+                msg.textContent = '❌ Lỗi: ' + err.message;
+            }
+        }
+
+        async function changeAccountPassword() {
+            if (!selectedAccount) return;
+            const newPass = document.getElementById('newPassInput').value.trim();
+            if (!newPass) {
+                alert('Vui lòng nhập mật khẩu mới!');
+                return;
+            }
+            const msg = document.getElementById('profActionMsg');
+            msg.className = 'mt-2 small font-weight-bold text-dark';
+            msg.textContent = 'Đang đổi mật khẩu...';
+
+            try {
+                const body = new URLSearchParams({
+                    action: 'change_password',
+                    username: selectedAccount.username,
+                    password: selectedAccount.password,
+                    newPassword: newPass
+                });
+                const res = await fetch(`${getApiBase()}/api/public/account`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+                    body: body.toString()
+                });
+                const data = await res.json();
+                if (data.ok) {
+                    msg.className = 'mt-2 small font-weight-bold text-success';
+                    msg.textContent = '✅ ' + data.message;
+                    selectedAccount.password = newPass;
+                    document.getElementById('lookupPassInput').value = newPass;
+                    document.getElementById('newPassInput').value = '';
+                } else {
+                    msg.className = 'mt-2 small font-weight-bold text-danger';
+                    msg.textContent = '❌ ' + (data.message || 'Đổi mật khẩu thất bại');
+                }
+            } catch (err) {
+                msg.className = 'mt-2 small font-weight-bold text-danger';
+                msg.textContent = '❌ Lỗi: ' + err.message;
+            }
+        }
+
+        function refreshAllLive() {
+            fetchServerStatus();
+            loadAccountsAndRenderRank();
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            initIntroSliders();
+            renderForumPosts();
+            refreshAllLive();
+            setInterval(fetchServerStatus, 10000);
+        });
+    </script>
+</body>
+</html>
