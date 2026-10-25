@@ -4,6 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Ngọc Rồng VIAM — Trung Tâm Quản Trị Server</title>
+  <link rel="icon" type="image/png" href="admin_icons/favicon.png" />
+  <link rel="shortcut icon" href="admin_icons/favicon.png" type="image/png" />
   <style>
     :root {
       --bg: #f8fafc;
@@ -495,19 +497,101 @@
       font-size: 13px;
       font-weight: 500;
     }
+
+    /* NRO Game Icons & Avatars */
+    .nro-ico {
+      width: 18px;
+      height: 18px;
+      object-fit: contain;
+      vertical-align: middle;
+      image-rendering: -webkit-optimize-contrast;
+    }
+    .nro-ico-sm {
+      width: 14px;
+      height: 14px;
+      object-fit: contain;
+      vertical-align: middle;
+      margin-right: 2px;
+    }
+    .nro-ico-lg {
+      width: 26px;
+      height: 26px;
+      object-fit: contain;
+      vertical-align: middle;
+      background: var(--panel-subtle);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 2px;
+    }
+    .nro-avatar {
+      width: 28px;
+      height: 28px;
+      object-fit: contain;
+      vertical-align: middle;
+      background: var(--panel-subtle);
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      padding: 2px;
+      flex-shrink: 0;
+    }
+    .brand-logo {
+      height: 44px;
+      width: auto;
+      object-fit: contain;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.18));
+    }
+    .stat-card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+    .stat-icon-box {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      background: var(--panel-subtle);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .stat-icon-box img {
+      width: 22px;
+      height: 22px;
+      object-fit: contain;
+    }
+    .tab-label-wrap {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <header>
       <div class="brand">
+        <img src="admin_icons/logo.png" alt="Ngọc Rồng VIAM" class="brand-logo" />
+        <img src="admin_icons/admin_vip.gif" alt="Admin VIP" style="width:34px;height:34px;object-fit:contain;" />
         <div id="statusDot" class="status-dot"></div>
         <div>
-          <h1 id="serverTitle">Ngọc Rồng VIAM — Quản Trị Hệ Thống</h1>
+          <h1 id="serverTitle" style="display:flex;align-items:center;gap:6px;">
+            Ngọc Rồng VIAM — Quản Trị Hệ Thống
+            <img src="admin_icons/hot.gif" alt="Hot" style="height:13px;" />
+            <img src="admin_icons/age18.png" alt="18+" style="height:14px;" />
+          </h1>
           <span id="connStatusText">Đang kết nối tới máy chủ...</span>
         </div>
       </div>
       <div class="conn-bar">
+        <a href="trang_chu_nro.html" target="_blank" style="text-decoration:none;">
+          <button type="button" class="btn-muted btn-sm" title="Mở Trang Chủ Ngọc Rồng VIAM">
+            <img src="admin_icons/nr1s.png" class="nro-ico" alt="" /> Trang Chủ
+          </button>
+        </a>
         <button class="btn-muted btn-sm" onclick="toggleTheme()" id="themeBtn" title="Đổi giao diện Sáng / Tối">Giao diện Tối</button>
         <select id="presetHost" onchange="applyPresetHost()">
           <option value="http://103.179.190.242:14445">VPS (103.179.190.242:14445)</option>
@@ -516,23 +600,32 @@
         </select>
         <input type="text" id="apiHost" value="http://103.179.190.242:14445" style="width: 200px;" placeholder="http://IP:14445" />
         <input type="password" id="adminKey" value="viam2026" style="width: 95px;" placeholder="Mã Admin" />
-        <button class="btn-sm" onclick="fetchStatus()">Làm mới</button>
+        <button class="btn-sm" onclick="fetchStatus()"><img src="admin_icons/radar.png" class="nro-ico" alt="" /> Làm mới</button>
       </div>
     </header>
 
     <div class="stats-grid">
       <div class="stat-card">
-        <div class="stat-label">Người chơi trực tuyến</div>
+        <div class="stat-card-top">
+          <div class="stat-label">Người chơi trực tuyến</div>
+          <div class="stat-icon-box"><img src="admin_icons/td.png" alt="Online" /></div>
+        </div>
         <div class="stat-value"><span id="statOnline">0</span> <span style="font-size:14px;font-weight:500;color:var(--muted);">/ <span id="statBotCount">0</span> Bot</span></div>
         <div class="stat-sub" id="statStartTime">Khởi chạy: --</div>
       </div>
       <div class="stat-card">
-        <div class="stat-label">Boss đang hoạt động</div>
+        <div class="stat-card-top">
+          <div class="stat-label">Boss đang hoạt động</div>
+          <div class="stat-icon-box"><img src="admin_icons/radar.png" alt="Boss" /></div>
+        </div>
         <div class="stat-value" id="statBoss">0 / 0</div>
-        <div class="stat-sub">Xem chi tiết tại mục Giám Sát Boss</div>
+        <div class="stat-sub">Xem chi tiết tại mục Giám Sát Boss <img src="admin_icons/hot.gif" alt="" style="height:11px;vertical-align:middle;" /></div>
       </div>
       <div class="stat-card">
-        <div class="stat-label">Tỷ lệ EXP Server</div>
+        <div class="stat-card-top">
+          <div class="stat-label">Tỷ lệ EXP Server</div>
+          <div class="stat-icon-box"><img src="admin_icons/exp_tnsm.png" alt="EXP" /></div>
+        </div>
         <div class="stat-value" id="statExpRate">x1</div>
         <div class="stat-sub">
           Đặt nhanh:
@@ -543,12 +636,18 @@
         </div>
       </div>
       <div class="stat-card">
-        <div class="stat-label">Bộ nhớ RAM (JVM)</div>
+        <div class="stat-card-top">
+          <div class="stat-label">Bộ nhớ RAM (JVM)</div>
+          <div class="stat-icon-box"><img src="admin_icons/capsule.png" alt="RAM" /></div>
+        </div>
         <div class="stat-value" id="statRam">0 / 0 MB</div>
         <div class="stat-sub" id="statThreads">Số luồng xử lý: --</div>
       </div>
       <div class="stat-card">
-        <div class="stat-label">Thời gian Uptime</div>
+        <div class="stat-card-top">
+          <div class="stat-label">Thời gian Uptime</div>
+          <div class="stat-icon-box"><img src="admin_icons/nr1s.png" alt="Uptime" /></div>
+        </div>
         <div class="stat-value" id="statUptime">00:00:00</div>
         <div class="stat-sub">Tự động đồng bộ mỗi 3 giây</div>
       </div>
@@ -557,57 +656,57 @@
     <div class="actions-bar">
       <div class="announce-box">
         <input type="text" id="announceText" placeholder="Nhập thông báo gửi toàn bộ người chơi đang online..." onkeydown="if(event.key==='Enter') sendAnnounce()" />
-        <button onclick="sendAnnounce()">Gửi Thông Báo</button>
+        <button onclick="sendAnnounce()"><img src="admin_icons/hot.gif" alt="" style="height:12px;" /> Gửi Thông Báo</button>
       </div>
       <div class="toolbar-divider"></div>
-      <button class="btn-warning" onclick="openTaskModal('', 0, 0, 0, 0)" title="Nhảy qua bước nhiệm vụ đang kẹt hoặc đặt thẳng nhiệm vụ cho người chơi Online & Offline">Nhảy Nhiệm Vụ</button>
-      <button class="btn-warning" onclick="openIntrinsicModal('', 0, 0, -1, 0, 0)" title="Tặng hoặc chỉnh sửa chỉ số Nội tại (%) cho người chơi Online & Offline">Buff Nội Tại</button>
-      <button class="btn-teal" onclick="saveAllData()">Lưu Dữ Liệu</button>
-      <button class="btn-teal" onclick="updateAndRestartServer()" title="Tự động kéo code mới từ GitHub (git pull) và khởi động lại Server">Cập Nhật & Khởi Động Lại</button>
-      <button class="btn-warning" onclick="triggerBackupNow()">Backup GitHub</button>
-      <button class="btn-purple" onclick="downloadBackup()">Tải Backup (.sql.gz)</button>
+      <button class="btn-warning" onclick="openTaskModal('', 0, 0, 0, 0)" title="Nhảy qua bước nhiệm vụ đang kẹt hoặc đặt thẳng nhiệm vụ cho người chơi Online & Offline"><img src="admin_icons/nr4s.png" class="nro-ico" alt="" /> Nhảy Nhiệm Vụ</button>
+      <button class="btn-warning" onclick="openIntrinsicModal('', 0, 0, -1, 0, 0)" title="Tặng hoặc chỉnh sửa chỉ số Nội tại (%) cho người chơi Online & Offline"><img src="admin_icons/intrinsic_atk.png" class="nro-ico" alt="" /> Buff Nội Tại</button>
+      <button class="btn-teal" onclick="saveAllData()"><img src="admin_icons/senzu.png" class="nro-ico" alt="" /> Lưu Dữ Liệu</button>
+      <button class="btn-teal" onclick="updateAndRestartServer()" title="Tự động kéo code mới từ GitHub (git pull) và khởi động lại Server"><img src="admin_icons/capsule.png" class="nro-ico" alt="" /> Cập Nhật & Khởi Động Lại</button>
+      <button class="btn-warning" onclick="triggerBackupNow()"><img src="admin_icons/cuon_sach.png" class="nro-ico" alt="" /> Backup GitHub</button>
+      <button class="btn-purple" onclick="downloadBackup()"><img src="admin_icons/ruong_skh.png" class="nro-ico" alt="" /> Tải Backup (.sql.gz)</button>
     </div>
 
     <div class="workspace-layout">
       <div class="tabs">
         <button id="tabBtnPlayers" class="tab-btn active" onclick="switchTab('players')">
-          <span>1. Người Chơi Online</span>
+          <span class="tab-label-wrap"><img src="admin_icons/td.png" class="nro-ico" alt="" /> 1. Người Chơi Online</span>
           <span class="badge badge-dead" id="countPlayersTab">0</span>
         </button>
         <button id="tabBtnAccounts" class="tab-btn" onclick="switchTab('accounts')">
-          <span>2. Tài Khoản & NV DB</span>
+          <span class="tab-label-wrap"><img src="admin_icons/admin_avatar.png" class="nro-ico" alt="" /> 2. Tài Khoản & NV DB</span>
           <span class="badge badge-dead" id="countAccountsTab">Tất cả</span>
         </button>
         <button id="tabBtnBosses" class="tab-btn" onclick="switchTab('bosses')">
-          <span>3. Giám Sát & Gọi Boss</span>
+          <span class="tab-label-wrap"><img src="admin_icons/radar.png" class="nro-ico" alt="" /> 3. Giám Sát & Gọi Boss</span>
           <span class="badge badge-dead" id="countBossesTab">0</span>
         </button>
         <button id="tabBtnItems" class="tab-btn" onclick="switchTab('items')">
-          <span>4. Kho Vật Phẩm</span>
+          <span class="tab-label-wrap"><img src="admin_icons/ao_tl.png" class="nro-ico" alt="" /> 4. Kho Vật Phẩm</span>
           <span class="badge badge-dead" id="countItemsTab">Tất cả</span>
         </button>
         <button id="tabBtnEvents" class="tab-btn" onclick="switchTab('events')">
-          <span>5. Quản Lý Sự Kiện</span>
+          <span class="tab-label-wrap"><img src="admin_icons/ev_halloween.png" class="nro-ico" alt="" /> 5. Quản Lý Sự Kiện</span>
           <span class="badge badge-alive">Live</span>
         </button>
         <button id="tabBtnSystem" class="tab-btn" onclick="switchTab('system')">
-          <span>6. Hệ Thống & BXH</span>
+          <span class="tab-label-wrap"><img src="admin_icons/nr1s.png" class="nro-ico" alt="" /> 6. Hệ Thống & BXH</span>
         </button>
         <button id="tabBtnGiftcodes" class="tab-btn" onclick="switchTab('giftcodes')">
-          <span>7. Mã Quà Tặng (Code)</span>
+          <span class="tab-label-wrap"><img src="admin_icons/giftcode.png" class="nro-ico" alt="" /> 7. Mã Quà Tặng (Code)</span>
           <span class="badge badge-alive" id="countGiftcodesTab">0</span>
         </button>
 
         <div class="sidebar-section">
           <div class="sidebar-label">Công cụ Nhân Vật</div>
-          <button class="btn-muted btn-sm" style="width:100%;justify-content:flex-start;" onclick="switchTab('giftcodes')">🎟 Thiết Lập Mã Giftcode</button>
-          <button class="btn-muted btn-sm" style="width:100%;justify-content:flex-start;" onclick="openTaskModal('', 0, 0, 0, 0)">⏭ Nhảy Nhiệm Vụ</button>
-          <button class="btn-muted btn-sm" style="width:100%;justify-content:flex-start;" onclick="openIntrinsicModal('', 0, 0, -1, 0, 0)">⚡ Buff Nội Tại</button>
-          <button class="btn-muted btn-sm" style="width:100%;justify-content:flex-start;" onclick="openGiftModal('', 'Người chơi')">🎁 Trao Quà / Vật Phẩm</button>
+          <button class="btn-muted btn-sm" style="width:100%;justify-content:flex-start;" onclick="switchTab('giftcodes')"><img src="admin_icons/giftcode.png" class="nro-ico" alt="" /> Thiết Lập Mã Giftcode</button>
+          <button class="btn-muted btn-sm" style="width:100%;justify-content:flex-start;" onclick="openTaskModal('', 0, 0, 0, 0)"><img src="admin_icons/nr4s.png" class="nro-ico" alt="" /> Nhảy Nhiệm Vụ</button>
+          <button class="btn-muted btn-sm" style="width:100%;justify-content:flex-start;" onclick="openIntrinsicModal('', 0, 0, -1, 0, 0)"><img src="admin_icons/intrinsic_atk.png" class="nro-ico" alt="" /> Buff Nội Tại</button>
+          <button class="btn-muted btn-sm" style="width:100%;justify-content:flex-start;" onclick="openGiftModal('', 'Người chơi')"><img src="admin_icons/thoi_vang.png" class="nro-ico" alt="" /> Trao Quà / Vật Phẩm</button>
         </div>
 
         <div class="sidebar-section">
-          <div class="sidebar-label">Đổi nhanh EXP Server</div>
+          <div class="sidebar-label"><img src="admin_icons/exp_tnsm.png" class="nro-ico-sm" alt="" /> Đổi nhanh EXP Server</div>
           <div class="sidebar-grid-3">
             <button class="btn-muted btn-sm" onclick="quickSetExp(1)">x1</button>
             <button class="btn-muted btn-sm" onclick="quickSetExp(2)">x2</button>
@@ -619,13 +718,13 @@
         </div>
 
         <div class="sidebar-section">
-          <div class="sidebar-label">Điều khiển Bot & Boss</div>
+          <div class="sidebar-label"><img src="admin_icons/detu.png" class="nro-ico-sm" alt="" /> Điều khiển Bot & Boss</div>
           <div class="sidebar-grid-2">
-            <button class="btn-muted btn-sm" onclick="spawnBots(0)">+Bot Quái</button>
-            <button class="btn-muted btn-sm" onclick="spawnBots(2)">+Bot Boss</button>
+            <button class="btn-muted btn-sm" onclick="spawnBots(0)"><img src="admin_icons/td.png" class="nro-ico-sm" alt="" /> +Bot Quái</button>
+            <button class="btn-muted btn-sm" onclick="spawnBots(2)"><img src="admin_icons/xd.png" class="nro-ico-sm" alt="" /> +Bot Boss</button>
           </div>
           <div class="sidebar-grid-2">
-            <button class="btn-muted btn-sm" onclick="spawnAllBosses()">Gọi All Boss</button>
+            <button class="btn-muted btn-sm" onclick="spawnAllBosses()"><img src="admin_icons/radar.png" class="nro-ico-sm" alt="" /> Gọi All Boss</button>
             <button class="btn-danger btn-sm" onclick="clearAllBots()">Xóa Bot</button>
           </div>
         </div>
@@ -891,11 +990,11 @@
           <div class="form-group" style="margin-bottom:0;">
             <label>Triệu hồi nhanh Boss Sự Kiện:</label>
             <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;">
-              <button class="btn-muted btn-sm" onclick="spawnEventBoss('halloween')">Boss Halloween</button>
-              <button class="btn-muted btn-sm" onclick="spawnEventBoss('christmas')">Boss Giáng Sinh</button>
-              <button class="btn-muted btn-sm" onclick="spawnEventBoss('tet')">Boss Tết (Lân Con)</button>
-              <button class="btn-muted btn-sm" onclick="spawnEventBoss('trung_thu')">Boss Trung Thu</button>
-              <button class="btn-muted btn-sm" onclick="spawnEventBoss('hung_vuong')">Boss Hùng Vương</button>
+              <button class="btn-muted btn-sm" onclick="spawnEventBoss('halloween')"><img src="admin_icons/ev_halloween.png" class="nro-ico" alt="" /> Boss Halloween</button>
+              <button class="btn-muted btn-sm" onclick="spawnEventBoss('christmas')"><img src="admin_icons/ev_noel.png" class="nro-ico" alt="" /> Boss Giáng Sinh</button>
+              <button class="btn-muted btn-sm" onclick="spawnEventBoss('tet')"><img src="admin_icons/ev_tet.png" class="nro-ico" alt="" /> Boss Tết (Lân Con)</button>
+              <button class="btn-muted btn-sm" onclick="spawnEventBoss('trung_thu')"><img src="admin_icons/ev_trungthu.png" class="nro-ico" alt="" /> Boss Trung Thu</button>
+              <button class="btn-muted btn-sm" onclick="spawnEventBoss('hung_vuong')"><img src="admin_icons/ev_hungvuong.png" class="nro-ico" alt="" /> Boss Hùng Vương</button>
             </div>
           </div>
 
@@ -1001,12 +1100,12 @@
       <div class="card" style="margin-bottom: 14px;">
         <div class="card-header">
           <div>
-            <h3>Thiết Lập / Tạo Mã Quà Tặng (Giftcode) Toàn Server</h3>
+            <h3 style="display:flex;align-items:center;gap:8px;"><img src="admin_icons/giftcode.png" class="nro-ico-lg" alt="" /> Thiết Lập / Tạo Mã Quà Tặng (Giftcode) Toàn Server <img src="admin_icons/hot.gif" alt="" style="height:13px;" /></h3>
             <span style="font-size:12.5px;color:var(--muted);">Tạo mới hoặc cập nhật Giftcode lưu trực tiếp vào MySQL — có hiệu lực ngay lập tức mà không cần khởi động lại Server. Người chơi nhập tại <b>Ông Gôhan / Ông Moori / Ông Paragus</b> hoặc <b>Santa (Đảo Kame)</b>.</span>
           </div>
           <div style="display:flex;gap:8px;flex-wrap:wrap;">
-            <button class="btn-muted btn-sm" onclick="applyPresetGiftcodeSachSkh()">⚡ Điền Gói: x50 Thỏi Vàng + x999 Sách Cũ + x5 Rương SKH</button>
-            <button class="btn-success" onclick="saveGiftcode()">Lưu & Kích Hoạt Mã Giftcode</button>
+            <button class="btn-muted btn-sm" onclick="applyPresetGiftcodeSachSkh()"><img src="admin_icons/thoi_vang.png" class="nro-ico" alt="" /> Điền Gói: x50 Thỏi Vàng + x999 Sách Cũ + x5 Rương SKH</button>
+            <button class="btn-success" onclick="saveGiftcode()"><img src="admin_icons/giftcode.png" class="nro-ico" alt="" /> Lưu & Kích Hoạt Mã Giftcode</button>
           </div>
         </div>
         <div class="card-body">
@@ -1038,14 +1137,14 @@
           <div style="background:var(--surface-hover);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:14px;">
             <div style="font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:8px;">Thêm Nhanh Vật Phẩm Vào Mã Giftcode Đang Soạn:</div>
             <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;">
-              <button class="btn-muted btn-sm" onclick="addDraftGiftItem(457, 'Thỏi vàng', 50, [{id:30,param:0}])">+ x50 Thỏi Vàng (ID 457)</button>
-              <button class="btn-muted btn-sm" onclick="addDraftGiftItem(1281, 'Trang sách cũ', 999, [{id:30,param:0}])">+ x999 Trang Sách Cũ (ID 1281)</button>
-              <button class="btn-muted btn-sm" onclick="addDraftGiftItem(1282, 'Bìa sách', 999, [{id:30,param:0}])">+ x999 Bìa Sách (ID 1282)</button>
-              <button class="btn-muted btn-sm" onclick="addDraftGiftItem(1283, 'Cuốn sách cũ', 10, [{id:30,param:0}])">+ x10 Cuốn Sách Cũ (ID 1283)</button>
-              <button class="btn-muted btn-sm" onclick="addDraftGiftItem(-4, 'Rương SKH Tân Thủ', 5, [])">+ x5 Rương SKH Tân Thủ</button>
-              <button class="btn-muted btn-sm" onclick="addDraftGiftItem(1655, 'Capsule Kích Hoạt (Hộp SKH)', 5, [{id:30,param:0}])">+ x5 Capsule Kích Hoạt SKH (ID 1655)</button>
-              <button class="btn-muted btn-sm" onclick="addDraftGiftItem(-2, 'Ngọc xanh', 200000, [])">+ 200.000 Ngọc Xanh</button>
-              <button class="btn-muted btn-sm" onclick="addDraftGiftItem(-3, 'Hồng ngọc', 5000, [])">+ 5.000 Hồng Ngọc</button>
+              <button class="btn-muted btn-sm" onclick="addDraftGiftItem(457, 'Thỏi vàng', 50, [{id:30,param:0}])"><img src="admin_icons/thoi_vang.png" class="nro-ico" alt="" /> + x50 Thỏi Vàng (ID 457)</button>
+              <button class="btn-muted btn-sm" onclick="addDraftGiftItem(1281, 'Trang sách cũ', 999, [{id:30,param:0}])"><img src="admin_icons/trang_sach.png" class="nro-ico" alt="" /> + x999 Trang Sách Cũ (ID 1281)</button>
+              <button class="btn-muted btn-sm" onclick="addDraftGiftItem(1282, 'Bìa sách', 999, [{id:30,param:0}])"><img src="admin_icons/bia_sach.png" class="nro-ico" alt="" /> + x999 Bìa Sách (ID 1282)</button>
+              <button class="btn-muted btn-sm" onclick="addDraftGiftItem(1283, 'Cuốn sách cũ', 10, [{id:30,param:0}])"><img src="admin_icons/cuon_sach.png" class="nro-ico" alt="" /> + x10 Cuốn Sách Cũ (ID 1283)</button>
+              <button class="btn-muted btn-sm" onclick="addDraftGiftItem(-4, 'Rương SKH Tân Thủ', 5, [])"><img src="admin_icons/ruong_skh.png" class="nro-ico" alt="" /> + x5 Rương SKH Tân Thủ</button>
+              <button class="btn-muted btn-sm" onclick="addDraftGiftItem(1655, 'Capsule Kích Hoạt (Hộp SKH)', 5, [{id:30,param:0}])"><img src="admin_icons/capsule.png" class="nro-ico" alt="" /> + x5 Capsule Kích Hoạt SKH (ID 1655)</button>
+              <button class="btn-muted btn-sm" onclick="addDraftGiftItem(-2, 'Ngọc xanh', 200000, [])"><img src="admin_icons/gem.png" class="nro-ico" alt="" /> + 200.000 Ngọc Xanh</button>
+              <button class="btn-muted btn-sm" onclick="addDraftGiftItem(-3, 'Hồng ngọc', 5000, [])"><img src="admin_icons/ruby.png" class="nro-ico" alt="" /> + 5.000 Hồng Ngọc</button>
             </div>
             <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;border-top:1px solid var(--border);padding-top:10px;">
               <div style="position:relative;flex:1;min-width:220px;">
@@ -1548,6 +1647,74 @@
       return String(str || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd');
     }
 
+    function getPlanetAvatarSrc(genderOrId, isAdminOrTop1 = false) {
+      if (isAdminOrTop1) return 'admin_icons/admin_vip.gif';
+      const g = normalizeVi(String(genderOrId ?? ''));
+      if (g === '1' || g.includes('namek')) return 'admin_icons/nm.png';
+      if (g === '2' || g.includes('xayda')) return 'admin_icons/xd.png';
+      if (g === '0' || g.includes('trai dat')) return 'admin_icons/td.png';
+      return 'admin_icons/admin_avatar.png';
+    }
+
+    function getDragonBallRankSrc(rank) {
+      const r = Number(rank);
+      if (r >= 1 && r <= 7) return `admin_icons/nr${r}s.png`;
+      return 'admin_icons/nr7s.png';
+    }
+
+    function getItemIconSrc(id, type, name) {
+      const numId = Number(id);
+      if (numId === -1 || numId === 76 || (numId >= 188 && numId <= 190)) return 'admin_icons/gold.png';
+      if (numId === -2 || numId === 77) return 'admin_icons/gem.png';
+      if (numId === -3 || numId === 861) return 'admin_icons/ruby.png';
+      if (numId === -4 || numId === 1655) return 'admin_icons/ruong_skh.png';
+      if (numId === 457) return 'admin_icons/thoi_vang.png';
+      if (numId === 1281) return 'admin_icons/trang_sach.png';
+      if (numId === 1282) return 'admin_icons/bia_sach.png';
+      if (numId === 1283) return 'admin_icons/cuon_sach.png';
+      if (numId === 454) return 'admin_icons/porata1.png';
+      if (numId === 921) return 'admin_icons/porata2.png';
+      if (numId === 674) return 'admin_icons/da_ngu_sac.png';
+      if (numId === 380) return 'admin_icons/capsule.png';
+      if (numId === 381) return 'admin_icons/cuong_no.png';
+      if (numId === 1150) return 'admin_icons/cuong_no_2.png';
+      if (numId === 382) return 'admin_icons/bo_huyet.png';
+      if (numId === 383) return 'admin_icons/bo_khi.png';
+      if (numId === 568) return 'admin_icons/pet_egg.png';
+      if (numId >= 14 && numId <= 20) return `admin_icons/nr${numId - 13}s.png`;
+
+      const n = normalizeVi(name || '');
+      if (n.includes('thoi vang')) return 'admin_icons/thoi_vang.png';
+      if (n.includes('trang sach')) return 'admin_icons/trang_sach.png';
+      if (n.includes('bia sach')) return 'admin_icons/bia_sach.png';
+      if (n.includes('cuon sach')) return 'admin_icons/cuon_sach.png';
+      if (n.includes('bong tai')) return 'admin_icons/porata2.png';
+      if (n.includes('da ngu sac') || n.includes('sao pha le')) return 'admin_icons/da_ngu_sac.png';
+      if (n.includes('ruong') || n.includes('skh') || n.includes('kich hoat')) return 'admin_icons/ruong_skh.png';
+      if (n.includes('ngoc rong')) return 'admin_icons/nr1s.png';
+      if (n.includes('bi ngo')) return 'admin_icons/ev_halloween.png';
+      if (n.includes('giang sinh') || n.includes('noel')) return 'admin_icons/ev_noel.png';
+      if (n.includes('trung thu')) return 'admin_icons/ev_trungthu.png';
+      if (n.includes('banh chung')) return 'admin_icons/ev_banhchung.png';
+      if (n.includes('dua hau')) return 'admin_icons/ev_hungvuong.png';
+      if (n.includes('phao')) return 'admin_icons/ev_firework.png';
+      if (n.includes('hoa hong') || n.includes('bong hoa')) return 'admin_icons/ev_8_3.png';
+
+      const t = Number(type);
+      if (t === 0) return n.includes('huy diet') ? 'admin_icons/ao_hd.png' : 'admin_icons/ao_tl.png';
+      if (t === 1) return 'admin_icons/quan_tl.png';
+      if (t === 2) return 'admin_icons/gang_tl.png';
+      if (t === 3) return 'admin_icons/giay_tl.png';
+      if (t === 4) return n.includes('nhan') ? 'admin_icons/nhan_tl.png' : 'admin_icons/radar.png';
+      if (t === 5) return 'admin_icons/admin_avatar.png';
+      if (t === 6) return 'admin_icons/senzu.png';
+      if (t === 7) return 'admin_icons/sach_vo.png';
+      if (t === 12) return 'admin_icons/nr1s.png';
+      if (t === 14) return 'admin_icons/da_ngu_sac.png';
+      if (t === 21 || t === 23) return 'admin_icons/pet_egg.png';
+      return 'admin_icons/capsule.png';
+    }
+
     function switchTab(tab) {
       currentTab = tab;
       const tabs = ['players', 'accounts', 'bosses', 'items', 'events', 'system', 'giftcodes'];
@@ -1662,28 +1829,33 @@
       tbody.innerHTML = filtered.map(p => `
         <tr>
           <td style="color:var(--muted);">#${p.id}</td>
-          <td class="text-name">${escapeHtml(p.name)}</td>
-          <td>${escapeHtml(p.gender)}</td>
-          <td class="text-power">${formatNum(p.power)}</td>
+          <td class="text-name">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <img src="${getPlanetAvatarSrc(p.genderId ?? p.gender, false)}" class="nro-avatar" alt="" />
+              <span>${escapeHtml(p.name)}</span>
+            </div>
+          </td>
+          <td><img src="${getPlanetAvatarSrc(p.genderId ?? p.gender, false)}" class="nro-ico-sm" alt="" /> ${escapeHtml(p.gender)}</td>
+          <td class="text-power"><img src="admin_icons/exp_tnsm.png" class="nro-ico-sm" alt="" /> ${formatNum(p.power)}</td>
           <td>
-            <span style="font-weight:500;">HP: ${formatNum(p.hp)}/${formatNum(p.hpMax)}</span><br/>
-            <span style="font-size:12px;color:var(--muted);">KI: ${formatNum(p.mp)} · SĐ: ${formatNum(p.dame)}</span><br/>
-            <span style="font-size:11.5px;color:var(--text-secondary);">Nội tại: ${escapeHtml(p.intrinsicName || 'Chưa mở')}</span><br/>
-            <span style="font-size:11.5px;color:var(--muted);">${escapeHtml(p.taskName || ('NV #' + (p.taskId ?? 0)))}</span>
+            <span style="font-weight:500;"><img src="admin_icons/bo_huyet.png" class="nro-ico-sm" alt="" /> HP: ${formatNum(p.hp)}/${formatNum(p.hpMax)}</span><br/>
+            <span style="font-size:12px;color:var(--muted);"><img src="admin_icons/bo_khi.png" class="nro-ico-sm" alt="" /> KI: ${formatNum(p.mp)} · <img src="admin_icons/cuong_no.png" class="nro-ico-sm" alt="" /> SĐ: ${formatNum(p.dame)}</span><br/>
+            <span style="font-size:11.5px;color:var(--text-secondary);"><img src="admin_icons/intrinsic_atk.png" class="nro-ico-sm" alt="" /> Nội tại: ${escapeHtml(p.intrinsicName || 'Chưa mở')}</span><br/>
+            <span style="font-size:11.5px;color:var(--muted);"><img src="admin_icons/nr4s.png" class="nro-ico-sm" alt="" /> ${escapeHtml(p.taskName || ('NV #' + (p.taskId ?? 0)))}</span>
           </td>
           <td>
-            <span class="text-gold">${formatNum(p.gold)} Vàng</span> · <span class="text-vnd">${formatNum(p.vnd)} đ</span><br/>
-            <span style="font-size:12px;color:var(--muted);">${formatNum(p.gem)} Ngọc · ${formatNum(p.ruby)} HN · Rương SKH: <b style="color:var(--text-secondary);">${formatNum(p.ruongSkh ?? 5)}</b></span>
+            <span class="text-gold"><img src="admin_icons/gold.png" class="nro-ico-sm" alt="" /> ${formatNum(p.gold)} Vàng</span> · <span class="text-vnd"><img src="admin_icons/vnd.png" class="nro-ico-sm" alt="" /> ${formatNum(p.vnd)} đ</span><br/>
+            <span style="font-size:12px;color:var(--muted);"><img src="admin_icons/gem.png" class="nro-ico-sm" alt="" /> ${formatNum(p.gem)} Ngọc · <img src="admin_icons/ruby.png" class="nro-ico-sm" alt="" /> ${formatNum(p.ruby)} HN · <img src="admin_icons/ruong_skh.png" class="nro-ico-sm" alt="" /> SKH: <b style="color:var(--text-secondary);">${formatNum(p.ruongSkh ?? 5)}</b></span>
           </td>
           <td><b>${escapeHtml(p.mapName)}</b> <span class="badge badge-dead">Khu ${p.zoneId}</span></td>
-          <td>${p.hasPet ? `Có (${formatNum(p.petPower)})` : '<span style="color:var(--muted)">Không</span>'}</td>
+          <td>${p.hasPet ? `<span style="display:inline-flex;align-items:center;gap:4px;"><img src="admin_icons/detu.png" class="nro-ico" alt="" /> Có (${formatNum(p.petPower)})</span>` : '<span style="color:var(--muted)">Không</span>'}</td>
           <td style="display:flex;gap:5px;flex-wrap:wrap;">
-            <button class="btn-success btn-sm" onclick="openGiftModal(${p.id}, '${escapeJs(p.name)}')">Trao Quà</button>
-            <button class="btn-muted btn-sm" onclick="openTaskModal('${escapeJs(p.name)}', ${p.id}, 0, ${p.taskId ?? 0}, ${p.taskIndex ?? 0})">Nhảy NV</button>
-            <button class="btn-muted btn-sm" onclick="promptGiveSkhBox('${escapeJs(p.name)}', ${p.id}, 0, ${p.ruongSkh ?? 5})">+Rương SKH</button>
-            <button class="btn-muted btn-sm" onclick="openIntrinsicModal('${escapeJs(p.name)}', ${p.id}, 0, ${p.genderId ?? -1}, ${p.intrinsicId || 0}, ${p.intrinsicParam1 || 0})">Nội Tại</button>
-            <button class="btn-muted btn-sm" onclick="inspectPlayer(${p.id})">Xem Đồ</button>
-            <button class="btn-muted btn-sm" onclick="healPlayer(${p.id})">Hồi HP/KI</button>
+            <button class="btn-success btn-sm" onclick="openGiftModal(${p.id}, '${escapeJs(p.name)}')"><img src="admin_icons/thoi_vang.png" class="nro-ico-sm" alt="" /> Trao Quà</button>
+            <button class="btn-muted btn-sm" onclick="openTaskModal('${escapeJs(p.name)}', ${p.id}, 0, ${p.taskId ?? 0}, ${p.taskIndex ?? 0})"><img src="admin_icons/nr4s.png" class="nro-ico-sm" alt="" /> Nhảy NV</button>
+            <button class="btn-muted btn-sm" onclick="promptGiveSkhBox('${escapeJs(p.name)}', ${p.id}, 0, ${p.ruongSkh ?? 5})"><img src="admin_icons/ruong_skh.png" class="nro-ico-sm" alt="" /> +Rương SKH</button>
+            <button class="btn-muted btn-sm" onclick="openIntrinsicModal('${escapeJs(p.name)}', ${p.id}, 0, ${p.genderId ?? -1}, ${p.intrinsicId || 0}, ${p.intrinsicParam1 || 0})"><img src="admin_icons/intrinsic_atk.png" class="nro-ico-sm" alt="" /> Nội Tại</button>
+            <button class="btn-muted btn-sm" onclick="inspectPlayer(${p.id})"><img src="admin_icons/ao_tl.png" class="nro-ico-sm" alt="" /> Xem Đồ</button>
+            <button class="btn-muted btn-sm" onclick="healPlayer(${p.id})"><img src="admin_icons/senzu.png" class="nro-ico-sm" alt="" /> Hồi HP/KI</button>
             <button class="btn-danger btn-sm" onclick="kickPlayer(${p.id}, '${escapeJs(p.name)}')">Kick</button>
           </td>
         </tr>
@@ -1713,34 +1885,39 @@
             <td style="font-weight:600;">${escapeHtml(a.username)}</td>
             <td style="color:var(--muted);font-family:monospace;">${escapeHtml(a.password)}</td>
             <td class="text-name">
-              ${escapeHtml(a.playerName)} <span style="font-size:11.5px;color:var(--muted);font-weight:400;">(${escapeHtml(a.gender)})</span>
-              ${a.playerId > 0 ? `<br/><span style="font-size:11.5px;color:var(--muted);font-weight:400;">Nội tại: ${escapeHtml(a.intrinsicName || 'Chưa mở')}</span>` : ''}
-              ${a.playerId > 0 ? `<br/><span style="font-size:11.5px;color:var(--muted);font-weight:400;">${escapeHtml(a.taskName || ('NV #' + (a.taskId ?? 0)))}</span>` : ''}
+              <div style="display:flex;align-items:center;gap:8px;">
+                <img src="${getPlanetAvatarSrc(a.genderId ?? a.gender, a.isAdmin)}" class="nro-avatar" alt="" />
+                <div>
+                  ${escapeHtml(a.playerName)} <span style="font-size:11.5px;color:var(--muted);font-weight:400;">(${escapeHtml(a.gender)})</span>
+                  ${a.playerId > 0 ? `<br/><span style="font-size:11.5px;color:var(--muted);font-weight:400;"><img src="admin_icons/intrinsic_atk.png" class="nro-ico-sm" alt="" /> Nội tại: ${escapeHtml(a.intrinsicName || 'Chưa mở')}</span>` : ''}
+                  ${a.playerId > 0 ? `<br/><span style="font-size:11.5px;color:var(--muted);font-weight:400;"><img src="admin_icons/nr4s.png" class="nro-ico-sm" alt="" /> ${escapeHtml(a.taskName || ('NV #' + (a.taskId ?? 0)))}</span>` : ''}
+                </div>
+              </div>
             </td>
             <td>
               ${a.online ? '<span class="badge badge-alive">Online</span>' : '<span class="badge badge-dead">Offline</span>'}
               ${a.ban ? '<span class="badge badge-ban">Khóa</span>' : ''}
             </td>
             <td>
-              <span class="text-vnd">${formatNum(a.vnd)} đ</span><br/>
+              <span class="text-vnd"><img src="admin_icons/vnd.png" class="nro-ico-sm" alt="" /> ${formatNum(a.vnd)} đ</span><br/>
               <span style="font-size:11.5px;color:var(--muted);">Tổng nạp: ${formatNum(a.tongnap)} đ</span>
             </td>
             <td>
               ${a.active ? '<span class="badge badge-alive">Đã Mở TV</span>' : '<span class="badge badge-dead">Chưa Mở TV</span>'}
-              ${a.isAdmin ? '<span class="badge badge-admin">Admin</span>' : ''}
+              ${a.isAdmin ? '<span class="badge badge-admin"><img src="admin_icons/hot.gif" alt="" style="height:10px;" /> Admin</span>' : ''}
             </td>
-            <td class="text-power">${formatNum(a.power)}</td>
+            <td class="text-power"><img src="admin_icons/exp_tnsm.png" class="nro-ico-sm" alt="" /> ${formatNum(a.power)}</td>
             <td>
-              <span class="text-gold">${formatNum(a.gold)} Vàng</span><br/>
-              <span style="font-size:12px;color:var(--muted);">${formatNum(a.gem)} Ngọc · ${formatNum(a.ruby)} HN · SKH: <b style="color:var(--text-secondary);">${formatNum(a.ruongSkh ?? 5)}</b></span>
+              <span class="text-gold"><img src="admin_icons/gold.png" class="nro-ico-sm" alt="" /> ${formatNum(a.gold)} Vàng</span><br/>
+              <span style="font-size:12px;color:var(--muted);"><img src="admin_icons/gem.png" class="nro-ico-sm" alt="" /> ${formatNum(a.gem)} Ngọc · <img src="admin_icons/ruby.png" class="nro-ico-sm" alt="" /> ${formatNum(a.ruby)} HN · <img src="admin_icons/ruong_skh.png" class="nro-ico-sm" alt="" /> SKH: <b style="color:var(--text-secondary);">${formatNum(a.ruongSkh ?? 5)}</b></span>
             </td>
             <td style="display:flex;gap:5px;flex-wrap:wrap;">
-              <button class="btn-success btn-sm" onclick="openEditAccount(${a.accId})">Sửa / +VNĐ</button>
-              ${a.playerId > 0 ? `<button class="btn-muted btn-sm" onclick="openTaskModal('${escapeJs(a.playerName)}', ${a.playerId}, ${a.accId}, ${a.taskId ?? 0}, ${a.taskIndex ?? 0})">Nhảy NV</button>` : ''}
-              <button class="btn-muted btn-sm" onclick="promptGiveSkhBox('${escapeJs(a.playerName)}', ${a.playerId || 0}, ${a.accId}, ${a.ruongSkh ?? 5})">+Rương SKH</button>
-              ${a.playerId > 0 ? `<button class="btn-muted btn-sm" onclick="openIntrinsicModal('${escapeJs(a.playerName)}', ${a.playerId}, ${a.accId}, ${a.genderId ?? -1}, ${a.intrinsicId || 0}, ${a.intrinsicParam1 || 0})">Nội Tại</button>` : ''}
+              <button class="btn-success btn-sm" onclick="openEditAccount(${a.accId})"><img src="admin_icons/vnd.png" class="nro-ico-sm" alt="" /> Sửa / +VNĐ</button>
+              ${a.playerId > 0 ? `<button class="btn-muted btn-sm" onclick="openTaskModal('${escapeJs(a.playerName)}', ${a.playerId}, ${a.accId}, ${a.taskId ?? 0}, ${a.taskIndex ?? 0})"><img src="admin_icons/nr4s.png" class="nro-ico-sm" alt="" /> Nhảy NV</button>` : ''}
+              <button class="btn-muted btn-sm" onclick="promptGiveSkhBox('${escapeJs(a.playerName)}', ${a.playerId || 0}, ${a.accId}, ${a.ruongSkh ?? 5})"><img src="admin_icons/ruong_skh.png" class="nro-ico-sm" alt="" /> +Rương SKH</button>
+              ${a.playerId > 0 ? `<button class="btn-muted btn-sm" onclick="openIntrinsicModal('${escapeJs(a.playerName)}', ${a.playerId}, ${a.accId}, ${a.genderId ?? -1}, ${a.intrinsicId || 0}, ${a.intrinsicParam1 || 0})"><img src="admin_icons/intrinsic_atk.png" class="nro-ico-sm" alt="" /> Nội Tại</button>` : ''}
               ${!a.active ? `<button class="btn-muted btn-sm" onclick="quickToggleAccount(${a.accId}, 'active', 1)">Mở TV</button>` : ''}
-              ${a.online && a.playerId > 0 ? `<button class="btn-muted btn-sm" onclick="openGiftModal(${a.playerId}, '${escapeJs(a.playerName)}')">Trao Quà</button>` : ''}
+              ${a.online && a.playerId > 0 ? `<button class="btn-muted btn-sm" onclick="openGiftModal(${a.playerId}, '${escapeJs(a.playerName)}')"><img src="admin_icons/thoi_vang.png" class="nro-ico-sm" alt="" /> Trao Quà</button>` : ''}
               <button class="${a.ban ? 'btn-muted' : 'btn-danger'} btn-sm" onclick="quickToggleAccount(${a.accId}, 'ban', ${a.ban ? 0 : 1})">${a.ban ? 'Mở Khóa' : 'Khóa'}</button>
             </td>
           </tr>
@@ -1907,7 +2084,13 @@
         return `
           <tr>
             <td style="color:var(--muted);">#${b.index}</td>
-            <td style="font-weight:600;color:${b.alive ? 'var(--text)' : 'var(--muted)'};">${escapeHtml(b.name)}</td>
+            <td style="font-weight:600;color:${b.alive ? 'var(--text)' : 'var(--muted)'};">
+              <div style="display:flex;align-items:center;gap:7px;">
+                <img src="${b.alive ? 'admin_icons/radar.png' : 'admin_icons/nr7s.png'}" class="nro-ico" alt="" />
+                <span>${escapeHtml(b.name)}</span>
+                ${b.alive ? '<img src="admin_icons/hot.gif" alt="" style="height:11px;" />' : ''}
+              </div>
+            </td>
             <td>
               <span class="badge ${b.alive ? 'badge-alive' : 'badge-dead'}">
                 ${b.alive ? 'Đang Sống' : ('Chờ (' + b.status + ')')}
@@ -1924,7 +2107,7 @@
             <td style="display:flex;gap:6px;">
               ${b.alive
                 ? `<button class="btn-danger btn-sm" onclick="killBoss(${b.index})">Thu Hồi</button>`
-                : `<button class="btn-muted btn-sm" onclick="spawnBoss(${b.index})">Gọi Boss</button>`
+                : `<button class="btn-muted btn-sm" onclick="spawnBoss(${b.index})"><img src="admin_icons/radar.png" class="nro-ico-sm" alt="" /> Gọi Boss</button>`
               }
             </td>
           </tr>
@@ -1960,8 +2143,8 @@
         const dateStr = dt ? dt.toLocaleDateString('vi-VN') : '';
         const agoSec = item.timeMs > 0 ? Math.max(0, Math.floor((Date.now() - item.timeMs) / 1000)) : 0;
         const actorBadge = item.isBot
-          ? `<span class="badge badge-dead" style="margin-left:6px;">Bot</span>`
-          : `<span class="badge badge-alive" style="margin-left:6px;">Người chơi</span>`;
+          ? `<span class="badge badge-dead" style="margin-left:6px;"><img src="admin_icons/detu.png" class="nro-ico-sm" alt="" /> Bot</span>`
+          : `<span class="badge badge-alive" style="margin-left:6px;"><img src="admin_icons/td.png" class="nro-ico-sm" alt="" /> Người chơi</span>`;
         const zoneHtml = item.zoneId >= 0 ? `<span class="badge badge-dead" style="margin-left:6px;">Khu ${item.zoneId}</span>` : '';
 
         return `
@@ -1972,8 +2155,8 @@
               <span style="font-size:11.5px;color:var(--muted);margin-left:4px;">(${dateStr})</span><br/>
               <span style="font-size:11px;color:var(--muted);">Cách đây ${formatDurationShort(agoSec)}</span>
             </td>
-            <td style="font-weight:600;color:var(--text);">${escapeHtml(item.bossName || ('Boss #' + item.bossId))}</td>
-            <td>${item.hpMax > 0 ? formatNum(item.hpMax) : '--'}</td>
+            <td style="font-weight:600;color:var(--text);"><img src="admin_icons/radar.png" class="nro-ico-sm" alt="" /> ${escapeHtml(item.bossName || ('Boss #' + item.bossId))}</td>
+            <td><img src="admin_icons/bo_huyet.png" class="nro-ico-sm" alt="" /> ${item.hpMax > 0 ? formatNum(item.hpMax) : '--'}</td>
             <td>
               <b style="color:var(--text);">${escapeHtml(item.killerName || 'Ẩn danh')}</b>
               ${actorBadge}
@@ -2066,10 +2249,16 @@
       tbody.innerHTML = draftGiftcodeItems.map((it, idx) => {
         const optsStr = (it.options || []).map(o => `${o.id}:${o.param}`).join(', ');
         const isSpecial = it.id < 0;
+        const icoSrc = getItemIconSrc(it.id, -1, it.name);
         return `
           <tr>
             <td><span class="badge badge-dead">${it.id}</span></td>
-            <td style="font-weight:600;color:var(--text);">${escapeHtml(it.name || ('Item #' + it.id))}</td>
+            <td style="font-weight:600;color:var(--text);">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <img src="${icoSrc}" class="nro-ico-lg" alt="" />
+                <span>${escapeHtml(it.name || ('Item #' + it.id))}</span>
+              </div>
+            </td>
             <td>
               <input type="number" value="${it.quantity}" min="1" style="width:120px;font-weight:600;" onchange="updateDraftGiftItemQty(${idx}, this.value)" />
             </td>
@@ -2103,10 +2292,13 @@
         return;
       }
       drop.innerHTML = matches.map(it => `
-        <div style="padding:7px 10px;cursor:pointer;border-bottom:1px solid var(--border);font-size:12.5px;"
+        <div style="padding:7px 10px;cursor:pointer;border-bottom:1px solid var(--border);font-size:12.5px;display:flex;align-items:center;gap:8px;"
              onmousedown="selectGcCustomItem(${it.id}, '${escapeHtml(it.name).replace(/'/g, "\\'")}')">
-          <b>#${it.id} — ${escapeHtml(it.name)}</b>
-          <span style="color:var(--muted);font-size:11.5px;margin-left:6px;">(Type ${it.type})</span>
+          <img src="${getItemIconSrc(it.id, it.type, it.name)}" class="nro-ico" alt="" />
+          <div>
+            <b>#${it.id} — ${escapeHtml(it.name)}</b>
+            <span style="color:var(--muted);font-size:11.5px;margin-left:6px;">(Type ${it.type})</span>
+          </div>
         </div>
       `).join('');
       drop.style.display = 'block';
@@ -2182,7 +2374,8 @@
         const active = !gc.expired && gc.countLeft > 0;
         const itemsHtml = (gc.items || []).map(it => {
           const optText = (it.options || []).filter(o => o.id !== 30 && o.id !== 73).map(o => `${o.name ? o.name.replace('#', o.param) : ('Opt ' + o.id + ': ' + o.param)}`).join(', ');
-          return `<span class="badge badge-dead" style="margin:2px 4px 2px 0;display:inline-block;"><b>x${formatNum(it.quantity)}</b> ${escapeHtml(it.name)}${optText ? ` <i style="color:var(--muted);">(${escapeHtml(optText)})</i>` : ''}</span>`;
+          const icoSrc = getItemIconSrc(it.id, -1, it.name);
+          return `<span class="badge badge-dead" style="margin:2px 4px 2px 0;display:inline-flex;align-items:center;gap:4px;"><img src="${icoSrc}" class="nro-ico-sm" alt="" /><b>x${formatNum(it.quantity)}</b> ${escapeHtml(it.name)}${optText ? ` <i style="color:var(--muted);">(${escapeHtml(optText)})</i>` : ''}</span>`;
         }).join('');
         const createStr = gc.dateCreateMs > 0 ? new Date(gc.dateCreateMs).toLocaleDateString('vi-VN') : '--';
         const expStr = gc.dateExpiredMs > 0 ? new Date(gc.dateExpiredMs).toLocaleDateString('vi-VN') : '--';
@@ -2190,7 +2383,13 @@
         return `
           <tr>
             <td style="color:var(--muted);">#${gc.id}</td>
-            <td><b style="font-size:14px;letter-spacing:0.4px;color:var(--text);">${escapeHtml(gc.code)}</b></td>
+            <td>
+              <div style="display:flex;align-items:center;gap:7px;">
+                <img src="admin_icons/giftcode.png" class="nro-ico-lg" alt="" />
+                <b style="font-size:14px;letter-spacing:0.4px;color:var(--text);">${escapeHtml(gc.code)}</b>
+                ${active ? '<img src="admin_icons/hot.gif" alt="" style="height:11px;" />' : ''}
+              </div>
+            </td>
             <td>
               <span class="badge ${active ? 'badge-alive' : 'badge-dead'}">${active ? 'Đang Mở' : 'Hết Hạn / Hết Lượt'}</span>
               <div style="font-size:11.5px;color:var(--muted);margin-top:3px;">Còn lại: <b>${formatNum(gc.countLeft)}</b> lượt</div>
@@ -2292,7 +2491,7 @@
       document.getElementById('optionsResultBody').innerHTML = filteredOpts.map(op => `
         <tr>
           <td><b>#${op.id}</b></td>
-          <td class="text-power">${escapeHtml(op.name)}</td>
+          <td class="text-power"><img src="admin_icons/intrinsic_atk.png" class="nro-ico-sm" alt="" /> ${escapeHtml(op.name)}</td>
           <td><button class="btn-sm" onclick="promptAddOption(${op.id}, '${escapeJs(op.name)}')">+ Ghép Option</button></td>
         </tr>
       `).join('') || `<tr><td colspan="3" style="text-align:center;color:var(--muted);">Không tìm thấy Option.</td></tr>`;
@@ -2319,10 +2518,15 @@
       document.getElementById('itemsResultBody').innerHTML = pageItems.map(it => `
         <tr>
           <td><b>#${it.id}</b></td>
-          <td class="text-name">${escapeHtml(it.name)}</td>
+          <td class="text-name">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <img src="${getItemIconSrc(it.id, it.type, it.name)}" class="nro-ico-lg" alt="" />
+              <span>${escapeHtml(it.name)}</span>
+            </div>
+          </td>
           <td>Loại ${it.type} (${escapeHtml(it.gender)})</td>
           <td style="color:var(--muted);max-width:240px;overflow:hidden;text-overflow:ellipsis;" title="${escapeHtml(it.description)}">${escapeHtml(it.description)}</td>
-          <td><button class="btn-success btn-sm" onclick="selectItemForGift(${it.id}, '${escapeJs(it.name)}')">Chọn Trao Quà</button></td>
+          <td><button class="btn-success btn-sm" onclick="selectItemForGift(${it.id}, '${escapeJs(it.name)}')"><img src="admin_icons/thoi_vang.png" class="nro-ico-sm" alt="" /> Chọn Trao Quà</button></td>
         </tr>
       `).join('') || `<tr><td colspan="5" style="text-align:center;color:var(--muted);">Không tìm thấy Vật phẩm.</td></tr>`;
     }
@@ -2421,33 +2625,44 @@
         const topBody = document.getElementById('topPlayersBody');
         topBody.innerHTML = (data.topPlayers || []).map(p => `
           <tr>
-            <td><b>#${p.rank}</b></td>
+            <td>
+              <span style="display:inline-flex;align-items:center;gap:5px;">
+                <img src="${getDragonBallRankSrc(p.rank)}" class="nro-ico" alt="" />
+                <b>#${p.rank}</b>
+              </span>
+            </td>
             <td>#${p.id}</td>
-            <td class="text-name">${escapeHtml(p.name)}</td>
-            <td>${escapeHtml(p.gender)}</td>
-            <td class="text-power">${formatNum(p.power)}</td>
-            <td class="text-gold">${formatNum(p.gold)}</td>
-            <td class="text-gem">${formatNum(p.gem)}</td>
-            <td class="text-ruby">${formatNum(p.ruby)}</td>
-            <td><span class="text-vnd">${formatNum(p.vnd)} đ</span> (Tổng: ${formatNum(p.tongnap)} đ)</td>
+            <td class="text-name">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <img src="${getPlanetAvatarSrc(p.gender, p.rank === 1)}" class="nro-avatar" alt="" />
+                <span>${escapeHtml(p.name)}</span>
+                ${p.rank <= 3 ? '<img src="admin_icons/hot.gif" alt="" style="height:11px;" />' : ''}
+              </div>
+            </td>
+            <td><img src="${getPlanetAvatarSrc(p.gender, false)}" class="nro-ico-sm" alt="" /> ${escapeHtml(p.gender)}</td>
+            <td class="text-power"><img src="admin_icons/exp_tnsm.png" class="nro-ico-sm" alt="" /> ${formatNum(p.power)}</td>
+            <td class="text-gold"><img src="admin_icons/gold.png" class="nro-ico-sm" alt="" /> ${formatNum(p.gold)}</td>
+            <td class="text-gem"><img src="admin_icons/gem.png" class="nro-ico-sm" alt="" /> ${formatNum(p.gem)}</td>
+            <td class="text-ruby"><img src="admin_icons/ruby.png" class="nro-ico-sm" alt="" /> ${formatNum(p.ruby)}</td>
+            <td><span class="text-vnd"><img src="admin_icons/vnd.png" class="nro-ico-sm" alt="" /> ${formatNum(p.vnd)} đ</span> (Tổng: ${formatNum(p.tongnap)} đ)</td>
           </tr>
         `).join('') || `<tr><td colspan="9" style="text-align:center;color:var(--muted);">Chưa có nhân vật nào.</td></tr>`;
       } catch (e) {}
     }
 
     const EVENT_DEFINITIONS = [
-      { key: 'halloween', altKey: 'halloween', label: 'Sự Kiện Halloween', desc: 'Rơi Bí Ngô 1-7 Sao (gọi Rồng Xương), Boss Bí Ma / Ma Trơi / Dơi' },
-      { key: 'christmas', altKey: 'christmas', label: 'Sự Kiện Giáng Sinh (Noel)', desc: 'Rơi Tất Vớ, Hộp Quà Giáng Sinh & Boss Ông Già Noel' },
-      { key: 'lunnar_new_year', altKey: 'lunarNewYear', label: 'Sự Kiện Tết Nguyên Đán', desc: 'Rơi Bao Lì Xì, NPC Tết & Boss Lân Con' },
-      { key: 'trung_thu', altKey: 'trungThu', label: 'Sự Kiện Tết Trung Thu', desc: 'Rơi Hộp Quà Trung Thu & Boss Khỉ Đột / Nguyệt Thần' },
-      { key: 'hung_vuong', altKey: 'hungVuong', label: 'Sự Kiện Giỗ Tổ Hùng Vương', desc: 'Rơi Ngà Voi, Cựa Gà, Hồng Mao, Dưa Hấu, Tem (Dâng sính lễ Vua Hùng)' },
-      { key: 'summer_nuoc_mia', altKey: 'summerNuocMia', label: 'Sự Kiện Mùa Hè (Nước Mía & Kem)', desc: 'Rơi Khúc Mía, Nước Đá, Kem Trái Cây (Đua Top tại NPC Xe Nước Mía & ChiChi)' },
-      { key: 'children_day', altKey: 'childrenDay', label: 'Sự Kiện Thiếu Nhi 1/6', desc: 'Rơi Hộp Quà Thiếu Nhi (Mở Cải trang VIP & Đua Top tại NPC ChiChi)' },
-      { key: 'cooking_banh', altKey: 'cookingBanh', label: 'Sự Kiện Nấu Bánh Chưng & Bánh Dầy', desc: 'Rơi Cơm Nếp, Đậu Xanh, Thịt Tươi, Chả Lụa... nấu bánh tại NPC Nồi Bánh' },
-      { key: 'firework', altKey: 'firework', label: 'Sự Kiện Pháo Hoa Lễ Hội', desc: 'Rơi Pháo Bông & Pháo Bông VIP khi đánh quái (Bắn pháo hoa nhận Vàng)' },
-      { key: 'womans_day', altKey: 'womensDay', label: 'Sự Kiện Quốc Tế Phụ Nữ 8/3', desc: 'Rơi Hoa Hồng khi đánh quái & Buff chỉ số sự kiện' },
-      { key: 'top_up', altKey: 'topUp', label: 'Sự Kiện Khuyến Mãi Nạp', desc: 'Kích hoạt mốc thưởng sự kiện nạp' },
-      { key: 'double_gold', altKey: 'doubleGold', label: 'Sự Kiện X2 Vàng Rơi Toàn Server', desc: 'Nhân đôi lượng Vàng rơi ra khi tiêu diệt quái' }
+      { key: 'halloween', altKey: 'halloween', icon: 'admin_icons/ev_halloween.png', label: 'Sự Kiện Halloween', desc: 'Rơi Bí Ngô 1-7 Sao (gọi Rồng Xương), Boss Bí Ma / Ma Trơi / Dơi' },
+      { key: 'christmas', altKey: 'christmas', icon: 'admin_icons/ev_noel.png', label: 'Sự Kiện Giáng Sinh (Noel)', desc: 'Rơi Tất Vớ, Hộp Quà Giáng Sinh & Boss Ông Già Noel' },
+      { key: 'lunnar_new_year', altKey: 'lunarNewYear', icon: 'admin_icons/ev_tet.png', label: 'Sự Kiện Tết Nguyên Đán', desc: 'Rơi Bao Lì Xì, NPC Tết & Boss Lân Con' },
+      { key: 'trung_thu', altKey: 'trungThu', icon: 'admin_icons/ev_trungthu.png', label: 'Sự Kiện Tết Trung Thu', desc: 'Rơi Hộp Quà Trung Thu & Boss Khỉ Đột / Nguyệt Thần' },
+      { key: 'hung_vuong', altKey: 'hungVuong', icon: 'admin_icons/ev_hungvuong.png', label: 'Sự Kiện Giỗ Tổ Hùng Vương', desc: 'Rơi Ngà Voi, Cựa Gà, Hồng Mao, Dưa Hấu, Tem (Dâng sính lễ Vua Hùng)' },
+      { key: 'summer_nuoc_mia', altKey: 'summerNuocMia', icon: 'admin_icons/ev_summer.png', label: 'Sự Kiện Mùa Hè (Nước Mía & Kem)', desc: 'Rơi Khúc Mía, Nước Đá, Kem Trái Cây (Đua Top tại NPC Xe Nước Mía & ChiChi)' },
+      { key: 'children_day', altKey: 'childrenDay', icon: 'admin_icons/ev_thieunhi.png', label: 'Sự Kiện Thiếu Nhi 1/6', desc: 'Rơi Hộp Quà Thiếu Nhi (Mở Cải trang VIP & Đua Top tại NPC ChiChi)' },
+      { key: 'cooking_banh', altKey: 'cookingBanh', icon: 'admin_icons/ev_banhchung.png', label: 'Sự Kiện Nấu Bánh Chưng & Bánh Dầy', desc: 'Rơi Cơm Nếp, Đậu Xanh, Thịt Tươi, Chả Lụa... nấu bánh tại NPC Nồi Bánh' },
+      { key: 'firework', altKey: 'firework', icon: 'admin_icons/ev_firework.png', label: 'Sự Kiện Pháo Hoa Lễ Hội', desc: 'Rơi Pháo Bông & Pháo Bông VIP khi đánh quái (Bắn pháo hoa nhận Vàng)' },
+      { key: 'womans_day', altKey: 'womensDay', icon: 'admin_icons/ev_8_3.png', label: 'Sự Kiện Quốc Tế Phụ Nữ 8/3', desc: 'Rơi Hoa Hồng khi đánh quái & Buff chỉ số sự kiện' },
+      { key: 'top_up', altKey: 'topUp', icon: 'admin_icons/vnd.png', label: 'Sự Kiện Khuyến Mãi Nạp', desc: 'Kích hoạt mốc thưởng sự kiện nạp' },
+      { key: 'double_gold', altKey: 'doubleGold', icon: 'admin_icons/thoi_vang.png', label: 'Sự Kiện X2 Vàng Rơi Toàn Server', desc: 'Nhân đôi lượng Vàng rơi ra khi tiêu diệt quái' }
     ];
 
     let currentEventsState = { halloween: true, drop_rate: 5, dropRate: 5 };
@@ -2470,10 +2685,13 @@
           <div style="border:1px solid ${isOn ? 'var(--success-border)' : 'var(--border)'};background:${isOn ? 'var(--success-bg)' : 'var(--panel)'};border-radius:8px;padding:12px 14px;display:flex;flex-direction:column;justify-content:space-between;gap:10px;">
             <div>
               <div style="display:flex;justify-content:space-between;align-items:center;gap:6px;">
-                <b style="font-size:13px;color:var(--text);">${def.label}</b>
+                <b style="font-size:13px;color:var(--text);display:inline-flex;align-items:center;gap:7px;">
+                  <img src="${def.icon || 'admin_icons/nr1s.png'}" class="nro-ico-lg" alt="" />
+                  <span>${def.label}</span>
+                </b>
                 <span class="badge ${isOn ? 'badge-alive' : 'badge-dead'}">${isOn ? 'ĐANG BẬT' : 'ĐANG TẮT'}</span>
               </div>
-              <div style="font-size:12px;color:var(--muted);margin-top:4px;line-height:1.4;">${def.desc}</div>
+              <div style="font-size:12px;color:var(--muted);margin-top:6px;line-height:1.4;">${def.desc}</div>
             </div>
             <div style="display:flex;gap:6px;">
               <button class="${isOn ? 'btn-danger' : 'btn-muted'} btn-sm" style="width:100%;" onclick="toggleGameEvent('${def.altKey}', ${isOn ? 0 : 1})">
@@ -2647,7 +2865,7 @@
       const renderSlots = (arr) => arr.length === 0
         ? '<p style="color:var(--muted);">Trống</p>'
         : `<table><thead><tr><th>Ô</th><th>ID</th><th>Tên Vật Phẩm</th><th>SL</th><th>Chỉ Số (Options)</th></tr></thead><tbody>` +
-          arr.map(x => `<tr><td>#${x.slot}</td><td>${x.id}</td><td class="text-name">${escapeHtml(x.name)}</td><td>x${x.quantity}</td><td class="text-power">${escapeHtml(x.options)}</td></tr>`).join('') +
+          arr.map(x => `<tr><td>#${x.slot}</td><td>${x.id}</td><td class="text-name"><div style="display:flex;align-items:center;gap:7px;"><img src="${getItemIconSrc(x.id, -1, x.name)}" class="nro-ico-lg" alt="" /><span>${escapeHtml(x.name)}</span></div></td><td>x${x.quantity}</td><td class="text-power">${escapeHtml(x.options)}</td></tr>`).join('') +
           `</tbody></table>`;
 
       document.getElementById('inspectContent').innerHTML = `

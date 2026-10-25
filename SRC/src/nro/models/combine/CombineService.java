@@ -660,7 +660,7 @@ public class CombineService {
             case CHUYEN_HOA_TRANG_BI_VANG:
                 return "Lưu ý trang bị mới\nphải hơn trang bị gốc\n1 bậc";
             case PHAN_RA_TRANG_BI_KH:
-                return "Ta sẽ phù phép\nphân rã thành\nkhoáng tái chế cho ngươi";
+                return "Ta sẽ phù phép\nphân rã Đồ Kích Hoạt thành Vàng,\nHồng Ngọc, Đá Ngũ Sắc, Khoáng TC & Thức Ăn";
             case TAI_TAO_CAPSULE_KH:
                 return "Ta sẽ phù phép\ntái tạo thành 1 viên\nCapsule kích hoạt tự chọn";
             case DAP_DO_KICH_HOAT:
@@ -726,7 +726,7 @@ public class CombineService {
             case PHA_LE_HOA_TRANG_BI:
                 return "Chọn trang bị\n(Áo, quần, găng, giày hoặc rađa)\nSau đó chọn 'Nâng cấp'";
             case PHAN_RA_TRANG_BI_KH:
-                return "Vào hành trang\nChọn hay nhiều\nTrang bị kích hoạt cần rã\nSau đó chọn 'Phân rã'";
+                return "Vào hành trang\nChọn 1 hoặc nhiều Trang bị Kích Hoạt cần phân rã\nNhận Vàng, Hồng Ngọc, Đá Ngũ Sắc, Khoáng Tái Chế và Thức Ăn Hủy Diệt tùy theo sức mạnh yêu cầu của trang bị";
             case TAI_TAO_CAPSULE_KH:
                 return "Vào hành trang\nChọn 3 khoáng tái chế\nChọn 1 Capsule vỡ\nSau đó chọn 'Tái tạo'";
             case DAP_DO_KICH_HOAT:
