@@ -216,6 +216,21 @@ public class InventoryService {
         //**********************************************************************
     }
 
+    private static boolean hasOnlyPlaceholderOptions(List<ItemOption> opts) {
+        if (opts == null || opts.isEmpty()) {
+            return true;
+        }
+        for (ItemOption io : opts) {
+            if (io != null && io.optionTemplate != null) {
+                int id = io.optionTemplate.id;
+                if (id != 30 && id != 73 && id != 174 && id != 86 && id != 87) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     public boolean isStackableItem(Item item) {
         if (item == null || !item.isNotNullItem() || item.template == null) {
             return false;
@@ -235,20 +250,21 @@ public class InventoryService {
                 return false;
             }
             case 27 -> {
-                if (item.template.isUpToUp) {
-                    return true;
-                }
                 if (item.itemOptions != null) {
                     for (ItemOption io : item.itemOptions) {
                         if (io != null && io.optionTemplate != null) {
                             int opId = io.optionTemplate.id;
-                            if (opId != 30 && opId != 73 && opId != 174 && opId != 86 && opId != 87) {
+                            if (opId == 50 || opId == 77 || opId == 103 || opId == 5 || opId == 14
+                                    || opId == 94 || opId == 108 || opId == 102 || opId == 107) {
                                 return false;
                             }
                         }
                     }
                 }
-                return true;
+                if (item.template.isUpToUp) {
+                    return true;
+                }
+                return hasOnlyPlaceholderOptions(item.itemOptions);
             }
             default -> {
                 return true;
@@ -257,20 +273,24 @@ public class InventoryService {
     }
 
     private boolean tryMergeStack(Item target, Item source) {
-        if (target == null || source == null || !target.isNotNullItem() || !source.isNotNullItem()) {
+        if (target == null || source == null || target == source || !target.isNotNullItem() || !source.isNotNullItem()) {
             return false;
         }
         if (target.template == null || source.template == null || target.template.id != source.template.id) {
             return false;
         }
+        sanitizeStarOptions(target);
+        sanitizeStarOptions(source);
         int[] idParamT = isItemIncrementalOption(target);
         int[] idParamS = isItemIncrementalOption(source);
         if (idParamT[0] != -1 || idParamS[0] != -1) {
             int optId = idParamT[0] != -1 ? idParamT[0] : idParamS[0];
             if ((idParamT[0] == -1 || idParamT[0] == optId) && (idParamS[0] == -1 || idParamS[0] == optId)) {
-                int valT = idParamT[0] != -1 ? idParamT[1] : Math.max(1, target.quantity);
-                int valS = idParamS[0] != -1 ? idParamS[1] : Math.max(1, source.quantity);
-                if (valT > 0 && valS > 0 && valT + valS <= 30000) {
+                int valT = idParamT[0] != -1 ? Math.max(idParamT[1], target.quantity) : Math.max(1, target.quantity);
+                int valS = idParamS[0] != -1 ? Math.max(idParamS[1], source.quantity) : Math.max(1, source.quantity);
+                if (valT > 0 && valS > 0 && valT < 30000) {
+                    int canAdd = 30000 - valT;
+                    int add = Math.min(canAdd, valS);
                     ItemOption found = null;
                     for (ItemOption io : target.itemOptions) {
                         if (io != null && io.optionTemplate != null && io.optionTemplate.id == optId) {
@@ -279,12 +299,27 @@ public class InventoryService {
                         }
                     }
                     if (found != null) {
-                        found.param = valT + valS;
+                        found.param = valT + add;
                     } else {
-                        target.itemOptions.add(new ItemOption(optId, valT + valS));
+                        target.itemOptions.add(new ItemOption(optId, valT + add));
                     }
-                    source.quantity = 0;
-                    return true;
+                    if (target.quantity > 1) {
+                        target.quantity = 1;
+                    }
+                    if (valS <= canAdd) {
+                        source.quantity = 0;
+                        return true;
+                    } else {
+                        int remain = valS - add;
+                        for (ItemOption io : source.itemOptions) {
+                            if (io != null && io.optionTemplate != null && io.optionTemplate.id == optId) {
+                                io.param = remain;
+                                break;
+                            }
+                        }
+                        source.quantity = (idParamS[0] != -1) ? 1 : remain;
+                        return false;
+                    }
                 }
             }
             return false;
@@ -292,10 +327,11 @@ public class InventoryService {
         if (!isStackableItem(target) || !isStackableItem(source)) {
             return false;
         }
-        if (!checkListsEqual(target.itemOptions, source.itemOptions)
-                && target.template.id != 2074 && target.template.id != 380
-                && !target.isDaNangCap() && !target.isManhTS()) {
-            return false;
+        if (hasOnlyPlaceholderOptions(target.itemOptions) && !hasOnlyPlaceholderOptions(source.itemOptions)) {
+            target.itemOptions.clear();
+            for (ItemOption io : source.itemOptions) {
+                target.itemOptions.add(new ItemOption(io));
+            }
         }
         int maxStack = ((target.template.id >= 1066 && target.template.id <= 1070) || target.template.id == 457
                 || target.template.id == 610 || target.template.type == 14 || target.template.id == 2048
@@ -399,6 +435,11 @@ public class InventoryService {
     }
 
     private Item putItemBag(Player player, Item item) {
+        if (item != null && item.isNotNullItem() && (isStackableItem(item) || isItemIncrementalOption(item)[0] != -1)) {
+            if (addItemList(player.inventory.itemsBag, item) && item.quantity == 0) {
+                return ItemService.gI().createItemNull();
+            }
+        }
         for (int i = 0; i < player.inventory.itemsBag.size(); i++) {
             if (!player.inventory.itemsBag.get(i).isNotNullItem()) {
                 player.inventory.itemsBag.set(i, item);
@@ -410,6 +451,11 @@ public class InventoryService {
     }
 
     private Item putItemBox(Player player, Item item) {
+        if (item != null && item.isNotNullItem() && (isStackableItem(item) || isItemIncrementalOption(item)[0] != -1)) {
+            if (addItemList(player.inventory.itemsBox, item) && item.quantity == 0) {
+                return ItemService.gI().createItemNull();
+            }
+        }
         for (int i = 0; i < player.inventory.itemsBox.size(); i++) {
             if (!player.inventory.itemsBox.get(i).isNotNullItem()) {
                 player.inventory.itemsBox.set(i, item);
@@ -599,12 +645,12 @@ public class InventoryService {
     }
 
     public void itemBoxToBodyOrBag(Player player, int index) {
-        if (index < 0) {
+        if (index < 0 || index >= player.inventory.itemsBox.size()) {
             Service.gI().sendThongBao(player, "Không thể thực hiện");
             return;
         }
         Item item = player.inventory.itemsBox.get(index);
-        if (item.isNotNullItem()) {
+        if (item != null && item.isNotNullItem()) {
             boolean done = false;
             if (item.template.type >= 0 && item.template.type <= 5 || item.template.type == 32) {
                 Item itemBody = player.inventory.itemsBody.get(item.template.type == 32 ? 6 : item.template.type);
@@ -622,7 +668,10 @@ public class InventoryService {
                             player.inventory.itemsBox.set(index, itemBody);
                             done = true;
 
+                            sortItems(player.inventory.itemsBox);
                             sendItemBody(player);
+                            sendItemBags(player);
+                            sendItemBox(player);
                             Service.gI().point(player);
                             Service.gI().Send_Caitrang(player);
                         }
@@ -631,12 +680,16 @@ public class InventoryService {
             }
             if (!done) {
                 if (addItemBag(player, item)) {
-
                     if (item.quantity == 0) {
                         Item sItem = ItemService.gI().createItemNull();
                         player.inventory.itemsBox.set(index, sItem);
                     }
+                    sortItems(player.inventory.itemsBag);
+                    sortItems(player.inventory.itemsBox);
                     sendItemBags(player);
+                    sendItemBox(player);
+                } else {
+                    Service.gI().sendThongBao(player, "Hành trang đã đầy!");
                 }
             }
         }
@@ -662,8 +715,11 @@ public class InventoryService {
                     player.inventory.itemsBag.set(index, sItem);
                 }
                 sortItems(player.inventory.itemsBag);
+                sortItems(player.inventory.itemsBox);
                 sendItemBags(player);
                 sendItemBox(player);
+            } else {
+                Service.gI().sendThongBao(player, "Rương đồ đã đầy!");
             }
         }
     }
@@ -676,6 +732,7 @@ public class InventoryService {
         if (item.isNotNullItem()) {
             player.inventory.itemsBody.set(index, putItemBox(player, item));
             sortItems(player.inventory.itemsBag);
+            sortItems(player.inventory.itemsBox);
             sendItemBody(player);
             sendItemBox(player);
             Service.gI().point(player);
@@ -688,7 +745,26 @@ public class InventoryService {
     }
 
     public static void sanitizeStarOptions(Item item) {
-        if (item == null || !item.isNotNullItem() || item.itemOptions == null || item.itemOptions.isEmpty()) {
+        if (item == null || !item.isNotNullItem() || item.template == null) {
+            return;
+        }
+        if (item.itemOptions == null) {
+            item.itemOptions = new ArrayList<>();
+        }
+        if (item.template.id >= 441 && item.template.id <= 447 && hasOnlyPlaceholderOptions(item.itemOptions)) {
+            item.itemOptions.clear();
+            switch (item.template.id) {
+                case 441 -> item.itemOptions.add(new Item.ItemOption(95, 5));
+                case 442 -> item.itemOptions.add(new Item.ItemOption(96, 5));
+                case 443 -> item.itemOptions.add(new Item.ItemOption(97, 5));
+                case 444 -> item.itemOptions.add(new Item.ItemOption(98, 3));
+                case 445 -> item.itemOptions.add(new Item.ItemOption(99, 3));
+                case 446 -> item.itemOptions.add(new Item.ItemOption(100, 5));
+                case 447 -> item.itemOptions.add(new Item.ItemOption(101, 5));
+            }
+            return;
+        }
+        if (item.itemOptions.isEmpty()) {
             return;
         }
         int maxStar = 0;
@@ -1037,64 +1113,31 @@ public class InventoryService {
     }
 
     public boolean addItemList(List<Item> items, Item itemAdd) {
+        if (itemAdd == null || !itemAdd.isNotNullItem()) {
+            return false;
+        }
         if (itemAdd.itemOptions.isEmpty()) {
             itemAdd.itemOptions.add(new Item.ItemOption(73, 0));
         }
+        sanitizeStarOptions(itemAdd);
 
-        int[] idParam = isItemIncrementalOption(itemAdd);
-        if (idParam[0] != -1) {
-            for (Item it : items) {
-                if (it.isNotNullItem() && it.template.id == itemAdd.template.id) {
-                    boolean foundOpt = false;
-                    for (Item.ItemOption io : it.itemOptions) {
-                        if (io.optionTemplate.id == idParam[0]) {
-                            foundOpt = true;
-                            if (io.param + idParam[1] <= 30000) {
-                                io.param += idParam[1];
-                                itemAdd.quantity = 0;
-                                return true;
-                            }
-                        }
-                    }
-                    if (!foundOpt && idParam[0] == 31 && it.quantity + idParam[1] <= 30000) {
-                        it.itemOptions.add(new Item.ItemOption(31, it.quantity + idParam[1]));
-                        itemAdd.quantity = 0;
-                        return true;
-                    }
-                }
-            }
-        }
-        if (itemAdd.template.isUpToUp || isStackableItem(itemAdd)) {
-            for (Item it : items) {
-                if (!it.isNotNullItem() || it.template.id != itemAdd.template.id || (!checkListsEqual(it.itemOptions, itemAdd.itemOptions) && itemAdd.template.id != 2074 && itemAdd.template.id != 380 && !itemAdd.isDaNangCap() && !itemAdd.isManhTS()) || it.quantity >= 100_000_000) {
-                    continue;
-                }
-
-                //========================ITEM TĂNG SỐ LƯỢNG========================
-                if ((itemAdd.template.id >= 1066 && itemAdd.template.id <= 1070) || itemAdd.template.id == 457
-                        || itemAdd.template.id == 610 || itemAdd.template.type == 14 || itemAdd.template.id == 2048
-                        || itemAdd.template.id > 2049 && itemAdd.template.id < 2056 || itemAdd.template.id == 821
-                        || itemAdd.template.id == 2075) {
-                    it.quantity += itemAdd.quantity;
+        boolean mergedAny = false;
+        for (Item it : items) {
+            if (it != null && it.isNotNullItem() && it != itemAdd && itemAdd.quantity > 0) {
+                int beforeQty = itemAdd.quantity;
+                int[] beforeInc = isItemIncrementalOption(itemAdd);
+                if (tryMergeStack(it, itemAdd)) {
                     itemAdd.quantity = 0;
                     return true;
                 }
-
-                if (it.quantity < 99999) {
-                    int add = 99999 - it.quantity;
-                    if (itemAdd.quantity <= add) {
-                        it.quantity += itemAdd.quantity;
-                        itemAdd.quantity = 0;
-                        return true;
-                    } else {
-                        it.quantity = 99999;
-                        itemAdd.quantity -= add;
-                    }
+                int[] afterInc = isItemIncrementalOption(itemAdd);
+                if (itemAdd.quantity < beforeQty || (beforeInc[0] != -1 && afterInc[1] < beforeInc[1])) {
+                    mergedAny = true;
                 }
             }
         }
 
-        //add item vào ô mới
+        //add item vào ô mới nếu còn dư hoặc không thể cộng dồn
         if (itemAdd.quantity > 0) {
             for (int i = 0; i < items.size(); i++) {
                 if (!items.get(i).isNotNullItem()) {
@@ -1104,7 +1147,7 @@ public class InventoryService {
                 }
             }
         }
-        return false;
+        return mergedAny;
     }
 
     public static boolean checkListsEqual(List<ItemOption> list1, List<ItemOption> list2) {

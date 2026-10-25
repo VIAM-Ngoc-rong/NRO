@@ -62,8 +62,12 @@ public class CombineSystem {
     }
 
     public static int getOptionDaPhaLe(Item daPhaLe) {
-        if (daPhaLe.template.type == 30) {
-            return daPhaLe.itemOptions.get(0).optionTemplate.id;
+        if (daPhaLe.template.type == 30 && daPhaLe.itemOptions != null) {
+            for (Item.ItemOption io : daPhaLe.itemOptions) {
+                if (io != null && io.optionTemplate != null && io.optionTemplate.id != 30 && io.optionTemplate.id != 73) {
+                    return io.optionTemplate.id;
+                }
+            }
         }
         return switch (daPhaLe.template.id) {
             case 20, 1833 ->
@@ -100,8 +104,12 @@ public class CombineSystem {
     }
 
     public static int getParamDaPhaLe(Item daPhaLe) {
-        if (daPhaLe.template.type == 30) {
-            return daPhaLe.itemOptions.get(0).param;
+        if (daPhaLe.template.type == 30 && daPhaLe.itemOptions != null) {
+            for (Item.ItemOption io : daPhaLe.itemOptions) {
+                if (io != null && io.optionTemplate != null && io.optionTemplate.id != 30 && io.optionTemplate.id != 73 && io.param > 0) {
+                    return io.param;
+                }
+            }
         }
         return switch (daPhaLe.template.id) {
             case 20 ->
