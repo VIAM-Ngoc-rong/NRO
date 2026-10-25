@@ -400,6 +400,7 @@ public final class Manager {
                     clan.thoiGianHoanThanhBDKB = Long.parseLong(String.valueOf(dataArray.get(1)));
                 }
                 dataArray.clear();
+                clan.loadNoiTaiFromJson(rs.getString("tops"));
                 CLANS.add(clan);
             }
 
@@ -766,6 +767,7 @@ public final class Manager {
                         itemTemp.isUpToUp = rs.getBoolean("is_up_to_up");
                         if (itemTemp.id == 1655 || itemTemp.id == 1664 || itemTemp.id == 1665 || itemTemp.id == 1666
                                 || itemTemp.id == 1671 || itemTemp.id == 1672 || itemTemp.id == 1775 || itemTemp.id == 1823
+                                || itemTemp.id == 1045 || itemTemp.id == 1608 || itemTemp.id == 1609
                                 || itemTemp.type == 6 || itemTemp.type == 12 || itemTemp.type == 14
                                 || itemTemp.type == 29 || itemTemp.type == 31 || itemTemp.type == 33) {
                             itemTemp.isUpToUp = true;

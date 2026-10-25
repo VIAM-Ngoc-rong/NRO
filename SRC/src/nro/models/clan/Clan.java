@@ -78,6 +78,72 @@ public class Clan {
 
     public long timeUpdateClan;
 
+    // Điểm Nội Tại Bang Hội & Các cấp chỉ số Nội Tại / Hào Quang Bang
+    public int pointNoiTai = 0;
+    public int winPKBang = 0;
+    public int lvHpAdd = 0;          // Tối đa 20 cấp (+50.000 HP/cấp)
+    public int lvMpAdd = 0;          // Tối đa 20 cấp (+50.000 KI/cấp)
+    public int lvDameAdd = 0;        // Tối đa 20 cấp (+2.500 SĐ/cấp)
+    public int lvTlHp = 0;           // Tối đa 15 cấp (+2% HP/cấp)
+    public int lvTlMp = 0;           // Tối đa 15 cấp (+2% KI/cấp)
+    public int lvTlDame = 0;         // Tối đa 15 cấp (+2% SĐ/cấp)
+    public int lvTlTNSM = 0;         // Tối đa 15 cấp (+5% TNSM & Vàng/cấp)
+    public int lvCrit = 0;           // Tối đa 10 cấp (+1% CRIT/cấp)
+    public int levelHaoQuangBang = 0; // 0 = Chưa mở, 1..5 = 5 Cấp Hào Quang Bang Hội
+
+    public String toNoiTaiJson() {
+        return "[" + pointNoiTai + "," + winPKBang + ","
+                + lvHpAdd + "," + lvMpAdd + "," + lvDameAdd + ","
+                + lvTlHp + "," + lvTlMp + "," + lvTlDame + ","
+                + lvTlTNSM + "," + lvCrit + "," + levelHaoQuangBang + "]";
+    }
+
+    public void loadNoiTaiFromJson(String json) {
+        if (json == null || json.isEmpty() || !json.startsWith("[")) {
+            return;
+        }
+        try {
+            JSONArray arr = (JSONArray) org.json.simple.JSONValue.parse(json);
+            if (arr != null && arr.size() >= 11) {
+                this.pointNoiTai = Integer.parseInt(String.valueOf(arr.get(0)));
+                this.winPKBang = Integer.parseInt(String.valueOf(arr.get(1)));
+                this.lvHpAdd = Integer.parseInt(String.valueOf(arr.get(2)));
+                this.lvMpAdd = Integer.parseInt(String.valueOf(arr.get(3)));
+                this.lvDameAdd = Integer.parseInt(String.valueOf(arr.get(4)));
+                this.lvTlHp = Integer.parseInt(String.valueOf(arr.get(5)));
+                this.lvTlMp = Integer.parseInt(String.valueOf(arr.get(6)));
+                this.lvTlDame = Integer.parseInt(String.valueOf(arr.get(7)));
+                this.lvTlTNSM = Integer.parseInt(String.valueOf(arr.get(8)));
+                this.lvCrit = Integer.parseInt(String.valueOf(arr.get(9)));
+                this.levelHaoQuangBang = Integer.parseInt(String.valueOf(arr.get(10)));
+            }
+        } catch (Exception ignored) {
+        }
+    }
+
+    public void saveNoiTaiBang() {
+        String data = toNoiTaiJson();
+        try (Connection con = LocalManager.getConnection();
+                PreparedStatement ps = con.prepareStatement("UPDATE clan SET tops = ? WHERE id = ? LIMIT 1")) {
+            ps.setString(1, data);
+            ps.setInt(2, this.id);
+            ps.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void refreshAllMembersStatsAndAura() {
+        for (Player pl : new ArrayList<>(this.membersInGame)) {
+            if (pl != null && pl.nPoint != null) {
+                pl.nPoint.calPoint();
+                Service.gI().point(pl);
+                Service.gI().Send_Info_NV(pl);
+                nro.models.services.RadarService.gI().sendAura(pl, pl.getAura(), pl.getEffFront());
+            }
+        }
+    }
+
     public Clan() {
         this.id = NEXT_ID++;
         this.name = "";
@@ -337,7 +403,7 @@ public class Clan {
 
         String thongTinLeader = "[" + getLeader().id + "," + getLeader().name + "," + getLeader().head + "," + getLeader().body + "," + getLeader().leg + "]";
 
-        String top = dataArray.toJSONString();
+        String top = this.toNoiTaiJson();
 
         PreparedStatement ps = null;
         try (Connection con = LocalManager.getConnection();) {
@@ -410,7 +476,7 @@ public class Clan {
             ps.setInt(6, this.level);
             ps.setString(7, member);
             ps.setString(8, this.name2);
-            ps.setString(9, "cc");
+            ps.setString(9, this.toNoiTaiJson());
             ps.setString(10, topBanDoKhoBau);
             ps.setString(11, thongTinLeader);
             ps.setInt(12, this.id);

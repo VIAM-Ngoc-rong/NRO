@@ -270,6 +270,49 @@ public class NPoint {
             this.tlHutHp += 10;
             this.tlHutMp += 10;
         }
+        // Chỉ số Nội Tại Bang Hội & Hào Quang Bang Hội
+        nro.models.clan.Clan myClan = this.player.isPet && ((Pet) this.player).master != null
+                ? ((Pet) this.player).master.clan
+                : this.player.clan;
+        if (myClan != null) {
+            if (myClan.lvHpAdd > 0) {
+                this.hpAdd += myClan.lvHpAdd * 50_000;
+            }
+            if (myClan.lvMpAdd > 0) {
+                this.mpAdd += myClan.lvMpAdd * 50_000;
+            }
+            if (myClan.lvDameAdd > 0) {
+                this.dameAdd += myClan.lvDameAdd * 2_500;
+            }
+            if (myClan.lvTlHp > 0) {
+                this.tlHp.add(myClan.lvTlHp * 2);
+            }
+            if (myClan.lvTlMp > 0) {
+                this.tlMp.add(myClan.lvTlMp * 2);
+            }
+            if (myClan.lvTlDame > 0) {
+                this.tlDame.add(myClan.lvTlDame * 2);
+            }
+            if (myClan.lvTlTNSM > 0) {
+                this.tlTNSM.add(myClan.lvTlTNSM * 5);
+                this.tlGold += myClan.lvTlTNSM * 5;
+            }
+            if (myClan.lvCrit > 0) {
+                this.critAdd += myClan.lvCrit;
+            }
+            if (myClan.levelHaoQuangBang > 0) {
+                int bonusHQBang = switch (myClan.levelHaoQuangBang) {
+                    case 1 -> 2;
+                    case 2 -> 4;
+                    case 3 -> 6;
+                    case 4 -> 8;
+                    default -> 12;
+                };
+                this.tlHp.add(bonusHQBang);
+                this.tlMp.add(bonusHQBang);
+                this.tlDame.add(bonusHQBang);
+            }
+        }
         // Lấy tất cả option danh hiệu
         List<Item.ItemOption> options = BagesTemplate.sendListItemOption(player);
 

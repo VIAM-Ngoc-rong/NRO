@@ -40,6 +40,11 @@ public class ClanMartialArtsService {
     public static final int MAP_ID = ConstMap.DAI_HOI_VO_THUAT_BANG_HOI; // 134
     public static final int MENU_MAIN = ConstNpc.BASE_MENU;
     public static final int MENU_SELECT_LINEUP = 7101;
+    public static final int MENU_CLAN_INTRINSIC = 7102;
+    public static final int MENU_CLAN_AURA = 7103;
+
+    public static final int WIN_INTRINSIC_POINTS = 10;
+    public static final int LOSE_INTRINSIC_POINTS = 2;
 
     public static final int FEE_TYPE_GOLD_BAR = 1; // 20 Thỏi vàng
     public static final int FEE_TYPE_RUBY = 2;     // 1.000 Hồng ngọc
@@ -246,14 +251,17 @@ public class ClanMartialArtsService {
         }
 
         Clan clan = player.clan;
+        sb.append("|2|Bang [").append(clan.name).append("] - Điểm Nội Tại Bang: ")
+                .append(clan.pointNoiTai).append(" điểm (Thắng: ").append(clan.winPKBang).append(" trận)\n");
+
         ClanArenaMatch activeMatch = getActiveMatchOfClan(clan.id);
         if (activeMatch != null) {
-            sb.append("|2|Bang [").append(clan.name).append("] đang thi đấu với Bang [")
+            sb.append("|2|Đang thi đấu với Bang [")
                     .append(activeMatch.getOpponentClanName(clan.id)).append("] tại Khu ")
                     .append(activeMatch.zone.zoneId).append("!\n");
             sb.append(activeMatch.getStatusSummary());
             npc.createOtherMenu(player, MENU_MAIN, sb.toString(),
-                    "Thể lệ\nGiải đấu", "Về\nĐảo Kame", "Đóng");
+                    "Nội Tại\nBang Hội", "Hào Quang\nBang Hội", "Thể lệ\nGiải đấu", "Về\nĐảo Kame", "Đóng");
             return;
         }
 
@@ -265,17 +273,16 @@ public class ClanMartialArtsService {
             sb.append("|1|Đang chờ Bang hội khác đăng ký để Trọng Tài ghép cặp ngẫu nhiên...");
             if (clan.isLeader(player)) {
                 npc.createOtherMenu(player, MENU_MAIN, sb.toString(),
-                        "Hủy đăng ký\n(Hoàn 100%)", "Thể lệ\nGiải đấu", "Về\nĐảo Kame", "Đóng");
+                        "Hủy đăng ký\n(Hoàn 100%)", "Nội Tại\nBang Hội", "Hào Quang\nBang Hội", "Thể lệ\nGiải đấu", "Về\nĐảo Kame");
             } else {
                 npc.createOtherMenu(player, MENU_MAIN, sb.toString(),
-                        "Thể lệ\nGiải đấu", "Về\nĐảo Kame", "Đóng");
+                        "Nội Tại\nBang Hội", "Hào Quang\nBang Hội", "Thể lệ\nGiải đấu", "Về\nĐảo Kame", "Đóng");
             }
             return;
         }
 
         if (clan.isLeader(player)) {
             List<Long> draft = getCleanedDraftLineup(clan, player);
-            sb.append("|2|Bang hội: [").append(clan.name).append("] (Bạn là Bang Chủ)\n");
             if (draft.isEmpty()) {
                 sb.append("|6|Thứ tự thi đấu: Chưa chọn (Hãy bấm 'Chọn đội hình' để xếp thứ tự lên sàn)");
             } else {
@@ -286,17 +293,18 @@ public class ClanMartialArtsService {
                     "Chọn đội hình\n(" + draft.size() + " người)",
                     "Đăng ký\n(20 Thỏi vàng)",
                     "Đăng ký\n(1.000 Hồng ngọc)",
+                    "Nội Tại\nBang Hội",
+                    "Hào Quang\nBang Hội",
                     "Thể lệ\nGiải đấu",
                     "Về\nĐảo Kame");
         } else {
             List<Long> draft = draftLineups.getOrDefault(clan.id, Collections.emptyList());
-            sb.append("|2|Bang hội: [").append(clan.name).append("]\n");
-            sb.append("|1|Chỉ Bang Chủ mới có thể đăng ký và xếp thứ tự thi đấu.\n");
+            sb.append("|1|Chỉ Bang Chủ mới có thể đăng ký và nâng cấp Nội Tại / Hào Quang Bang.\n");
             if (!draft.isEmpty()) {
                 sb.append("Đội hình dự kiến: ").append(formatDraftLineup(draft));
             }
             npc.createOtherMenu(player, MENU_MAIN, sb.toString(),
-                    "Thể lệ\nGiải đấu", "Về\nĐảo Kame", "Đóng");
+                    "Nội Tại\nBang Hội", "Hào Quang\nBang Hội", "Thể lệ\nGiải đấu", "Về\nĐảo Kame", "Đóng");
         }
     }
 
@@ -307,6 +315,14 @@ public class ClanMartialArtsService {
         int indexMenu = player.idMark.getIndexMenu();
         if (indexMenu == MENU_SELECT_LINEUP) {
             handleLineupSelection(npc, player, select);
+            return;
+        }
+        if (indexMenu == MENU_CLAN_INTRINSIC) {
+            handleClanIntrinsicConfirm(npc, player, select);
+            return;
+        }
+        if (indexMenu == MENU_CLAN_AURA) {
+            handleClanAuraConfirm(npc, player, select);
             return;
         }
         if (indexMenu != MENU_MAIN) {
@@ -325,8 +341,10 @@ public class ClanMartialArtsService {
         ClanArenaMatch activeMatch = getActiveMatchOfClan(clan.id);
         if (activeMatch != null) {
             switch (select) {
-                case 0 -> showTutorial(npc, player);
-                case 1 -> ChangeMapService.gI().changeMapNonSpaceship(player, 5, 200, 288);
+                case 0 -> openClanIntrinsicMenu(npc, player);
+                case 1 -> openClanAuraMenu(npc, player);
+                case 2 -> showTutorial(npc, player);
+                case 3 -> ChangeMapService.gI().changeMapNonSpaceship(player, 5, 200, 288);
             }
             return;
         }
@@ -336,13 +354,17 @@ public class ClanMartialArtsService {
             if (clan.isLeader(player)) {
                 switch (select) {
                     case 0 -> cancelRegistration(npc, player, waitingReg);
-                    case 1 -> showTutorial(npc, player);
-                    case 2 -> ChangeMapService.gI().changeMapNonSpaceship(player, 5, 200, 288);
+                    case 1 -> openClanIntrinsicMenu(npc, player);
+                    case 2 -> openClanAuraMenu(npc, player);
+                    case 3 -> showTutorial(npc, player);
+                    case 4 -> ChangeMapService.gI().changeMapNonSpaceship(player, 5, 200, 288);
                 }
             } else {
                 switch (select) {
-                    case 0 -> showTutorial(npc, player);
-                    case 1 -> ChangeMapService.gI().changeMapNonSpaceship(player, 5, 200, 288);
+                    case 0 -> openClanIntrinsicMenu(npc, player);
+                    case 1 -> openClanAuraMenu(npc, player);
+                    case 2 -> showTutorial(npc, player);
+                    case 3 -> ChangeMapService.gI().changeMapNonSpaceship(player, 5, 200, 288);
                 }
             }
             return;
@@ -353,13 +375,17 @@ public class ClanMartialArtsService {
                 case 0 -> openLineupSelectionMenu(npc, player);
                 case 1 -> registerClan(npc, player, FEE_TYPE_GOLD_BAR);
                 case 2 -> registerClan(npc, player, FEE_TYPE_RUBY);
-                case 3 -> showTutorial(npc, player);
-                case 4 -> ChangeMapService.gI().changeMapNonSpaceship(player, 5, 200, 288);
+                case 3 -> openClanIntrinsicMenu(npc, player);
+                case 4 -> openClanAuraMenu(npc, player);
+                case 5 -> showTutorial(npc, player);
+                case 6 -> ChangeMapService.gI().changeMapNonSpaceship(player, 5, 200, 288);
             }
         } else {
             switch (select) {
-                case 0 -> showTutorial(npc, player);
-                case 1 -> ChangeMapService.gI().changeMapNonSpaceship(player, 5, 200, 288);
+                case 0 -> openClanIntrinsicMenu(npc, player);
+                case 1 -> openClanAuraMenu(npc, player);
+                case 2 -> showTutorial(npc, player);
+                case 3 -> ChangeMapService.gI().changeMapNonSpaceship(player, 5, 200, 288);
             }
         }
     }
@@ -552,7 +578,181 @@ public class ClanMartialArtsService {
         }
     }
 
+    private int getIntrinsicUpgradeCost(int currentLv) {
+        return 5 + currentLv * 5;
+    }
+
+    private void openClanIntrinsicMenu(Npc npc, Player player) {
+        if (player.clan == null) {
+            return;
+        }
+        Clan c = player.clan;
+        StringBuilder sb = new StringBuilder();
+        sb.append("|7|NỘI TẠI BANG HỘI - [").append(c.name).append("]\n");
+        sb.append("|2|Điểm Nội Tại Bang hiện có: ").append(c.pointNoiTai).append(" điểm\n");
+        sb.append("(Thắng PK Bang Hội: +").append(WIN_INTRINSIC_POINTS).append(" điểm | Tham gia: +").append(LOSE_INTRINSIC_POINTS).append(" điểm)\n");
+        sb.append("|1|• HP Gốc: Cấp ").append(c.lvHpAdd).append("/20 (+").append(Util.numberToMoney(c.lvHpAdd * 50_000L)).append(" HP)\n");
+        sb.append("• KI Gốc: Cấp ").append(c.lvMpAdd).append("/20 (+").append(Util.numberToMoney(c.lvMpAdd * 50_000L)).append(" KI)\n");
+        sb.append("• SĐ Gốc: Cấp ").append(c.lvDameAdd).append("/20 (+").append(Util.numberToMoney(c.lvDameAdd * 2_500L)).append(" SĐ)\n");
+        sb.append("• % HP: Cấp ").append(c.lvTlHp).append("/15 (+").append(c.lvTlHp * 2).append("% HP)\n");
+        sb.append("• % KI: Cấp ").append(c.lvTlMp).append("/15 (+").append(c.lvTlMp * 2).append("% KI)\n");
+        sb.append("• % Sức Đánh: Cấp ").append(c.lvTlDame).append("/15 (+").append(c.lvTlDame * 2).append("% SĐ)\n");
+        sb.append("• % TNSM & Vàng: Cấp ").append(c.lvTlTNSM).append("/15 (+").append(c.lvTlTNSM * 5).append("% TNSM & Vàng)\n");
+        sb.append("• % Chí Mạng: Cấp ").append(c.lvCrit).append("/10 (+").append(c.lvCrit).append("% CRIT)");
+
+        if (!c.isLeader(player)) {
+            npc.createOtherMenu(player, MENU_CLAN_INTRINSIC, sb.toString(), "Quay lại");
+            return;
+        }
+
+        npc.createOtherMenu(player, MENU_CLAN_INTRINSIC, sb.toString(),
+                c.lvHpAdd < 20 ? "Nâng HP\n(" + getIntrinsicUpgradeCost(c.lvHpAdd) + " đ)" : "HP Gốc\n(Đã Max)",
+                c.lvMpAdd < 20 ? "Nâng KI\n(" + getIntrinsicUpgradeCost(c.lvMpAdd) + " đ)" : "KI Gốc\n(Đã Max)",
+                c.lvDameAdd < 20 ? "Nâng SĐ\n(" + getIntrinsicUpgradeCost(c.lvDameAdd) + " đ)" : "SĐ Gốc\n(Đã Max)",
+                c.lvTlHp < 15 ? "Nâng %HP\n(" + getIntrinsicUpgradeCost(c.lvTlHp) + " đ)" : "%HP\n(Đã Max)",
+                c.lvTlMp < 15 ? "Nâng %KI\n(" + getIntrinsicUpgradeCost(c.lvTlMp) + " đ)" : "%KI\n(Đã Max)",
+                c.lvTlDame < 15 ? "Nâng %SĐ\n(" + getIntrinsicUpgradeCost(c.lvTlDame) + " đ)" : "%SĐ\n(Đã Max)",
+                c.lvTlTNSM < 15 ? "Nâng TNSM\n& Vàng (" + getIntrinsicUpgradeCost(c.lvTlTNSM) + " đ)" : "TNSM & Vàng\n(Đã Max)",
+                c.lvCrit < 10 ? "Nâng %CRIT\n(" + getIntrinsicUpgradeCost(c.lvCrit) + " đ)" : "%CRIT\n(Đã Max)",
+                "Quay lại");
+    }
+
+    private void handleClanIntrinsicConfirm(Npc npc, Player player, int select) {
+        if (player.clan == null || !player.clan.isLeader(player) || select < 0 || select >= 8) {
+            openMenuTrongTai(npc, player);
+            return;
+        }
+        Clan c = player.clan;
+        int curLv;
+        int maxLv;
+        String statName;
+        switch (select) {
+            case 0 -> { curLv = c.lvHpAdd; maxLv = 20; statName = "HP Gốc (+50.000 HP)"; }
+            case 1 -> { curLv = c.lvMpAdd; maxLv = 20; statName = "KI Gốc (+50.000 KI)"; }
+            case 2 -> { curLv = c.lvDameAdd; maxLv = 20; statName = "Sức Đánh Gốc (+2.500 SĐ)"; }
+            case 3 -> { curLv = c.lvTlHp; maxLv = 15; statName = "% HP (+2% HP)"; }
+            case 4 -> { curLv = c.lvTlMp; maxLv = 15; statName = "% KI (+2% KI)"; }
+            case 5 -> { curLv = c.lvTlDame; maxLv = 15; statName = "% Sức Đánh (+2% SĐ)"; }
+            case 6 -> { curLv = c.lvTlTNSM; maxLv = 15; statName = "% TNSM & Vàng (+5%)"; }
+            default -> { curLv = c.lvCrit; maxLv = 10; statName = "% Chí Mạng (+1% CRIT)"; }
+        }
+        if (curLv >= maxLv) {
+            Service.gI().sendThongBao(player, "Chỉ số " + statName + " của Bang đã đạt cấp tối đa (" + maxLv + ")!");
+            openClanIntrinsicMenu(npc, player);
+            return;
+        }
+        int cost = getIntrinsicUpgradeCost(curLv);
+        if (c.pointNoiTai < cost) {
+            Service.gI().sendThongBao(player, "Bang không đủ Điểm Nội Tại! Cần " + cost + " điểm (Hiện có: " + c.pointNoiTai + " điểm).");
+            openClanIntrinsicMenu(npc, player);
+            return;
+        }
+
+        c.pointNoiTai -= cost;
+        switch (select) {
+            case 0 -> c.lvHpAdd++;
+            case 1 -> c.lvMpAdd++;
+            case 2 -> c.lvDameAdd++;
+            case 3 -> c.lvTlHp++;
+            case 4 -> c.lvTlMp++;
+            case 5 -> c.lvTlDame++;
+            case 6 -> c.lvTlTNSM++;
+            case 7 -> c.lvCrit++;
+        }
+        c.saveNoiTaiBang();
+        c.refreshAllMembersStatsAndAura();
+        notifyClanMembers(c.id, "Bang Chủ " + player.name + " đã nâng cấp Nội Tại Bang [" + statName + "] lên Cấp " + (curLv + 1) + "!");
+        openClanIntrinsicMenu(npc, player);
+    }
+
+    private static final int[] CLAN_AURA_COSTS = {20, 50, 100, 200, 350};
+    private static final String[] CLAN_AURA_NAMES = {
+        "Hào Quang Tân Tinh (+2% HP, KI, SĐ)",
+        "Hào Quang Thanh Long (+4% HP, KI, SĐ)",
+        "Hào Quang Kim Quang (+6% HP, KI, SĐ)",
+        "Hào Quang Hắc Ám (+8% HP, KI, SĐ)",
+        "Hào Quang Bá Vương (+12% HP, KI, SĐ)"
+    };
+
+    private void openClanAuraMenu(Npc npc, Player player) {
+        if (player.clan == null) {
+            return;
+        }
+        Clan c = player.clan;
+        String curAura = (c.levelHaoQuangBang > 0 && c.levelHaoQuangBang <= 5)
+                ? ("Cấp " + c.levelHaoQuangBang + " - " + CLAN_AURA_NAMES[c.levelHaoQuangBang - 1])
+                : "Chưa mở khóa";
+        StringBuilder sb = new StringBuilder();
+        sb.append("|7|HÀO QUANG BANG HỘI - [").append(c.name).append("]\n");
+        sb.append("|2|Điểm Nội Tại Bang hiện có: ").append(c.pointNoiTai).append(" điểm\n");
+        sb.append("Hào Quang Bang đang kích hoạt: ").append(curAura).append("\n");
+        sb.append("|1|(Tất cả thành viên trong Bang đều phát sáng Hào Quang và nhận chỉ số!)\n");
+        for (int i = 0; i < 5; i++) {
+            sb.append("• Cấp ").append(i + 1).append(" (").append(CLAN_AURA_COSTS[i]).append(" điểm): ")
+                    .append(CLAN_AURA_NAMES[i]).append("\n");
+        }
+
+        if (!c.isLeader(player)) {
+            npc.createOtherMenu(player, MENU_CLAN_AURA, sb.toString(), "Quay lại");
+            return;
+        }
+
+        npc.createOtherMenu(player, MENU_CLAN_AURA, sb.toString(),
+                "Hào Quang\nCấp 1 (20đ)",
+                "Hào Quang\nCấp 2 (50đ)",
+                "Hào Quang\nCấp 3 (100đ)",
+                "Hào Quang\nCấp 4 (200đ)",
+                "Hào Quang\nCấp 5 (350đ)",
+                "Quay lại");
+    }
+
+    private void handleClanAuraConfirm(Npc npc, Player player, int select) {
+        if (player.clan == null || !player.clan.isLeader(player) || select < 0 || select >= 5) {
+            openMenuTrongTai(npc, player);
+            return;
+        }
+        Clan c = player.clan;
+        int targetLv = select + 1;
+        if (c.levelHaoQuangBang >= targetLv) {
+            Service.gI().sendThongBao(player, "Bang của bạn đã sở hữu Hào Quang Bang Cấp " + c.levelHaoQuangBang + " rồi!");
+            openClanAuraMenu(npc, player);
+            return;
+        }
+        int cost = CLAN_AURA_COSTS[select];
+        if (c.pointNoiTai < cost) {
+            Service.gI().sendThongBao(player, "Bang không đủ Điểm Nội Tại! Cần " + cost + " điểm (Hiện có: " + c.pointNoiTai + " điểm).");
+            openClanAuraMenu(npc, player);
+            return;
+        }
+        c.pointNoiTai -= cost;
+        c.levelHaoQuangBang = targetLv;
+        c.saveNoiTaiBang();
+        c.refreshAllMembersStatsAndAura();
+        String auraName = CLAN_AURA_NAMES[select];
+        notifyClanMembers(c.id, "Chúc mừng! Bang Chủ " + player.name + " đã mở khóa [" + auraName + "] cho toàn bộ thành viên Bang!");
+        ServerNotify.gI().notify("Bang [" + c.name + "] vừa kích hoạt " + auraName + " rực rỡ khắp máy chủ!");
+        openClanAuraMenu(npc, player);
+    }
+
     private void rewardWinnerClan(ClanRegistration winReg, ClanRegistration loseReg) {
+        try {
+            Clan winClan = nro.models.server.Manager.getClanById(winReg.clanId);
+            if (winClan != null) {
+                winClan.winPKBang++;
+                winClan.pointNoiTai += WIN_INTRINSIC_POINTS;
+                winClan.saveNoiTaiBang();
+            }
+        } catch (Exception ignored) {
+        }
+        try {
+            Clan loseClan = nro.models.server.Manager.getClanById(loseReg.clanId);
+            if (loseClan != null) {
+                loseClan.pointNoiTai += LOSE_INTRINSIC_POINTS;
+                loseClan.saveNoiTaiBang();
+            }
+        } catch (Exception ignored) {
+        }
+
         Player receiver = Client.gI().getPlayer(winReg.leaderId);
         if (receiver == null) {
             for (Long fId : winReg.fighterIds) {
@@ -579,11 +779,11 @@ public class ClanMartialArtsService {
             }
         }
         if (receiver != null) {
-            Service.gI().sendThongBao(receiver, "Chúc mừng Bang [" + winReg.clanName + "] chiến thắng! Nhận thưởng " + rewardText + "!");
+            Service.gI().sendThongBao(receiver, "Chúc mừng Bang [" + winReg.clanName + "] chiến thắng! Nhận " + rewardText + " & +" + WIN_INTRINSIC_POINTS + " Điểm Nội Tại Bang!");
         }
-        notifyClanMembers(winReg.clanId, "Bang [" + winReg.clanName + "] đã chiến thắng Bang [" + loseReg.clanName + "] tại Đại Hội Võ Thuật! Phần thưởng 150% lệ phí (" + rewardText + ") đã trao cho Bang Chủ!");
-        notifyClanMembers(loseReg.clanId, "Bang [" + loseReg.clanName + "] đã thất bại trước Bang [" + winReg.clanName + "] tại Đại Hội Võ Thuật Bang Hội. Hãy phục thù ở trận sau!");
-        ServerNotify.gI().notify("Đại Hội Võ Thuật Bang Hội: Bang [" + winReg.clanName + "] đã xuất sắc đánh bại Bang [" + loseReg.clanName + "] và nhận thưởng 150% lệ phí!");
+        notifyClanMembers(winReg.clanId, "Bang [" + winReg.clanName + "] đã chiến thắng! Nhận +" + WIN_INTRINSIC_POINTS + " Điểm Nội Tại Bang & " + rewardText + " (trao cho Bang Chủ)!");
+        notifyClanMembers(loseReg.clanId, "Bang [" + loseReg.clanName + "] đã thất bại trước Bang [" + winReg.clanName + "] và nhận +" + LOSE_INTRINSIC_POINTS + " Điểm Nội Tại Bang khuyến khích!");
+        ServerNotify.gI().notify("Đại Hội Võ Thuật Bang Hội: Bang [" + winReg.clanName + "] đã đánh bại Bang [" + loseReg.clanName + "], nhận 150% lệ phí & +" + WIN_INTRINSIC_POINTS + " Điểm Nội Tại Bang!");
     }
 
     private void notifyClanMembers(int clanId, String msg) {

@@ -843,6 +843,9 @@ public class Player implements Runnable {
         if (!isPl()) {
             return -1;
         }
+        if (this.clan != null && this.clan.levelHaoQuangBang > 0) {
+            return (byte) Math.min(4, this.clan.levelHaoQuangBang - 1);
+        }
         if (this.Cards == null || this.Cards.isEmpty()) {
             return -1;
         }
