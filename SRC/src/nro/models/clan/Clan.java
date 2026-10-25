@@ -144,6 +144,24 @@ public class Clan {
         }
     }
 
+    public boolean isTop1PKBang() {
+        if (this.winPKBang <= 0) {
+            return false;
+        }
+        Clan best = null;
+        for (Clan c : Manager.CLANS) {
+            if (c == null || c.winPKBang <= 0) {
+                continue;
+            }
+            if (best == null || c.winPKBang > best.winPKBang
+                    || (c.winPKBang == best.winPKBang && c.levelHaoQuangBang > best.levelHaoQuangBang)
+                    || (c.winPKBang == best.winPKBang && c.levelHaoQuangBang == best.levelHaoQuangBang && c.powerPoint > best.powerPoint)) {
+                best = c;
+            }
+        }
+        return best != null && best.id == this.id;
+    }
+
     public Clan() {
         this.id = NEXT_ID++;
         this.name = "";

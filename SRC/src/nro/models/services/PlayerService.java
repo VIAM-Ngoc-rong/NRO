@@ -281,6 +281,10 @@ public class PlayerService {
     private static final int COST_GOLD_HOI_SINH_NRSD = 50_000;
 
     public void hoiSinh(Player player) {
+        if (player.zone != null && player.zone.map != null && player.zone.map.mapId == 134) {
+            Service.gI().sendThongBao(player, "Không thể tự hồi sinh tại chỗ trong Đại Hội Võ Thuật Bang Hội!");
+            return;
+        }
         if (player.isDie() && player.zone != null && player.zone.map.mapId != 51) {
             if (Util.canDoWithTime(player.lastTimeRevived, 1500)) {
                 boolean canHs = false;

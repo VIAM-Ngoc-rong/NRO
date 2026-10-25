@@ -51,6 +51,7 @@ import nro.models.npc.DuaHauEgg;
 import nro.models.server.Manager;
 import static nro.models.server.Manager.isTopSukienChanged;
 import nro.models.services.ChatGlobalService;
+import nro.models.services.EffectSkillService;
 import nro.models.task.BadgesTaskService;
 import nro.models.utils.Logger;
 
@@ -930,6 +931,7 @@ public class UseItem {
                                 UseItem.gI().useBaoLiXi(pl, item);
                                 break;
                             case 589:
+                            case 610:
                                 UseItem.gI().useBongHoa(pl, item);
                                 break;
                             case 1542:
@@ -942,7 +944,7 @@ public class UseItem {
                             case 1547:
                             case 1548:
                             case 1549:
-                                UseItem.gI().useNguyenLieuNauBanh(pl);
+                                UseItem.gI().useNguyenLieuNauBanh(pl, item);
                                 break;
                             case 1612:
                             case 1613:
@@ -2132,6 +2134,11 @@ public class UseItem {
     }
 
     public void eatPea(Player player) {
+        if (player.zone != null && player.zone.map != null && player.zone.map.mapId == 134
+                && (player.isPKDHVT || player.location.y <= 312)) {
+            Service.gI().sendThongBao(player, "Không thể sử dụng Đậu thần khi đang thi đấu trên võ đài Bang Hội!");
+            return;
+        }
         if (!Util.canDoWithTime(player.lastTimeEatPea, 1000)) {
             return;
         }
@@ -2338,8 +2345,11 @@ public class UseItem {
 
             InventoryService.gI().addItemBag(player, newItem);
             InventoryService.gI().subQuantityItemsBag(player, itemused, 1);
+            player.point_sukien += 1;
+            player.event.addEventPoint(1);
+            Manager.isTopSukienChanged = true;
             InventoryService.gI().sendItemBags(player);
-            Service.gI().sendThongBao(player, "Bạn đã nhận được " + newItem.template.name + " (chỉ số ngẫu nhiên)!");
+            Service.gI().sendThongBao(player, "Bạn đã nhận được " + newItem.template.name + " (+1 điểm sự kiện)!");
         } else {
             Service.gI().sendThongBao(player, "Cần ít nhất 1 ô trống trong hành trang!");
         }
@@ -2414,8 +2424,11 @@ public class UseItem {
 
             InventoryService.gI().addItemBag(player, newItem);
             InventoryService.gI().subQuantityItemsBag(player, itemused, 1);
+            player.point_sukien += 1;
+            player.event.addEventPoint(1);
+            Manager.isTopSukienChanged = true;
             InventoryService.gI().sendItemBags(player);
-            Service.gI().sendThongBao(player, "Bạn đã nhận được " + newItem.template.name + " (chỉ số ngẫu nhiên)!");
+            Service.gI().sendThongBao(player, "Bạn đã nhận được " + newItem.template.name + " (+1 điểm sự kiện)!");
         } else {
             Service.gI().sendThongBao(player, "Cần ít nhất 1 ô trống trong hành trang!");
         }
@@ -2866,34 +2879,30 @@ public class UseItem {
         Service.gI().sendThongBao(pl, "Thưởng thức " + item.template.name + " nhận được " + rw.template.name + "!");
     }
 
-    public void useNguyenLieuNauBanh(Player pl) {
+    public void useNguyenLieuNauBanh(Player pl, Item itemUsed) {
         if (InventoryService.gI().getCountEmptyBag(pl) <= 0) {
             Service.gI().sendThongBao(pl, "Cần ít nhất 1 ô trống trong hành trang!");
             return;
         }
+        int usedId = itemUsed != null && itemUsed.template != null ? itemUsed.template.id : 1546;
+        boolean preferBanhDay = (usedId == 1544 || usedId == 1545 || usedId == 1547);
+
         Item comnep = InventoryService.gI().findItemBag(pl, 1546);
         Item dauxanh = InventoryService.gI().findItemBag(pl, 1548);
         Item thittuoi = InventoryService.gI().findItemBag(pl, 1549);
-        if (comnep != null && comnep.quantity >= 10
-                && dauxanh != null && dauxanh.quantity >= 10
-                && thittuoi != null && thittuoi.quantity >= 10) {
-            InventoryService.gI().subQuantityItemsBag(pl, comnep, 10);
-            InventoryService.gI().subQuantityItemsBag(pl, dauxanh, 10);
-            InventoryService.gI().subQuantityItemsBag(pl, thittuoi, 10);
-            Item banhChung = ItemService.gI().createNewItem((short) 1556, 1);
-            banhChung.itemOptions.add(new ItemOption(93, 30));
-            InventoryService.gI().addItemBag(pl, banhChung);
-            InventoryService.gI().sendItemBags(pl);
-            Service.gI().sendThongBao(pl, "Đã nấu thành công 1 Bánh Chưng! Bấm Sử dụng Bánh Chưng hoặc dâng Vua Hùng để nhận quà.");
-            return;
-        }
         Item botgao = InventoryService.gI().findItemBag(pl, 1547);
         Item muoitieu = InventoryService.gI().findItemBag(pl, 1545);
         Item chalua = InventoryService.gI().findItemBag(pl, 1544);
-        if (comnep != null && comnep.quantity >= 10
+
+        boolean canBanhChung = comnep != null && comnep.quantity >= 10
+                && dauxanh != null && dauxanh.quantity >= 10
+                && thittuoi != null && thittuoi.quantity >= 10;
+        boolean canBanhDay = comnep != null && comnep.quantity >= 10
                 && botgao != null && botgao.quantity >= 5
                 && muoitieu != null && muoitieu.quantity >= 5
-                && chalua != null && chalua.quantity >= 1) {
+                && chalua != null && chalua.quantity >= 1;
+
+        if (preferBanhDay && canBanhDay) {
             InventoryService.gI().subQuantityItemsBag(pl, comnep, 10);
             InventoryService.gI().subQuantityItemsBag(pl, botgao, 5);
             InventoryService.gI().subQuantityItemsBag(pl, muoitieu, 5);
@@ -2901,8 +2910,40 @@ public class UseItem {
             Item banhDay = ItemService.gI().createNewItem((short) 1542, 1);
             banhDay.itemOptions.add(new ItemOption(93, 30));
             InventoryService.gI().addItemBag(pl, banhDay);
+            pl.point_sukien += 1;
+            pl.event.addEventPoint(1);
+            Manager.isTopSukienChanged = true;
             InventoryService.gI().sendItemBags(pl);
-            Service.gI().sendThongBao(pl, "Đã nấu thành công 1 Bánh Dầy! Bấm Sử dụng Bánh Dầy hoặc dâng Vua Hùng để nhận quà.");
+            Service.gI().sendThongBao(pl, "Đã nấu thành công 1 Bánh Dầy (+1 điểm sự kiện)! Bấm Sử dụng Bánh Dầy hoặc dâng Vua Hùng để nhận quà.");
+            return;
+        }
+        if (canBanhChung) {
+            InventoryService.gI().subQuantityItemsBag(pl, comnep, 10);
+            InventoryService.gI().subQuantityItemsBag(pl, dauxanh, 10);
+            InventoryService.gI().subQuantityItemsBag(pl, thittuoi, 10);
+            Item banhChung = ItemService.gI().createNewItem((short) 1556, 1);
+            banhChung.itemOptions.add(new ItemOption(93, 30));
+            InventoryService.gI().addItemBag(pl, banhChung);
+            pl.point_sukien += 1;
+            pl.event.addEventPoint(1);
+            Manager.isTopSukienChanged = true;
+            InventoryService.gI().sendItemBags(pl);
+            Service.gI().sendThongBao(pl, "Đã nấu thành công 1 Bánh Chưng Lang Liêu (+1 điểm sự kiện)! Bấm Sử dụng Bánh Chưng hoặc dâng Vua Hùng để nhận quà.");
+            return;
+        }
+        if (canBanhDay) {
+            InventoryService.gI().subQuantityItemsBag(pl, comnep, 10);
+            InventoryService.gI().subQuantityItemsBag(pl, botgao, 5);
+            InventoryService.gI().subQuantityItemsBag(pl, muoitieu, 5);
+            InventoryService.gI().subQuantityItemsBag(pl, chalua, 1);
+            Item banhDay = ItemService.gI().createNewItem((short) 1542, 1);
+            banhDay.itemOptions.add(new ItemOption(93, 30));
+            InventoryService.gI().addItemBag(pl, banhDay);
+            pl.point_sukien += 1;
+            pl.event.addEventPoint(1);
+            Manager.isTopSukienChanged = true;
+            InventoryService.gI().sendItemBags(pl);
+            Service.gI().sendThongBao(pl, "Đã nấu thành công 1 Bánh Dầy (+1 điểm sự kiện)! Bấm Sử dụng Bánh Dầy hoặc dâng Vua Hùng để nhận quà.");
             return;
         }
         Service.gI().sendThongBao(pl, "Nấu Bánh Chưng cần: 10 Cơm nếp + 10 Đậu xanh + 10 Thịt tươi.\nNấu Bánh Dầy cần: 10 Cơm nếp + 5 Bột gạo + 5 Muối tiêu + 1 Chả lụa.");

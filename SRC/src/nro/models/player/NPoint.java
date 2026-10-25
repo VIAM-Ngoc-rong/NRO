@@ -312,6 +312,12 @@ public class NPoint {
                 this.tlMp.add(bonusHQBang);
                 this.tlDame.add(bonusHQBang);
             }
+            if (myClan.isTop1PKBang()) {
+                this.tlHp.add(5);
+                this.tlMp.add(5);
+                this.tlDame.add(5);
+                this.tlTNSM.add(10);
+            }
         }
         // Lấy tất cả option danh hiệu
         List<Item.ItemOption> options = BagesTemplate.sendListItemOption(player);
