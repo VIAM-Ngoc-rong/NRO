@@ -121,12 +121,11 @@ if [ "$1" = "--fg" ]; then
       -XX:ParallelGCThreads=2 \
       -XX:ConcGCThreads=1 \
       -Xms256M -Xmx${MAX_HEAP_MB}M \
+      -XX:MaxNewSize=192M \
       -XX:-UseGCOverheadLimit \
       -XX:MinHeapFreeRatio=10 \
       -XX:MaxHeapFreeRatio=25 \
       -XX:+UseG1GC \
-      -XX:G1NewSizePercent=5 \
-      -XX:G1MaxNewSizePercent=20 \
       -XX:InitiatingHeapOccupancyPercent=30 \
       -XX:+ExplicitGCInvokesConcurrent \
       -XX:MaxGCPauseMillis=50 \
@@ -143,12 +142,11 @@ nohup java -server \
   -XX:ParallelGCThreads=2 \
   -XX:ConcGCThreads=1 \
   -Xms256M -Xmx${MAX_HEAP_MB}M \
+  -XX:MaxNewSize=192M \
   -XX:-UseGCOverheadLimit \
   -XX:MinHeapFreeRatio=10 \
   -XX:MaxHeapFreeRatio=25 \
   -XX:+UseG1GC \
-  -XX:G1NewSizePercent=5 \
-  -XX:G1MaxNewSizePercent=20 \
   -XX:InitiatingHeapOccupancyPercent=30 \
   -XX:+ExplicitGCInvokesConcurrent \
   -XX:MaxGCPauseMillis=50 \
