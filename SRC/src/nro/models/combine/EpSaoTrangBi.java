@@ -38,7 +38,8 @@ public class EpSaoTrangBi {
                 }
 
                 if (starEmpty <= 9) {
-                    if (star >= 7 && starEmpty >= 8 && !CombineService.gI().CheckSlot(trangBi, starEmpty)) {
+                    boolean isNgocRongTim = daPhaLe.template.id >= 1827 && daPhaLe.template.id <= 1833;
+                    if (!isNgocRongTim && star >= 7 && starEmpty >= 8 && !CombineService.gI().CheckSlot(trangBi, starEmpty)) {
                         CombineService.gI().baHatMit.createOtherMenu(player, ConstNpc.IGNORE_MENU,
                                 "Cần cường hóa lỗ sao pha lê này trước", "Đóng");
                         return;
@@ -121,7 +122,8 @@ public class EpSaoTrangBi {
                     break;
                 }
 
-                if (star >= 7 && starEmpty >= 8 && !CombineService.gI().CheckSlot(trangBi, starEmpty)) {
+                boolean isNgocRongTim = daPhaLe.template.id >= 1827 && daPhaLe.template.id <= 1833;
+                if (!isNgocRongTim && star >= 7 && starEmpty >= 8 && !CombineService.gI().CheckSlot(trangBi, starEmpty)) {
                     if (epCount == 0) {
                         Service.gI().sendThongBao(player, "Cần cường hóa lỗ sao pha lê này trước");
                     }
@@ -164,6 +166,22 @@ public class EpSaoTrangBi {
                 } else {
                     optionStar = new ItemOption(102, 1);
                     trangBi.itemOptions.add(optionStar);
+                }
+
+                if (isNgocRongTim) {
+                    ItemOption opt228 = null;
+                    for (ItemOption io : trangBi.itemOptions) {
+                        if (io.optionTemplate.id == 228) {
+                            opt228 = io;
+                            break;
+                        }
+                    }
+                    int targetSlot = Math.max(8, starEmpty);
+                    if (opt228 == null) {
+                        trangBi.itemOptions.add(new ItemOption(228, targetSlot));
+                    } else if (opt228.param < targetSlot) {
+                        opt228.param = targetSlot;
+                    }
                 }
 
                 InventoryService.gI().subQuantityItemsBag(player, daPhaLe, 1);

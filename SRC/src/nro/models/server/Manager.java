@@ -75,7 +75,7 @@ public final class Manager {
     private static Manager instance;
     public static long timeRealTop = 0;
     public static byte SERVER = 1;
-    public static byte SECOND_WAIT_LOGIN = 5;
+    public static byte SECOND_WAIT_LOGIN = 0;
     public static int MAX_PER_IP = 1000;
     public static int MAX_PLAYER = 2000;
     public static byte RATE_EXP_SERVER = 1;

@@ -90,46 +90,30 @@ public class MrBlue {
 
                 if (rs.getBoolean("ban")) {
                     Service.gI().sendThongBaoOK(session, "Tài khoản này đang bị khóa. Liên hệ Admin để biết thêm thông tin");
-                } else if (secondsPass1 < Manager.SECOND_WAIT_LOGIN) {
-                    if (secondsPass < secondsPass1) {
-                        Service.gI().sendWaitToLogin(session, Manager.SECOND_WAIT_LOGIN - secondsPass);
-                        return null;
-                    }
-                    Service.gI().sendWaitToLogin(session, Manager.SECOND_WAIT_LOGIN - secondsPass1);
-                    return null;
-                } else if (rs.getTimestamp("last_time_login").getTime() > session.lastTimeLogout
-                        && (plInGame = Client.gI().getPlayerByUser(session.userId)) != null) {
+                } else {
+                    plInGame = Client.gI().getPlayerByUser(session.userId);
                     if (plInGame != null) {
                         Client.gI().kickSession(plInGame.getSession());
                     }
-                } else {
-                    if (secondsPass < Manager.SECOND_WAIT_LOGIN) {
-                        Service.gI().sendWaitToLogin(session, Manager.SECOND_WAIT_LOGIN - secondsPass);
+                    rs = LocalManager.executeQuery("select * from player where account_id = ? limit 1", session.userId);
+                    if (!rs.first()) {
+                        //-28 -4 version data game
+                        DataGame.sendVersionGame(session);
+                        //-31 data item background
+                        DataGame.sendDataItemBG(session);
+                        Service.gI().switchToCreateChar(session);
                     } else {
-                        rs = LocalManager.executeQuery("select * from player where account_id = ? limit 1", session.userId);
-                        if (!rs.first()) {
-                            //-28 -4 version data game
-                            DataGame.sendVersionGame(session);
-                            //-31 data item background
-                            DataGame.sendDataItemBG(session);
-                            Service.gI().switchToCreateChar(session);
-                        } else {
-                            plInGame = Client.gI().getPlayerByUser(session.userId);
-                            if (plInGame != null) {
-                                Client.gI().kickSession(plInGame.getSession());
-                            }
-                            if ((player = loadPlayer(rs, false)) != null) {
-                                player.isPlayer = true;
-                                player.deltaTime = deltaTime;
-                                player.point_sukien = rs.getInt("point_sukien");
-                                player.point_sukien1 = rs.getInt("point_sukien1");
-                                player.point_sukien2 = rs.getInt("point_sukien2");
-                                player.thachdauwhis = rs.getInt("thachdauwhis");
-                                player.point_maydam = rs.getInt("point_maydam");
-                                player.total_damage_maydam = rs.getLong("total_damage_maydam");
-                                player.isNewMember = !Util.isTimeDifferenceGreaterThanNDays(createTime, 35);
-                                LocalManager.executeUpdate("update account set last_time_login = '" + new Timestamp(System.currentTimeMillis()) + "', ip_address = '" + session.ipAddress + "' where id = " + session.userId);
-                            }
+                        if ((player = loadPlayer(rs, false)) != null) {
+                            player.isPlayer = true;
+                            player.deltaTime = deltaTime;
+                            player.point_sukien = rs.getInt("point_sukien");
+                            player.point_sukien1 = rs.getInt("point_sukien1");
+                            player.point_sukien2 = rs.getInt("point_sukien2");
+                            player.thachdauwhis = rs.getInt("thachdauwhis");
+                            player.point_maydam = rs.getInt("point_maydam");
+                            player.total_damage_maydam = rs.getLong("total_damage_maydam");
+                            player.isNewMember = !Util.isTimeDifferenceGreaterThanNDays(createTime, 35);
+                            LocalManager.executeUpdate("update account set last_time_login = '" + new Timestamp(System.currentTimeMillis()) + "', ip_address = '" + session.ipAddress + "' where id = " + session.userId);
                         }
                     }
                 }

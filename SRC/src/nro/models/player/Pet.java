@@ -43,6 +43,10 @@ public class Pet extends Player {
     @Getter
     public byte status = 0;
 
+    public byte getStatus() {
+        return this.status;
+    }
+
     public byte typePet;
     public boolean isTransform;
 

@@ -810,7 +810,7 @@ public class Controller implements IMessageHandler {
                                 //sendThongBaoServer(player);
                             }
 
-                            if (player.inventory.itemsBody.get(10).isNotNullItem()) {
+                            if (player.inventory.itemsBody.size() > 10 && player.inventory.itemsBody.get(10).isNotNullItem()) {
                                 Service.gI().sendChibi(player);
                             }
                             player.zone.mapInfo(player);
@@ -825,6 +825,9 @@ public class Controller implements IMessageHandler {
                             Service.gI().sendTimeSkill(player);
                             TrainingService.gI().tnsmLuyenTapUp(player);
                             player.sendNewPet();
+                            if (player.pet != null) {
+                                Service.gI().showInfoPet(player);
+                            }
                             if (player.getSession() != null && player.getSession().tongnap > 0) {
                                 AchievementService.gI().checkDoneTask(player, ConstAchievement.LAN_DAU_NAP_NGOC);
                             }
@@ -948,7 +951,6 @@ public class Controller implements IMessageHandler {
             player.setClothes.setup();
             if (player.pet != null) {
                 player.pet.setClothes.setup();
-                Service.gI().showInfoPet(player);
             }
             ItemTimeService.gI().sendCanAutoPlay(player);
             player.start();
