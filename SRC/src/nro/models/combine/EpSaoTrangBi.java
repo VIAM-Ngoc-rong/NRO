@@ -168,22 +168,6 @@ public class EpSaoTrangBi {
                     trangBi.itemOptions.add(optionStar);
                 }
 
-                if (isNgocRongTim) {
-                    ItemOption opt228 = null;
-                    for (ItemOption io : trangBi.itemOptions) {
-                        if (io.optionTemplate.id == 228) {
-                            opt228 = io;
-                            break;
-                        }
-                    }
-                    int targetSlot = Math.max(8, starEmpty);
-                    if (opt228 == null) {
-                        trangBi.itemOptions.add(new ItemOption(228, targetSlot));
-                    } else if (opt228.param < targetSlot) {
-                        opt228.param = targetSlot;
-                    }
-                }
-
                 InventoryService.gI().subQuantityItemsBag(player, daPhaLe, 1);
                 epCount++;
             }

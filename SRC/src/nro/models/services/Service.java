@@ -1627,10 +1627,9 @@ public class Service {
                     } else {
                         int countOption = item.itemOptions.size();
                         msg.writer().writeByte(countOption);
-                        boolean isPurpleStar = InventoryService.isPurpleStarEquip(item);
                         for (ItemOption iop : item.itemOptions) {
                             int id = iop.optionTemplate.id;
-                            int param = InventoryService.getDisplayStarParam(iop, isPurpleStar);
+                            int param = iop.param;
                             if (id == 213 && param > 1000) {
                                 int tier = param / 1000;
                                 param = param % 1000;

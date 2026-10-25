@@ -706,7 +706,6 @@ public class InventoryService {
                 if (item == null || !item.isNotNullItem()) {
                     continue;
                 }
-                boolean isPurpleStar = isPurpleStarEquip(item);
                 msg.writer().writeShort(item.template.id);
                 msg.writer().writeInt(item.quantity);
                 msg.writer().writeUTF(item.getInfo());
@@ -728,7 +727,7 @@ public class InventoryService {
                         msg.writer().writeShort(param);
                     } else {
                         msg.writer().writeByte(io.optionTemplate.id);
-                        msg.writer().writeShort(getDisplayStarParam(io, isPurpleStar));
+                        msg.writer().writeShort(io.param);
                     }
                 }
             }
@@ -768,7 +767,6 @@ public class InventoryService {
                     if (!item.isNotNullItem()) {
                         msg.writer().writeShort(-1);
                     } else {
-                        boolean isPurpleStar = isPurpleStarEquip(item);
                         msg.writer().writeShort(item.template.id);
                         msg.writer().writeInt(item.quantity);
                         msg.writer().writeUTF(item.getInfo());
@@ -790,7 +788,7 @@ public class InventoryService {
                                 msg.writer().writeShort(param);
                             } else {
                                 msg.writer().writeByte(itemOption.optionTemplate.id);
-                                msg.writer().writeShort(getDisplayStarParam(itemOption, isPurpleStar));
+                                msg.writer().writeShort(itemOption.param);
                             }
                         }
                     }
@@ -822,7 +820,6 @@ public class InventoryService {
                 Item it = player.inventory.itemsBox.get(i);
                 msg.writer().writeShort(it.isNotNullItem() ? it.template.id : -1);
                 if (it.isNotNullItem()) {
-                    boolean isPurpleStar = isPurpleStarEquip(it);
                     msg.writer().writeInt(it.quantity);
                     msg.writer().writeUTF(it.getInfo());
                     msg.writer().writeUTF(it.getContent());
@@ -842,7 +839,7 @@ public class InventoryService {
                             msg.writer().writeShort(param);
                         } else {
                             msg.writer().writeByte(io.optionTemplate.id);
-                            msg.writer().writeShort(getDisplayStarParam(io, isPurpleStar));
+                            msg.writer().writeShort(io.param);
                         }
                     }
                 }
@@ -851,69 +848,6 @@ public class InventoryService {
             msg.cleanup();
         } catch (Exception e) {
         }
-    }
-
-    public static boolean isPurpleStarEquip(Item item) {
-        if (item == null || !item.isNotNullItem() || item.template == null || item.itemOptions == null) {
-            return false;
-        }
-        if (item.template.type >= 5 && item.template.type != 32) {
-            return false;
-        }
-        int star = 0;
-        boolean has228 = false;
-        for (Item.ItemOption io : item.itemOptions) {
-            if (io == null || io.optionTemplate == null) {
-                continue;
-            }
-            if (io.optionTemplate.id == 102) {
-                star = io.param;
-            } else if (io.optionTemplate.id == 228) {
-                has228 = true;
-            }
-        }
-        if (star <= 0) {
-            return false;
-        }
-        if (has228 || star > 7) {
-            return true;
-        }
-        for (Item.ItemOption io : item.itemOptions) {
-            if (io == null || io.optionTemplate == null) {
-                continue;
-            }
-            switch (io.optionTemplate.id) {
-                case 50 -> {
-                    if (io.param > 3 * star) {
-                        return true;
-                    }
-                }
-                case 77, 103, 80, 81 -> {
-                    if (io.param > 5 * star) {
-                        return true;
-                    }
-                }
-                case 94, 108 -> {
-                    if (io.param > 2 * star) {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
-    }
-
-    public static int getDisplayStarParam(Item.ItemOption io, boolean isPurpleStar) {
-        if (!isPurpleStar || io == null || io.optionTemplate == null) {
-            return io != null ? io.param : 0;
-        }
-        if (io.optionTemplate.id == 102) {
-            return io.param <= 7 ? (7 + io.param) : io.param;
-        }
-        if (io.optionTemplate.id == 107) {
-            return Math.max(14, io.param);
-        }
-        return io.param;
     }
 
     public void openBox(Player player) {
