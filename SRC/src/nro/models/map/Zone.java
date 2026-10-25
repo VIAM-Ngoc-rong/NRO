@@ -849,6 +849,7 @@ public class Zone {
                     || pl.zone.map.mapId == 52
                     || pl.zone.map.mapId == 113
                     || pl.zone.map.mapId == 129
+                    || pl.zone.map.mapId == 134
                     || MapService.gI().isMapDoanhTrai(pl.zone.map.mapId)
                     || MapService.gI().isMapBlackBallWar(pl.zone.map.mapId)
                     || MapService.gI().isMapBanDoKhoBau(pl.zone.map.mapId)

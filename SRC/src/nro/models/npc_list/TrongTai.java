@@ -1,5 +1,8 @@
-package nro.models.npc_list;import nro.models.consts.ConstNpc;
+package nro.models.npc_list;
+
+import nro.models.consts.ConstNpc;
 import nro.models.managers.SuperRankManager;
+import nro.models.matches.dai_hoi_vo_thuat.ClanMartialArtsService;
 import nro.models.matches.dai_hoi_vo_thuat.SuperRankService;
 import nro.models.npc.Npc;
 import nro.models.player.Player;
@@ -15,6 +18,11 @@ public class TrongTai extends Npc {
     @Override
     public void openBaseMenu(Player player) {
         if (!canOpenNpc(player)) return;
+
+        if (mapId == ClanMartialArtsService.MAP_ID) {
+            ClanMartialArtsService.gI().openMenuTrongTai(this, player);
+            return;
+        }
 
         if (mapId == 113) {
             if (SuperRankManager.gI().awaiting(player)) {
@@ -33,7 +41,14 @@ public class TrongTai extends Npc {
 
     @Override
     public void confirmMenu(Player player, int select) {
-        if (!canOpenNpc(player) || !player.idMark.isBaseMenu()) return;
+        if (!canOpenNpc(player)) return;
+
+        if (mapId == ClanMartialArtsService.MAP_ID) {
+            ClanMartialArtsService.gI().confirmMenuTrongTai(this, player, select);
+            return;
+        }
+
+        if (!player.idMark.isBaseMenu()) return;
 
         if (mapId == 113) {
             if (SuperRankManager.gI().awaiting(player)) {

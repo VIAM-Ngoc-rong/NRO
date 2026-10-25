@@ -360,6 +360,8 @@ public class ChangeMapService {
             boolean nextMapIsCold = MapService.gI().isMapCold(zoneJoin.map);
             boolean currMapIsTL = MapService.gI().isMapTuongLai(pl.zone.map);
             boolean nextMapIsTL = MapService.gI().isMapTuongLai(zoneJoin.map);
+            boolean currMapIsClanPK = pl.zone.map.mapId == ConstMap.DAI_HOI_VO_THUAT_BANG_HOI;
+            boolean nextMapIsClanPK = zoneJoin.map.mapId == ConstMap.DAI_HOI_VO_THUAT_BANG_HOI;
             boolean nextMapIsMabu = MapService.gI().isMapMaBu(zoneJoin.map.mapId);
             boolean sameZone = pl.zone.map.mapId == zoneJoin.map.mapId;
             if (typeSpace == AUTO_SPACE_SHIP) {
@@ -451,6 +453,18 @@ public class ChangeMapService {
                     Service.gI().sendThongBao(pl, "Bạn đã đến tương lai, khi chết ở đây bạn sẽ bị giảm sức mạnh và tiềm năng");
                 }
                 Service.gI().point(pl);
+                Service.gI().Send_Info_NV(pl);
+            }
+            if (currMapIsClanPK != nextMapIsClanPK && pl.isPl()) {
+                pl.nPoint.calPoint();
+                if (!currMapIsClanPK && nextMapIsClanPK) {
+                    pl.nPoint.setFullHpMp();
+                    Service.gI().sendThongBao(pl, "Bạn đã đến Đại Hội Võ Thuật Bang Hội! Cường hóa x100 HP & KI, x5 Sức đánh!");
+                } else {
+                    Service.gI().sendThongBao(pl, "Bạn đã rời Đại Hội Võ Thuật Bang Hội, chỉ số trở lại bình thường.");
+                }
+                Service.gI().point(pl);
+                PlayerService.gI().sendInfoHpMp(pl);
                 Service.gI().Send_Info_NV(pl);
             }
             checkJoinSpecialMap(pl);

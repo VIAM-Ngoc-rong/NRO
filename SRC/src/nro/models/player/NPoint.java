@@ -1045,12 +1045,21 @@ public class NPoint {
             }
         }
 
+        // Cường hóa Đại Hội Võ Thuật Bang Hội (map 134): x100 HP
+        if (!this.player.isBoss && this.player.zone != null && this.player.zone.map != null
+                && this.player.zone.map.mapId == 134) {
+            hpMax *= 100L;
+        }
+        this.clanArenaHpOverflowScale = (hpMax > 2_147_483_647L) ? ((double) hpMax / 2_147_483_647.0) : 1.0;
+
         if (hpMax > 2_147_483_647) {
             hpMax = 2_147_483_647;
         }
 
         this.hpMax = (int) hpMax;
     }
+
+    public double clanArenaHpOverflowScale = 1.0;
 
     private void setHp() {
         this.hp = Math.min(this.hp, this.hpMax);
@@ -1152,6 +1161,12 @@ public class NPoint {
             if (opt.optionTemplate.id == 103) {
                 mpMax += (mpMax * opt.param / 100L);
             }
+        }
+
+        // Cường hóa Đại Hội Võ Thuật Bang Hội (map 134): x100 KI
+        if (!this.player.isBoss && this.player.zone != null && this.player.zone.map != null
+                && this.player.zone.map.mapId == 134) {
+            mpMax *= 100L;
         }
 
         if (mpMax
@@ -1352,6 +1367,12 @@ public class NPoint {
         // Xử lý map cold
         if (!this.player.isBoss && this.player.zone != null && MapService.gI().isMapCold(this.player.zone.map) && !this.isKhongLanh) {
             dame /= 2;
+        }
+
+        // Cường hóa Đại Hội Võ Thuật Bang Hội (map 134): x5 Sức đánh
+        if (!this.player.isBoss && this.player.zone != null && this.player.zone.map != null
+                && this.player.zone.map.mapId == 134) {
+            dame *= 5L;
         }
 
         if (dame > 2_147_483_647) {

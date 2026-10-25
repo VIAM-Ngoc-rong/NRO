@@ -193,7 +193,7 @@ public class NonInteractiveNPC extends Player {
                         z.setNpc(pl);
                     }
                 }
-                case 129 -> {
+                case 129, 134 -> {
                     for (Zone z : m.zones) {
                         NonInteractiveNPC pl = new NonInteractiveNPC();
                         pl.name = "Trọng Tài";

@@ -141,6 +141,7 @@ public class ConstMap {
     public static final int HANH_TINH_YARDART = 131;
     public static final int HANH_TINH_YARDART_2 = 132;
     public static final int HANH_TINH_YARDART_3 = 133;
+    public static final int DAI_HOI_VO_THUAT_BANG_HOI = 134;
     public static final int DONG_HAI_TAC = 135;
     public static final int HANG_BACH_TUOC = 136;
     public static final int DONG_KHO_BAU = 137;

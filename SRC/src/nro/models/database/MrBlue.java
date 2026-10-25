@@ -281,7 +281,7 @@ public class MrBlue {
                 }
                 if (mapId == 112) {
                     player.location.y = 408;
-                } else if (mapId == 129 || mapId == 113) {
+                } else if (mapId == 129 || mapId == 113 || mapId == 134) {
                     player.location.y = 360;
                 }
                 if (mapId == 49) {

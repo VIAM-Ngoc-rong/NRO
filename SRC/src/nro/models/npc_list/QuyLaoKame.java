@@ -3,6 +3,7 @@ package nro.models.npc_list;
 import nro.models.consts.ConstNpc;
 import nro.models.item.Item;
 import nro.models.map.phoban.BanDoKhoBau;
+import nro.models.matches.dai_hoi_vo_thuat.ClanMartialArtsService;
 import nro.models.services_dungeon.TreasureUnderSeaService;
 import nro.models.npc.Npc;
 import static nro.models.npc.NpcFactory.PLAYERID_OBJECT;
@@ -95,6 +96,7 @@ public class QuyLaoKame extends Npc {
             ArrayList<String> menu = new ArrayList<>();
             if (!player.canReward) {
                 menu.add("Nói\nchuyện");
+                menu.add("PK\nBang Hội");
                 menu.add("Đổi điểm\nsự kiện\n[" + player.event.getEventPoint() + "]");
                 menu.add("Đổi điểm\nsăn Boss\n[" + player.pointSanBoss + "]");
                 menu.add("Nhận quà\nKOL");
@@ -170,6 +172,9 @@ public class QuyLaoKame extends Npc {
                 handleTalk(player);
                 break;
             case 1:
+                ClanMartialArtsService.gI().goToClanArenaMap(player);
+                break;
+            case 2:
                 String sayDeoLung = "|7|CỬA HÀNG ĐEO LƯNG (CHỈ SỐ NGẪU NHIÊN)\n"
                         + "|2|Điểm sự kiện hiện có: " + Util.numberToMoney(player.event.getEventPoint()) + " điểm\n"
                         + "Hồng ngọc hiện có: " + Util.numberToMoney(player.inventory.ruby) + " Hồng ngọc\n"
@@ -180,16 +185,16 @@ public class QuyLaoKame extends Npc {
                         "Mua Hồng Ngọc\n(Vĩnh Viễn)",
                         "Đóng");
                 break;
-            case 2:
+            case 3:
                 openDoiDiemSanBossMenu(player);
                 break;
-            case 3:
+            case 4:
                 handleKOLQuest(player, false);
                 break;
-            case 4:
+            case 5:
                 handleKOLQuest(player, true);
                 break;
-            case 5:
+            case 6:
                 handleTradeRuacon(player);
                 break;
         }

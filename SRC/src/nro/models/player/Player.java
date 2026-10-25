@@ -1333,6 +1333,12 @@ public class Player implements Runnable {
             if (this.zone.map.mapId == 51) {
                 this.totalDamageTaken += damage;
             }
+            if (this.zone.map.mapId == 134) {
+                if (this.nPoint != null && this.nPoint.clanArenaHpOverflowScale > 1.0) {
+                    damage = Math.max(1, (long) (damage / this.nPoint.clanArenaHpOverflowScale));
+                }
+                this.totalDamageTaken += damage;
+            }
             this.nPoint.subHP(damage);
             if ((plAtt != null || isMobAttack) && isDie() && !isBoss && !isNewPet && !isNewPet1) {
                 if (plAtt != null && this.isPl()) {

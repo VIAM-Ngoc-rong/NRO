@@ -1074,6 +1074,25 @@ public final class Manager {
                         dtn.clear();
                     }
                     dataArray.clear();
+                    if (mapId == ConstMap.DAI_HOI_VO_THUAT_BANG_HOI) {
+                        mapTemplate.name = "Đại hội võ thuật";
+                        mapTemplate.type = ConstMap.MAP_NORMAL;
+                        mapTemplate.planetId = 2;
+                        mapTemplate.bgType = 0;
+                        mapTemplate.tileId = 23;
+                        mapTemplate.bgId = 8;
+                        mapTemplate.zones = 10;
+                        mapTemplate.maxPlayerPerZone = 35;
+                        mapTemplate.wayPoints.clear();
+                        mapTemplate.mobTemp = new byte[0];
+                        mapTemplate.mobLevel = new byte[0];
+                        mapTemplate.mobHp = new int[0];
+                        mapTemplate.mobX = new short[0];
+                        mapTemplate.mobY = new short[0];
+                        mapTemplate.npcId = new byte[]{22, 22};
+                        mapTemplate.npcX = new short[]{295, 474};
+                        mapTemplate.npcY = new short[]{360, 360};
+                    }
                     MAP_TEMPLATES[i++] = mapTemplate;
                 }
                 Logger.success(Logger.RED + "Successfully loaded map template (" + MAP_TEMPLATES.length + ")\n");
