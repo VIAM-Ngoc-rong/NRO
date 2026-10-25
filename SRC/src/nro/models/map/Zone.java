@@ -679,7 +679,8 @@ public class Zone {
         Message msg;
         try {
             msg = new Message(-24);
-            msg.writer().writeByte(this.map.mapId);
+            // Map 134 (PK Bang Hội) dùng template hiển thị Võ Đài 113 để client kích hoạt isVoDaiMap() (vẽ đối xứng đủ 2 nửa võ đài và ẩn ô gạch thô)
+            msg.writer().writeByte(this.map.mapId == 134 ? 113 : this.map.mapId);
             msg.writer().writeByte(this.map.planetId);
             msg.writer().writeByte(this.map.tileId);
             msg.writer().writeByte(this.map.bgId);
