@@ -889,8 +889,10 @@ public class UseItem {
                                 UseItem.gI().usePorata3(pl);
                                 break;
                             case 193: //gói 10 viên capsule
-                                openCapsuleUI(pl);
                                 InventoryService.gI().subQuantityItemsBag(pl, item, 1);
+                                InventoryService.gI().sendItemBags(pl);
+                                openCapsuleUI(pl);
+                                break;
                             case 194: //capsule đặc biệt
                                 openCapsuleUI(pl);
                                 break;

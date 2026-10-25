@@ -21,8 +21,10 @@ public class PhanRaDoSao {
 
     public static void showInfoCombine(Player player) {
         if (player.combineNew.itemsCombine.isEmpty()) {
-            CombineService.gI().baHatMit.createOtherMenu(player, ConstNpc.IGNORE_MENU,
-                    "Hãy chọn ít nhất 1 trang bị có Sao Pha Lê (không phải đồ Kích Hoạt) để phân rã!", "Đóng");
+            CombineService.gI().baHatMit.createOtherMenu(player, ConstNpc.MENU_START_COMBINE,
+                    "Hãy chọn ít nhất 1 trang bị có Sao Pha Lê (không phải đồ Kích Hoạt) để phân rã!\n"
+                    + "|7|(Mẹo: Bấm 'Chọn TẤT CẢ' hoặc 'Đổi sang Trang kế' bên dưới để chọn nhanh không lo trùng tên)",
+                    "Đóng", "Chọn TẤT CẢ\nở Trang này", "Đổi sang\nTrang kế");
             return;
         }
 
@@ -85,7 +87,11 @@ public class PhanRaDoSao {
         npcSay.append("|2|Chi phí: Miễn phí (Tỉ lệ thành công 100%)");
 
         CombineService.gI().baHatMit.createOtherMenu(player, ConstNpc.MENU_START_COMBINE,
-                npcSay.toString(), "Phân rã\nngay", "Từ chối");
+                npcSay.toString(),
+                "Phân rã\nngay (" + player.combineNew.itemsCombine.size() + " món)",
+                "Chọn TẤT CẢ\nở Trang này",
+                "Đổi sang\nTrang kế",
+                "Từ chối");
     }
 
     public static void thucHienPhanRa(Player player) {
@@ -210,6 +216,13 @@ public class PhanRaDoSao {
             msg.append(", ").append(totalCapsuleKH).append(" Capsule Kích Hoạt");
         }
         Service.gI().sendThongBao(player, msg.toString());
+    }
+
+    public static boolean isValidItem(Item item) {
+        return item != null && item.isNotNullItem() && item.quantity >= 1
+                && CombineSystem.isTrangBiPhaLeHoa(item)
+                && !DapDoKichHoat.isItemKichHoat(item)
+                && getStar(item) >= 1;
     }
 
     public static int getStar(Item item) {

@@ -87,16 +87,36 @@ public class CombineService {
         if (player.combineNew == null) {
             return;
         }
+        java.util.List<Item> prevItems = new java.util.ArrayList<>(player.combineNew.itemsCombine);
+        java.util.Map<Integer, Integer> prevCountByTemplate = new java.util.HashMap<>();
+        for (Item prev : prevItems) {
+            if (prev != null && prev.isNotNullItem() && prev.template != null) {
+                prevCountByTemplate.merge((int) prev.template.id, 1, Integer::sum);
+            }
+        }
+
         player.combineNew.clearItemCombine();
         boolean hadDuplicateOrInvalid = false;
+        boolean clickedTabSwitch = false;
+
         if (index != null && index.length > 0) {
             java.util.Set<Integer> addedBagIndices = new java.util.HashSet<>();
             for (int i = 0; i < index.length; i++) {
-                int bagIndex = player.inventory.resolveBagIndex(index[i]);
+                int clientIdx = index[i];
+                if (!player.inventory.displayedBagIndices.isEmpty() && clientIdx >= player.inventory.displayedBagIndices.size()) {
+                    clickedTabSwitch = true;
+                    hadDuplicateOrInvalid = true;
+                    continue;
+                }
+                int bagIndex = player.inventory.resolveBagIndex(clientIdx);
                 if (bagIndex >= 0 && bagIndex < player.inventory.itemsBag.size()) {
                     Item item = player.inventory.itemsBag.get(bagIndex);
-                    if (item != null && item.isNotNullItem() && item.quantity > 0
-                            && item.template != null && item.template.id != 1998) {
+                    if (item != null && item.isNotNullItem() && item.template != null && item.template.id == 1998) {
+                        clickedTabSwitch = true;
+                        hadDuplicateOrInvalid = true;
+                        continue;
+                    }
+                    if (item != null && item.isNotNullItem() && item.quantity > 0 && item.template != null) {
                         boolean alreadyAddedRef = false;
                         for (Item existing : player.combineNew.itemsCombine) {
                             if (existing == item) {
@@ -113,10 +133,21 @@ public class CombineService {
                         hadDuplicateOrInvalid = true;
                     }
                 } else {
+                    clickedTabSwitch = true;
                     hadDuplicateOrInvalid = true;
                 }
             }
         }
+
+        if (clickedTabSwitch) {
+            switchBagTabInCombine(player);
+            return;
+        }
+
+        if (autoExpandSameTemplateItems(player, prevCountByTemplate)) {
+            hadDuplicateOrInvalid = true;
+        }
+
         if (hadDuplicateOrInvalid) {
             reOpenItemCombine(player);
         }
@@ -314,7 +345,21 @@ public class CombineService {
     }
     
     public void startCombineVip(Player player, int n) {
-        switch (player.combineNew.typeCombine) {
+        if (player == null || player.combineNew == null) {
+            return;
+        }
+        int type = player.combineNew.typeCombine;
+        if (type == PHAN_RA_TRANG_BI_KH || type == PHAN_RA_DO_SAO || type == PHAN_RA_DO_THAN_LINH) {
+            if (n == 10) {
+                selectAllValidItemsInCurrentTab(player);
+                openTabCombine(player, type, true);
+                return;
+            } else if (n == 100) {
+                switchBagTabInCombine(player);
+                return;
+            }
+        }
+        switch (type) {
             case PHA_LE_HOA_TRANG_BI:
                 PhaLeHoaTrangBi.phaLeHoa(player, n);
                 break;
@@ -335,6 +380,135 @@ public class CombineService {
 
     }
 
+    private boolean isItemValidForBulkCombine(int type, Item item) {
+        if (item == null || !item.isNotNullItem() || item.quantity <= 0 || item.template == null || item.template.id == 1998) {
+            return false;
+        }
+        return switch (type) {
+            case PHAN_RA_TRANG_BI_KH -> PhanRaTrangBi.isValidItem(item);
+            case PHAN_RA_DO_SAO -> PhanRaDoSao.isValidItem(item);
+            case PHAN_RA_DO_THAN_LINH -> item.isDTL();
+            case DAP_DO_KICH_HOAT -> DapDoKichHoat.isItemKichHoat(item);
+            default -> false;
+        };
+    }
+
+    private boolean autoExpandSameTemplateItems(Player player, java.util.Map<Integer, Integer> prevCountByTemplate) {
+        int type = player.combineNew.typeCombine;
+        if (type != PHAN_RA_TRANG_BI_KH && type != PHAN_RA_DO_SAO
+                && type != PHAN_RA_DO_THAN_LINH && type != DAP_DO_KICH_HOAT) {
+            return false;
+        }
+        java.util.List<Item> currentList = player.combineNew.itemsCombine;
+        if (currentList.isEmpty()) {
+            return false;
+        }
+        java.util.Map<Integer, Integer> curCountByTemplate = new java.util.HashMap<>();
+        for (Item it : currentList) {
+            if (it != null && it.isNotNullItem() && it.template != null) {
+                curCountByTemplate.merge((int) it.template.id, 1, Integer::sum);
+            }
+        }
+
+        boolean addedAny = false;
+        int limit = player.inventory.getActiveTabSize();
+        for (java.util.Map.Entry<Integer, Integer> entry : curCountByTemplate.entrySet()) {
+            int tempId = entry.getKey();
+            int curCount = entry.getValue();
+            int prevCount = prevCountByTemplate.getOrDefault(tempId, 0);
+            // Nếu người chơi vừa bỏ bớt 1 món cùng loại ra thì tôn trọng lựa chọn bỏ chọn của họ
+            if (prevCount > curCount) {
+                continue;
+            }
+            for (int i = 0; i < limit && i < player.inventory.itemsBag.size(); i++) {
+                Item candidate = player.inventory.itemsBag.get(i);
+                if (candidate == null || !candidate.isNotNullItem() || candidate.template == null
+                        || candidate.template.id != tempId) {
+                    continue;
+                }
+                if (!isItemValidForBulkCombine(type, candidate)) {
+                    continue;
+                }
+                boolean exists = false;
+                for (Item ex : currentList) {
+                    if (ex == candidate) {
+                        exists = true;
+                        break;
+                    }
+                }
+                if (!exists) {
+                    if (type == DAP_DO_KICH_HOAT) {
+                        int skhCount = 0;
+                        for (Item ex : currentList) {
+                            if (DapDoKichHoat.isItemKichHoat(ex)) {
+                                skhCount++;
+                            }
+                        }
+                        if (skhCount >= 3 || currentList.size() >= 4) {
+                            break;
+                        }
+                    }
+                    currentList.add(candidate);
+                    addedAny = true;
+                }
+            }
+        }
+        return addedAny;
+    }
+
+    public int countValidBulkItemsInCurrentTab(Player player) {
+        if (player == null || player.combineNew == null || player.inventory == null) {
+            return 0;
+        }
+        int type = player.combineNew.typeCombine;
+        int count = 0;
+        int limit = player.inventory.getActiveTabSize();
+        for (int i = 0; i < limit && i < player.inventory.itemsBag.size(); i++) {
+            Item it = player.inventory.itemsBag.get(i);
+            if (isItemValidForBulkCombine(type, it)) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    public void selectAllValidItemsInCurrentTab(Player player) {
+        if (player == null || player.combineNew == null || player.inventory == null) {
+            return;
+        }
+        int type = player.combineNew.typeCombine;
+        int limit = player.inventory.getActiveTabSize();
+        for (int i = 0; i < limit && i < player.inventory.itemsBag.size(); i++) {
+            Item it = player.inventory.itemsBag.get(i);
+            if (!isItemValidForBulkCombine(type, it)) {
+                continue;
+            }
+            boolean exists = false;
+            for (Item ex : player.combineNew.itemsCombine) {
+                if (ex == it) {
+                    exists = true;
+                    break;
+                }
+            }
+            if (!exists) {
+                player.combineNew.itemsCombine.add(it);
+            }
+        }
+    }
+
+    public void switchBagTabInCombine(Player player) {
+        if (player == null || player.inventory == null || player.combineNew == null) {
+            return;
+        }
+        int totalTabs = player.inventory.getTotalBagTabs();
+        int nextTab = (player.inventory.currentBagTab + 1) % Math.max(1, totalTabs);
+        player.inventory.switchBagTab(nextTab);
+        InventoryService.gI().sendItemBags(player);
+        openTabCombine(player, player.combineNew.typeCombine, true);
+        nro.models.services.Service.gI().sendThongBao(player,
+                "Đã chuyển sang Hành trang Trang " + (nextTab + 1) + "/" + totalTabs + " để tiếp tục chọn đồ!");
+    }
+
     /**
      * Mở tab đập đồ
      *
@@ -342,7 +516,15 @@ public class CombineService {
      * @param type kiểu đập đồ
      */
     public void openTabCombine(Player player, int type) {
-        player.combineNew.setTypeCombine(type);
+        openTabCombine(player, type, false);
+    }
+
+    public void openTabCombine(Player player, int type, boolean keepExistingSelection) {
+        if (!keepExistingSelection) {
+            player.combineNew.setTypeCombine(type);
+        } else {
+            player.combineNew.typeCombine = type;
+        }
         Message msg = null;
         try {
             msg = new Message(-81);
@@ -359,6 +541,14 @@ public class CombineService {
             if (msg != null) {
                 msg.cleanup();
             }
+        }
+        // Tự động chọn sẵn tất cả Đồ Kích Hoạt ở Trang hiện tại khi mở Phân rã Đồ Kích Hoạt
+        // để tránh lỗi client chặn chọn trùng tên ("Đã có vật phẩm này")
+        if (type == PHAN_RA_TRANG_BI_KH && !keepExistingSelection) {
+            selectAllValidItemsInCurrentTab(player);
+        }
+        if (!player.combineNew.itemsCombine.isEmpty()) {
+            reOpenItemCombine(player);
         }
     }
 

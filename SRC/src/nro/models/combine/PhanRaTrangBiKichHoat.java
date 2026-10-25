@@ -32,8 +32,10 @@ public class PhanRaTrangBiKichHoat {
 
         public static void showInfoCombine(Player player) {
             if (player.combineNew.itemsCombine.isEmpty()) {
-                CombineService.gI().baHatMit.createOtherMenu(player, ConstNpc.IGNORE_MENU,
-                        "Hãy chọn ít nhất 1 món Trang bị Kích Hoạt để phân rã!", "Đóng");
+                CombineService.gI().baHatMit.createOtherMenu(player, ConstNpc.MENU_START_COMBINE,
+                        "Hãy chọn ít nhất 1 món Trang bị Kích Hoạt để phân rã!\n"
+                        + "|7|(Mẹo: Bấm 'Chọn TẤT CẢ' hoặc 'Đổi sang Trang kế' bên dưới để chọn nhanh không lo trùng tên)",
+                        "Đóng", "Chọn TẤT CẢ\nở Trang này", "Đổi sang\nTrang kế");
                 return;
             }
 
@@ -90,7 +92,11 @@ public class PhanRaTrangBiKichHoat {
             npcSay.append("|2|Chi phí: Miễn phí (Tỉ lệ thành công 100%)");
 
             CombineService.gI().baHatMit.createOtherMenu(player, ConstNpc.MENU_START_COMBINE,
-                    npcSay.toString(), "Phân rã\nngay", "Từ chối");
+                    npcSay.toString(),
+                    "Phân rã\nngay (" + player.combineNew.itemsCombine.size() + " món)",
+                    "Chọn TẤT CẢ\nở Trang này",
+                    "Đổi sang\nTrang kế",
+                    "Từ chối");
         }
 
         public static void ThucHienPhanRa(Player player) {
@@ -246,7 +252,7 @@ public class PhanRaTrangBiKichHoat {
             return bestId;
         }
 
-        private static boolean isValidItem(Item item) {
+        public static boolean isValidItem(Item item) {
             if (item == null || !item.isNotNullItem() || item.template == null || item.itemOptions == null) {
                 return false;
             }

@@ -22,8 +22,10 @@ public class TaiCheDoThan {
 
     public static void showInfoCombine(Player player) {
         if (player.combineNew.itemsCombine.isEmpty()) {
-            CombineService.gI().baHatMit.createOtherMenu(player, ConstNpc.IGNORE_MENU,
-                    "Hãy chọn ít nhất 1 món Đồ Thần Linh để tái chế!", "Đóng");
+            CombineService.gI().baHatMit.createOtherMenu(player, ConstNpc.MENU_START_COMBINE,
+                    "Hãy chọn ít nhất 1 món Đồ Thần Linh để tái chế!\n"
+                    + "|7|(Mẹo: Bấm 'Chọn TẤT CẢ' hoặc 'Đổi sang Trang kế' bên dưới để chọn nhanh không lo trùng tên)",
+                    "Đóng", "Chọn TẤT CẢ\nở Trang này", "Đổi sang\nTrang kế");
             return;
         }
 
@@ -57,7 +59,11 @@ public class TaiCheDoThan {
         npcSay.append("|2|Chi phí: Miễn phí (Tỉ lệ thành công 100%)");
 
         CombineService.gI().baHatMit.createOtherMenu(player, ConstNpc.MENU_START_COMBINE,
-                npcSay.toString(), "Tái chế\nngay", "Từ chối");
+                npcSay.toString(),
+                "Tái chế\nngay (" + countDTL + " món)",
+                "Chọn TẤT CẢ\nở Trang này",
+                "Đổi sang\nTrang kế",
+                "Từ chối");
     }
 
     public static void thucHienTaiChe(Player player) {

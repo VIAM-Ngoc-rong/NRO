@@ -168,26 +168,16 @@ public class Inventory {
         }
         int id = item.template.id;
         int type = item.template.type;
-        if (type == 6 || type == 7 || type == 12 || type == 14 || type == 27 || type == 29 || type == 30 || type == 33) {
+        if (type == 6) { // Đậu thần
             return true;
         }
         return switch (id) {
-            case 193, 194, // Capsule kì bí, Capsule VIP
+            case 193, 194, // Gói 10 viên Capsule, Capsule đặc biệt (VIP)
                  454, 921, 1819, // Bông tai Porata cấp 1, 2, 3
                  521, // Tự động luyện tập
                  992, // Nhẫn thời không
                  457, // Thỏi vàng
-                 361, // Gậy phép / Dò ngọc Namek
-                 379, 380, // Máy dò & Viên Capsule kì bí
-                 381, 382, 383, 384, 385, // Cuồng nộ, Bổ huyết, Bổ khí, Giáp xên, Ẩn danh
-                 1099, 1100, 1101, 1102, 1103, // Item bổ trợ cấp 2
-                 1150, 1151, 1152, 1153, 1154, // Item bổ trợ cấp 2
-                 590, // Bí kíp
-                 611, // Bản đồ kho báu
-                 663, 664, 665, 666, 667, // Thức ăn hủy diệt
-                 933, 934, 935, 987, // Mảnh vỡ/hồn bông tai, Đá xanh lam, Đá bảo vệ
-                 1229, 1281, 1282, 1283, // Bí kíp / sách nâng cấp
-                 1832, 1833, 2077 // Ngọc rồng / Triệu hồi
+                 361, 379 // Gậy phép / Máy dò Capsule kì bí
                  -> true;
             default -> false;
         };

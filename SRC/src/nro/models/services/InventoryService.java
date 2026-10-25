@@ -799,10 +799,37 @@ public class InventoryService {
             int tabSize = player.inventory.getActiveTabSize();
             List<Integer> displayIndices = player.inventory.displayedBagIndices;
             displayIndices.clear();
+            Set<Integer> presentTemplateIds = new HashSet<>();
             for (int i = 0; i < tabSize && i < player.inventory.itemsBag.size(); i++) {
                 Item item = player.inventory.itemsBag.get(i);
                 if (item != null && item.isNotNullItem()) {
                     displayIndices.add(i);
+                    if (item.template != null) {
+                        presentTemplateIds.add((int) item.template.id);
+                    }
+                }
+            }
+            // Giữ các vật phẩm đã chọn trong Bà Hạt Mít khi chuyển sang Tab khác để gom đồ xuyên Tab
+            if (player.combineNew != null && player.combineNew.itemsCombine != null && !player.combineNew.itemsCombine.isEmpty()) {
+                for (Item combItem : player.combineNew.itemsCombine) {
+                    if (combItem != null && combItem.isNotNullItem()) {
+                        for (int i = tabSize; i < player.inventory.itemsBag.size() && displayIndices.size() < 118; i++) {
+                            if (player.inventory.itemsBag.get(i) == combItem && !displayIndices.contains(i)) {
+                                displayIndices.add(i);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            // Luôn hiển thị các vật phẩm tiện ích thiết yếu (Capsule, Bông tai Porata, Đậu thần, TĐLT...) ở mọi Tab
+            for (int i = tabSize; i < player.inventory.itemsBag.size() && displayIndices.size() < 118; i++) {
+                Item item = player.inventory.itemsBag.get(i);
+                if (player.inventory.isLinkedUtilityItem(item)
+                        && !displayIndices.contains(i)
+                        && !presentTemplateIds.contains((int) item.template.id)) {
+                    displayIndices.add(i);
+                    presentTemplateIds.add((int) item.template.id);
                 }
             }
             int nonNullCount = displayIndices.size();
