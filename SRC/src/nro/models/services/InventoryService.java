@@ -818,11 +818,42 @@ public class InventoryService {
             if (bankOffset == 0) {
                 player.inventory.currentBagSubPage = 0;
             }
+            if (!allNonNull.isEmpty() && bankOffset + activeTab * Inventory.BAG_VIEW_SIZE >= allNonNull.size()) {
+                int remainInBank = Math.max(1, allNonNull.size() - bankOffset);
+                activeTab = Math.max(0, Math.min(Inventory.NUM_QUICK_TABS - 1, (remainInBank - 1) / Inventory.BAG_VIEW_SIZE));
+                player.inventory.currentBagTab = activeTab;
+            }
             int tabStart = bankOffset + activeTab * Inventory.BAG_VIEW_SIZE;
             int tabEnd = Math.min(allNonNull.size(), tabStart + Inventory.BAG_VIEW_SIZE);
 
-            for (int i = tabStart; i < tabEnd && displayIndices.size() < 126; i++) {
+            // Liên kết các vật phẩm tiện ích / phím tắt thiết yếu (Đậu thần, Bông tai, Capsule, TĐLT, Item bổ trợ...)
+            // từ Trang 1 xuống cuối Trang 2..5 để client luôn dùng được khi đang mở Trang 2..5
+            List<Integer> linkedUtilityIndices = new ArrayList<>();
+            if (tabStart > 0) {
+                Set<Short> presentTempIds = new HashSet<>();
+                for (int i = tabStart; i < tabEnd; i++) {
+                    Item it = player.inventory.itemsBag.get(allNonNull.get(i));
+                    if (it != null && it.isNotNullItem() && it.template != null) {
+                        presentTempIds.add(it.template.id);
+                    }
+                }
+                for (int i = 0; i < tabStart && i < allNonNull.size() && linkedUtilityIndices.size() < 24; i++) {
+                    int bagIdx = allNonNull.get(i);
+                    Item it = player.inventory.itemsBag.get(bagIdx);
+                    if (player.inventory.isLinkedUtilityItem(it) && presentTempIds.add(it.template.id)) {
+                        linkedUtilityIndices.add(bagIdx);
+                    }
+                }
+            }
+
+            int maxCurrentTabEntries = Math.max(96, 126 - linkedUtilityIndices.size());
+            for (int i = tabStart; i < tabEnd && displayIndices.size() < maxCurrentTabEntries; i++) {
                 displayIndices.add(allNonNull.get(i));
+            }
+            for (int utilBagIdx : linkedUtilityIndices) {
+                if (displayIndices.size() < 126 && !displayIndices.contains(utilBagIdx)) {
+                    displayIndices.add(utilBagIdx);
+                }
             }
 
             // Đảm bảo mọi vật phẩm đang chọn trong Bà Hạt Mít luôn nằm trong danh sách hiển thị (< 126)
@@ -1173,16 +1204,13 @@ public class InventoryService {
                 for (int i = 0; i < addSlots; i++) {
                     player.inventory.itemsBag.add(ItemService.gI().createItemNull());
                 }
-                int targetTab = Math.max(0, player.inventory.getTotalBagTabs() - 1);
-                player.inventory.switchBagTab(targetTab);
                 sendItemBags(player);
                 Service.gI().sendThongBaoOK(player, "Hành trang của bạn đã được mở rộng thêm " + addSlots + " ô!\nTổng: "
-                        + player.inventory.itemsBag.size() + "/" + Inventory.MAX_ITEMS_BAG + " ô (Đang mở Tab "
-                        + (player.inventory.currentBagTab + 1) + "/" + player.inventory.getTotalBagTabs()
-                        + " - Gõ 'tab 1'..'tab " + player.inventory.getTotalBagTabs() + "' để chuyển Tab)");
+                        + player.inventory.itemsBag.size() + "/" + Inventory.MAX_ITEMS_BAG + " ô (Đang mở Trang "
+                        + (player.inventory.currentBagTab + 1) + "/" + player.inventory.getTotalBagTabs() + ")");
                 return true;
             } else {
-                Service.gI().sendThongBaoOK(player, "Hành trang của bạn đã đạt tối đa (" + Inventory.MAX_ITEMS_BAG + " ô / 5 Tab)");
+                Service.gI().sendThongBaoOK(player, "Hành trang của bạn đã đạt tối đa (" + Inventory.MAX_ITEMS_BAG + " ô / 5 Trang)");
                 return false;
             }
         } else if (item.template.id == 518) {
@@ -1352,14 +1380,17 @@ public class InventoryService {
             return -1;
         }
         List<Integer> displayed = pl.inventory.displayedBagIndices;
-        for (int i = 0; i < displayed.size(); i++) {
-            int idx = displayed.get(i);
-            if (idx >= 0 && idx < pl.inventory.itemsBag.size()) {
-                Item item = pl.inventory.itemsBag.get(idx);
-                if (item != null && item.isNotNullItem() && it.equals(item)) {
-                    return (byte) i;
+        if (!displayed.isEmpty()) {
+            for (int i = 0; i < displayed.size(); i++) {
+                int idx = displayed.get(i);
+                if (idx >= 0 && idx < pl.inventory.itemsBag.size()) {
+                    Item item = pl.inventory.itemsBag.get(idx);
+                    if (item != null && item.isNotNullItem() && it.equals(item)) {
+                        return (byte) i;
+                    }
                 }
             }
+            return -1;
         }
         int limit = pl.inventory.getActiveTabSize();
         for (int i = 0; i < limit && i < pl.inventory.itemsBag.size(); ++i) {

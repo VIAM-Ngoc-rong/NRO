@@ -380,12 +380,17 @@ public class ConsignShopService {
 
     public void KiGui(Player pl, int id, int money, byte moneyType, int quantity) {
         try {
+            int bagIndex = pl.inventory.resolveBagIndex(id);
+            if (bagIndex < 0 || bagIndex >= pl.inventory.itemsBag.size()) {
+                Service.gI().sendThongBao(pl, "Không thể thực hiện");
+                return;
+            }
             if (!SubThoiVang(pl, 1)) {
                 Service.gI().sendThongBao(pl, "Bạn cần có ít nhất 1 thỏi vàng để làm phí đăng bán");
                 return;
             }
 
-            Item it = ItemService.gI().copyItem(pl.inventory.itemsBag.get(id));
+            Item it = ItemService.gI().copyItem(pl.inventory.itemsBag.get(bagIndex));
             for (Item.ItemOption daubuoi : it.itemOptions) {
                 if (daubuoi.optionTemplate.id == 30) {
                     Service.gI().sendThongBao(pl, "Vật phẩm không thể kí gửi");
@@ -408,7 +413,7 @@ public class ConsignShopService {
                     if (money > 100000 && money < 0) {
                         Service.gI().sendThongBao(pl, "không thể ký gửi quá 100000 thỏi vàng");
                     } else {
-                        InventoryService.gI().subQuantityItemsBag(pl, pl.inventory.itemsBag.get(id), quantity);
+                        InventoryService.gI().subQuantityItemsBag(pl, pl.inventory.itemsBag.get(bagIndex), quantity);
                         ConsignShopManager.gI().listItem.add(new ConsignItem(getMaxId() + 1, it.template.id, (int) pl.id, getTabKiGui(it), money, -1, quantity, (byte) 0, it.itemOptions, false));
                         InventoryService.gI().sendItemBags(pl);
                         openShopKyGui(pl);
@@ -421,7 +426,7 @@ public class ConsignShopService {
                     if (money > 1000000 && money < 0) {
                         Service.gI().sendThongBao(pl, "không thể ký gửi quá 1000000 ngọc");
                     } else {
-                        InventoryService.gI().subQuantityItemsBag(pl, pl.inventory.itemsBag.get(id), quantity);
+                        InventoryService.gI().subQuantityItemsBag(pl, pl.inventory.itemsBag.get(bagIndex), quantity);
                         ConsignShopManager.gI().listItem.add(new ConsignItem(getMaxId() + 1, it.template.id, (int) pl.id, getTabKiGui(it), -1, money, quantity, (byte) 0, it.itemOptions, false));
                         InventoryService.gI().sendItemBags(pl);
                         openShopKyGui(pl);

@@ -97,6 +97,20 @@ public class UseItem {
         int bagIndex = player.inventory.resolveBagIndex(index);
         if (bagIndex <= -101 && bagIndex >= -105) {
             int targetTab = -101 - bagIndex;
+            int usedSlots = player.inventory.getUsedSlotsInBag();
+            int maxNonEmptyTab = usedSlots <= 0 ? 0
+                    : Math.min(nro.models.player.Inventory.NUM_QUICK_TABS - 1,
+                            (usedSlots - 1) / nro.models.player.Inventory.BAG_VIEW_SIZE);
+            if (targetTab > maxNonEmptyTab) {
+                player.inventory.switchBagTab(maxNonEmptyTab);
+                InventoryService.gI().sendItemBags(player);
+                InventoryService.gI().sendItemBody(player);
+                Service.gI().sendThongBao(player, "Trang " + (targetTab + 1) + " hiện chưa có vật phẩm (Đang có "
+                        + usedSlots + " món ở Trang 1" + (maxNonEmptyTab > 0 ? "-" + (maxNonEmptyTab + 1) : "")
+                        + ", từ món thứ " + (targetTab * nro.models.player.Inventory.BAG_VIEW_SIZE + 1)
+                        + " mới sang Trang " + (targetTab + 1) + ")!");
+                return true;
+            }
             player.inventory.switchBagTab(targetTab);
             InventoryService.gI().sendItemBags(player);
             InventoryService.gI().sendItemBody(player);
@@ -108,7 +122,7 @@ public class UseItem {
             int sSlot = bankOffset + targetTab * nro.models.player.Inventory.BAG_VIEW_SIZE + 1;
             int eSlot = bankOffset + (targetTab + 1) * nro.models.player.Inventory.BAG_VIEW_SIZE;
             Service.gI().sendThongBao(player, "Đã chuyển sang Trang " + (targetTab + 1) + "/5 (Ô "
-                    + sSlot + "-" + eSlot + " | Bể chung " + player.inventory.getUsedSlotsInBag() + "/"
+                    + sSlot + "-" + eSlot + " | Bể chung " + usedSlots + "/"
                     + player.inventory.itemsBag.size() + " ô)!");
             return true;
         }
@@ -148,7 +162,11 @@ public class UseItem {
         if (player == null || player.inventory == null) {
             return;
         }
-        int nextTab = (player.inventory.currentBagTab + 1) % nro.models.player.Inventory.NUM_QUICK_TABS;
+        int usedSlots = player.inventory.getUsedSlotsInBag();
+        int maxNonEmptyTab = usedSlots <= 0 ? 0
+                : Math.min(nro.models.player.Inventory.NUM_QUICK_TABS - 1,
+                        (usedSlots - 1) / nro.models.player.Inventory.BAG_VIEW_SIZE);
+        int nextTab = (maxNonEmptyTab <= 0) ? 0 : ((player.inventory.currentBagTab + 1) % (maxNonEmptyTab + 1));
         player.inventory.switchBagTab(nextTab);
         InventoryService.gI().sendItemBags(player);
         InventoryService.gI().sendItemBody(player);
@@ -302,6 +320,20 @@ public class UseItem {
                                     || (baseBtn > 0 && iditem >= baseBtn && iditem < baseBtn + 5)) {
                                 int targetTab = (iditem >= fixedBtn && iditem < fixedBtn + 5) ? (iditem - fixedBtn)
                                         : (iditem >= 24990 && iditem <= 24994) ? (iditem - 24990) : (iditem - baseBtn);
+                                int usedSlots = player.inventory.getUsedSlotsInBag();
+                                int maxNonEmptyTab = usedSlots <= 0 ? 0
+                                        : Math.min(nro.models.player.Inventory.NUM_QUICK_TABS - 1,
+                                                (usedSlots - 1) / nro.models.player.Inventory.BAG_VIEW_SIZE);
+                                if (targetTab > maxNonEmptyTab) {
+                                    player.inventory.switchBagTab(maxNonEmptyTab);
+                                    InventoryService.gI().sendItemBags(player);
+                                    InventoryService.gI().sendItemBody(player);
+                                    Service.gI().sendThongBao(player, "Trang " + (targetTab + 1) + " hiện chưa có vật phẩm (Đang có "
+                                            + usedSlots + " món ở Trang 1" + (maxNonEmptyTab > 0 ? "-" + (maxNonEmptyTab + 1) : "")
+                                            + ", từ món thứ " + (targetTab * nro.models.player.Inventory.BAG_VIEW_SIZE + 1)
+                                            + " mới sang Trang " + (targetTab + 1) + ")!");
+                                    return;
+                                }
                                 player.inventory.switchBagTab(targetTab);
                                 InventoryService.gI().sendItemBags(player);
                                 InventoryService.gI().sendItemBody(player);
@@ -315,7 +347,8 @@ public class UseItem {
                                 return;
                             }
                             Item item = finditem(player, iditem);
-                            UseItem.gI().useItem(player, item, index);
+                            int realBagIndex = item != null ? player.inventory.itemsBag.indexOf(item) : -1;
+                            UseItem.gI().useItem(player, item, realBagIndex);
                         }
                     }
                 }

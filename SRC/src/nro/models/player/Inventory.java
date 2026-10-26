@@ -154,7 +154,8 @@ public class Inventory {
         }
         int id = item.template.id;
         int type = item.template.type;
-        if (type == 6) { // Đậu thần
+        if (type == 6 || type == 29 || type == 12 || type == 7 || type == 33) {
+            // Đậu thần (6), Vật phẩm bổ trợ/thức ăn/item time (29), Ngọc rồng (12), Sách học skill (7), Thẻ Radar (33)
             return true;
         }
         return switch (id) {
@@ -163,7 +164,16 @@ public class Inventory {
                  521, // Tự động luyện tập
                  992, // Nhẫn thời không
                  457, // Thỏi vàng
-                 361, 379 // Gậy phép / Máy dò Capsule kì bí
+                 361, 379, 1532, // Gậy phép, Máy dò Capsule kì bí, Máy dò đồ
+                 380, // Capsule kì bí
+                 381, 382, 383, 384, 385, // Cuồng nộ, Bổ huyết, Bổ khí, Giáp xên, Ẩn danh
+                 1150, 1151, 1152, 1153, 1154, // Cuồng nộ 2, Bổ khí 2, Bổ huyết 2, Giáp xên 2, Ẩn danh 2
+                 663, 664, 665, 666, 667, 880, 881, 882, // Thức ăn
+                 1614, 1615, 1616, 1628, 1635, 638, 1233, 579, 1045, 764, // Nước mía, Bùa Santa, Cỏ 4 lá, Commeson, Nồi cơm điện, Đuôi khỉ, Khẩu trang
+                 211, 212, // Nho tím, Nho xanh
+                 570, // Rương gỗ
+                 401, 402, 403, 404, 759, 1758, 1759, 1760, 1795, // Đổi đệ tử, Sách kỹ năng đệ tử
+                 1652, 1655, 1787 // Loa thế giới, Capsule kích hoạt, Map riêng tư
                  -> true;
             default -> false;
         };

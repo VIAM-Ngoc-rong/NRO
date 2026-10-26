@@ -803,6 +803,19 @@ public class NpcFactory {
                         int totalTabs = nro.models.player.Inventory.NUM_QUICK_TABS;
                         boolean canExpand = player.inventory.itemsBag.size() < nro.models.player.Inventory.MAX_ITEMS_BAG;
                         if (select >= 0 && select < totalTabs) {
+                            int usedSlots = player.inventory.getUsedSlotsInBag();
+                            int maxNonEmptyTab = usedSlots <= 0 ? 0
+                                    : Math.min(totalTabs - 1, (usedSlots - 1) / nro.models.player.Inventory.BAG_VIEW_SIZE);
+                            if (select > maxNonEmptyTab) {
+                                player.inventory.switchBagTab(maxNonEmptyTab);
+                                InventoryService.gI().sendItemBags(player);
+                                InventoryService.gI().sendItemBody(player);
+                                Service.gI().sendThongBao(player, "Trang " + (select + 1) + " hiện chưa có vật phẩm (Đang có "
+                                        + usedSlots + " món ở Trang 1" + (maxNonEmptyTab > 0 ? "-" + (maxNonEmptyTab + 1) : "")
+                                        + ", từ món thứ " + (select * nro.models.player.Inventory.BAG_VIEW_SIZE + 1)
+                                        + " mới sang Trang " + (select + 1) + ")!");
+                                return;
+                            }
                             player.inventory.switchBagTab(select);
                             InventoryService.gI().sendItemBags(player);
                             InventoryService.gI().sendItemBody(player);
