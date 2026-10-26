@@ -829,7 +829,7 @@ public class NpcFactory {
                                             player.mapBeforeCapsule = player.zone;
                                         }
                                         player.changeMapVIP = true;
-                                        ChangeMapService.gI().changeMapBySpaceShip(player, targetMapId, 0, -1);
+                                        ChangeMapService.gI().changeMapBySpaceShip(player, zone0, -1);
                                         Service.gI().sendThongBao(player, "Đã dịch chuyển tới " + boss.zone.map.mapName + " (Khu 0). Hãy dò từ Khu 1 trở đi để tìm " + boss.name + "!");
                                     } else {
                                         Service.gI().sendThongBao(player, "Không thể dịch chuyển đến " + boss.zone.map.mapName + "!");

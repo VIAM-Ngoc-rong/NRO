@@ -2074,13 +2074,12 @@ public class Player implements Runnable {
         this.targetAutoBossId = boss.id;
         this.targetAutoBossName = boss.data[lv].getName();
         this.autoHuntScanZone = 0;
-        this.lastTimeAutoHuntAction = 0;
+        this.lastTimeAutoHuntAction = System.currentTimeMillis() - 1800L;
         this.lastTimeAutoHuntAttack = 0;
         this.lastTimeAutoHuntWaitNotify = System.currentTimeMillis();
         this.isAutoBuffPea = true;
         Service.gI().sendThongBao(this, "Đã BẬT Tự Động Săn Boss: " + this.targetAutoBossName
                 + "! Hệ thống sẽ tự đến map, dò từng khu và bật Tàn Sát khi Boss xuất hiện.");
-        this.updateAutoHuntBoss();
     }
 
     public void stopAutoHuntBoss() {
@@ -2139,10 +2138,6 @@ public class Player implements Runnable {
             if (it.playerId == this.id || it.playerId == -1) {
                 boolean isCurrency = it.itemTemplate.type == 9 || it.itemTemplate.type == 10 || it.itemTemplate.type == 34;
                 if (isCurrency || InventoryService.gI().getCountEmptyBag(this) > 0) {
-                    if (Util.getDistance(this.location.x, this.location.y, it.x, it.y) > 40) {
-                        Service.gI().resetPoint(this, it.x, it.y);
-                        PlayerService.gI().playerMove(this, it.x, it.y);
-                    }
                     nro.models.map.service.ItemMapService.gI().pickItem(this, it.itemMapId, true);
                 }
             }
@@ -2218,15 +2213,17 @@ public class Player implements Runnable {
             }
 
             int targetMapId = targetBoss.zone.map.mapId;
-            // B1: Nếu đang ở khác bản đồ -> Bay tới Khu 0 của bản đồ Boss
+            // B1: Nếu đang ở khác bản đồ -> Dịch chuyển xuống mặt đất tại Khu 0 của bản đồ Boss
             if (this.zone.map.mapId != targetMapId) {
-                if (Util.canDoWithTime(this.lastTimeAutoHuntAction, 2000)) {
+                if (Util.canDoWithTime(this.lastTimeAutoHuntAction, 2200)) {
                     this.lastTimeAutoHuntAction = System.currentTimeMillis();
                     this.autoHuntScanZone = 0;
                     Zone zone0 = MapService.gI().getZoneByMapIDAndZoneID(targetMapId, 0);
                     if (zone0 != null) {
+                        int targetX = (targetBoss.location.x > 50 && targetBoss.location.x < zone0.map.mapWidth - 50)
+                                ? targetBoss.location.x : 200;
                         this.changeMapVIP = true;
-                        ChangeMapService.gI().changeMapBySpaceShip(this, targetMapId, 0, -1);
+                        ChangeMapService.gI().changeMapInYard(this, zone0, targetX);
                         Service.gI().sendThongBao(this, "[Tự Săn Boss] Đã đến " + targetBoss.zone.map.mapName + " (Khu 0), bắt đầu dò khu tìm " + targetBoss.name + "...");
                     }
                 }
@@ -2235,7 +2232,7 @@ public class Player implements Runnable {
 
             // B2: Đã ở đúng bản đồ nhưng chưa đúng Khu -> Tự động dò lần lượt từng Khu (0 -> 1 -> 2...)
             if (this.zone != targetBoss.zone) {
-                if (Util.canDoWithTime(this.lastTimeAutoHuntAction, 1600)) {
+                if (Util.canDoWithTime(this.lastTimeAutoHuntAction, 2000)) {
                     this.lastTimeAutoHuntAction = System.currentTimeMillis();
                     int numZones = this.zone.map.zones.size();
                     if (numZones > 1) {
@@ -2245,7 +2242,11 @@ public class Player implements Runnable {
                             Zone candZone = this.zone.map.zones.get(candZoneId);
                             if (candZone != null && !candZone.isFullPlayer()) {
                                 this.autoHuntScanZone = candZoneId;
-                                ChangeMapService.gI().changeZone(this, candZoneId);
+                                int targetX = (targetBoss.location.x > 50 && targetBoss.location.x < candZone.map.mapWidth - 50)
+                                        ? targetBoss.location.x : this.location.x;
+                                this.changeMapVIP = true;
+                                this.idMark.setLastTimeChangeZone(System.currentTimeMillis());
+                                ChangeMapService.gI().changeMapInYard(this, candZone, targetX);
                                 if (candZone == targetBoss.zone) {
                                     Service.gI().sendThongBao(this, "[Tự Săn Boss] Đã tìm thấy " + targetBoss.name + " tại Khu " + candZoneId + "! Bắt đầu Tàn Sát!");
                                 } else {
@@ -2259,16 +2260,22 @@ public class Player implements Runnable {
                 return;
             }
 
-            // B3: Đã ở đúng Khu có Boss -> Bật Đệ tử Tấn công, áp sát Boss và Tàn Sát!
+            // B3: Đã ở đúng Khu có Boss -> Bật Đệ tử Tấn công, áp sát Boss trên mặt đất và Tàn Sát!
             if (this.pet != null && !this.pet.isDie() && this.pet.status != Pet.ATTACK && this.pet.status != Pet.GOHOME) {
                 this.pet.changeStatus(Pet.ATTACK);
             }
 
-            if (Util.getDistance(this, targetBoss) > 55) {
+            if (Util.getDistance(this, targetBoss) > 120 && Util.canDoWithTime(this.lastTimeAutoHuntAction, 2000)) {
+                this.lastTimeAutoHuntAction = System.currentTimeMillis();
                 int bx = targetBoss.location.x + Util.nextInt(-25, 25);
-                int by = targetBoss.location.y;
-                Service.gI().resetPoint(this, bx, by);
+                if (bx < 50) {
+                    bx = 50;
+                } else if (bx > this.zone.map.mapWidth - 50) {
+                    bx = this.zone.map.mapWidth - 50;
+                }
+                int by = this.zone.map.yPhysicInTop(bx, targetBoss.location.y);
                 PlayerService.gI().playerMove(this, bx, by);
+                Service.gI().resetPoint(this, bx, by);
             }
 
             if (nro.models.services.SkillService.gI().canAttackPlayer(this, targetBoss)
