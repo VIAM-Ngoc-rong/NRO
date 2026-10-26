@@ -23,6 +23,7 @@ public class Inventory {
     public static final int MAX_ITEMS_BAG = 1000;
     public static final int BAG_TAB_SIZE = 200;
     public static final int BAG_PAGE_SIZE = 200;
+    public static final int BAG_VIEW_SIZE = 120;
     public static final int BAG_SUBPAGE_SIZE = 100;
     public static final int NUM_QUICK_TABS = 5;
     public static final int MAX_ITEMS_BOX = 120;

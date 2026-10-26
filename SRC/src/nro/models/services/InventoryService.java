@@ -806,29 +806,28 @@ public class InventoryService {
                 }
             }
 
-            // Hiển thị ĐÚNG các vật phẩm thuộc Trang đang chọn (1..5, mỗi trang 200 ô),
-            // KHÔNG lặp lại / xoay vòng vật phẩm của Trang 1 sang Trang 2, 3, 4, 5!
+            // Hiển thị ĐÚNG các vật phẩm thuộc Trang đang chọn (1..5, mỗi khung màn hình 120 ô vật phẩm = 20 hàng x 6 cột):
+            // - Trang 1 (1★): Ô 1 - 120
+            // - Trang 2 (2★): Ô 121 - 240 (hiển thị ngay lập tức toàn bộ đồ từ 121..200 và trên 200!)
+            // - Trang 3 (3★): Ô 241 - 360
+            // - Trang 4 (4★): Ô 361 - 480
+            // - Trang 5 (5★): Ô 481 - 600 (bấm lần 2 khi > 600 món sẽ lật sang Ô 601 - 1000)
             int activeTab = Math.max(0, Math.min(Inventory.NUM_QUICK_TABS - 1, player.inventory.currentBagTab));
-            int tabStart = activeTab * Inventory.BAG_PAGE_SIZE;
-            int tabEnd = Math.min(allNonNull.size(), (activeTab + 1) * Inventory.BAG_PAGE_SIZE);
-            int subPage = player.inventory.currentBagSubPage;
-            int startOffset = tabStart + (subPage * Inventory.BAG_SUBPAGE_SIZE);
-            if (startOffset >= tabEnd && subPage > 0) {
+            int bankCapacity = Inventory.NUM_QUICK_TABS * Inventory.BAG_VIEW_SIZE; // 600
+            int bankOffset = (player.inventory.currentBagSubPage > 0 && allNonNull.size() > bankCapacity) ? bankCapacity : 0;
+            if (bankOffset == 0) {
                 player.inventory.currentBagSubPage = 0;
-                startOffset = tabStart;
             }
+            int tabStart = bankOffset + activeTab * Inventory.BAG_VIEW_SIZE;
+            int tabEnd = Math.min(allNonNull.size(), tabStart + Inventory.BAG_VIEW_SIZE);
 
-            for (int i = startOffset; i < tabEnd && displayIndices.size() < 126; i++) {
+            for (int i = tabStart; i < tabEnd && displayIndices.size() < 126; i++) {
                 displayIndices.add(allNonNull.get(i));
-            }
-            if (subPage > 0) {
-                for (int i = tabStart; i < startOffset && displayIndices.size() < 126; i++) {
-                    displayIndices.add(allNonNull.get(i));
-                }
             }
 
             // Đảm bảo mọi vật phẩm đang chọn trong Bà Hạt Mít luôn nằm trong danh sách hiển thị (< 126)
-            if (player.combineNew != null && player.combineNew.itemsCombine != null && !player.combineNew.itemsCombine.isEmpty()) {
+            boolean isCombining = player.combineNew != null && player.combineNew.itemsCombine != null && !player.combineNew.itemsCombine.isEmpty();
+            if (isCombining) {
                 for (Item combItem : player.combineNew.itemsCombine) {
                     if (combItem != null && combItem.isNotNullItem()) {
                         for (int i = 0; i < player.inventory.itemsBag.size(); i++) {
@@ -850,8 +849,9 @@ public class InventoryService {
             int displaySlots = Math.min(126, ((rawSlots + 5) / 6) * 6);
 
             // Cấp ID template đã đăng ký sẵn trong ItemData (NRitem2):
-            // - Nút [1]..[5] và Nút [+]
-            // - Các món trang bị (type 0..4) trùng ID trong túi để Bà Hạt Mít không báo "Đã có vật phẩm này"
+            // - Nút [1]..[5] và Nút [+] dùng ID cố định 2200..2205
+            // - Khi mở Hành trang bình thường: dùng 100% ID thật (realTempId) của vật phẩm
+            // - Chỉ khi đang mở Bà Hạt Mít (isCombining): cấp alias cho trang bị trùng ID
             java.util.Map<Short, Integer> equipCounts = new java.util.HashMap<>();
             short[] slotTempIds = new short[totalEntries];
             for (int idx = 0; idx < totalEntries; idx++) {
@@ -871,7 +871,7 @@ public class InventoryService {
                     continue;
                 }
                 short realTempId = item.template.id;
-                if (!isStackableItem(item) && item.template.type >= 0 && item.template.type <= 4) {
+                if (isCombining && !isStackableItem(item) && item.template.type >= 0 && item.template.type <= 4) {
                     int occ = equipCounts.getOrDefault(realTempId, 0);
                     equipCounts.put(realTempId, occ + 1);
                     slotTempIds[idx] = nro.models.data.ItemData.getEquipAliasTemplateId(realTempId, occ);
@@ -892,10 +892,13 @@ public class InventoryService {
                 if (bagIdx <= -101 && bagIdx >= -105) {
                     int tabNum = -100 - bagIdx; // 1..5
                     boolean isCur = (tabNum == curTab);
+                    int sSlot = bankOffset + (tabNum - 1) * Inventory.BAG_VIEW_SIZE + 1;
+                    int eSlot = bankOffset + tabNum * Inventory.BAG_VIEW_SIZE;
                     msg.writer().writeShort(slotTempIds[idx]);
                     msg.writer().writeInt(1);
-                    msg.writer().writeUTF("Trang " + tabNum + (isCur ? " [Đang hiển thị ở đầu túi]" : " [Bấm để nhảy tới Trang " + tabNum + "]"));
-                    msg.writer().writeUTF("Dùng chung 1 bể hành trang (" + usedBag + "/" + maxBag + " ô)");
+                    msg.writer().writeUTF("Trang " + tabNum + " (Ô " + sSlot + "-" + eSlot + ")"
+                            + (isCur ? " [Đang mở]" : " [Bấm Sử dụng để mở Trang " + tabNum + "]"));
+                    msg.writer().writeUTF("Bể chung hành trang: " + usedBag + "/" + maxBag + " ô");
                     if (isCur) {
                         msg.writer().writeByte(3);
                         msg.writer().writeByte(102); // Hiển thị số 1★..5★ ở góc trên bên trái ô

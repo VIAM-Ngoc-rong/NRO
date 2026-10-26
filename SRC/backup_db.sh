@@ -25,7 +25,14 @@ mysql -e "PURGE BINARY LOGS BEFORE NOW();" >/dev/null 2>&1 || true
 ls -1t "$BACKUP_DIR"/${DB_NAME}_20*.sql.gz 2>/dev/null | tail -n +2 | xargs -r rm -f 2>/dev/null || true
 
 mysqldump -h "$DB_HOST" -P "$DB_PORT" -u "$DB_USER" -p"$DB_PASS" \
-  --single-transaction --quick --routines --triggers "$DB_NAME" 2>/dev/null | gzip > "$BACKUP_FILE"
+  --single-transaction --quick --routines --triggers "$DB_NAME" 2>/dev/null \
+  | sed -e 's/utf8mb4_0900_ai_ci/utf8mb4_general_ci/g' \
+        -e 's/utf8mb4_0900_as_cs/utf8mb4_bin/g' \
+        -e 's/utf8mb3_general_ci/utf8mb4_general_ci/g' \
+        -e 's/utf8mb3_unicode_ci/utf8mb4_unicode_ci/g' \
+        -e 's/CHARACTER SET utf8mb3/CHARACTER SET utf8mb4/g' \
+        -e 's/CHARSET=utf8mb3/CHARSET=utf8mb4/g' \
+  | gzip > "$BACKUP_FILE"
 
 if [ -s "$BACKUP_FILE" ]; then
     cp -f "$BACKUP_FILE" "$DAILY_FILE"

@@ -103,11 +103,13 @@ public class UseItem {
             if (player.combineNew != null && !player.combineNew.itemsCombine.isEmpty()) {
                 nro.models.combine.CombineService.gI().reOpenItemCombine(player);
             }
-            int sSlot = targetTab * nro.models.player.Inventory.BAG_PAGE_SIZE + 1;
-            int eSlot = (targetTab + 1) * nro.models.player.Inventory.BAG_PAGE_SIZE;
-            String subInfo = player.inventory.currentBagSubPage > 0 ? " [Nửa sau: 101-200]" : "";
-            Service.gI().sendThongBao(player, "Đã chuyển đầu túi sang Trang " + (targetTab + 1) + "/5 (Ô "
-                    + sSlot + "-" + eSlot + subInfo + ", 200 ô/Trang - Dùng chung 1 bể)!");
+            int bankOffset = (player.inventory.currentBagSubPage > 0)
+                    ? (nro.models.player.Inventory.NUM_QUICK_TABS * nro.models.player.Inventory.BAG_VIEW_SIZE) : 0;
+            int sSlot = bankOffset + targetTab * nro.models.player.Inventory.BAG_VIEW_SIZE + 1;
+            int eSlot = bankOffset + (targetTab + 1) * nro.models.player.Inventory.BAG_VIEW_SIZE;
+            Service.gI().sendThongBao(player, "Đã chuyển sang Trang " + (targetTab + 1) + "/5 (Ô "
+                    + sSlot + "-" + eSlot + " | Bể chung " + player.inventory.getUsedSlotsInBag() + "/"
+                    + player.inventory.itemsBag.size() + " ô)!");
             return true;
         }
         if (bagIndex == -106) {
@@ -294,12 +296,18 @@ public class UseItem {
                         } else {
                             int iditem = _msg.reader().readShort();
                             int baseBtn = nro.models.server.Manager.ITEM_TEMPLATES.size();
-                            if ((iditem >= 24990 && iditem <= 24994) || (baseBtn > 0 && iditem >= baseBtn && iditem < baseBtn + 5)) {
-                                int targetTab = (iditem >= 24990 && iditem <= 24994) ? (iditem - 24990) : (iditem - baseBtn);
+                            int fixedBtn = nro.models.data.ItemData.VIRTUAL_BTN_BASE_ID;
+                            if ((iditem >= fixedBtn && iditem < fixedBtn + 5)
+                                    || (iditem >= 24990 && iditem <= 24994)
+                                    || (baseBtn > 0 && iditem >= baseBtn && iditem < baseBtn + 5)) {
+                                int targetTab = (iditem >= fixedBtn && iditem < fixedBtn + 5) ? (iditem - fixedBtn)
+                                        : (iditem >= 24990 && iditem <= 24994) ? (iditem - 24990) : (iditem - baseBtn);
                                 player.inventory.switchBagTab(targetTab);
                                 InventoryService.gI().sendItemBags(player);
                                 InventoryService.gI().sendItemBody(player);
-                                Service.gI().sendThongBao(player, "Đã chuyển đầu túi sang Trang " + (targetTab + 1) + "/5 (Dùng chung 1 bể)!");
+                                int sSlot = targetTab * nro.models.player.Inventory.BAG_VIEW_SIZE + 1;
+                                int eSlot = (targetTab + 1) * nro.models.player.Inventory.BAG_VIEW_SIZE;
+                                Service.gI().sendThongBao(player, "Đã chuyển sang Trang " + (targetTab + 1) + "/5 (Ô " + sSlot + "-" + eSlot + ")!");
                                 return;
                             }
                             if (nro.models.data.ItemData.isQuickTabButtonTemplateId(iditem)) {

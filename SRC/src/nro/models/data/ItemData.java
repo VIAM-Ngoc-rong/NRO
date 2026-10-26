@@ -17,6 +17,7 @@ import nro.models.player_system.Template;
 public class ItemData {
 
     public static final int SPLIT_TEMPLATE_ID = 1150;
+    public static final int VIRTUAL_BTN_BASE_ID = 2200;
     public static final int ALIAS_EQUIP_COPIES = 4;
 
     private static volatile int cachedBaseTemplateCount = -1;
@@ -60,20 +61,17 @@ public class ItemData {
                 currentId++;
             }
 
-            // 2. Ghi 6 nút bấm nhanh ở đầu Hành Trang (baseSize + 0 .. baseSize + 5):
-            //    [1] [2] [3] [4] [5] [+]
+            // Đệm (pad) từ baseSize lên VIRTUAL_BTN_BASE_ID (2200) để cả DB Local (2000) và DB VPS (2156)
+            // đều có 6 nút bấm nhanh ở ĐÚNG cố định ID 2200..2205!
             short bagIcon = 4340;
             if (baseSize > 517 && Manager.ITEM_TEMPLATES.get(517) != null && Manager.ITEM_TEMPLATES.get(517).iconID > 0) {
                 bagIcon = Manager.ITEM_TEMPLATES.get(517).iconID;
             }
-            for (int t = 0; t < Inventory.NUM_QUICK_TABS; t++) {
-                int tabNum = t + 1;
-                int sSlot = t * Inventory.BAG_PAGE_SIZE + 1;
-                int eSlot = (t + 1) * Inventory.BAG_PAGE_SIZE;
+            while (currentId < VIRTUAL_BTN_BASE_ID) {
                 dos.writeByte(27);
                 dos.writeByte(3);
-                dos.writeUTF("Nút [" + tabNum + "] - Trang " + tabNum + " (Ô " + sSlot + "-" + eSlot + ")");
-                dos.writeUTF("Bể chung hành trang. Bấm Sử dụng / Chọn để đưa Trang " + tabNum + " lên đầu!");
+                dos.writeUTF("");
+                dos.writeUTF("");
                 dos.writeByte(1);
                 dos.writeInt(0);
                 dos.writeShort(bagIcon);
@@ -81,14 +79,32 @@ public class ItemData {
                 dos.writeBoolean(false);
                 currentId++;
             }
-            // Nút thứ 6 [+]: Mở rộng & Quản lý bể chung
+
+            // 2. Ghi 6 nút bấm nhanh ở đầu Hành Trang tại ID cố định (2200 .. 2205):
+            //    [1] [2] [3] [4] [5] [+]
+            for (int t = 0; t < Inventory.NUM_QUICK_TABS; t++) {
+                int tabNum = t + 1;
+                int sSlot = t * Inventory.BAG_VIEW_SIZE + 1;
+                int eSlot = (t + 1) * Inventory.BAG_VIEW_SIZE;
+                dos.writeByte(27);
+                dos.writeByte(3);
+                dos.writeUTF("Nút [" + tabNum + "] - Trang " + tabNum + " (Ô " + sSlot + "-" + eSlot + ")");
+                dos.writeUTF("Bể chung 1000 ô. Bấm Sử dụng để mở ngay Trang " + tabNum + "!");
+                dos.writeByte(1);
+                dos.writeInt(0);
+                dos.writeShort(bagIcon);
+                dos.writeShort(-1);
+                dos.writeBoolean(false);
+                currentId++;
+            }
+            // Nút thứ 6 [+] (ID 2205): Mở rộng & Quản lý bể chung
             dos.writeByte(27);
             dos.writeByte(3);
             dos.writeUTF("Nút [+] Mở Rộng & Tiện Ích Bể Chung");
             dos.writeUTF("Bấm Sử dụng / Chọn để mở thêm ô túi đồ hoặc bật Menu Tiện Ích");
             dos.writeByte(1);
             dos.writeInt(0);
-            dos.writeShort((short) 4340);
+            dos.writeShort(bagIcon);
             dos.writeShort(-1);
             dos.writeBoolean(false);
             currentId++;
@@ -136,17 +152,20 @@ public class ItemData {
 
     public static short getQuickTabButtonTemplateId(int btnIndex) {
         ensurePart2Built();
-        int base = Manager.ITEM_TEMPLATES.size();
-        if (btnIndex >= 0 && btnIndex <= Inventory.NUM_QUICK_TABS && cachedPart2EndId >= base + btnIndex + 1) {
-            return (short) (base + btnIndex);
+        int btnBase = Math.max(VIRTUAL_BTN_BASE_ID, Manager.ITEM_TEMPLATES.size());
+        if (btnIndex >= 0 && btnIndex <= Inventory.NUM_QUICK_TABS && cachedPart2EndId >= btnBase + btnIndex + 1) {
+            return (short) (btnBase + btnIndex);
         }
         return 1998;
     }
 
     public static boolean isQuickTabButtonTemplateId(int tempId) {
         int base = Manager.ITEM_TEMPLATES.size();
+        int btnBase = Math.max(VIRTUAL_BTN_BASE_ID, base);
         return tempId == 1998
+                || (tempId >= VIRTUAL_BTN_BASE_ID && tempId <= VIRTUAL_BTN_BASE_ID + Inventory.NUM_QUICK_TABS)
                 || (base > 0 && tempId >= base && tempId <= base + Inventory.NUM_QUICK_TABS)
+                || (tempId >= btnBase && tempId <= btnBase + Inventory.NUM_QUICK_TABS)
                 || (tempId >= 24989 && tempId <= 24995);
     }
 

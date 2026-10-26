@@ -27,6 +27,7 @@ SET time_zone = "+00:00";
 -- Cấu trúc bảng cho bảng `account`
 --
 
+DROP TABLE IF EXISTS `account`;
 CREATE TABLE `account` (
   `id` int(11) NOT NULL,
   `username` varchar(20) NOT NULL,
@@ -85,6 +86,7 @@ INSERT INTO `account` (`id`, `username`, `password`, `email`, `create_time`, `up
 -- Cấu trúc bảng cho bảng `achievement_template`
 --
 
+DROP TABLE IF EXISTS `achievement_template`;
 CREATE TABLE `achievement_template` (
   `id` int(11) NOT NULL,
   `info1` text NOT NULL,
@@ -125,6 +127,7 @@ INSERT INTO `achievement_template` (`id`, `info1`, `info2`, `money`, `max_count`
 -- Cấu trúc bảng cho bảng `adminpanel`
 --
 
+DROP TABLE IF EXISTS `adminpanel`;
 CREATE TABLE `adminpanel` (
   `domain` text DEFAULT NULL,
   `title` text DEFAULT NULL,
@@ -160,6 +163,7 @@ INSERT INTO `adminpanel` (`domain`, `title`, `tenmaychu`, `logo`, `trangthai`, `
 -- Cấu trúc bảng cho bảng `array_head_2_frames`
 --
 
+DROP TABLE IF EXISTS `array_head_2_frames`;
 CREATE TABLE `array_head_2_frames` (
   `id` int(11) NOT NULL,
   `data` text NOT NULL
@@ -229,6 +233,7 @@ INSERT INTO `array_head_2_frames` (`id`, `data`) VALUES
 -- Cấu trúc bảng cho bảng `bank_transfers`
 --
 
+DROP TABLE IF EXISTS `bank_transfers`;
 CREATE TABLE `bank_transfers` (
   `id` int(11) NOT NULL,
   `transaction_id` varchar(255) NOT NULL,
@@ -247,6 +252,7 @@ CREATE TABLE `bank_transfers` (
 -- Cấu trúc bảng cho bảng `bg_item_template`
 --
 
+DROP TABLE IF EXISTS `bg_item_template`;
 CREATE TABLE `bg_item_template` (
   `id` int(11) NOT NULL,
   `image_id` int(11) NOT NULL,
@@ -864,6 +870,7 @@ INSERT INTO `bg_item_template` (`id`, `image_id`, `layer`, `dx`, `dy`) VALUES
 -- Cấu trúc bảng cho bảng `clan`
 --
 
+DROP TABLE IF EXISTS `clan`;
 CREATE TABLE `clan` (
   `id` int(11) NOT NULL,
   `NAME` varchar(255) NOT NULL,
@@ -894,6 +901,7 @@ INSERT INTO `clan` (`id`, `NAME`, `NAME_2`, `slogan`, `img_id`, `power_point`, `
 -- Cấu trúc bảng cho bảng `clan_task_template`
 --
 
+DROP TABLE IF EXISTS `clan_task_template`;
 CREATE TABLE `clan_task_template` (
   `id` int(11) NOT NULL,
   `NAME` varchar(255) NOT NULL,
@@ -975,6 +983,7 @@ INSERT INTO `clan_task_template` (`id`, `NAME`, `max_count_lv1`, `max_count_lv2`
 -- Cấu trúc bảng cho bảng `comments`
 --
 
+DROP TABLE IF EXISTS `comments`;
 CREATE TABLE `comments` (
   `id` int(11) NOT NULL,
   `post_id` int(11) NOT NULL,
@@ -1001,6 +1010,7 @@ INSERT INTO `comments` (`id`, `post_id`, `nguoidung`, `traloi`, `gender`, `admin
 -- Cấu trúc bảng cho bảng `data_badges`
 --
 
+DROP TABLE IF EXISTS `data_badges`;
 CREATE TABLE `data_badges` (
   `id` int(11) NOT NULL,
   `idEffect` int(11) NOT NULL,
@@ -1037,6 +1047,7 @@ INSERT INTO `data_badges` (`id`, `idEffect`, `idItem`, `NAME`, `Options`) VALUES
 -- Cấu trúc bảng cho bảng `flag_bag`
 --
 
+DROP TABLE IF EXISTS `flag_bag`;
 CREATE TABLE `flag_bag` (
   `id` int(11) NOT NULL,
   `icon_data` varchar(1000) NOT NULL,
@@ -1214,6 +1225,7 @@ INSERT INTO `flag_bag` (`id`, `icon_data`, `NAME`, `gold`, `gem`, `icon_id`) VAL
 -- Cấu trúc bảng cho bảng `giftcode`
 --
 
+DROP TABLE IF EXISTS `giftcode`;
 CREATE TABLE `giftcode` (
   `id` int(11) NOT NULL,
   `code` text NOT NULL,
@@ -1236,6 +1248,7 @@ INSERT INTO `giftcode` (`id`, `code`, `count_left`, `detail`, `datecreate`, `exp
 -- Cấu trúc bảng cho bảng `head_avatar`
 --
 
+DROP TABLE IF EXISTS `head_avatar`;
 CREATE TABLE `head_avatar` (
   `head_id` int(11) NOT NULL,
   `avatar_id` int(11) NOT NULL
@@ -1748,6 +1761,7 @@ INSERT INTO `head_avatar` (`head_id`, `avatar_id`) VALUES
 -- Cấu trúc bảng cho bảng `history_transaction`
 --
 
+DROP TABLE IF EXISTS `history_transaction`;
 CREATE TABLE `history_transaction` (
   `id` int(11) NOT NULL,
   `player_1` varchar(255) NOT NULL,
@@ -1767,6 +1781,7 @@ CREATE TABLE `history_transaction` (
 -- Cấu trúc bảng cho bảng `img_by_name`
 --
 
+DROP TABLE IF EXISTS `img_by_name`;
 CREATE TABLE `img_by_name` (
   `id` int(11) NOT NULL,
   `NAME` varchar(55) NOT NULL,
@@ -1931,6 +1946,7 @@ INSERT INTO `img_by_name` (`id`, `NAME`, `n_frame`) VALUES
 -- Cấu trúc bảng cho bảng `intrinsic`
 --
 
+DROP TABLE IF EXISTS `intrinsic`;
 CREATE TABLE `intrinsic` (
   `id` int(11) NOT NULL,
   `NAME` varchar(255) NOT NULL,
@@ -2162,6 +2178,7 @@ INSERT INTO `intrinsic` (`id`, `NAME`, `param_from_1`, `param_to_1`, `param_from
 -- Cấu trúc bảng cho bảng `item_option_template`
 --
 
+DROP TABLE IF EXISTS `item_option_template`;
 CREATE TABLE `item_option_template` (
   `id` int(11) NOT NULL,
   `NAME` varchar(255) NOT NULL
@@ -2430,6 +2447,7 @@ INSERT INTO `item_option_template` (`id`, `NAME`) VALUES
 -- Cấu trúc bảng cho bảng `item_shop`
 --
 
+DROP TABLE IF EXISTS `item_shop`;
 CREATE TABLE `item_shop` (
   `id` int(11) NOT NULL,
   `tab_id` int(11) NOT NULL,
@@ -3280,6 +3298,7 @@ INSERT INTO `item_shop` (`id`, `tab_id`, `temp_id`, `is_new`, `is_sell`, `type_s
 -- Cấu trúc bảng cho bảng `item_shop_option`
 --
 
+DROP TABLE IF EXISTS `item_shop_option`;
 CREATE TABLE `item_shop_option` (
   `id` int(11) NOT NULL,
   `item_shop_id` int(11) NOT NULL,
@@ -4719,6 +4738,7 @@ INSERT INTO `item_shop_option` (`id`, `item_shop_id`, `option_id`, `param`) VALU
 -- Cấu trúc bảng cho bảng `item_template`
 --
 
+DROP TABLE IF EXISTS `item_template`;
 CREATE TABLE `item_template` (
   `id` int(11) NOT NULL,
   `TYPE` int(11) NOT NULL,
@@ -6752,6 +6772,7 @@ INSERT INTO `item_template` (`id`, `TYPE`, `gender`, `NAME`, `description`, `lev
 -- Cấu trúc bảng cho bảng `map_template`
 --
 
+DROP TABLE IF EXISTS `map_template`;
 CREATE TABLE `map_template` (
   `id` int(11) NOT NULL,
   `NAME` varchar(55) NOT NULL,
@@ -6951,6 +6972,7 @@ INSERT INTO `map_template` (`id`, `NAME`, `zones`, `max_player`, `data`, `type`,
 -- Cấu trúc bảng cho bảng `mob_template`
 --
 
+DROP TABLE IF EXISTS `mob_template`;
 CREATE TABLE `mob_template` (
   `id` int(11) NOT NULL,
   `TYPE` int(11) NOT NULL,
@@ -7094,6 +7116,7 @@ INSERT INTO `mob_template` (`id`, `TYPE`, `NAME`, `hp`, `range_move`, `speed`, `
 -- Cấu trúc bảng cho bảng `napthe`
 --
 
+DROP TABLE IF EXISTS `napthe`;
 CREATE TABLE `napthe` (
   `id` int(11) NOT NULL,
   `user_nap` varchar(100) NOT NULL,
@@ -7119,6 +7142,7 @@ INSERT INTO `napthe` (`id`, `user_nap`, `telco`, `serial`, `code`, `amount`, `st
 -- Cấu trúc bảng cho bảng `notify`
 --
 
+DROP TABLE IF EXISTS `notify`;
 CREATE TABLE `notify` (
   `id` int(11) NOT NULL,
   `name` text CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
@@ -7131,6 +7155,7 @@ CREATE TABLE `notify` (
 -- Cấu trúc bảng cho bảng `npc_template`
 --
 
+DROP TABLE IF EXISTS `npc_template`;
 CREATE TABLE `npc_template` (
   `id` int(11) NOT NULL,
   `NAME` varchar(50) NOT NULL,
@@ -7245,6 +7270,7 @@ INSERT INTO `npc_template` (`id`, `NAME`, `head`, `body`, `leg`, `avatar`) VALUE
 -- Cấu trúc bảng cho bảng `part`
 --
 
+DROP TABLE IF EXISTS `part`;
 CREATE TABLE `part` (
   `id` int(11) NOT NULL,
   `TYPE` int(11) NOT NULL,
@@ -9367,6 +9393,7 @@ INSERT INTO `part` (`id`, `TYPE`, `DATA`) VALUES
 -- Cấu trúc bảng cho bảng `payments`
 --
 
+DROP TABLE IF EXISTS `payments`;
 CREATE TABLE `payments` (
   `id` int(11) NOT NULL,
   `name` varchar(255) NOT NULL,
@@ -9402,6 +9429,7 @@ INSERT INTO `payments` (`id`, `name`, `refNo`, `date`, `card_serial`, `card_pin`
 -- Cấu trúc bảng cho bảng `phongchat`
 --
 
+DROP TABLE IF EXISTS `phongchat`;
 CREATE TABLE `phongchat` (
   `id` int(11) NOT NULL,
   `id_user` int(11) DEFAULT NULL,
@@ -9415,6 +9443,7 @@ CREATE TABLE `phongchat` (
 -- Cấu trúc bảng cho bảng `player`
 --
 
+DROP TABLE IF EXISTS `player`;
 CREATE TABLE `player` (
   `id` int(11) NOT NULL,
   `account_id` int(11) DEFAULT NULL,
@@ -9501,6 +9530,7 @@ INSERT INTO `player` (`id`, `account_id`, `name`, `head`, `gender`, `have_tennis
 -- Cấu trúc bảng cho bảng `posts`
 --
 
+DROP TABLE IF EXISTS `posts`;
 CREATE TABLE `posts` (
   `id` int(11) NOT NULL,
   `tieude` varchar(75) NOT NULL,
@@ -9535,6 +9565,7 @@ INSERT INTO `posts` (`id`, `tieude`, `noidung`, `username`, `created_at`, `thelo
 -- Cấu trúc bảng cho bảng `radar`
 --
 
+DROP TABLE IF EXISTS `radar`;
 CREATE TABLE `radar` (
   `id` int(11) NOT NULL,
   `iconId` int(11) DEFAULT 0,
@@ -9584,6 +9615,7 @@ INSERT INTO `radar` (`id`, `iconId`, `rank`, `max`, `type`, `mob_id`, `body`, `n
 -- Cấu trúc bảng cho bảng `settings`
 --
 
+DROP TABLE IF EXISTS `settings`;
 CREATE TABLE `settings` (
   `Title` varchar(100) DEFAULT 'Nguyen Duc Kien',
   `Description` longtext DEFAULT NULL,
@@ -9618,6 +9650,7 @@ INSERT INTO `settings` (`Title`, `Description`, `Keywords`, `SiteKey`, `SecretKe
 -- Cấu trúc bảng cho bảng `shop`
 --
 
+DROP TABLE IF EXISTS `shop`;
 CREATE TABLE `shop` (
   `id` int(11) NOT NULL,
   `npc_id` int(11) NOT NULL,
@@ -9669,6 +9702,7 @@ INSERT INTO `shop` (`id`, `npc_id`, `tag_name`, `type_shop`) VALUES
 -- Cấu trúc bảng cho bảng `shop_ky_gui`
 --
 
+DROP TABLE IF EXISTS `shop_ky_gui`;
 CREATE TABLE `shop_ky_gui` (
   `id` int(11) NOT NULL,
   `player_id` int(11) NOT NULL,
@@ -9697,6 +9731,7 @@ INSERT INTO `shop_ky_gui` (`id`, `player_id`, `tab`, `item_id`, `gold`, `gem`, `
 -- Cấu trúc bảng cho bảng `side_task_template`
 --
 
+DROP TABLE IF EXISTS `side_task_template`;
 CREATE TABLE `side_task_template` (
   `id` int(11) NOT NULL,
   `NAME` varchar(255) NOT NULL,
@@ -9778,6 +9813,7 @@ INSERT INTO `side_task_template` (`id`, `NAME`, `max_count_lv1`, `max_count_lv2`
 -- Cấu trúc bảng cho bảng `skill_template`
 --
 
+DROP TABLE IF EXISTS `skill_template`;
 CREATE TABLE `skill_template` (
   `nclass_id` int(11) NOT NULL,
   `id` int(11) NOT NULL,
@@ -9830,6 +9866,7 @@ INSERT INTO `skill_template` (`nclass_id`, `id`, `NAME`, `max_point`, `mana_use_
 -- Cấu trúc bảng cho bảng `super_rank`
 --
 
+DROP TABLE IF EXISTS `super_rank`;
 CREATE TABLE `super_rank` (
   `id` int(11) NOT NULL,
   `player_id` int(11) NOT NULL,
@@ -11206,6 +11243,7 @@ INSERT INTO `super_rank` (`id`, `player_id`, `name`, `rank`, `last_pk_time`, `la
 -- Cấu trúc bảng cho bảng `tab_shop`
 --
 
+DROP TABLE IF EXISTS `tab_shop`;
 CREATE TABLE `tab_shop` (
   `id` int(11) NOT NULL,
   `shop_id` int(11) NOT NULL,
@@ -11282,6 +11320,7 @@ INSERT INTO `tab_shop` (`id`, `shop_id`, `NAME`) VALUES
 -- Cấu trúc bảng cho bảng `task_badges_template`
 --
 
+DROP TABLE IF EXISTS `task_badges_template`;
 CREATE TABLE `task_badges_template` (
   `id` int(11) NOT NULL,
   `NAME` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
@@ -11319,6 +11358,7 @@ INSERT INTO `task_badges_template` (`id`, `NAME`, `maxCount`, `idBadgesReward`) 
 -- Cấu trúc bảng cho bảng `task_main_template`
 --
 
+DROP TABLE IF EXISTS `task_main_template`;
 CREATE TABLE `task_main_template` (
   `id` int(11) NOT NULL,
   `NAME` varchar(255) NOT NULL,
@@ -11367,6 +11407,7 @@ INSERT INTO `task_main_template` (`id`, `NAME`, `detail`) VALUES
 -- Cấu trúc bảng cho bảng `task_sub_template`
 --
 
+DROP TABLE IF EXISTS `task_sub_template`;
 CREATE TABLE `task_sub_template` (
   `task_main_id` int(11) NOT NULL,
   `NAME` varchar(255) NOT NULL,
