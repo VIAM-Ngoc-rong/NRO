@@ -151,7 +151,7 @@ public class Boss extends Player implements IBoss {
         this.data = data;
         this.name = this.data[0].getName();
         int cfgRest = this.data[0].getSecondsRest();
-        this.secondsRest = (cfgRest >= 300 && cfgRest < 86400) ? Util.nextInt(300, 600) : cfgRest;
+        this.secondsRest = (cfgRest > 0 && cfgRest < 86400) ? Util.nextInt(30, 60) : cfgRest;
         this.bossStatus = BossStatus.REST;
         BossManager.gI().addBoss(this);
 
@@ -180,7 +180,7 @@ public class Boss extends Player implements IBoss {
         this.data = data;
         this.name = this.data[0].getName();
         int cfgRest = this.data[0].getSecondsRest();
-        this.secondsRest = (cfgRest >= 300 && cfgRest < 86400) ? Util.nextInt(300, 600) : cfgRest;
+        this.secondsRest = (cfgRest > 0 && cfgRest < 86400) ? Util.nextInt(30, 60) : cfgRest;
         this.bossStatus = BossStatus.REST;
         switch (bossType) {
             case YARDART ->
@@ -869,9 +869,9 @@ public class Boss extends Player implements IBoss {
                 return false;
             }
             this.lastTimeChatS = System.currentTimeMillis();
-            this.timeChatS = textChat.length() * 100;
-            if (this.timeChatS > 2000) {
-                this.timeChatS = 2000;
+            this.timeChatS = textChat.length() * 60;
+            if (this.timeChatS > 600) {
+                this.timeChatS = 600;
             }
             this.indexChatS++;
         }
@@ -1331,9 +1331,9 @@ public class Boss extends Player implements IBoss {
                 return false;
             }
             this.lastTimeChatE = System.currentTimeMillis();
-            this.timeChatE = textChat.length() * 100;
-            if (this.timeChatE > 2000) {
-                this.timeChatE = 2000;
+            this.timeChatE = textChat.length() * 60;
+            if (this.timeChatE > 600) {
+                this.timeChatE = 600;
             }
             this.indexChatE++;
         }
@@ -1356,8 +1356,8 @@ public class Boss extends Player implements IBoss {
             ChangeMapService.gI().exitMap(this);
             this.lastZone = null;
             int cfgRest = this.data[0].getSecondsRest();
-            if (cfgRest >= 300 && cfgRest < 86400) {
-                this.secondsRest = Util.nextInt(300, 600);
+            if (cfgRest > 0 && cfgRest < 86400) {
+                this.secondsRest = Util.nextInt(30, 60);
             }
             this.lastTimeRest = System.currentTimeMillis();
             this.changeStatus(BossStatus.REST);

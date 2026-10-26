@@ -810,13 +810,15 @@ public class NpcFactory {
                         nro.models.boss.Boss boss = BossManager.gI().getBoss(bossIdx);
                         switch (select) {
                             case 0 -> {
-                                if (boss != null && player.isAutoHuntBoss && player.isMatchingAutoBoss(boss)) {
-                                    player.stopAutoHuntBoss();
-                                } else if (boss != null) {
-                                    player.startAutoHuntBoss(bossIdx);
+                                if (boss != null) {
+                                    player.toggleAutoHuntBoss(bossIdx);
+                                    BossManager.gI().showListBoss(player);
                                 }
                             }
                             case 1 -> {
+                                player.toggleAutoHuntAllBoss();
+                            }
+                            case 2 -> {
                                 if (boss != null && boss.zone != null && !boss.isDie()) {
                                     int targetMapId = boss.zone.map.mapId;
                                     nro.models.map.Zone zone0 = nro.models.map.service.MapService.gI().getZoneByMapIDAndZoneID(targetMapId, 0);
@@ -835,17 +837,17 @@ public class NpcFactory {
                                         Service.gI().sendThongBao(player, "Không thể dịch chuyển đến " + boss.zone.map.mapName + "!");
                                     }
                                 } else {
-                                    Service.gI().sendThongBao(player, "Boss này hiện chưa xuất hiện! Bạn có thể bấm 'Tự Động Săn' để tự đến khi Boss hồi sinh.");
+                                    Service.gI().sendThongBao(player, "Boss này hiện chưa xuất hiện! Bạn có thể bấm 'Thêm Vào DS Tự Săn' để tự đến khi Boss hồi sinh.");
                                 }
                             }
-                            case 2 -> {
-                                if (player.isAutoHuntBoss && (boss == null || !player.isMatchingAutoBoss(boss))) {
+                            case 3 -> {
+                                if (player.isAutoHuntBoss) {
                                     player.stopAutoHuntBoss();
                                 } else {
                                     BossManager.gI().showListBoss(player);
                                 }
                             }
-                            case 3 -> {
+                            case 4 -> {
                                 BossManager.gI().showListBoss(player);
                             }
                         }
@@ -1007,24 +1009,27 @@ public class NpcFactory {
         boolean isHuntingThis = player.isAutoHuntBoss && player.isMatchingAutoBoss(boss);
 
         StringBuilder sb = new StringBuilder();
-        sb.append("|7|=== TÙY CHỌN SĂN BOSS ===\n");
-        sb.append("|2|Boss đã chọn: |1|").append(bossName).append("\n");
+        sb.append("|7|=== TÙY CHỌN TỰ ĐỘNG SĂN NHIỀU BOSS ===\n");
+        sb.append("|2|Boss đang chọn: |1|").append(bossName).append("\n");
         sb.append("|2|Trạng thái: ").append(isAlive
                 ? ("|1|Đang xuất hiện tại " + boss.zone.map.mapName + "\n")
-                : "|7|Đang chờ hồi sinh\n");
-        sb.append("|2|Tự Động Săn Boss: ").append(player.isAutoHuntBoss
-                ? ("|1|[Đang săn: " + player.targetAutoBossName + "]\n")
+                : "|7|Đang chờ hồi sinh (30-60s)\n");
+        sb.append("|2|DS Đang Tự Săn: ").append(player.isAutoHuntBoss
+                ? ("|1|[" + player.getAutoHuntBossSummary() + "]\n")
                 : "|7|[Đang Tắt]\n");
-        sb.append("|0|(Khi bật Tự Động Săn: Nhân vật sẽ tự bay đến Khu 0 mỗi khi Boss xuất hiện -> tự dò từng Khu -> gặp Boss tự bật Tàn Sát & nhặt đồ!)");
+        sb.append("|0|(Bạn có thể chọn NHIỀU Boss vào danh sách hoặc bật 'Săn Tất Cả Boss'! Con nào sống sẽ tự đến dò khu & Tàn Sát trước, săn xong tự chuyển sang con tiếp theo!)");
 
-        String opt0 = isHuntingThis ? ("Tắt Tự Săn\n" + bossName) : ("Tự Động Săn\n" + bossName);
-        String opt1 = isAlive ? ("Đến Khu 0\n" + boss.zone.map.mapName) : "Đến Khu 0\n(Chờ Boss ra)";
-        if (player.isAutoHuntBoss && !isHuntingThis) {
+        String opt0 = (isHuntingThis && !player.isAutoHuntAllBoss)
+                ? ("Bỏ Khỏi DS\n" + bossName)
+                : ("Thêm Vào DS\n" + bossName);
+        String opt1 = player.isAutoHuntAllBoss ? "Tắt Săn\nTất Cả Boss" : "Bật Săn\nTất Cả Boss";
+        String opt2 = isAlive ? ("Đến Khu 0\n" + boss.zone.map.mapName) : "Đến Khu 0\n(Chờ Boss ra)";
+        if (player.isAutoHuntBoss) {
             NpcService.gI().createMenuConMeo(player, 9905, -1, sb.toString(),
-                    opt0, opt1, "Tắt Tự Săn\n" + player.targetAutoBossName, "Danh sách\nBoss", "Đóng");
+                    opt0, opt1, opt2, "Tắt Toàn Bộ\nTự Săn", "Danh sách\nBoss", "Đóng");
         } else {
             NpcService.gI().createMenuConMeo(player, 9905, -1, sb.toString(),
-                    opt0, opt1, "Danh sách\nBoss", "Đóng");
+                    opt0, opt1, opt2, "Danh sách\nBoss", "Đóng");
         }
     }
 
@@ -1034,10 +1039,10 @@ public class NpcFactory {
         String npcSay = "|7|=== BẢNG ĐIỀU KHIỂN TIỆN ÍCH ===\n"
                 + "|2|Auto Buff Đậu (Sư phụ & Đệ): " + (player.isAutoBuffPea ? "|1|[Đang Bật]" : "|7|[Đang Tắt]") + "\n"
                 + "|2|Auto Treo Quái (Chống đầy túi): " + (player.isAutoCleanBag ? "|1|[Đang Bật]" : "|7|[Đang Tắt]") + "\n"
-                + "|2|Auto Săn Boss: " + (player.isAutoHuntBoss ? ("|1|[Đang săn: " + player.targetAutoBossName + "]") : "|7|[Đang Tắt]") + "\n"
+                + "|2|Auto Săn Boss: " + (player.isAutoHuntBoss ? ("|1|[" + player.getAutoHuntBossSummary() + "]") : "|7|[Đang Tắt]") + "\n"
                 + "|2|Hành trang: |1|Trang " + curTab + "/" + totalTabs + " (" + player.inventory.getUsedSlotsInBag() + "/600 ô - 120 ô/Trang)\n"
                 + "|2|Điểm Săn Boss hiện có: |1|" + player.pointSanBoss + " điểm\n"
-                + "|0|(Mẹo: Mở Danh sách Boss -> Chọn Boss để Bật Tự Động Săn & Dò Khu!)";
+                + "|0|(Mẹo: Mở Danh sách Boss -> Chọn nhiều Boss vào DS Tự Săn hoặc bật Săn Tất Cả Boss!)";
         if (player.isAutoHuntBoss) {
             NpcService.gI().createMenuConMeo(player, 9900, -1, npcSay,
                     "Auto Đậu\n" + (player.isAutoBuffPea ? "[Tắt]" : "[Bật]"),

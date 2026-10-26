@@ -85,6 +85,10 @@ public class Player implements Runnable {
     public boolean isAutoCleanBag = false;
     public long lastTimeAutoCleanBag;
     public boolean isAutoHuntBoss = false;
+    public boolean isAutoHuntAllBoss = false;
+    public final List<Long> autoHuntBossGroupKeys = new java.util.concurrent.CopyOnWriteArrayList<>();
+    public final List<String> autoHuntBossNames = new java.util.concurrent.CopyOnWriteArrayList<>();
+    public nro.models.boss.Boss currentLockedAutoBoss = null;
     public int pendingAutoBossIndex = -1;
     public int targetAutoBossIndex = -1;
     public long targetAutoBossId = -1;
@@ -2062,33 +2066,98 @@ public class Player implements Runnable {
         return player.pet != null && player.pet.typePet == 1;
     }
 
+    public String getAutoHuntBossSummary() {
+        if (!this.isAutoHuntBoss) {
+            return "Đang Tắt";
+        }
+        if (this.isAutoHuntAllBoss) {
+            return "TẤT CẢ BOSS";
+        }
+        if (this.autoHuntBossNames.isEmpty()) {
+            return this.targetAutoBossName != null && !this.targetAutoBossName.isEmpty() ? this.targetAutoBossName : "Đang Bật";
+        }
+        String joined = String.join(", ", this.autoHuntBossNames);
+        if (joined.length() > 48) {
+            joined = joined.substring(0, 45) + "...";
+        }
+        return this.autoHuntBossNames.size() + " mục tiêu (" + joined + ")";
+    }
+
     public void startAutoHuntBoss(int bossIndex) {
+        toggleAutoHuntBoss(bossIndex);
+    }
+
+    public void toggleAutoHuntBoss(int bossIndex) {
         nro.models.boss.Boss boss = nro.models.boss.Boss_Manager.BossManager.gI().getBoss(bossIndex);
         if (boss == null || boss.data == null || boss.data.length == 0) {
             Service.gI().sendThongBao(this, "Không tìm thấy thông tin Boss!");
             return;
         }
         int lv = (boss.currentLevel >= 0 && boss.currentLevel < boss.data.length) ? boss.currentLevel : 0;
-        this.isAutoHuntBoss = true;
-        this.targetAutoBossIndex = bossIndex;
-        this.targetAutoBossId = boss.id;
-        this.targetAutoBossName = boss.data[lv].getName();
-        this.autoHuntScanZone = 0;
-        this.lastTimeAutoHuntAction = System.currentTimeMillis() - 1800L;
-        this.lastTimeAutoHuntAttack = 0;
-        this.lastTimeAutoHuntWaitNotify = System.currentTimeMillis();
-        this.isAutoBuffPea = true;
-        Service.gI().sendThongBao(this, "Đã BẬT Tự Động Săn Boss: " + this.targetAutoBossName
-                + "! Hệ thống sẽ tự đến map, dò từng khu và bật Tàn Sát khi Boss xuất hiện.");
+        String bossName = boss.data[lv].getName();
+        long groupKey = getBossGroupKey(boss.id);
+
+        int existingIdx = this.autoHuntBossGroupKeys.indexOf(groupKey);
+        if (existingIdx >= 0) {
+            this.autoHuntBossGroupKeys.remove(existingIdx);
+            if (existingIdx < this.autoHuntBossNames.size()) {
+                this.autoHuntBossNames.remove(existingIdx);
+            }
+            if (this.currentLockedAutoBoss != null && getBossGroupKey(this.currentLockedAutoBoss.id) == groupKey) {
+                this.currentLockedAutoBoss = null;
+            }
+            if (this.autoHuntBossGroupKeys.isEmpty() && !this.isAutoHuntAllBoss) {
+                stopAutoHuntBoss();
+            } else {
+                this.targetAutoBossName = getAutoHuntBossSummary();
+                Service.gI().sendThongBao(this, "Đã bỏ " + bossName + " khỏi DS Tự Săn! Đang săn: " + this.targetAutoBossName);
+            }
+        } else {
+            this.autoHuntBossGroupKeys.add(groupKey);
+            this.autoHuntBossNames.add(bossName);
+            this.isAutoHuntBoss = true;
+            this.targetAutoBossIndex = bossIndex;
+            this.targetAutoBossId = boss.id;
+            this.targetAutoBossName = getAutoHuntBossSummary();
+            this.lastTimeAutoHuntAction = System.currentTimeMillis() - 1800L;
+            this.lastTimeAutoHuntWaitNotify = System.currentTimeMillis();
+            this.isAutoBuffPea = true;
+            Service.gI().sendThongBao(this, "Đã thêm " + bossName + " vào DS Tự Săn! Đang săn: " + this.targetAutoBossName);
+        }
+    }
+
+    public void toggleAutoHuntAllBoss() {
+        this.isAutoHuntAllBoss = !this.isAutoHuntAllBoss;
+        if (this.isAutoHuntAllBoss) {
+            this.isAutoHuntBoss = true;
+            this.targetAutoBossId = 999999L;
+            this.targetAutoBossName = "TẤT CẢ BOSS";
+            this.lastTimeAutoHuntAction = System.currentTimeMillis() - 1800L;
+            this.lastTimeAutoHuntWaitNotify = System.currentTimeMillis();
+            this.isAutoBuffPea = true;
+            Service.gI().sendThongBao(this, "Đã BẬT Tự Động Săn TẤT CẢ BOSS! Boss nào đang sống sẽ tự động bay đến dò khu & tàn sát!");
+        } else {
+            if (this.autoHuntBossGroupKeys.isEmpty()) {
+                stopAutoHuntBoss();
+            } else {
+                this.targetAutoBossName = getAutoHuntBossSummary();
+                this.currentLockedAutoBoss = null;
+                Service.gI().sendThongBao(this, "Đã tắt Săn Tất Cả, chuyển về săn theo DS đã chọn: " + this.targetAutoBossName);
+            }
+        }
     }
 
     public void stopAutoHuntBoss() {
         this.isAutoHuntBoss = false;
+        this.isAutoHuntAllBoss = false;
+        this.autoHuntBossGroupKeys.clear();
+        this.autoHuntBossNames.clear();
+        this.currentLockedAutoBoss = null;
         this.targetAutoBossIndex = -1;
         this.targetAutoBossId = -1;
         this.targetAutoBossName = "";
         this.autoHuntScanZone = 0;
-        Service.gI().sendThongBao(this, "Đã TẮT chế độ Tự Động Săn Boss!");
+        Service.gI().sendThongBao(this, "Đã TẮT toàn bộ chế độ Tự Động Săn Boss!");
     }
 
     private static long getBossGroupKey(long bossId) {
@@ -2110,17 +2179,38 @@ public class Player implements Runnable {
         };
     }
 
-    public boolean isMatchingAutoBoss(nro.models.boss.Boss b) {
-        if (b == null || !this.isAutoHuntBoss || this.targetAutoBossId == -1) {
+    private static boolean isHuntableWorldBoss(nro.models.boss.Boss b) {
+        if (b == null || b.data == null || b.data.length == 0) {
             return false;
         }
-        if (b.id == this.targetAutoBossId) {
+        if (b.id == nro.models.boss.BossID.DEATH_BEAM_1 || b.id == nro.models.boss.BossID.DEATH_BEAM_2
+                || b.id == nro.models.boss.BossID.DEATH_BEAM_3 || b.id == nro.models.boss.BossID.DEATH_BEAM_4
+                || b.id == nro.models.boss.BossID.DEATH_BEAM_5 || "$".equals(b.data[0].getName())) {
+            return false;
+        }
+        int mapId = (b.zone != null && b.zone.map != null) ? b.zone.map.mapId : b.data[0].getMapJoin()[0];
+        if (MapService.gI().isMapBossFinal(mapId) || MapService.gI().isMapCadic(mapId)
+                || MapService.gI().isMapYardart(mapId) || MapService.gI().isMapHuyDiet(mapId)
+                || MapService.gI().isMapMaBu(mapId) || MapService.gI().isMapMabu2H(mapId)
+                || MapService.gI().isMapBlackBallWar(mapId) || MapService.gI().isMapPhoBan(mapId)
+                || MapService.gI().isMapOffline(mapId)) {
+            return false;
+        }
+        return true;
+    }
+
+    public boolean isMatchingAutoBoss(nro.models.boss.Boss b) {
+        if (b == null || !this.isAutoHuntBoss || !isHuntableWorldBoss(b)) {
+            return false;
+        }
+        if (this.isAutoHuntAllBoss) {
             return true;
         }
-        if (b.parentBoss != null && b.parentBoss.id == this.targetAutoBossId) {
+        long gKey = getBossGroupKey(b.id);
+        if (this.autoHuntBossGroupKeys.contains(gKey)) {
             return true;
         }
-        if (getBossGroupKey(b.id) == getBossGroupKey(this.targetAutoBossId)) {
+        if (b.parentBoss != null && this.autoHuntBossGroupKeys.contains(getBossGroupKey(b.parentBoss.id))) {
             return true;
         }
         return false;
@@ -2145,12 +2235,13 @@ public class Player implements Runnable {
     }
 
     private nro.models.boss.Boss findTargetAutoBoss() {
-        // 1. Ưu tiên tìm Boss mục tiêu đang ở ngay trong Khu hiện tại
+        // 1. Ưu tiên Boss mục tiêu đang ở ngay trong Khu hiện tại
+        nro.models.boss.Boss waitingInZone = null;
         if (this.zone != null) {
-            nro.models.boss.Boss waitingInZone = null;
             for (Player p : this.zone.getBosses()) {
                 if (p instanceof nro.models.boss.Boss b && !b.isDie() && isMatchingAutoBoss(b)) {
                     if (b.typePk == ConstPlayer.PK_ALL || nro.models.services.SkillService.gI().canAttackPlayer(this, b)) {
+                        this.currentLockedAutoBoss = b;
                         return b;
                     }
                     if (waitingInZone == null) {
@@ -2158,37 +2249,89 @@ public class Player implements Runnable {
                     }
                 }
             }
-            if (waitingInZone != null) {
+        }
+
+        // 2. Giữ khóa mục tiêu đang dò/đang đánh cho tới khi mục tiêu đó bị tiêu diệt (tránh nhảy qua lại giữa nhiều map)
+        if (this.currentLockedAutoBoss != null
+                && this.currentLockedAutoBoss.zone != null
+                && !this.currentLockedAutoBoss.isDie()
+                && isMatchingAutoBoss(this.currentLockedAutoBoss)) {
+            if (waitingInZone != null && this.currentLockedAutoBoss.zone == this.zone) {
                 return waitingInZone;
             }
-        }
-
-        // 2. Kiểm tra đúng instance đã chọn nếu đang sống
-        nro.models.boss.Boss indexed = nro.models.boss.Boss_Manager.BossManager.gI().getBoss(this.targetAutoBossIndex);
-        if (indexed != null && indexed.zone != null && !indexed.isDie() && isMatchingAutoBoss(indexed)) {
-            if (indexed.typePk == ConstPlayer.PK_ALL) {
-                return indexed;
+            // Nếu đang dò cùng nhóm Boss (VD: Tiểu đội sát thủ), ưu tiên con đang bật PK_ALL trong nhóm đó
+            long lockedGroup = getBossGroupKey(this.currentLockedAutoBoss.id);
+            if (this.currentLockedAutoBoss.typePk != ConstPlayer.PK_ALL) {
+                for (nro.models.boss.Boss b : nro.models.boss.Boss_Manager.BossManager.gI().getBosses()) {
+                    if (b != null && b.zone != null && !b.isDie()
+                            && getBossGroupKey(b.id) == lockedGroup
+                            && b.typePk == ConstPlayer.PK_ALL) {
+                        this.currentLockedAutoBoss = b;
+                        return b;
+                    }
+                }
             }
+            return this.currentLockedAutoBoss;
         }
 
-        // 3. Quét toàn bộ danh sách Boss tìm con đang mở PK (hoặc đang sống) cùng nhóm
+        if (waitingInZone != null) {
+            this.currentLockedAutoBoss = waitingInZone;
+            return waitingInZone;
+        }
+
+        // 3. Nếu chọn theo danh sách cụ thể: duyệt theo đúng thứ tự người chơi đã chọn
+        if (!this.isAutoHuntAllBoss && !this.autoHuntBossGroupKeys.isEmpty()) {
+            nro.models.boss.Boss fallbackWaiting = null;
+            for (long wantedGroup : this.autoHuntBossGroupKeys) {
+                for (nro.models.boss.Boss b : nro.models.boss.Boss_Manager.BossManager.gI().getBosses()) {
+                    if (b != null && b.zone != null && !b.isDie() && isHuntableWorldBoss(b)) {
+                        boolean matchGroup = (getBossGroupKey(b.id) == wantedGroup)
+                                || (b.parentBoss != null && getBossGroupKey(b.parentBoss.id) == wantedGroup);
+                        if (matchGroup) {
+                            if (b.typePk == ConstPlayer.PK_ALL) {
+                                this.currentLockedAutoBoss = b;
+                                return b;
+                            }
+                            if (fallbackWaiting == null) {
+                                fallbackWaiting = b;
+                            }
+                        }
+                    }
+                }
+            }
+            this.currentLockedAutoBoss = fallbackWaiting;
+            return fallbackWaiting;
+        }
+
+        // 4. Chế độ Săn Tất Cả Boss: ưu tiên Boss đang ở cùng Map trước, sau đó đến Boss đang bật PK_ALL
         nro.models.boss.Boss fallbackAlive = null;
         for (nro.models.boss.Boss b : nro.models.boss.Boss_Manager.BossManager.gI().getBosses()) {
             if (b != null && b.zone != null && !b.isDie() && isMatchingAutoBoss(b)) {
-                if (b.typePk == ConstPlayer.PK_ALL) {
+                if (this.zone != null && b.zone.map == this.zone.map && b.typePk == ConstPlayer.PK_ALL) {
+                    this.currentLockedAutoBoss = b;
                     return b;
                 }
-                if (fallbackAlive == null) {
+                if (b.typePk == ConstPlayer.PK_ALL && fallbackAlive == null) {
                     fallbackAlive = b;
                 }
             }
         }
+        if (fallbackAlive == null) {
+            for (nro.models.boss.Boss b : nro.models.boss.Boss_Manager.BossManager.gI().getBosses()) {
+                if (b != null && b.zone != null && !b.isDie() && isMatchingAutoBoss(b)) {
+                    fallbackAlive = b;
+                    break;
+                }
+            }
+        }
+        this.currentLockedAutoBoss = fallbackAlive;
         return fallbackAlive;
     }
 
     public void updateAutoHuntBoss() {
         try {
-            if (!this.isAutoHuntBoss || this.targetAutoBossId == -1 || this.zone == null) {
+            if (!this.isAutoHuntBoss || this.zone == null
+                    || (!this.isAutoHuntAllBoss && this.autoHuntBossGroupKeys.isEmpty())) {
                 return;
             }
             // Nếu nhân vật bị Boss đánh chết trong lúc treo săn -> tự động hồi sinh tại chỗ sau 3 giây
@@ -2207,8 +2350,13 @@ public class Player implements Runnable {
             if (targetBoss == null || targetBoss.zone == null || targetBoss.zone.map == null) {
                 if (Util.canDoWithTime(this.lastTimeAutoHuntWaitNotify, 15000)) {
                     this.lastTimeAutoHuntWaitNotify = System.currentTimeMillis();
-                    Service.gI().sendThongBao(this, "[Tự Săn Boss] Đang chờ " + this.targetAutoBossName + " xuất hiện...");
+                    Service.gI().sendThongBao(this, "[Tự Săn Boss] Đang chờ Boss xuất hiện (" + getAutoHuntBossSummary() + ")...");
                 }
+                return;
+            }
+
+            // Chờ 1.2 giây sau đòn đánh cuối để đảm bảo nhặt sạch vật phẩm rơi từ Boss vừa chết trước khi chuyển khu/map
+            if (this.zone != targetBoss.zone && !Util.canDoWithTime(this.lastTimeAutoHuntAttack, 1200)) {
                 return;
             }
 

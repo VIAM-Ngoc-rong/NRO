@@ -587,7 +587,7 @@ public class BossManager implements Runnable {
                         }
                     }
                 }
-                Thread.sleep(Math.max(1500 - (System.currentTimeMillis() - st), 50));
+                Thread.sleep(Math.max(500 - (System.currentTimeMillis() - st), 50));
             } catch (Exception ignored) {
             }
         }
