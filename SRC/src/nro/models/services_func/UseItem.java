@@ -90,25 +90,45 @@ public class UseItem {
         return instance;
     }
 
+    private boolean handleMoveItemSelection(Player player, int bagIndex) {
+        if (player == null || player.inventory == null || !player.inventory.moveItemMode) {
+            return false;
+        }
+        if (bagIndex < 0 || bagIndex >= player.inventory.itemsBag.size()) {
+            return false;
+        }
+        Item item = player.inventory.itemsBag.get(bagIndex);
+        if (item == null || !item.isNotNullItem() || item.template == null) {
+            return false;
+        }
+        if (player.inventory.pendingMoveBagIndex == bagIndex) {
+            nro.models.npc.NpcFactory.openMenuMoveSingleItem(player, bagIndex);
+            return true;
+        }
+        player.inventory.pendingMoveBagIndex = bagIndex;
+        InventoryService.gI().sendItemBags(player);
+        Service.gI().sendThongBao(player, "Đã chọn [" + item.template.name
+                + "]. Hãy bấm nút [1★]..[5★] ở hàng đầu để chuyển sang Tab đó (Hoặc bấm lại món này để mở bảng chọn Tab)!");
+        return true;
+    }
+
     private boolean handleVirtualBagSlotClick(Player player, int index) {
+        return handleVirtualBagSlotClick(player, index, false);
+    }
+
+    private boolean handleVirtualBagSlotClick(Player player, int index, boolean openMenuOnBtn6) {
         if (player == null || player.inventory == null || player.inventory.itemsBag == null || index < 0) {
             return false;
         }
         int bagIndex = player.inventory.resolveBagIndex(index);
         if (bagIndex <= -101 && bagIndex >= -105) {
             int targetTab = -101 - bagIndex;
-            int usedSlots = player.inventory.getUsedSlotsInBag();
-            int maxNonEmptyTab = usedSlots <= 0 ? 0
-                    : Math.min(nro.models.player.Inventory.NUM_QUICK_TABS - 1,
-                            (usedSlots - 1) / nro.models.player.Inventory.BAG_VIEW_SIZE);
-            if (targetTab > maxNonEmptyTab) {
-                player.inventory.switchBagTab(maxNonEmptyTab);
-                InventoryService.gI().sendItemBags(player);
-                InventoryService.gI().sendItemBody(player);
-                Service.gI().sendThongBao(player, "Trang " + (targetTab + 1) + " hiện chưa có vật phẩm (Đang có "
-                        + usedSlots + " món ở Trang 1" + (maxNonEmptyTab > 0 ? "-" + (maxNonEmptyTab + 1) : "")
-                        + ", từ món thứ " + (targetTab * nro.models.player.Inventory.BAG_VIEW_SIZE + 1)
-                        + " mới sang Trang " + (targetTab + 1) + ")!");
+            if (openMenuOnBtn6) {
+                nro.models.npc.NpcFactory.openMenuBagTab(player);
+                return true;
+            }
+            if (player.inventory.moveItemMode && player.inventory.pendingMoveBagIndex >= 0) {
+                InventoryService.gI().moveItemToTab(player, player.inventory.pendingMoveBagIndex, targetTab);
                 return true;
             }
             player.inventory.switchBagTab(targetTab);
@@ -117,17 +137,25 @@ public class UseItem {
             if (player.combineNew != null && !player.combineNew.itemsCombine.isEmpty()) {
                 nro.models.combine.CombineService.gI().reOpenItemCombine(player);
             }
-            int bankOffset = (player.inventory.currentBagSubPage > 0)
-                    ? (nro.models.player.Inventory.NUM_QUICK_TABS * nro.models.player.Inventory.BAG_VIEW_SIZE) : 0;
-            int sSlot = bankOffset + targetTab * nro.models.player.Inventory.BAG_VIEW_SIZE + 1;
-            int eSlot = bankOffset + (targetTab + 1) * nro.models.player.Inventory.BAG_VIEW_SIZE;
-            Service.gI().sendThongBao(player, "Đã chuyển sang Trang " + (targetTab + 1) + "/5 (Ô "
-                    + sSlot + "-" + eSlot + " | Bể chung " + usedSlots + "/"
-                    + player.inventory.itemsBag.size() + " ô)!");
+            int tabUsed = player.inventory.getUsedSlotsInTab(targetTab);
+            Service.gI().sendThongBao(player, "Đã chuyển sang Trang " + (targetTab + 1) + "/5 (Đang có "
+                    + tabUsed + "/120 món)"
+                    + (player.inventory.moveItemMode ? " - [Chế độ Chuyển Đồ đang BẬT]" : "!"));
             return true;
         }
         if (bagIndex == -106) {
-            nro.models.npc.NpcFactory.openMenuBagTab(player);
+            if (openMenuOnBtn6) {
+                nro.models.npc.NpcFactory.openMenuBagTab(player);
+                return true;
+            }
+            player.inventory.moveItemMode = !player.inventory.moveItemMode;
+            player.inventory.pendingMoveBagIndex = -1;
+            InventoryService.gI().sendItemBags(player);
+            if (player.inventory.moveItemMode) {
+                Service.gI().sendThongBao(player, "Đã BẬT chế độ Chuyển Đồ! Bấm vào món đồ cần chuyển, rồi bấm nút [1★]..[5★] ở hàng đầu (Bấm lại nút thứ 6 để Tắt).");
+            } else {
+                Service.gI().sendThongBao(player, "Đã TẮT chế độ Chuyển Đồ giữa các Tab!");
+            }
             return true;
         }
         if (!player.inventory.displayedBagIndices.isEmpty()) {
@@ -162,19 +190,16 @@ public class UseItem {
         if (player == null || player.inventory == null) {
             return;
         }
-        int usedSlots = player.inventory.getUsedSlotsInBag();
-        int maxNonEmptyTab = usedSlots <= 0 ? 0
-                : Math.min(nro.models.player.Inventory.NUM_QUICK_TABS - 1,
-                        (usedSlots - 1) / nro.models.player.Inventory.BAG_VIEW_SIZE);
-        int nextTab = (maxNonEmptyTab <= 0) ? 0 : ((player.inventory.currentBagTab + 1) % (maxNonEmptyTab + 1));
+        int nextTab = (player.inventory.currentBagTab + 1) % nro.models.player.Inventory.NUM_QUICK_TABS;
         player.inventory.switchBagTab(nextTab);
         InventoryService.gI().sendItemBags(player);
         InventoryService.gI().sendItemBody(player);
         if (player.combineNew != null && !player.combineNew.itemsCombine.isEmpty()) {
             nro.models.combine.CombineService.gI().reOpenItemCombine(player);
         }
-        Service.gI().sendThongBao(player, "Đã chuyển đầu túi sang Trang " + (nextTab + 1) + "/"
-                + nro.models.player.Inventory.NUM_QUICK_TABS + " (Dùng chung 1 bể)!");
+        Service.gI().sendThongBao(player, "Đã chuyển sang Trang " + (nextTab + 1) + "/"
+                + nro.models.player.Inventory.NUM_QUICK_TABS + " (Đang có "
+                + player.inventory.getUsedSlotsInTab(nextTab) + "/120 món)!");
     }
 
     public void getItem(MySession session, Message msg) {
@@ -201,6 +226,10 @@ public class UseItem {
                 return;
             }
             int bagIndex = player.inventory.resolveBagIndex(index);
+            if ((type == ITEM_BAG_TO_BODY || type == ITEM_BAG_TO_PET_BODY)
+                    && handleMoveItemSelection(player, bagIndex)) {
+                return;
+            }
             switch (type) {
                 case ITEM_BOX_TO_BODY_OR_BAG:
                     InventoryService.gI().itemBoxToBodyOrBag(player, index);
@@ -272,6 +301,9 @@ public class UseItem {
                             if (bagIndex < 0 || bagIndex >= player.inventory.itemsBag.size()) {
                                 return;
                             }
+                            if (where == 1 && handleMoveItemSelection(player, bagIndex)) {
+                                return;
+                            }
                             Item item = player.inventory.itemsBag.get(bagIndex);
                             if (item.isNotNullItem()) {
                                 if (nro.models.data.ItemData.isQuickTabButtonTemplateId(item.template.id)) {
@@ -320,30 +352,26 @@ public class UseItem {
                                     || (baseBtn > 0 && iditem >= baseBtn && iditem < baseBtn + 5)) {
                                 int targetTab = (iditem >= fixedBtn && iditem < fixedBtn + 5) ? (iditem - fixedBtn)
                                         : (iditem >= 24990 && iditem <= 24994) ? (iditem - 24990) : (iditem - baseBtn);
-                                int usedSlots = player.inventory.getUsedSlotsInBag();
-                                int maxNonEmptyTab = usedSlots <= 0 ? 0
-                                        : Math.min(nro.models.player.Inventory.NUM_QUICK_TABS - 1,
-                                                (usedSlots - 1) / nro.models.player.Inventory.BAG_VIEW_SIZE);
-                                if (targetTab > maxNonEmptyTab) {
-                                    player.inventory.switchBagTab(maxNonEmptyTab);
-                                    InventoryService.gI().sendItemBags(player);
-                                    InventoryService.gI().sendItemBody(player);
-                                    Service.gI().sendThongBao(player, "Trang " + (targetTab + 1) + " hiện chưa có vật phẩm (Đang có "
-                                            + usedSlots + " món ở Trang 1" + (maxNonEmptyTab > 0 ? "-" + (maxNonEmptyTab + 1) : "")
-                                            + ", từ món thứ " + (targetTab * nro.models.player.Inventory.BAG_VIEW_SIZE + 1)
-                                            + " mới sang Trang " + (targetTab + 1) + ")!");
+                                if (player.inventory.moveItemMode && player.inventory.pendingMoveBagIndex >= 0) {
+                                    InventoryService.gI().moveItemToTab(player, player.inventory.pendingMoveBagIndex, targetTab);
                                     return;
                                 }
                                 player.inventory.switchBagTab(targetTab);
                                 InventoryService.gI().sendItemBags(player);
                                 InventoryService.gI().sendItemBody(player);
-                                int sSlot = targetTab * nro.models.player.Inventory.BAG_VIEW_SIZE + 1;
-                                int eSlot = (targetTab + 1) * nro.models.player.Inventory.BAG_VIEW_SIZE;
-                                Service.gI().sendThongBao(player, "Đã chuyển sang Trang " + (targetTab + 1) + "/5 (Ô " + sSlot + "-" + eSlot + ")!");
+                                Service.gI().sendThongBao(player, "Đã chuyển sang Trang " + (targetTab + 1) + "/5 (Đang có "
+                                        + player.inventory.getUsedSlotsInTab(targetTab) + "/120 món)!");
                                 return;
                             }
                             if (nro.models.data.ItemData.isQuickTabButtonTemplateId(iditem)) {
-                                nro.models.npc.NpcFactory.openMenuBagTab(player);
+                                player.inventory.moveItemMode = !player.inventory.moveItemMode;
+                                player.inventory.pendingMoveBagIndex = -1;
+                                InventoryService.gI().sendItemBags(player);
+                                if (player.inventory.moveItemMode) {
+                                    Service.gI().sendThongBao(player, "Đã BẬT chế độ Chuyển Đồ! Bấm vào món đồ cần chuyển, rồi bấm nút [1★]..[5★] ở hàng đầu (Bấm lại nút thứ 6 để Tắt).");
+                                } else {
+                                    Service.gI().sendThongBao(player, "Đã TẮT chế độ Chuyển Đồ giữa các Tab!");
+                                }
                                 return;
                             }
                             Item item = finditem(player, iditem);
@@ -366,11 +394,16 @@ public class UseItem {
                             }
                             item = player.inventory.itemsBody.get(index);
                         } else {
-                            if (handleVirtualBagSlotClick(player, index)) {
+                            if (handleVirtualBagSlotClick(player, index, true)) {
                                 return;
                             }
                             int bagIndex = player.inventory.resolveBagIndex(index);
                             if (bagIndex < 0 || bagIndex >= player.inventory.itemsBag.size()) {
+                                return;
+                            }
+                            if (player.inventory.moveItemMode) {
+                                player.inventory.pendingMoveBagIndex = bagIndex;
+                                nro.models.npc.NpcFactory.openMenuMoveSingleItem(player, bagIndex);
                                 return;
                             }
                             item = player.inventory.itemsBag.get(bagIndex);

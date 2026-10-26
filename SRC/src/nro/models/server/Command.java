@@ -389,23 +389,10 @@ public class Command {
                 int totalTabs = player.inventory.getTotalBagTabs();
                 if (tabNum >= 1 && tabNum <= totalTabs) {
                     int targetTab = tabNum - 1;
-                    int usedSlots = player.inventory.getUsedSlotsInBag();
-                    int maxNonEmptyTab = usedSlots <= 0 ? 0
-                            : Math.min(totalTabs - 1, (usedSlots - 1) / nro.models.player.Inventory.BAG_VIEW_SIZE);
-                    if (targetTab > maxNonEmptyTab) {
-                        player.inventory.switchBagTab(maxNonEmptyTab);
-                        InventoryService.gI().sendItemBags(player);
-                        Service.gI().sendThongBao(player, "Trang " + tabNum + " hiện chưa có vật phẩm (Đang có "
-                                + usedSlots + " món ở Trang 1" + (maxNonEmptyTab > 0 ? "-" + (maxNonEmptyTab + 1) : "")
-                                + ", từ món thứ " + (targetTab * nro.models.player.Inventory.BAG_VIEW_SIZE + 1)
-                                + " mới sang Trang " + tabNum + ")!");
-                        return true;
-                    }
                     player.inventory.switchBagTab(targetTab);
                     InventoryService.gI().sendItemBags(player);
-                    int startSlot = targetTab * nro.models.player.Inventory.BAG_VIEW_SIZE + 1;
-                    int endSlot = tabNum * nro.models.player.Inventory.BAG_VIEW_SIZE;
-                    Service.gI().sendThongBao(player, "Đã chuyển sang Hành trang Trang " + tabNum + "/" + totalTabs + " (Ô " + startSlot + " - " + endSlot + ")!");
+                    Service.gI().sendThongBao(player, "Đã chuyển sang Hành trang Trang " + tabNum + "/" + totalTabs
+                            + " (Đang có " + player.inventory.getUsedSlotsInTab(targetTab) + "/120 món)!");
                 } else {
                     Service.gI().sendThongBao(player, "Bạn hiện có " + totalTabs + " Trang Hành trang (Gõ 'tab 1' đến 'tab " + totalTabs + "')!");
                 }

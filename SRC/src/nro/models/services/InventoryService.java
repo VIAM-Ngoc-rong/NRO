@@ -374,7 +374,51 @@ public class InventoryService {
             }
         }
 
-        // 2. Dồn các ô trống để thu gọn toàn bộ bể chung hành trang về đầu danh sách
+        if (list instanceof Inventory.BagList) {
+            int maxTabSlots = Inventory.NUM_QUICK_TABS * Inventory.BAG_VIEW_SIZE; // 600 ô (5 Tab x 120 ô)
+            // Nếu có vật phẩm nằm ngoài ô 600, đưa vào ô trống đầu tiên trong 5 Tab (0..599)
+            if (totalSize > maxTabSlots) {
+                for (int i = maxTabSlots; i < totalSize; i++) {
+                    Item overflow = list.get(i);
+                    if (overflow != null && overflow.isNotNullItem()) {
+                        for (int k = 0; k < maxTabSlots; k++) {
+                            Item slot = list.get(k);
+                            if (slot == null || !slot.isNotNullItem()) {
+                                list.set(k, overflow);
+                                list.set(i, ItemService.gI().createItemNull());
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            // 2. Dồn các ô trống ĐỘC LẬP trong phạm vi từng Tab (mỗi Tab 120 ô) để đồ ở Tab nào giữ nguyên ở Tab đó
+            for (int chunkStart = 0; chunkStart < totalSize; chunkStart += Inventory.BAG_VIEW_SIZE) {
+                int chunkEnd = Math.min(totalSize, chunkStart + Inventory.BAG_VIEW_SIZE);
+                for (int i = chunkStart; i < chunkEnd - 1; i++) {
+                    Item current = list.get(i);
+                    if (current == null || !current.isNotNullItem()) {
+                        int indexSwap = -1;
+                        for (int j = i + 1; j < chunkEnd; j++) {
+                            Item candidate = list.get(j);
+                            if (candidate != null && candidate.isNotNullItem()) {
+                                indexSwap = j;
+                                break;
+                            }
+                        }
+                        if (indexSwap != -1) {
+                            list.set(i, list.get(indexSwap));
+                            list.set(indexSwap, ItemService.gI().createItemNull());
+                        } else {
+                            break;
+                        }
+                    }
+                }
+            }
+            return;
+        }
+
+        // 2. Dồn các ô trống cho Rương đồ (itemsBox) và danh sách thông thường
         for (int i = 0; i < totalSize - 1; i++) {
             Item current = list.get(i);
             if (current == null || !current.isNotNullItem()) {
@@ -394,6 +438,121 @@ public class InventoryService {
                 }
             }
         }
+    }
+
+    public static boolean isImportantUtilityItem(Item item) {
+        if (item == null || !item.isNotNullItem() || item.template == null) {
+            return false;
+        }
+        int id = item.template.id;
+        int type = item.template.type;
+        return type == 6 || type == 12
+                || id == 454 || id == 921 || id == 1819
+                || id == 193 || id == 194
+                || id == 457 || id == 992
+                || id == 361 || id == 379;
+    }
+
+    public boolean moveItemToTab(Player player, int sourceBagIndex, int targetTab) {
+        if (player == null || player.inventory == null || player.inventory.itemsBag == null) {
+            return false;
+        }
+        if (sourceBagIndex < 0 || sourceBagIndex >= player.inventory.itemsBag.size()
+                || targetTab < 0 || targetTab >= Inventory.NUM_QUICK_TABS) {
+            return false;
+        }
+        Item sourceItem = player.inventory.itemsBag.get(sourceBagIndex);
+        if (sourceItem == null || !sourceItem.isNotNullItem() || sourceItem.template == null) {
+            player.inventory.pendingMoveBagIndex = -1;
+            return false;
+        }
+        String itemName = sourceItem.template.name;
+        int sourceTab = sourceBagIndex / Inventory.BAG_VIEW_SIZE;
+        if (sourceTab == targetTab) {
+            player.inventory.pendingMoveBagIndex = -1;
+            sendItemBags(player);
+            Service.gI().sendThongBao(player, itemName + " đã nằm ở Trang " + (targetTab + 1) + " rồi!");
+            return false;
+        }
+        int targetStart = targetTab * Inventory.BAG_VIEW_SIZE;
+        int targetEnd = Math.min(player.inventory.itemsBag.size(), targetStart + Inventory.BAG_VIEW_SIZE);
+
+        // Tìm ô trống đầu tiên trong Tab đích
+        for (int i = targetStart; i < targetEnd; i++) {
+            Item slot = player.inventory.itemsBag.get(i);
+            if (slot == null || !slot.isNotNullItem()) {
+                player.inventory.itemsBag.set(i, sourceItem);
+                player.inventory.itemsBag.set(sourceBagIndex, ItemService.gI().createItemNull());
+                player.inventory.pendingMoveBagIndex = -1;
+                sortItems(player.inventory.itemsBag);
+                sendItemBags(player);
+                Service.gI().sendThongBao(player, "Đã chuyển [" + itemName + "] từ Trang "
+                        + (sourceTab + 1) + " sang Trang " + (targetTab + 1) + "!");
+                return true;
+            }
+        }
+
+        // Nếu Tab đích đã đầy 120/120 ô: Tự động hoán đổi (swap) với món cuối cùng của Tab đích
+        int swapIdx = targetEnd - 1;
+        for (int i = targetEnd - 1; i >= targetStart; i--) {
+            Item cand = player.inventory.itemsBag.get(i);
+            if (cand != null && cand.isNotNullItem() && !isImportantUtilityItem(cand)) {
+                swapIdx = i;
+                break;
+            }
+        }
+        Item swappedItem = player.inventory.itemsBag.get(swapIdx);
+        String swappedName = (swappedItem != null && swappedItem.isNotNullItem() && swappedItem.template != null)
+                ? swappedItem.template.name : "vật phẩm";
+        player.inventory.itemsBag.set(swapIdx, sourceItem);
+        player.inventory.itemsBag.set(sourceBagIndex, swappedItem);
+        player.inventory.pendingMoveBagIndex = -1;
+        sortItems(player.inventory.itemsBag);
+        sendItemBags(player);
+        Service.gI().sendThongBao(player, "Trang " + (targetTab + 1) + " đã đầy 120 ô: Đã chuyển ["
+                + itemName + "] sang Trang " + (targetTab + 1) + " (đổi chỗ với [" + swappedName + "])!");
+        return true;
+    }
+
+    public int moveUtilityItemsToFirstTab(Player player) {
+        if (player == null || player.inventory == null || player.inventory.itemsBag == null) {
+            return 0;
+        }
+        int moved = 0;
+        int firstTabEnd = Math.min(player.inventory.itemsBag.size(), Inventory.BAG_VIEW_SIZE);
+        for (int i = firstTabEnd; i < player.inventory.itemsBag.size(); i++) {
+            Item it = player.inventory.itemsBag.get(i);
+            if (isImportantUtilityItem(it)) {
+                boolean placed = false;
+                for (int k = 0; k < firstTabEnd; k++) {
+                    Item slot = player.inventory.itemsBag.get(k);
+                    if (slot == null || !slot.isNotNullItem()) {
+                        player.inventory.itemsBag.set(k, it);
+                        player.inventory.itemsBag.set(i, ItemService.gI().createItemNull());
+                        placed = true;
+                        moved++;
+                        break;
+                    }
+                }
+                if (!placed) {
+                    for (int k = firstTabEnd - 1; k >= 0; k--) {
+                        Item cand = player.inventory.itemsBag.get(k);
+                        if (!isImportantUtilityItem(cand)) {
+                            player.inventory.itemsBag.set(k, it);
+                            player.inventory.itemsBag.set(i, cand);
+                            moved++;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        if (moved > 0) {
+            player.inventory.pendingMoveBagIndex = -1;
+            sortItems(player.inventory.itemsBag);
+            sendItemBags(player);
+        }
+        return moved;
     }
 
     public Item finditemBongHoa(Player player, int soluong) {
@@ -428,11 +587,19 @@ public class InventoryService {
                 return ItemService.gI().createItemNull();
             }
         }
+        int activeTab = Math.max(0, Math.min(Inventory.NUM_QUICK_TABS - 1, player.inventory.currentBagTab));
+        int tabStart = activeTab * Inventory.BAG_VIEW_SIZE;
+        int tabEnd = Math.min(player.inventory.itemsBag.size(), tabStart + Inventory.BAG_VIEW_SIZE);
+        for (int i = tabStart; i < tabEnd; i++) {
+            if (!player.inventory.itemsBag.get(i).isNotNullItem()) {
+                player.inventory.itemsBag.set(i, item);
+                return ItemService.gI().createItemNull();
+            }
+        }
         for (int i = 0; i < player.inventory.itemsBag.size(); i++) {
             if (!player.inventory.itemsBag.get(i).isNotNullItem()) {
                 player.inventory.itemsBag.set(i, item);
-                Item sItem = ItemService.gI().createItemNull();
-                return sItem;
+                return ItemService.gI().createItemNull();
             }
         }
         return item;
@@ -790,69 +957,41 @@ public class InventoryService {
             List<Integer> displayIndices = player.inventory.displayedBagIndices;
             displayIndices.clear();
 
-            // Hàng đầu tiên (6 ô: 0..5) ngay dưới khung Trang bị là thanh nút bấm nhanh: [1] [2] [3] [4] [5] [+]
+            // Hàng đầu tiên (6 ô: 0..5) ngay dưới khung Trang bị là thanh nút bấm nhanh: [1] [2] [3] [4] [5] [⇄]
             for (int t = 0; t < Inventory.NUM_QUICK_TABS; t++) {
-                displayIndices.add(-101 - t); // -101..-105 -> Trang 1..5 (mỗi trang 200 ô)
+                displayIndices.add(-101 - t); // -101..-105 -> Trang 1..5 (mỗi trang 120 ô độc lập)
             }
-            displayIndices.add(-106); // -106 -> Nút [+] Quản lý / Tiện ích túi đồ
+            displayIndices.add(-106); // -106 -> Nút [⇄] Chuyển đồ giữa các Tab & Tiện ích túi đồ
 
-            // Gom toàn bộ vật phẩm thực trong bể chung (itemsBag: 5 trang x 200 ô = 1000 ô)
-            List<Integer> allNonNull = new ArrayList<>();
+            int usedBag = 0;
             for (int i = 0; i < player.inventory.itemsBag.size(); i++) {
                 Item item = player.inventory.itemsBag.get(i);
                 if (item != null && item.isNotNullItem() && item.template != null
                         && !nro.models.data.ItemData.isQuickTabButtonTemplateId(item.template.id)) {
-                    allNonNull.add(i);
+                    usedBag++;
                 }
             }
 
-            // Hiển thị ĐÚNG các vật phẩm thuộc Trang đang chọn (1..5, mỗi khung màn hình 120 ô vật phẩm = 20 hàng x 6 cột):
-            // - Trang 1 (1★): Ô 1 - 120
-            // - Trang 2 (2★): Ô 121 - 240 (hiển thị ngay lập tức toàn bộ đồ từ 121..200 và trên 200!)
-            // - Trang 3 (3★): Ô 241 - 360
-            // - Trang 4 (4★): Ô 361 - 480
-            // - Trang 5 (5★): Ô 481 - 600 (bấm lần 2 khi > 600 món sẽ lật sang Ô 601 - 1000)
+            if (player.inventory.pendingMoveBagIndex >= 0) {
+                if (player.inventory.pendingMoveBagIndex >= player.inventory.itemsBag.size()
+                        || player.inventory.itemsBag.get(player.inventory.pendingMoveBagIndex) == null
+                        || !player.inventory.itemsBag.get(player.inventory.pendingMoveBagIndex).isNotNullItem()) {
+                    player.inventory.pendingMoveBagIndex = -1;
+                }
+            }
+
+            // Hiển thị ĐÚNG các vật phẩm thuộc Tab đang chọn (1..5, mỗi Tab độc lập 120 ô = 20 hàng x 6 cột):
             int activeTab = Math.max(0, Math.min(Inventory.NUM_QUICK_TABS - 1, player.inventory.currentBagTab));
-            int bankCapacity = Inventory.NUM_QUICK_TABS * Inventory.BAG_VIEW_SIZE; // 600
-            int bankOffset = (player.inventory.currentBagSubPage > 0 && allNonNull.size() > bankCapacity) ? bankCapacity : 0;
-            if (bankOffset == 0) {
-                player.inventory.currentBagSubPage = 0;
-            }
-            if (!allNonNull.isEmpty() && bankOffset + activeTab * Inventory.BAG_VIEW_SIZE >= allNonNull.size()) {
-                int remainInBank = Math.max(1, allNonNull.size() - bankOffset);
-                activeTab = Math.max(0, Math.min(Inventory.NUM_QUICK_TABS - 1, (remainInBank - 1) / Inventory.BAG_VIEW_SIZE));
-                player.inventory.currentBagTab = activeTab;
-            }
-            int tabStart = bankOffset + activeTab * Inventory.BAG_VIEW_SIZE;
-            int tabEnd = Math.min(allNonNull.size(), tabStart + Inventory.BAG_VIEW_SIZE);
+            player.inventory.currentBagTab = activeTab;
+            int bankOffset = 0;
+            int tabStart = activeTab * Inventory.BAG_VIEW_SIZE;
+            int tabEnd = Math.min(player.inventory.itemsBag.size(), tabStart + Inventory.BAG_VIEW_SIZE);
 
-            // Liên kết các vật phẩm tiện ích / phím tắt thiết yếu (Đậu thần, Bông tai, Capsule, TĐLT, Item bổ trợ...)
-            // từ Trang 1 xuống cuối Trang 2..5 để client luôn dùng được khi đang mở Trang 2..5
-            List<Integer> linkedUtilityIndices = new ArrayList<>();
-            if (tabStart > 0) {
-                Set<Short> presentTempIds = new HashSet<>();
-                for (int i = tabStart; i < tabEnd; i++) {
-                    Item it = player.inventory.itemsBag.get(allNonNull.get(i));
-                    if (it != null && it.isNotNullItem() && it.template != null) {
-                        presentTempIds.add(it.template.id);
-                    }
-                }
-                for (int i = 0; i < tabStart && i < allNonNull.size() && linkedUtilityIndices.size() < 24; i++) {
-                    int bagIdx = allNonNull.get(i);
-                    Item it = player.inventory.itemsBag.get(bagIdx);
-                    if (player.inventory.isLinkedUtilityItem(it) && presentTempIds.add(it.template.id)) {
-                        linkedUtilityIndices.add(bagIdx);
-                    }
-                }
-            }
-
-            int maxCurrentTabEntries = Math.max(96, 126 - linkedUtilityIndices.size());
-            for (int i = tabStart; i < tabEnd && displayIndices.size() < maxCurrentTabEntries; i++) {
-                displayIndices.add(allNonNull.get(i));
-            }
-            for (int utilBagIdx : linkedUtilityIndices) {
-                if (displayIndices.size() < 126 && !displayIndices.contains(utilBagIdx)) {
-                    displayIndices.add(utilBagIdx);
+            for (int i = tabStart; i < tabEnd && displayIndices.size() < 126; i++) {
+                Item item = player.inventory.itemsBag.get(i);
+                if (item != null && item.isNotNullItem() && item.template != null
+                        && !nro.models.data.ItemData.isQuickTabButtonTemplateId(item.template.id)) {
+                    displayIndices.add(i);
                 }
             }
 
@@ -876,13 +1015,8 @@ public class InventoryService {
             }
 
             int totalEntries = displayIndices.size();
-            int rawSlots = Math.max(42, totalEntries + 6);
-            int displaySlots = Math.min(126, ((rawSlots + 5) / 6) * 6);
+            int displaySlots = 126;
 
-            // Cấp ID template đã đăng ký sẵn trong ItemData (NRitem2):
-            // - Nút [1]..[5] và Nút [+] dùng ID cố định 2200..2205
-            // - Khi mở Hành trang bình thường: dùng 100% ID thật (realTempId) của vật phẩm
-            // - Chỉ khi đang mở Bà Hạt Mít (isCombining): cấp alias cho trang bị trùng ID
             java.util.Map<Short, Integer> equipCounts = new java.util.HashMap<>();
             short[] slotTempIds = new short[totalEntries];
             for (int idx = 0; idx < totalEntries; idx++) {
@@ -912,8 +1046,15 @@ public class InventoryService {
             }
 
             int curTab = activeTab + 1;
-            int usedBag = allNonNull.size();
-            int maxBag = player.inventory.itemsBag.size();
+            int maxBag = Inventory.NUM_QUICK_TABS * Inventory.BAG_VIEW_SIZE;
+            String pendingItemName = null;
+            if (player.inventory.moveItemMode && player.inventory.pendingMoveBagIndex >= 0
+                    && player.inventory.pendingMoveBagIndex < player.inventory.itemsBag.size()) {
+                Item pend = player.inventory.itemsBag.get(player.inventory.pendingMoveBagIndex);
+                if (pend != null && pend.isNotNullItem() && pend.template != null) {
+                    pendingItemName = pend.template.name;
+                }
+            }
 
             msg = new Message(-36);
             msg.writer().writeByte(0);
@@ -922,41 +1063,60 @@ public class InventoryService {
                 int bagIdx = displayIndices.get(idx);
                 if (bagIdx <= -101 && bagIdx >= -105) {
                     int tabNum = -100 - bagIdx; // 1..5
+                    int tabUsed = player.inventory.getUsedSlotsInTab(tabNum - 1);
                     boolean isCur = (tabNum == curTab);
-                    int sSlot = bankOffset + (tabNum - 1) * Inventory.BAG_VIEW_SIZE + 1;
-                    int eSlot = bankOffset + tabNum * Inventory.BAG_VIEW_SIZE;
                     msg.writer().writeShort(slotTempIds[idx]);
                     msg.writer().writeInt(1);
-                    msg.writer().writeUTF("Trang " + tabNum + " (Ô " + sSlot + "-" + eSlot + ")"
-                            + (isCur ? " [Đang mở]" : " [Bấm Sử dụng để mở Trang " + tabNum + "]"));
-                    msg.writer().writeUTF("Bể chung hành trang: " + usedBag + "/" + maxBag + " ô");
+                    if (pendingItemName != null) {
+                        msg.writer().writeUTF("Chuyển [" + pendingItemName + "] -> Trang " + tabNum
+                                + " (Đang có " + tabUsed + "/120 món)");
+                        msg.writer().writeUTF("Bấm Sử dụng vào nút này để chuyển ngay sang Trang " + tabNum + "!");
+                    } else {
+                        msg.writer().writeUTF("Trang " + tabNum + " (Đang có " + tabUsed + "/120 món)"
+                                + (isCur ? " [Đang mở]" : " [Bấm Sử dụng để mở Trang " + tabNum + "]"));
+                        msg.writer().writeUTF("Bấm nút thứ 6 [+] ở góc phải hàng đầu để Chuyển Đồ giữa các Tab");
+                    }
                     if (isCur) {
                         msg.writer().writeByte(3);
                         msg.writer().writeByte(102); // Hiển thị số 1★..5★ ở góc trên bên trái ô
                         msg.writer().writeShort(tabNum);
                         msg.writer().writeByte(73);  // Tô nền Xanh Lá nổi bật cho Trang đang mở
                         msg.writer().writeShort(tabNum);
-                        msg.writer().writeByte(31);  // Số lượng vật phẩm trong bể chung
-                        msg.writer().writeShort(usedBag);
+                        msg.writer().writeByte(31);  // Số lượng vật phẩm trong Tab
+                        msg.writer().writeShort(tabUsed);
                     } else {
                         msg.writer().writeByte(2);
                         msg.writer().writeByte(102); // Hiển thị số 1★..5★ ở góc trên bên trái ô
                         msg.writer().writeShort(tabNum);
-                        msg.writer().writeByte(30);
-                        msg.writer().writeShort(0);
+                        msg.writer().writeByte(31);
+                        msg.writer().writeShort(tabUsed);
                     }
                     continue;
                 }
                 if (bagIdx == -106) {
+                    boolean isMove = player.inventory.moveItemMode;
                     msg.writer().writeShort(slotTempIds[idx]);
                     msg.writer().writeInt(1);
-                    msg.writer().writeUTF("Quản lý & Mở rộng Hành trang (" + usedBag + "/" + maxBag + " ô)");
-                    msg.writer().writeUTF("Bấm để mở thêm ô túi đồ hoặc bật Menu Tiện Ích");
-                    msg.writer().writeByte(2);
-                    msg.writer().writeByte(31);
-                    msg.writer().writeShort(usedBag);
-                    msg.writer().writeByte(30);
-                    msg.writer().writeShort(0);
+                    if (isMove) {
+                        msg.writer().writeUTF("Chế độ Chuyển Đồ Sang Tab Khác: [ĐANG BẬT]"
+                                + (pendingItemName != null ? " (Đang chọn: " + pendingItemName + ")" : ""));
+                        msg.writer().writeUTF("B1: Bấm vào món đồ cần chuyển -> B2: Bấm nút 1★..5★! (Bấm lại nút này để Tắt)");
+                        msg.writer().writeByte(3);
+                        msg.writer().writeByte(73); // Tô nền Xanh Lá khi đang BẬT chế độ Chuyển Đồ
+                        msg.writer().writeShort(1);
+                        msg.writer().writeByte(31);
+                        msg.writer().writeShort(usedBag);
+                        msg.writer().writeByte(30);
+                        msg.writer().writeShort(0);
+                    } else {
+                        msg.writer().writeUTF("Chuyển Đồ Giữa Các Tab [Đang Tắt] (Tổng: " + usedBag + "/" + maxBag + " ô)");
+                        msg.writer().writeUTF("Bấm Sử dụng để BẬT chuyển đồ sang Tab khác (Bỏ ra đất: Mở Menu)");
+                        msg.writer().writeByte(2);
+                        msg.writer().writeByte(31);
+                        msg.writer().writeShort(usedBag);
+                        msg.writer().writeByte(30);
+                        msg.writer().writeShort(0);
+                    }
                     continue;
                 }
                 Item item = player.inventory.itemsBag.get(bagIdx);
@@ -964,11 +1124,19 @@ public class InventoryService {
                     msg.writer().writeShort(-1);
                     continue;
                 }
+                boolean isSelectedMove = player.inventory.moveItemMode && bagIdx == player.inventory.pendingMoveBagIndex;
                 msg.writer().writeShort(slotTempIds[idx]);
                 msg.writer().writeInt(item.quantity);
-                msg.writer().writeUTF(item.getInfo());
-                msg.writer().writeUTF(item.getContent());
-                msg.writer().writeByte(item.itemOptions.size()); //options
+                msg.writer().writeUTF((isSelectedMove ? "[ĐANG CHỌN CHUYỂN TAB] " : "") + item.getInfo());
+                msg.writer().writeUTF(isSelectedMove
+                        ? "Hãy bấm nút 1★..5★ ở hàng đầu để chuyển sang Tab đó (Hoặc bấm lại món này để chọn Tab)!"
+                        : item.getContent());
+                int extraOpt = isSelectedMove ? 1 : 0;
+                msg.writer().writeByte(item.itemOptions.size() + extraOpt); //options
+                if (isSelectedMove) {
+                    msg.writer().writeByte(73); // Tô nền Xanh Lá cho món đồ đang chọn để chuyển Tab
+                    msg.writer().writeShort(1);
+                }
                 for (int j = 0; j < item.itemOptions.size(); j++) {
                     Item.ItemOption io = item.itemOptions.get(j);
                     if (io.optionTemplate.id == 213) {
@@ -1275,6 +1443,18 @@ public class InventoryService {
 
         //add item vào ô mới nếu còn dư hoặc không thể cộng dồn
         if (itemAdd.quantity > 0) {
+            if (items instanceof Inventory.BagList bagList && bagList.getOwner() != null) {
+                int activeTab = Math.max(0, Math.min(Inventory.NUM_QUICK_TABS - 1, bagList.getOwner().currentBagTab));
+                int tabStart = activeTab * Inventory.BAG_VIEW_SIZE;
+                int tabEnd = Math.min(items.size(), tabStart + Inventory.BAG_VIEW_SIZE);
+                for (int i = tabStart; i < tabEnd; i++) {
+                    if (!items.get(i).isNotNullItem()) {
+                        items.set(i, ItemService.gI().copyItem(itemAdd));
+                        itemAdd.quantity = 0;
+                        return true;
+                    }
+                }
+            }
             for (int i = 0; i < items.size(); i++) {
                 if (!items.get(i).isNotNullItem()) {
                     items.set(i, ItemService.gI().copyItem(itemAdd));
