@@ -383,6 +383,7 @@ public class ServerNotify extends Thread {
 
         // Mục Tổng quan Tỷ lệ Server & Giftcode đang mở
         StringBuilder liveSb = new StringBuilder();
+        liveSb.append("• Thời gian Server đã hoạt động: ").append(ServerManager.getFormattedUptimeHours()).append(" (Cộng dồn liên tục)\n");
         liveSb.append("• Tỷ lệ TNSM toàn Server: x").append(Manager.RATE_EXP_SERVER).append("\n");
         liveSb.append("• Vàng rơi từ quái: ").append((EventManager.DOUBLE_GOLD || TimeUtil.isWeekend()) ? "ĐANG X2 VÀNG TOÀN SERVER" : "Mặc định (Cuối tuần tự động X2)").append("\n");
         liveSb.append("• Tỷ lệ rơi Vật Phẩm Sự Kiện: ").append(EventManager.EVENT_DROP_RATE).append("%\n\n");

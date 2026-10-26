@@ -880,7 +880,19 @@ public final class Manager {
                     + "WHEN 153 THEN '+#% sát thương chiêu phát nổ' "
                     + "WHEN 159 THEN '+#% sát thương đòn chưởng' "
                     + "WHEN 210 THEN '# dòng chỉ số bí ẩn' "
-                    + "ELSE NAME END WHERE id IN (66, 153, 159, 210)")) {
+                    + "WHEN 237 THEN 'Set Nail chiến binh Namếc (+12% HP/Giáp, +8% SĐ mỗi món)' "
+                    + "WHEN 238 THEN '$[2] +24% HP/Giáp, +16% SĐ, +15% SĐ chí mạng' "
+                    + "WHEN 239 THEN '$[4] +48% HP/Giáp, +32% SĐ, +20% SĐCM, -25% hồi & +50% SĐ Masenko' "
+                    + "WHEN 240 THEN '$[5] +80% HP/Giáp, +50% SĐ, +30% SĐCM, -50% hồi & +100% SĐ Masenko' "
+                    + "WHEN 241 THEN 'Set Cađic M (+10% SĐ, +8% HP/Giáp mỗi món)' "
+                    + "WHEN 242 THEN '$[2] +20% SĐ, +16% HP/Giáp, +10% SĐCM, Tăng phạm vi phát nổ' "
+                    + "WHEN 243 THEN '$[4] +40% SĐ, +32% HP/Giáp, +15% SĐCM, +15% SĐ phát nổ' "
+                    + "WHEN 244 THEN '$[5] +60% SĐ, +50% HP/Giáp, +25% SĐCM, +30% SĐ phát nổ' "
+                    + "WHEN 245 THEN 'Set Thần Vũ Trụ Kaio (+10% SĐ/HP/Giáp, +4% CM mỗi món)' "
+                    + "WHEN 246 THEN '$[2] +20% SĐ/HP/Giáp, +8% CM, +10% SĐ chí mạng' "
+                    + "WHEN 247 THEN '$[4] +40% SĐ/HP/Giáp, +16% CM, +15% SĐCM, Giảm hao HP & +50% SĐ Kaioken' "
+                    + "WHEN 248 THEN '$[5] +60% SĐ/HP/Giáp, +20% CM, +25% SĐCM, Giảm hao HP & +100% SĐ Kaioken' "
+                    + "ELSE NAME END WHERE id IN (66, 153, 159, 210, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248)")) {
                 psUpdateOpt.executeUpdate();
             } catch (Exception ignored) {
             }
@@ -890,16 +902,24 @@ public final class Manager {
                 ItemOptionTemplate optionTemp = new ItemOptionTemplate();
                 optionTemp.id = rs.getInt("id");
                 optionTemp.name = rs.getString("name");
-                if (optionTemp.id == 66) {
-                    optionTemp.name = "+#% sát thương chiêu Laze";
-                } else if (optionTemp.id == 73) {
-                    optionTemp.name = "$Đang mở Trang # ở đầu Bể Chung";
-                } else if (optionTemp.id == 153) {
-                    optionTemp.name = "+#% sát thương chiêu phát nổ";
-                } else if (optionTemp.id == 159) {
-                    optionTemp.name = "+#% sát thương đòn chưởng";
-                } else if (optionTemp.id == 210) {
-                    optionTemp.name = "# dòng chỉ số bí ẩn";
+                switch (optionTemp.id) {
+                    case 66 -> optionTemp.name = "+#% sát thương chiêu Laze";
+                    case 73 -> optionTemp.name = "$Đang mở Trang # ở đầu Bể Chung";
+                    case 153 -> optionTemp.name = "+#% sát thương chiêu phát nổ";
+                    case 159 -> optionTemp.name = "+#% sát thương đòn chưởng";
+                    case 210 -> optionTemp.name = "# dòng chỉ số bí ẩn";
+                    case 237 -> optionTemp.name = "Set Nail chiến binh Namếc (+12% HP/Giáp, +8% SĐ mỗi món)";
+                    case 238 -> optionTemp.name = "$[2] +24% HP/Giáp, +16% SĐ, +15% SĐ chí mạng";
+                    case 239 -> optionTemp.name = "$[4] +48% HP/Giáp, +32% SĐ, +20% SĐCM, -25% hồi & +50% SĐ Masenko";
+                    case 240 -> optionTemp.name = "$[5] +80% HP/Giáp, +50% SĐ, +30% SĐCM, -50% hồi & +100% SĐ Masenko";
+                    case 241 -> optionTemp.name = "Set Cađic M (+10% SĐ, +8% HP/Giáp mỗi món)";
+                    case 242 -> optionTemp.name = "$[2] +20% SĐ, +16% HP/Giáp, +10% SĐCM, Tăng phạm vi phát nổ";
+                    case 243 -> optionTemp.name = "$[4] +40% SĐ, +32% HP/Giáp, +15% SĐCM, +15% SĐ phát nổ";
+                    case 244 -> optionTemp.name = "$[5] +60% SĐ, +50% HP/Giáp, +25% SĐCM, +30% SĐ phát nổ";
+                    case 245 -> optionTemp.name = "Set Thần Vũ Trụ Kaio (+10% SĐ/HP/Giáp, +4% CM mỗi món)";
+                    case 246 -> optionTemp.name = "$[2] +20% SĐ/HP/Giáp, +8% CM, +10% SĐ chí mạng";
+                    case 247 -> optionTemp.name = "$[4] +40% SĐ/HP/Giáp, +16% CM, +15% SĐCM, Giảm hao HP & +50% SĐ Kaioken";
+                    case 248 -> optionTemp.name = "$[5] +60% SĐ/HP/Giáp, +20% CM, +25% SĐCM, Giảm hao HP & +100% SĐ Kaioken";
                 }
                 ITEM_OPTION_TEMPLATES.add(optionTemp);
             }

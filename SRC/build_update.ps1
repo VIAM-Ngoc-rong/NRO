@@ -7,11 +7,21 @@ javac -proc:none -encoding UTF-8 -d build/classes -cp "build/classes;lib/*" `
     src/nro/models/data/DataGame.java `
     src/nro/models/data/ItemData.java `
     src/nro/models/database/ShopDAO.java `
+    src/nro/models/event/EventManager.java `
+    src/nro/models/server/ServerManager.java `
+    src/nro/models/server/AdminWebServer.java `
+    src/nro/models/server/ServerNotify.java `
     src/nro/models/server/Manager.java `
     src/nro/models/server/Command.java `
     src/nro/models/server/Controller.java `
     src/nro/models/player/Inventory.java `
+    src/nro/models/player/NPoint.java `
+    src/nro/models/player/SetClothes.java `
     src/nro/models/player/Player.java `
+    src/nro/models/mob/Mob.java `
+    src/nro/models/map/Zone.java `
+    src/nro/models/map/service/ChangeMapService.java `
+    src/nro/models/services/EffectSkillService.java `
     src/nro/models/services/InventoryService.java `
     src/nro/models/services/ItemService.java `
     src/nro/models/services/Service.java `
@@ -45,8 +55,12 @@ $classRoot = Join-Path $PSScriptRoot "build\classes"
 $pkgs = @(
     "nro\models\data",
     "nro\models\database",
+    "nro\models\event",
     "nro\models\server",
     "nro\models\player",
+    "nro\models\mob",
+    "nro\models\map",
+    "nro\models\map\service",
     "nro\models\services",
     "nro\models\services_func",
     "nro\models\combine",

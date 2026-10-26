@@ -751,14 +751,14 @@ public class SkillService {
                     //nổ
                     player.playerSkill.prepareTuSat = !player.playerSkill.prepareTuSat;
                     int rangeBom = SkillUtil.getRangeBom(player.playerSkill.skillSelect.point);
-                    if (player.setClothes.cadicM == 2) {
-                        rangeBom = SkillUtil.getRangeBom(player.playerSkill.skillSelect.point) + 200;
+                    if (player.setClothes.cadicM >= 2) {
+                        rangeBom = SkillUtil.getRangeBom(player.playerSkill.skillSelect.point) + 100;
                     }
                     long dame = player.nPoint.hp;
                     if (player.setClothes.cadicM == 4) {
-                        dame += (long) player.nPoint.hpMax * 20L / 100L;
-                    } else if (player.setClothes.cadicM == 5) {
-                        dame += (long) player.nPoint.hpMax * 50L / 100L;
+                        dame += (long) player.nPoint.hpMax * 15L / 100L;
+                    } else if (player.setClothes.cadicM >= 5) {
+                        dame += (long) player.nPoint.hpMax * 30L / 100L;
                     }
                     if (player.nPoint.tlBom > 0) {
                         dame += dame * player.nPoint.tlBom / 100L;
@@ -1192,11 +1192,10 @@ public class SkillService {
                     subTimeParam = intrinsic.param1;
                 }
                 if (player.setClothes.nail == 4) {
-                    subTimeParam = subTimeParam + 20; // Nếu nail = 4, cộng thêm 20
+                    subTimeParam = subTimeParam + 25;
                 }
-
-                if (player.setClothes.nail == 5) {
-                    subTimeParam = subTimeParam + 50; // Nếu nail = 5, cộng thêm 50
+                if (player.setClothes.nail >= 5) {
+                    subTimeParam = subTimeParam + 50;
                 }
             }
         }

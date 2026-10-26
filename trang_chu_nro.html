@@ -974,10 +974,14 @@
         }
 
         function formatUptime(sec) {
-            sec = Number(sec || 0);
+            sec = Math.max(0, Math.floor(Number(sec || 0)));
+            const hoursVal = sec / 3600;
+            const hoursStr = hoursVal >= 10
+                ? hoursVal.toFixed(1).replace(/\.0$/, '')
+                : hoursVal.toFixed(2).replace(/\.00$/, '').replace(/(\.\d)0$/, '$1');
             const h = Math.floor(sec / 3600);
             const m = Math.floor((sec % 3600) / 60);
-            return h > 0 ? `${h}h ${m}p` : `${m} phút`;
+            return h > 0 ? `${hoursStr} giờ (${h}g ${m}p)` : `${hoursStr} giờ (${m} phút)`;
         }
 
         function switchTab(tabId) {
@@ -1015,7 +1019,7 @@
             const onlineCount = data.onlineCount || 0;
             const bosses = Array.isArray(data.bosses) ? data.bosses : [];
             const giftcodes = Array.isArray(data.giftcodes) ? data.giftcodes : [];
-            const uptimeSec = data.uptimeSeconds !== undefined ? data.uptimeSeconds : (data.uptimeSec || 0);
+            const uptimeSec = data.totalUptimeSec !== undefined ? data.totalUptimeSec : (data.uptimeSeconds !== undefined ? data.uptimeSeconds : (data.uptimeSec || 0));
 
             document.getElementById('liveOnlineCount').textContent = onlineCount;
             document.getElementById('liveExpRate').textContent = 'x' + (data.expRate || 1);
@@ -1027,7 +1031,7 @@
             document.getElementById('statOnline').textContent = onlineCount + ' / ' + (data.maxPlayers || 1000);
             document.getElementById('statExp').textContent = 'x' + (data.expRate || 1);
             document.getElementById('statBoss').textContent = displayBosses.length + ' Boss';
-            document.getElementById('serverUptimeBadge').textContent = 'Uptime: ' + formatUptime(uptimeSec);
+            document.getElementById('serverUptimeBadge').textContent = 'Đã hoạt động: ' + formatUptime(uptimeSec);
 
             if (data.totalAccounts !== undefined) {
                 document.getElementById('statTotalAcc').textContent = data.totalAccounts;

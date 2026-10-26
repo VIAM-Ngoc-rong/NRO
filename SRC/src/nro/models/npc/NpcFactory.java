@@ -1101,6 +1101,7 @@ public class NpcFactory {
         int curTab = player.inventory.currentBagTab + 1;
         int totalTabs = player.inventory.getTotalBagTabs();
         String npcSay = "|7|=== BẢNG ĐIỀU KHIỂN TIỆN ÍCH ===\n"
+                + "|2|Thời gian Server đã hoạt động: |1|" + nro.models.server.ServerManager.getFormattedUptimeHours() + "\n"
                 + "|2|Auto Buff Đậu (Sư phụ & Đệ): " + (player.isAutoBuffPea ? "|1|[Đang Bật]" : "|7|[Đang Tắt]") + "\n"
                 + "|2|Auto Treo Quái (Chống đầy túi): " + (player.isAutoCleanBag ? "|1|[Đang Bật]" : "|7|[Đang Tắt]") + "\n"
                 + "|2|Auto Săn Boss: " + (player.isAutoHuntBoss ? ("|1|[" + player.getAutoHuntBossSummary() + "]") : "|7|[Đang Tắt]") + "\n"

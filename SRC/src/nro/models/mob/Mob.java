@@ -645,39 +645,84 @@ public class Mob {
             }
         }
 
-        //======================== Vàng rơi từ quái (Tối đa 50k cơ bản, tăng thêm nếu có đồ +% vàng) ========================
-        int baseDropGoldRate = 50;
+        //======================== Vàng rơi từ quái (Tăng rõ rệt cả Tỷ lệ rơi & Số lượng vàng khi mặc đồ +% vàng) ========================
+        int baseDropGoldRate = 45;
         int baseVang = 0;
         if (MapService.gI().isMap3Planets(mapid)) {
-            baseDropGoldRate = 50;
-            baseVang = Util.nextInt(3000, 10000);
+            baseDropGoldRate = 45;
+            baseVang = Util.nextInt(4000, 8000);
         } else if (MapService.gI().isMapNappa(mapid)) {
             baseDropGoldRate = 50;
-            baseVang = Util.nextInt(10000, 25000);
+            baseVang = Util.nextInt(12000, 20000);
         } else if (MapService.gI().isMapCold(mapid)) {
-            baseDropGoldRate = 65;
-            baseVang = Util.nextInt(30000, 50000);
-        } else if (MapService.gI().isMapTuongLai(mapid) || MapService.gI().isMapPhoBan(mapid)) {
             baseDropGoldRate = 55;
-            baseVang = Util.nextInt(20000, 40000);
+            baseVang = Util.nextInt(32000, 45000);
+        } else if (MapService.gI().isMapTuongLai(mapid) || MapService.gI().isMapPhoBan(mapid)) {
+            baseDropGoldRate = 50;
+            baseVang = Util.nextInt(22000, 32000);
         } else {
             baseDropGoldRate = 50;
-            baseVang = Util.nextInt(20000, 40000);
+            baseVang = Util.nextInt(22000, 32000);
         }
 
-        // Tính tổng % vàng cộng thêm từ trang bị (option 100 / 156) của chủ và đệ tử
-        int totalTlGold = 0;
-        if (plOwner.nPoint != null) {
-            totalTlGold += plOwner.nPoint.tlGold;
+        // Tính tổng % vàng cộng thêm từ trang bị (Option 100, 155, 156, Set Gohan 233/234, Danh hiệu, Cỏ 4 lá) của cả Sư phụ & Đệ tử
+        int ownerTlGold = (plOwner.nPoint != null) ? plOwner.nPoint.tlGold : 0;
+        int bodyTlGold = 0;
+        int gohanPieces = 0;
+        if (plOwner.inventory != null && plOwner.inventory.itemsBody != null) {
+            for (Item item : plOwner.inventory.itemsBody) {
+                if (item != null && item.isNotNullItem() && item.itemOptions != null) {
+                    boolean hasGohan = false;
+                    for (Item.ItemOption op : item.itemOptions) {
+                        if (op != null && op.optionTemplate != null) {
+                            int opId = op.optionTemplate.id;
+                            if (opId == 100 || opId == 155 || opId == 156) {
+                                bodyTlGold += op.param;
+                            } else if (opId == 233 || opId == 234) {
+                                hasGohan = true;
+                            }
+                        }
+                    }
+                    if (hasGohan) {
+                        gohanPieces++;
+                    }
+                }
+            }
         }
-        if (plOwner.pet != null && plOwner.pet.nPoint != null) {
-            totalTlGold += plOwner.pet.nPoint.tlGold;
+        if (gohanPieces >= 5) {
+            bodyTlGold += 30;
+        } else if (gohanPieces >= 1) {
+            bodyTlGold += gohanPieces * 5;
+        }
+        int totalTlGold = Math.max(ownerTlGold, bodyTlGold);
+
+        if (plOwner.pet != null) {
+            int petPointGold = (plOwner.pet.nPoint != null) ? plOwner.pet.nPoint.tlGold : 0;
+            int petBodyGold = 0;
+            if (plOwner.pet.inventory != null && plOwner.pet.inventory.itemsBody != null) {
+                for (Item item : plOwner.pet.inventory.itemsBody) {
+                    if (item != null && item.isNotNullItem() && item.itemOptions != null) {
+                        for (Item.ItemOption op : item.itemOptions) {
+                            if (op != null && op.optionTemplate != null) {
+                                int opId = op.optionTemplate.id;
+                                if (opId == 100 || opId == 155 || opId == 156) {
+                                    petBodyGold += op.param;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            totalTlGold += Math.max(petPointGold, petBodyGold);
         }
         if (plOwner.itemTime != null && plOwner.itemTime.isUseCoBonLa) {
-            totalTlGold += 15;
+            totalTlGold += 25;
+        }
+        if (plOwner.effectSkill != null && plOwner.effectSkill.isChibi && plOwner.typeChibi == 0) {
+            totalTlGold += 100;
         }
 
-        int finalGoldDropRate = Math.min(90, baseDropGoldRate + (totalTlGold > 0 ? Math.min(25, totalTlGold / 4) : 0));
+        int finalGoldDropRate = Math.min(95, baseDropGoldRate + (totalTlGold > 0 ? Math.min(45, (totalTlGold + 1) / 2) : 0));
         if (Util.isTrue(finalGoldDropRate, 100)) {
             long vangLong = (long) baseVang * (100L + totalTlGold) / 100L;
             if (TimeUtil.isWeekend() || EventManager.DOUBLE_GOLD) {
@@ -736,9 +781,16 @@ public class Mob {
                         }
                     }
                 }
+                if (plOwner.setClothes != null) {
+                    if (plOwner.setClothes.gohan >= 5) {
+                        totalOption236Param += 150;
+                    } else if (plOwner.setClothes.gohan >= 1) {
+                        totalOption236Param += plOwner.setClothes.gohan * 25;
+                    }
+                }
 
-                if (totalOption236Param > 100) {
-                    totalOption236Param = 100;
+                if (totalOption236Param > 250) {
+                    totalOption236Param = 250;
                 }
 
                 double percentFromOption236 = Math.pow(totalOption236Param / 100.0, 1.5) * 20.0; // max 20%

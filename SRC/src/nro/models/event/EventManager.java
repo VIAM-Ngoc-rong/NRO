@@ -116,6 +116,10 @@ public class EventManager {
     }
 
     public static synchronized void saveRuntimeConfig() {
+        try {
+            nro.models.server.ServerManager.saveServerUptime();
+        } catch (Exception ignored) {
+        }
         try (Connection con = LocalManager.getConnection()) {
             ensureConfigTable(con);
             String sql = "INSERT INTO admin_runtime_config (cfg_key, cfg_val) VALUES (?, ?) "

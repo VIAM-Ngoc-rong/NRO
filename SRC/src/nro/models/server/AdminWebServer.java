@@ -390,7 +390,9 @@ public class AdminWebServer {
         long usedRamMb = (rt.totalMemory() - rt.freeMemory()) / (1024 * 1024);
         long maxRamMb = rt.maxMemory() / (1024 * 1024);
         int cpuCores = rt.availableProcessors();
-        long uptimeSec = (System.currentTimeMillis() - START_TIME_MS) / 1000;
+        long sessionUptimeSec = ServerManager.getSessionUptimeSeconds();
+        long totalUptimeSec = Math.max(sessionUptimeSec, ServerManager.getTotalUptimeSeconds());
+        double uptimeHours = ServerManager.getTotalUptimeHours();
         int threadsCount = Thread.activeCount();
 
         List<Player> onlinePlayers = new ArrayList<>(Client.gI().getPlayers());
@@ -401,7 +403,11 @@ public class AdminWebServer {
         sb.append("{\"ok\":true");
         sb.append(",\"serverName\":").append(jsonStr(ServerManager.NAME));
         sb.append(",\"timeStart\":").append(jsonStr(ServerManager.timeStart != null ? ServerManager.timeStart : ""));
-        sb.append(",\"uptimeSec\":").append(uptimeSec);
+        sb.append(",\"firstTimeStart\":").append(jsonStr(ServerManager.firstStartTime != null ? ServerManager.firstStartTime : ""));
+        sb.append(",\"uptimeSec\":").append(totalUptimeSec);
+        sb.append(",\"totalUptimeSec\":").append(totalUptimeSec);
+        sb.append(",\"sessionUptimeSec\":").append(sessionUptimeSec);
+        sb.append(",\"uptimeHours\":").append(uptimeHours);
         sb.append(",\"usedRamMb\":").append(usedRamMb);
         sb.append(",\"maxRamMb\":").append(maxRamMb);
         sb.append(",\"cpuCores\":").append(cpuCores);

@@ -421,7 +421,7 @@ public class Zone {
                                     msg.writer().writeShort(itemMapId);
                                     switch (itemType) {
                                         case 9, 10, 34 -> {
-                                            msg.writer().writeUTF(item.quantity > Short.MAX_VALUE ? "Bạn vừa nhận được " + Util.formatNumber(item.quantity) + " " + item.template.name : "");
+                                            msg.writer().writeUTF("Bạn vừa nhận được " + Util.formatNumber(item.quantity) + " " + item.template.name);
                                         }
                                         default -> {
                                             switch (item.template.id) {
@@ -445,7 +445,7 @@ public class Zone {
                                             }
                                         }
                                     }
-                                    msg.writer().writeShort(item.quantity > Short.MAX_VALUE ? 9999 : item.quantity);
+                                    msg.writer().writeShort(item.quantity > Short.MAX_VALUE ? Short.MAX_VALUE : item.quantity);
                                     player.sendMessage(msg);
                                     msg.cleanup();
                                     Service.gI().sendToAntherMePickItem(player, itemMapId);

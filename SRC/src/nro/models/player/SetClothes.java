@@ -37,6 +37,7 @@ public class SetClothes {
 
     public byte worldcup;
     public byte setDHD;
+    public byte gohan;
 
     public boolean godClothes;
     public int ctHaiTac = -1;
@@ -153,6 +154,11 @@ public class SetClothes {
                             setDHD++;
                         }
                         break;
+                    case 233:
+                    case 234:
+                        isActSet = true;
+                        gohan++;
+                        break;
                     case 245:
                     case 246:
                     case 247:
@@ -201,6 +207,7 @@ public class SetClothes {
         this.cadicM = 0;
         this.setDHD = 0;
         this.worldcup = 0;
+        this.gohan = 0;
         this.godClothes = false;
         this.ctHaiTac = -1;
     }

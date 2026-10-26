@@ -54,6 +54,11 @@ import nro.models.shop_ky_gui.ConsignShopManager;
 public class ServerManager {
 
     public static String timeStart;
+    public static String firstStartTime;
+    public static final long SESSION_START_MS = System.currentTimeMillis();
+    private static volatile long accumulatedUptimeSec = 0L;
+    private static volatile long lastUptimeCheckpointMs = System.currentTimeMillis();
+    private static final String UPTIME_FILE_PATH = "data/server_uptime.properties";
     public static final Map<Object, Object> CLIENTS = new HashMap<>();
     public static String NAME_SERVER = "Ngọc Rồng VIAM";
     public static String DOMAIN = "Server 1";
@@ -65,6 +70,148 @@ public class ServerManager {
     public static volatile boolean isRunning = true;
     private static volatile boolean isSavedOnClose = false;
     private ScheduledExecutorService topUpdater;
+
+    public static synchronized void loadServerUptime() {
+        long dbUptimeSec = 0L;
+        String dbFirstStart = null;
+        try (Connection con = LocalManager.getConnection()) {
+            EventManager.ensureConfigTable(con);
+            try (PreparedStatement ps = con.prepareStatement(
+                    "SELECT cfg_key, cfg_val FROM admin_runtime_config WHERE cfg_key IN ('total_uptime_sec', 'first_time_start')");
+                 java.sql.ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    String k = rs.getString("cfg_key");
+                    String v = rs.getString("cfg_val");
+                    if ("total_uptime_sec".equals(k) && v != null) {
+                        try {
+                            dbUptimeSec = Math.max(0L, Long.parseLong(v.trim()));
+                        } catch (Exception ignored) {
+                        }
+                    } else if ("first_time_start".equals(k) && v != null && !v.trim().isEmpty()) {
+                        dbFirstStart = v.trim();
+                    }
+                }
+            }
+        } catch (Exception ignored) {
+        }
+
+        long fileUptimeSec = 0L;
+        String fileFirstStart = null;
+        java.io.File f = new java.io.File(UPTIME_FILE_PATH);
+        if (f.exists()) {
+            try (java.io.FileInputStream fis = new java.io.FileInputStream(f)) {
+                Properties props = new Properties();
+                props.load(fis);
+                String val = props.getProperty("total_uptime_sec");
+                if (val != null) {
+                    fileUptimeSec = Math.max(0L, Long.parseLong(val.trim()));
+                }
+                String fs = props.getProperty("first_time_start");
+                if (fs != null && !fs.trim().isEmpty()) {
+                    fileFirstStart = fs.trim();
+                }
+            } catch (Exception ignored) {
+            }
+        }
+
+        long bestUptime = Math.max(dbUptimeSec, fileUptimeSec);
+        if (bestUptime <= 0L) {
+            try (Connection con = LocalManager.getConnection();
+                 PreparedStatement ps = con.prepareStatement("SELECT COALESCE(MAX(total_play_sec), 0) FROM account");
+                 java.sql.ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    bestUptime = Math.max(0L, rs.getLong(1));
+                }
+            } catch (Exception ignored) {
+            }
+        }
+
+        accumulatedUptimeSec = bestUptime;
+        lastUptimeCheckpointMs = System.currentTimeMillis();
+        if (dbFirstStart != null && !dbFirstStart.isEmpty()) {
+            firstStartTime = dbFirstStart;
+        } else if (fileFirstStart != null && !fileFirstStart.isEmpty()) {
+            firstStartTime = fileFirstStart;
+        } else {
+            firstStartTime = (timeStart != null && !timeStart.isEmpty())
+                    ? timeStart
+                    : TimeUtil.getTimeNow("dd/MM/yyyy HH:mm:ss");
+        }
+        saveServerUptime();
+        Logger.success("Đã khôi phục Thời Gian Hoạt Động Server: " + getFormattedUptimeHours() + " (Cộng dồn qua các đợt bảo trì/cập nhật)\n");
+    }
+
+    public static synchronized void saveServerUptime() {
+        long now = System.currentTimeMillis();
+        long deltaSec = Math.max(0L, (now - lastUptimeCheckpointMs) / 1000L);
+        if (deltaSec > 0L) {
+            accumulatedUptimeSec += deltaSec;
+            lastUptimeCheckpointMs += deltaSec * 1000L;
+        }
+        if (firstStartTime == null || firstStartTime.isEmpty()) {
+            firstStartTime = (timeStart != null && !timeStart.isEmpty())
+                    ? timeStart
+                    : TimeUtil.getTimeNow("dd/MM/yyyy HH:mm:ss");
+        }
+        try {
+            java.io.File f = new java.io.File(UPTIME_FILE_PATH);
+            if (f.getParentFile() != null && !f.getParentFile().exists()) {
+                f.getParentFile().mkdirs();
+            }
+            Properties props = new Properties();
+            props.setProperty("total_uptime_sec", String.valueOf(accumulatedUptimeSec));
+            props.setProperty("first_time_start", firstStartTime);
+            try (java.io.FileOutputStream fos = new java.io.FileOutputStream(f)) {
+                props.store(fos, "Persistent Server Uptime");
+            }
+        } catch (Exception ignored) {
+        }
+        try (Connection con = LocalManager.getConnection()) {
+            EventManager.ensureConfigTable(con);
+            try (PreparedStatement ps = con.prepareStatement(
+                    "INSERT INTO admin_runtime_config (cfg_key, cfg_val) VALUES (?, ?) "
+                    + "ON DUPLICATE KEY UPDATE cfg_val = VALUES(cfg_val)")) {
+                ps.setString(1, "total_uptime_sec");
+                ps.setString(2, String.valueOf(accumulatedUptimeSec));
+                ps.addBatch();
+                ps.setString(1, "first_time_start");
+                ps.setString(2, firstStartTime);
+                ps.addBatch();
+                ps.executeBatch();
+            }
+        } catch (Exception ignored) {
+        }
+    }
+
+    public static long getTotalUptimeSeconds() {
+        long uncheckpointed = Math.max(0L, (System.currentTimeMillis() - lastUptimeCheckpointMs) / 1000L);
+        return Math.max(0L, accumulatedUptimeSec + uncheckpointed);
+    }
+
+    public static long getSessionUptimeSeconds() {
+        return Math.max(0L, (System.currentTimeMillis() - SESSION_START_MS) / 1000L);
+    }
+
+    public static double getTotalUptimeHours() {
+        return Math.round((getTotalUptimeSeconds() / 3600.0) * 100.0) / 100.0;
+    }
+
+    public static String getFormattedUptimeHours() {
+        long totalSec = getTotalUptimeSeconds();
+        long h = totalSec / 3600L;
+        long m = (totalSec % 3600L) / 60L;
+        long s = totalSec % 60L;
+        double hoursVal = totalSec / 3600.0;
+        String hoursStr = hoursVal >= 10
+                ? String.format(Locale.US, "%.1f", hoursVal).replaceAll("\\.0$", "")
+                : String.format(Locale.US, "%.2f", hoursVal).replaceAll("\\.00$", "").replaceAll("(\\.\\d)0$", "$1");
+        if (h > 0) {
+            return hoursStr + " giờ (" + h + "g " + m + "p)";
+        } else if (m > 0) {
+            return hoursStr + " giờ (" + m + "p " + s + "s)";
+        }
+        return s + " giây";
+    }
 
     public void init() {
         Manager.gI();
@@ -106,6 +253,7 @@ public class ServerManager {
     public void run() {
         try {
             isRunning = true;
+            loadServerUptime();
             Runtime.getRuntime().addShutdownHook(new Thread(this::saveAllDataOnShutdown, "ShutdownSaveHook"));
             activeServerSocket();
             AdminWebServer.start();
@@ -156,6 +304,9 @@ public class ServerManager {
                 Manager.resetTopFlags();
             }
         }, 0, 3000, TimeUnit.MILLISECONDS);
+
+        // Định kỳ mỗi 30 giây lưu tổng thời gian hoạt động của Server (cộng dồn qua bảo trì & cập nhật)
+        topUpdater.scheduleAtFixedRate(ServerManager::saveServerUptime, 30, 30, TimeUnit.SECONDS);
 
         // Định kỳ mỗi 15 phút tự động dọn rác log hệ thống, MySQL binlog và server.log để chống tràn ổ cứng (No space left on device) lúc nửa đêm
         topUpdater.scheduleAtFixedRate(this::runPeriodicDiskCleanup, 5, 15, TimeUnit.MINUTES);
@@ -323,6 +474,10 @@ public class ServerManager {
         }
         isSavedOnClose = true;
         isRunning = false;
+        try {
+            saveServerUptime();
+        } catch (Exception ignored) {
+        }
         try {
             EventManager.saveRuntimeConfig();
         } catch (Exception ignored) {

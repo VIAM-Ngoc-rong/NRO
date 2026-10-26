@@ -215,11 +215,11 @@ public class EffectSkillService {
     }
 
     public void startUseSkillMonkey(Player player) {
-        sendEffectMonkey(player);
-        if (player.isBoss) {
+        if (player.isBoss || player.isAutoHuntBoss) {
             setIsMonkey(player);
             return;
         }
+        sendEffectMonkey(player);
         Service.gI().sendSpeedPlayer(player, 0);
         player.effectSkill.isUseSkillMonkey = true;
         player.effectSkill.timeUseSkillMonkey = 1500;
@@ -237,15 +237,20 @@ public class EffectSkillService {
     }
 
     public void setIsMonkey(Player player) {
-        EffectSkillService.gI().sendEffectMonkey(player);
-        int timeMonkey = SkillUtil.getTimeMonkey(player.playerSkill.skillSelect.point);
+        if (!player.isAutoHuntBoss) {
+            EffectSkillService.gI().sendEffectMonkey(player);
+        }
+        Skill skillMonkey = SkillUtil.getSkillbyId(player, Skill.BIEN_KHI);
+        int point = (skillMonkey != null && skillMonkey.point > 0) ? skillMonkey.point
+                : (player.playerSkill != null && player.playerSkill.skillSelect != null ? player.playerSkill.skillSelect.point : 1);
+        int timeMonkey = SkillUtil.getTimeMonkey(point);
         if (player.setClothes.cadic == 5) {
             timeMonkey *= 5;
         }
         player.effectSkill.isMonkey = true;
         player.effectSkill.timeMonkey = timeMonkey;
         player.effectSkill.lastTimeUpMonkey = System.currentTimeMillis();
-        player.effectSkill.levelMonkey = (byte) player.playerSkill.skillSelect.point;
+        player.effectSkill.levelMonkey = (byte) point;
         player.nPoint.setHp(((int) player.nPoint.hp * 2));
         Service.gI().Send_Caitrang(player);
         if (!player.isPet) {
@@ -262,8 +267,10 @@ public class EffectSkillService {
         if (player.nPoint.hp > player.nPoint.hpMax) {
             player.nPoint.setHp(player.nPoint.hpMax);
         }
-        sendEffectEndCharge(player);
-        sendEffectMonkey(player);
+        if (!player.isAutoHuntBoss) {
+            sendEffectEndCharge(player);
+            sendEffectMonkey(player);
+        }
         Service.gI().setNotMonkey(player);
         Service.gI().Send_Caitrang(player);
         Service.gI().point(player);

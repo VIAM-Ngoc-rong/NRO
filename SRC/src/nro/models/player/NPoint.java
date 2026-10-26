@@ -325,6 +325,8 @@ public class NPoint {
         for (Item.ItemOption opt : options) {
             if (opt.optionTemplate.id == 108) {
                 tlNeDon += (tlNeDon * opt.param / 100L);
+            } else if (opt.optionTemplate.id == 100 || opt.optionTemplate.id == 155) {
+                this.tlGold += opt.param;
             }
         }
 
@@ -472,6 +474,7 @@ public class NPoint {
                         case 147: //+#% sức đánh
                             this.tlDame.add(io.param);
                             break;
+                        case 155:
                         case 156: //Giảm 50% sức đánh, HP, KI và +#% SM, TN, vàng từ quái
                             this.tlSubSD += 50;
                             this.tlTNSM.add(io.param);
@@ -767,6 +770,7 @@ public class NPoint {
             case 147: //+#% sức đánh
                 this.tlDame.add(io.param);
                 break;
+            case 155:
             case 156: //Giảm 50% sức đánh, HP, KI và +#% SM, TN, vàng từ quái
                 this.tlSubSD += 50;
                 this.tlTNSM.add(io.param);
@@ -863,6 +867,11 @@ public class NPoint {
     public void setBasePoint() {
         if (this.player.setClothes != null) {
             this.player.setClothes.setup();
+            if (this.player.setClothes.gohan >= 5) {
+                this.tlGold += 30;
+            } else if (this.player.setClothes.gohan >= 1) {
+                this.tlGold += this.player.setClothes.gohan * 5;
+            }
         }
         setHpMax();
         setHp();
@@ -952,25 +961,25 @@ public class NPoint {
             hpMax += (hpMax * 80L / 100L);
         }
 
-        // Set Chiến Binh Nail (Namếc: cộng dồn theo từng món 1..5)
+        // Set Chiến Binh Nail (Namếc: +12% HP/Giáp mỗi món, 5 món +80% HP/Giáp)
         if (this.player.setClothes.nail >= 5) {
-            hpMax += (hpMax * 100L / 100L);
+            hpMax += (hpMax * 80L / 100L);
         } else if (this.player.setClothes.nail >= 1) {
-            hpMax += (hpMax * (this.player.setClothes.nail * 15L) / 100L);
+            hpMax += (hpMax * (this.player.setClothes.nail * 12L) / 100L);
         }
 
-        // Set Thần Vũ Trụ Kaio (Trái Đất: cộng dồn theo từng món 1..5)
+        // Set Thần Vũ Trụ Kaio (Trái Đất: +10% HP/Giáp mỗi món, 5 món +60% HP/Giáp)
         if (this.player.setClothes.thanVuTruKaio >= 5) {
             hpMax += (hpMax * 60L / 100L);
         } else if (this.player.setClothes.thanVuTruKaio >= 1) {
             hpMax += (hpMax * (this.player.setClothes.thanVuTruKaio * 10L) / 100L);
         }
 
-        // Set Cadic M (Xayda: cộng dồn theo từng món 1..5)
+        // Set Cađíc M (Xayda: +8% HP/Giáp mỗi món, 5 món +50% HP/Giáp)
         if (this.player.setClothes.cadicM >= 5) {
             hpMax += (hpMax * 50L / 100L);
         } else if (this.player.setClothes.cadicM >= 1) {
-            hpMax += (hpMax * (this.player.setClothes.cadicM * 10L) / 100L);
+            hpMax += (hpMax * (this.player.setClothes.cadicM * 8L) / 100L);
         }
         // Xử lý set worldcup
         if (this.player.setClothes.worldcup == 2) {
@@ -1301,28 +1310,50 @@ public class NPoint {
             dame += (dame * 5 / 100L);
         }
 
+        // Set Chiến Binh Nail (Namếc: +8% SĐ mỗi món, 5 món +50% SĐ; SĐCM: [2]+15%, [4]+20%, [5]+30%)
         if (this.player.setClothes.nail >= 5) {
-            dame += (dame * 30L / 100L);
-            this.tlDameCrit.add(10);
-            this.tlSDCM += 10;
+            dame += (dame * 50L / 100L);
+            this.tlDameCrit.add(30);
+            this.tlSDCM += 30;
         } else if (this.player.setClothes.nail >= 1) {
-            dame += (dame * (this.player.setClothes.nail * 5L) / 100L);
-            if (this.player.setClothes.nail >= 2) {
+            dame += (dame * (this.player.setClothes.nail * 8L) / 100L);
+            if (this.player.setClothes.nail >= 4) {
+                this.tlDameCrit.add(20);
+                this.tlSDCM += 20;
+            } else if (this.player.setClothes.nail >= 2) {
+                this.tlDameCrit.add(15);
+                this.tlSDCM += 15;
+            }
+        }
+        // Set Thần Vũ Trụ Kaio (Trái Đất: +10% SĐ mỗi món, 5 món +60% SĐ; SĐCM: [2]+10%, [4]+15%, [5]+25%)
+        if (this.player.setClothes.thanVuTruKaio >= 5) {
+            dame += (dame * 60L / 100L);
+            this.tlDameCrit.add(25);
+            this.tlSDCM += 25;
+        } else if (this.player.setClothes.thanVuTruKaio >= 1) {
+            dame += (dame * (this.player.setClothes.thanVuTruKaio * 10L) / 100L);
+            if (this.player.setClothes.thanVuTruKaio >= 4) {
+                this.tlDameCrit.add(15);
+                this.tlSDCM += 15;
+            } else if (this.player.setClothes.thanVuTruKaio >= 2) {
                 this.tlDameCrit.add(10);
                 this.tlSDCM += 10;
             }
         }
-        if (this.player.setClothes.thanVuTruKaio >= 5) {
-            dame += (dame * 60L / 100L);
-        } else if (this.player.setClothes.thanVuTruKaio >= 1) {
-            dame += (dame * (this.player.setClothes.thanVuTruKaio * 10L) / 100L);
-        }
+        // Set Cađíc M (Xayda: +10% SĐ mỗi món, 5 món +60% SĐ; SĐCM: [2]+10%, [4]+15%, [5]+25%)
         if (this.player.setClothes.cadicM >= 5) {
-            dame += (dame * 100L / 100L);
-            this.tlDameCrit.add(50);
-            this.tlSDCM += 50;
+            dame += (dame * 60L / 100L);
+            this.tlDameCrit.add(25);
+            this.tlSDCM += 25;
         } else if (this.player.setClothes.cadicM >= 1) {
-            dame += (dame * (this.player.setClothes.cadicM * 15L) / 100L);
+            dame += (dame * (this.player.setClothes.cadicM * 10L) / 100L);
+            if (this.player.setClothes.cadicM >= 4) {
+                this.tlDameCrit.add(15);
+                this.tlSDCM += 15;
+            } else if (this.player.setClothes.cadicM >= 2) {
+                this.tlDameCrit.add(10);
+                this.tlSDCM += 10;
+            }
         }
         // Xử lý thức ăn 2
         if (this.player.itemTime != null && this.player.itemTime.isEatMeal2 && this.player.itemTime.iconMeal2 == 8061) {
@@ -1447,9 +1478,9 @@ public class NPoint {
             this.def += this.def * 10 / 100;
         }
         if (this.player.setClothes.nail >= 5) {
-            this.def += this.def * 100 / 100;
+            this.def += this.def * 80 / 100;
         } else if (this.player.setClothes.nail >= 1) {
-            this.def += this.def * (this.player.setClothes.nail * 15) / 100;
+            this.def += this.def * (this.player.setClothes.nail * 12) / 100;
         }
         if (this.player.setClothes.thanVuTruKaio >= 5) {
             this.def += this.def * 60 / 100;
@@ -1459,7 +1490,7 @@ public class NPoint {
         if (this.player.setClothes.cadicM >= 5) {
             this.def += this.def * 50 / 100;
         } else if (this.player.setClothes.cadicM >= 1) {
-            this.def += this.def * (this.player.setClothes.cadicM * 10) / 100;
+            this.def += this.def * (this.player.setClothes.cadicM * 8) / 100;
         }
     }
 
@@ -1476,9 +1507,9 @@ public class NPoint {
         }
 
         if (player.setClothes.thanVuTruKaio >= 5) {
-            this.crit += 25;
+            this.crit += 20;
         } else if (player.setClothes.thanVuTruKaio >= 1) {
-            this.crit += player.setClothes.thanVuTruKaio * 5;
+            this.crit += player.setClothes.thanVuTruKaio * 4;
         }
     }
 
@@ -1650,9 +1681,9 @@ public class NPoint {
             case Skill.TU_SAT:
                 percentDameSkill = skillSelect.damage;
                 if (this.player.setClothes.cadicM == 4) {
-                    percentXDame += 50;
-                } else if (this.player.setClothes.cadicM == 5) {
-                    percentXDame += 100;
+                    percentXDame += 15;
+                } else if (this.player.setClothes.cadicM >= 5) {
+                    percentXDame += 30;
                 }
                 if (this.tlBom > 0) {
                     percentXDame += this.tlBom;
@@ -1666,15 +1697,17 @@ public class NPoint {
                 break;
             case Skill.MASENKO:
                 if (intrinsic != null && intrinsic.id == 9) {
-                    percentXDame += intrinsic.param1;
+                    percentDameIntrinsic = intrinsic.param1;
                 }
-                if (this.player.setClothes.nail == 5) {
+                percentDameSkill = skillSelect.damage;
+                if (this.player.setClothes.nail == 4) {
+                    percentXDame += 50;
+                } else if (this.player.setClothes.nail >= 5) {
                     percentXDame += 100;
                 }
                 if (this.tlDameChuong > 0) {
                     percentXDame += this.tlDameChuong;
                 }
-                percentDameSkill = skillSelect.damage + percentXDame;
                 break;
 
             case Skill.LIEN_HOAN:
@@ -1688,8 +1721,10 @@ public class NPoint {
                 break;
             case Skill.KAIOKEN:
                 percentDameSkill = skillSelect.damage;
-                if (player.setClothes.thanVuTruKaio == 5) {
-                    percentXDame = 100;
+                if (player.setClothes.thanVuTruKaio == 4) {
+                    percentXDame += 50;
+                } else if (player.setClothes.thanVuTruKaio >= 5) {
+                    percentXDame += 100;
                 }
                 break;
             case Skill.DICH_CHUYEN_TUC_THOI:

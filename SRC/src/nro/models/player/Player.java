@@ -2553,6 +2553,13 @@ public class Player implements Runnable {
             // Luôn tự nhặt vật phẩm rơi từ Boss trong khu hiện tại trước
             autoPickBossDropsInZone();
 
+            if (this.effectSkill != null && this.effectSkill.isHaveEffectSkill()) {
+                return;
+            }
+            if (this.newSkill != null && this.newSkill.isStartSkillSpecial) {
+                return;
+            }
+
             nro.models.boss.Boss targetBoss = findTargetAutoBoss();
             if (targetBoss == null || targetBoss.zone == null || targetBoss.zone.map == null) {
                 if (Util.canDoWithTime(this.lastTimeAutoHuntWaitNotify, 15000)) {
@@ -2600,7 +2607,6 @@ public class Player implements Runnable {
                                 int targetX = (targetBoss.location.x > 50 && targetBoss.location.x < candZone.map.mapWidth - 50)
                                         ? targetBoss.location.x : this.location.x;
                                 this.changeMapVIP = true;
-                                this.idMark.setLastTimeChangeZone(System.currentTimeMillis());
                                 ChangeMapService.gI().changeMapInYard(this, candZone, targetX);
                                 if (candZone == targetBoss.zone) {
                                     Service.gI().sendThongBao(this, "[Tự Săn Boss] Đã tìm thấy " + targetBoss.name + " tại Khu " + candZoneId + "! Bắt đầu Tàn Sát!");
