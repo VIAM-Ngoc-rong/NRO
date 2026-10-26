@@ -165,7 +165,7 @@ public class ShopDAO {
                     is.options.add(new Item.ItemOption(50, 12));  // SĐ ngẫu nhiên 6-12%
                     is.options.add(new Item.ItemOption(77, 12));  // HP ngẫu nhiên 6-12%
                     is.options.add(new Item.ItemOption(103, 12)); // KI ngẫu nhiên 6-12%
-                    is.options.add(new Item.ItemOption(14, 6));   // +1~2 dòng phụ ngẫu nhiên
+                    is.options.add(new Item.ItemOption(210, 1));  // 1 dòng chỉ số bí ẩn
                     is.options.add(new Item.ItemOption(93, 5));   // Hạn sử dụng 5 ngày
                     is.options.add(new Item.ItemOption(30, 0));
 
@@ -173,7 +173,7 @@ public class ShopDAO {
                     rubyIs.options.add(new Item.ItemOption(50, 12));
                     rubyIs.options.add(new Item.ItemOption(77, 12));
                     rubyIs.options.add(new Item.ItemOption(103, 12));
-                    rubyIs.options.add(new Item.ItemOption(14, 6));
+                    rubyIs.options.add(new Item.ItemOption(210, 1));  // 1 dòng chỉ số bí ẩn
                     rubyIs.options.add(new Item.ItemOption(73, 0)); // Vĩnh viễn
                     rubyIs.options.add(new Item.ItemOption(30, 0));
                 } else if (idx < backTemplates.size() / 2) {
@@ -181,8 +181,7 @@ public class ShopDAO {
                     is.options.add(new Item.ItemOption(50, 16));  // SĐ ngẫu nhiên 8-16%
                     is.options.add(new Item.ItemOption(77, 16));  // HP ngẫu nhiên 8-16%
                     is.options.add(new Item.ItemOption(103, 16)); // KI ngẫu nhiên 8-16%
-                    is.options.add(new Item.ItemOption(14, 8));
-                    is.options.add(new Item.ItemOption(5, 10));
+                    is.options.add(new Item.ItemOption(210, 2));  // 2 dòng chỉ số bí ẩn
                     is.options.add(new Item.ItemOption(93, 5));   // Hạn sử dụng 5 ngày
                     is.options.add(new Item.ItemOption(30, 0));
 
@@ -190,8 +189,7 @@ public class ShopDAO {
                     rubyIs.options.add(new Item.ItemOption(50, 16));
                     rubyIs.options.add(new Item.ItemOption(77, 16));
                     rubyIs.options.add(new Item.ItemOption(103, 16));
-                    rubyIs.options.add(new Item.ItemOption(14, 8));
-                    rubyIs.options.add(new Item.ItemOption(5, 10));
+                    rubyIs.options.add(new Item.ItemOption(210, 2));  // 2 dòng chỉ số bí ẩn
                     rubyIs.options.add(new Item.ItemOption(73, 0)); // Vĩnh viễn
                     rubyIs.options.add(new Item.ItemOption(30, 0));
                 } else if (idx < (backTemplates.size() * 3) / 4) {
@@ -199,8 +197,7 @@ public class ShopDAO {
                     is.options.add(new Item.ItemOption(50, 20));  // SĐ ngẫu nhiên 10-20%
                     is.options.add(new Item.ItemOption(77, 20));  // HP ngẫu nhiên 10-20%
                     is.options.add(new Item.ItemOption(103, 20)); // KI ngẫu nhiên 10-20%
-                    is.options.add(new Item.ItemOption(5, 14));
-                    is.options.add(new Item.ItemOption(95, 12));
+                    is.options.add(new Item.ItemOption(210, 2));  // 2 dòng chỉ số bí ẩn
                     is.options.add(new Item.ItemOption(93, 5));   // Hạn sử dụng 5 ngày
                     is.options.add(new Item.ItemOption(30, 0));
 
@@ -208,8 +205,7 @@ public class ShopDAO {
                     rubyIs.options.add(new Item.ItemOption(50, 20));
                     rubyIs.options.add(new Item.ItemOption(77, 20));
                     rubyIs.options.add(new Item.ItemOption(103, 20));
-                    rubyIs.options.add(new Item.ItemOption(5, 14));
-                    rubyIs.options.add(new Item.ItemOption(95, 12));
+                    rubyIs.options.add(new Item.ItemOption(210, 2));  // 2 dòng chỉ số bí ẩn
                     rubyIs.options.add(new Item.ItemOption(73, 0)); // Vĩnh viễn
                     rubyIs.options.add(new Item.ItemOption(30, 0));
                 } else {
@@ -217,9 +213,7 @@ public class ShopDAO {
                     is.options.add(new Item.ItemOption(50, 25));  // SĐ ngẫu nhiên 12-25%
                     is.options.add(new Item.ItemOption(77, 25));  // HP ngẫu nhiên 12-25%
                     is.options.add(new Item.ItemOption(103, 25)); // KI ngẫu nhiên 12-25%
-                    is.options.add(new Item.ItemOption(5, 18));
-                    is.options.add(new Item.ItemOption(95, 15));
-                    is.options.add(new Item.ItemOption(14, 12));
+                    is.options.add(new Item.ItemOption(210, 3));  // 3 dòng chỉ số bí ẩn
                     is.options.add(new Item.ItemOption(93, 5));   // Hạn sử dụng 5 ngày
                     is.options.add(new Item.ItemOption(30, 0));
 
@@ -227,9 +221,7 @@ public class ShopDAO {
                     rubyIs.options.add(new Item.ItemOption(50, 25));
                     rubyIs.options.add(new Item.ItemOption(77, 25));
                     rubyIs.options.add(new Item.ItemOption(103, 25));
-                    rubyIs.options.add(new Item.ItemOption(5, 18));
-                    rubyIs.options.add(new Item.ItemOption(95, 15));
-                    rubyIs.options.add(new Item.ItemOption(14, 12));
+                    rubyIs.options.add(new Item.ItemOption(210, 3));  // 3 dòng chỉ số bí ẩn
                     rubyIs.options.add(new Item.ItemOption(73, 0)); // Vĩnh viễn
                     rubyIs.options.add(new Item.ItemOption(30, 0));
                 }
@@ -264,31 +256,31 @@ public class ShopDAO {
         int autoId = 100000;
 
         int[][] planetDefs = {
-            // --- TRÁI ĐẤT: Nhánh Chưởng (Ngẫu nhiên 50% - 150% sát thương chưởng khi mua) ---
-            {710,  50, 26, 77, 25, 103, 28, 159, 150, 98, 15, 14, 10},       // Quy Lão Kamê (50-150% ST chưởng)
-            {711,  50, 27, 77, 26, 103, 28, 159, 150, 98, 15, 116, 0},       // Jacky Chun (50-150% ST chưởng, Kháng TDHS)
+            // --- TRÁI ĐẤT: Nhánh Chưởng (Ngẫu nhiên 50% - 150% sát thương chưởng + 2 dòng chỉ số bí ẩn hệ Chưởng) ---
+            {710,  50, 26, 77, 25, 103, 28, 159, 150, 210, 2},                // Quy Lão Kamê (50-150% ST chưởng + 2 dòng bí ẩn)
+            {711,  50, 27, 77, 26, 103, 28, 159, 150, 116, 0, 210, 2},        // Jacky Chun (50-150% ST chưởng, Kháng TDHS + 2 dòng bí ẩn)
 
-            // --- TRÁI ĐẤT: Nhánh Đánh KOK / Cận Chiến (Tăng nhẹ %SĐ + Hút HP, KI) ---
-            {1553, 50, 32, 77, 28, 103, 27, 95, 15, 96, 15, 5, 15, 14, 10},  // Goku SSJ4 (32% SĐ, Hút 15% HP/KI)
-            {1590, 50, 33, 77, 28, 103, 28, 95, 20, 96, 20, 5, 15, 99, 15},  // Goku SSJ Blue (33% SĐ, Hút 20% HP/KI)
+            // --- TRÁI ĐẤT: Nhánh Đánh KOK / Cận Chiến (Tăng nhẹ %SĐ + 3 dòng chỉ số bí ẩn hệ Cận Chiến) ---
+            {1553, 50, 32, 77, 28, 103, 27, 210, 3},                          // Goku SSJ4 (32% SĐ + 3 dòng bí ẩn)
+            {1590, 50, 33, 77, 28, 103, 28, 99, 15, 210, 3},                  // Goku SSJ Blue (33% SĐ, XGCC 15% + 3 dòng bí ẩn)
 
-            // --- NAMEK: Nhánh Đánh Tay / Liên Hoàn (Giống KOK Trái Đất: Tăng nhẹ %SĐ + Hút HP, KI) ---
-            {898,  50, 32, 77, 28, 103, 27, 95, 15, 96, 15, 5, 15, 14, 10},  // Zamasu (32% SĐ, Hút 15% HP/KI)
-            {1396, 50, 33, 77, 28, 103, 28, 95, 20, 96, 20, 5, 15, 99, 15},  // Super Píc (33% SĐ, Hút 20% HP/KI)
+            // --- NAMEK: Nhánh Đánh Tay / Liên Hoàn (Tăng nhẹ %SĐ + 3 dòng chỉ số bí ẩn hệ Cận Chiến) ---
+            {898,  50, 32, 77, 28, 103, 27, 210, 3},                          // Zamasu (32% SĐ + 3 dòng bí ẩn)
+            {1396, 50, 33, 77, 28, 103, 28, 99, 15, 210, 3},                  // Super Píc (33% SĐ, XGCC 15% + 3 dòng bí ẩn)
 
-            // --- NAMEK: Nhánh Chuyên KI / Laze (%KI cao hơn + Ngẫu nhiên 25% - 75% ST Laze khi mua) ---
-            {738,  50, 26, 77, 26, 103, 34, 66, 75, 98, 15},                 // Dr. Lychee (34% KI, 25-75% ST Laze)
-            {1567, 50, 27, 77, 26, 103, 36, 66, 75, 98, 18},                 // Frieren (36% KI, 25-75% ST Laze)
+            // --- NAMEK: Nhánh Chuyên KI / Laze (%KI cao + Ngẫu nhiên 25-75% ST Laze + 2 dòng chỉ số bí ẩn hệ KI/Chưởng) ---
+            {738,  50, 26, 77, 26, 103, 34, 66, 75, 210, 2},                  // Dr. Lychee (34% KI, 25-75% ST Laze + 2 dòng bí ẩn)
+            {1567, 50, 27, 77, 26, 103, 36, 66, 75, 210, 2},                  // Frieren (36% KI, 25-75% ST Laze + 2 dòng bí ẩn)
 
-            // --- XAYDA: Nhánh Đánh Tay / Biến Khỉ (Giống KOK Trái Đất: Tăng nhẹ %SĐ + Hút HP, KI) ---
-            {1783, 50, 32, 77, 28, 103, 27, 95, 15, 96, 15, 5, 15, 14, 10},  // Broly (32% SĐ, Hút 15% HP/KI)
-            {1275, 50, 33, 77, 28, 103, 28, 95, 20, 96, 20, 5, 15, 99, 15},  // Cumber SSJ (33% SĐ, Hút 20% HP/KI)
-            {1454, 50, 32, 77, 28, 103, 28, 95, 18, 96, 18, 5, 15, 14, 10},  // Super Black Goku Rose (32% SĐ, Hút 18% HP/KI)
-            {1697, 50, 33, 77, 28, 103, 28, 95, 20, 96, 20, 5, 15, 14, 10},  // Gogeta (33% SĐ, Hút 20% HP/KI)
+            // --- XAYDA: Nhánh Đánh Tay / Biến Khỉ (Tăng nhẹ %SĐ + 3 dòng chỉ số bí ẩn hệ Cận Chiến) ---
+            {1783, 50, 32, 77, 28, 103, 27, 210, 3},                          // Broly (32% SĐ + 3 dòng bí ẩn)
+            {1275, 50, 33, 77, 28, 103, 28, 99, 15, 210, 3},                  // Cumber SSJ (33% SĐ, XGCC 15% + 3 dòng bí ẩn)
+            {1454, 50, 32, 77, 28, 103, 28, 5, 15, 210, 3},                   // Super Black Goku Rose (32% SĐ, SĐCM 15% + 3 dòng bí ẩn)
+            {1697, 50, 33, 77, 28, 103, 28, 5, 15, 14, 10, 210, 2},           // Gogeta (33% SĐ, SĐCM 15%, CM 10% + 2 dòng bí ẩn)
 
-            // --- XAYDA: Nhánh Đánh Bom (%HP cao hơn + Ngẫu nhiên 25% - 75% ST Nổ khi mua) ---
-            {1744, 50, 26, 77, 34, 103, 25, 153, 75, 97, 12},                // Cađíc SSJ2 M (34% HP, 25-75% ST Nổ)
-            {1693, 50, 27, 77, 36, 103, 26, 153, 75, 97, 15}                 // Cađíc SSJ4 (36% HP, 25-75% ST Nổ)
+            // --- XAYDA: Nhánh Đánh Bom (%HP cao + Ngẫu nhiên 25-75% ST Nổ + 2 dòng chỉ số bí ẩn hệ Nổ/HP) ---
+            {1744, 50, 26, 77, 34, 103, 25, 153, 75, 210, 2},                 // Cađíc SSJ2 M (34% HP, 25-75% ST Nổ + 2 dòng bí ẩn)
+            {1693, 50, 27, 77, 36, 103, 26, 153, 75, 210, 2}                  // Cađíc SSJ4 (36% HP, 25-75% ST Nổ + 2 dòng bí ẩn)
         };
 
         ItemTemplate rubyTemp = ItemService.gI().getTemplate((short) 861);
@@ -315,33 +307,33 @@ public class ShopDAO {
 
         int[][] supportDefs = {
             // --- UP ĐỆ TỬ & SƯ PHỤ ---
-            {547,  50, 20, 77, 20, 103, 20, 160, 30, 101, 25},            // Tôn Ngộ Không Đệ Tử (+30% TNSM Đệ)
-            {548,  50, 18, 77, 24, 103, 20, 160, 30, 80, 15},             // Bát Giới Đệ Tử (+30% TNSM Đệ)
-            {1302, 50, 20, 77, 22, 103, 22, 160, 30, 94, 12},             // Sa Tăng Đệ Tử (+30% TNSM Đệ)
-            {1362, 50, 20, 77, 20, 103, 20, 101, 40, 160, 30, 100, 80},   // Thầy Giáo (+40% TNSM, +30% TNSM Đệ)
+            {547,  50, 20, 77, 20, 103, 20, 160, 30, 210, 1},               // Tôn Ngộ Không Đệ Tử (+30% TNSM Đệ + 1 dòng bí ẩn)
+            {548,  50, 18, 77, 24, 103, 20, 160, 30, 210, 1},               // Bát Giới Đệ Tử (+30% TNSM Đệ + 1 dòng bí ẩn)
+            {1302, 50, 20, 77, 22, 103, 22, 160, 30, 210, 1},               // Sa Tăng Đệ Tử (+30% TNSM Đệ + 1 dòng bí ẩn)
+            {1362, 50, 20, 77, 20, 103, 20, 101, 40, 160, 30, 210, 1},      // Thầy Giáo (+40% TNSM, +30% TNSM Đệ + 1 dòng bí ẩn)
 
             // --- KHÁNG LẠNH (ĐI MAP COLD) ---
-            {629,  50, 22, 77, 22, 103, 22, 106, 0, 5, 10},               // Fide Vàng (Kháng lạnh)
-            {878,  50, 23, 77, 22, 103, 22, 106, 0, 5, 10},               // Cooler Vàng (Kháng lạnh)
-            {937,  50, 21, 77, 24, 103, 21, 106, 0, 29, 0, 80, 15},       // Mabư Noel (Kháng lạnh + Sôcôla)
+            {629,  50, 22, 77, 22, 103, 22, 106, 0, 210, 1},                // Fide Vàng (Kháng lạnh + 1 dòng bí ẩn)
+            {878,  50, 23, 77, 22, 103, 22, 106, 0, 210, 1},                // Cooler Vàng (Kháng lạnh + 1 dòng bí ẩn)
+            {937,  50, 21, 77, 24, 103, 21, 106, 0, 29, 0, 210, 1},         // Mabư Noel (Kháng lạnh + Sôcôla + 1 dòng bí ẩn)
 
             // --- HIỆU ỨNG PK & SĂN BOSS ---
-            {1437, 50, 20, 77, 24, 103, 20, 26, 0, 94, 12},               // Bông Băng Vàng (Hóa đá)
-            {1205, 50, 22, 77, 22, 103, 22, 26, 0, 106, 0},               // Drabura Frost (Hóa đá + Kháng lạnh)
-            {578,  50, 20, 77, 25, 103, 20, 29, 0, 80, 10},               // Mabư Mập (Biến Sôcôla)
-            {549,  50, 21, 77, 21, 103, 21, 8, 4, 14, 5},                 // Xên Con (Hút 4% HP, KI mỗi 5s)
-            {525,  50, 20, 77, 20, 103, 22, 3, 100, 4, 2},                // Android 20 (Vô hiệu chưởng thành KI)
-            {455,  50, 18, 77, 20, 103, 18, 109, 10},                     // Ở Dơ (Hôi giảm 10% HP xung quanh)
-            {458,  50, 19, 77, 19, 103, 19, 108, 20, 111, 0},             // Xinbatô (+20% Né đòn)
-            {463,  50, 20, 77, 20, 103, 20, 116, 0},                      // Thỏ Đại Ca (Kháng TDHS)
-            {449,  50, 20, 77, 18, 103, 18, 25, 0, 105, 0},               // Người Vô Hình (Tàng hình)
-            {1557, 50, 22, 77, 22, 103, 22, 117, 15, 162, 3},             // Hắc Mị Nương (Đẹp +15% SĐ xung quanh)
-            {806,  50, 20, 77, 22, 103, 22, 173, 12, 94, 10},             // Đôrêmon (Hồi 12% HP/KI đồng đội)
+            {1437, 50, 20, 77, 24, 103, 20, 26, 0, 210, 1},                 // Bông Băng Vàng (Hóa đá + 1 dòng bí ẩn)
+            {1205, 50, 22, 77, 22, 103, 22, 26, 0, 106, 0, 210, 1},         // Drabura Frost (Hóa đá + Kháng lạnh + 1 dòng bí ẩn)
+            {578,  50, 20, 77, 25, 103, 20, 29, 0, 210, 1},                 // Mabư Mập (Biến Sôcôla + 1 dòng bí ẩn)
+            {549,  50, 21, 77, 21, 103, 21, 8, 4, 210, 1},                  // Xên Con (Hút 4% HP, KI mỗi 5s + 1 dòng bí ẩn)
+            {525,  50, 20, 77, 20, 103, 22, 3, 100, 4, 2, 210, 1},          // Android 20 (Vô hiệu chưởng thành KI + 1 dòng bí ẩn)
+            {455,  50, 18, 77, 20, 103, 18, 109, 10, 210, 1},               // Ở Dơ (Hôi giảm 10% HP xung quanh + 1 dòng bí ẩn)
+            {458,  50, 19, 77, 19, 103, 19, 108, 20, 111, 0, 210, 1},       // Xinbatô (+20% Né đòn + 1 dòng bí ẩn)
+            {463,  50, 20, 77, 20, 103, 20, 116, 0, 210, 1},                // Thỏ Đại Ca (Kháng TDHS + 1 dòng bí ẩn)
+            {449,  50, 20, 77, 18, 103, 18, 25, 0, 105, 0, 210, 1},         // Người Vô Hình (Tàng hình + 1 dòng bí ẩn)
+            {1557, 50, 22, 77, 22, 103, 22, 117, 15, 162, 3, 210, 1},       // Hắc Mị Nương (Đẹp +15% SĐ xung quanh + 1 dòng bí ẩn)
+            {806,  50, 20, 77, 22, 103, 22, 173, 12, 210, 1},               // Đôrêmon (Hồi 12% HP/KI đồng đội + 1 dòng bí ẩn)
 
             // --- VÕ PHỤC YARDRAT (3 HÀNH TINH) ---
-            {592,  50, 20, 77, 20, 103, 20, 33, 1, 108, 15},              // Võ phục Yardrat Trái Đất
-            {593,  50, 20, 77, 20, 103, 20, 33, 1, 108, 15},              // Võ phục Yardrat Namek
-            {594,  50, 20, 77, 20, 103, 20, 33, 1, 108, 15}               // Võ phục Yardrat Xayda
+            {592,  50, 20, 77, 20, 103, 20, 33, 1, 210, 1},                 // Võ phục Yardrat Trái Đất
+            {593,  50, 20, 77, 20, 103, 20, 33, 1, 210, 1},                 // Võ phục Yardrat Namek
+            {594,  50, 20, 77, 20, 103, 20, 33, 1, 210, 1}                  // Võ phục Yardrat Xayda
         };
 
         for (int[] def : supportDefs) {
@@ -887,6 +879,7 @@ public class ShopDAO {
                     if (hasMainStat && !hasSubStat) {
                         itemShop.options.clear();
                         applyClassicCostumeOptions(itemShop, itemShop.temp);
+                        itemShop.options.add(new Item.ItemOption(210, 1));
                         if (expiryDays > 0) {
                             itemShop.options.add(new Item.ItemOption(93, expiryDays));
                         }

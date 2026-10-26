@@ -879,7 +879,8 @@ public final class Manager {
                     + "WHEN 66 THEN '+#% sát thương chiêu Laze' "
                     + "WHEN 153 THEN '+#% sát thương chiêu phát nổ' "
                     + "WHEN 159 THEN '+#% sát thương đòn chưởng' "
-                    + "ELSE NAME END WHERE id IN (66, 153, 159)")) {
+                    + "WHEN 210 THEN '# dòng chỉ số bí ẩn' "
+                    + "ELSE NAME END WHERE id IN (66, 153, 159, 210)")) {
                 psUpdateOpt.executeUpdate();
             } catch (Exception ignored) {
             }
@@ -897,6 +898,8 @@ public final class Manager {
                     optionTemp.name = "+#% sát thương chiêu phát nổ";
                 } else if (optionTemp.id == 159) {
                     optionTemp.name = "+#% sát thương đòn chưởng";
+                } else if (optionTemp.id == 210) {
+                    optionTemp.name = "# dòng chỉ số bí ẩn";
                 }
                 ITEM_OPTION_TEMPLATES.add(optionTemp);
             }

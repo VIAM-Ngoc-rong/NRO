@@ -14,8 +14,13 @@ public class Combine {
     public long lastTimeCombine;
 
     public List<Item> itemsCombine;
-    @Setter
     public int typeCombine;
+
+    public void setTypeCombine(int typeCombine) {
+        this.typeCombine = typeCombine;
+        this.clearItemCombine();
+        this.clearParamCombine();
+    }
 
     public int goldCombine;
     public int gemCombine;

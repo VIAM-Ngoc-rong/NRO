@@ -53,10 +53,14 @@ public class ItemService {
         item.info = item.getInfo();
         if (item.template != null && item.template.type == 11) {
             int maxStat = 16;
+            int mysteryCount = 0;
             for (Item.ItemOption io : itemShop.options) {
-                if (io.optionTemplate != null && io.optionTemplate.id == 50 && io.param > 0) {
-                    maxStat = io.param;
-                    break;
+                if (io.optionTemplate != null) {
+                    if (io.optionTemplate.id == 50 && io.param > 0) {
+                        maxStat = io.param;
+                    } else if (io.optionTemplate.id == 210 && io.param > 0) {
+                        mysteryCount += io.param;
+                    }
                 }
             }
             int minStat = Math.max(5, maxStat / 2);
@@ -64,20 +68,20 @@ public class ItemService {
             item.itemOptions.add(new Item.ItemOption(77, Util.nextInt(minStat, maxStat)));
             item.itemOptions.add(new Item.ItemOption(103, Util.nextInt(minStat, maxStat)));
 
+            // Chỉ random các dòng chiến đấu/hỗ trợ chuẩn (TUYỆT ĐỐI KHÔNG random ra TNSM ở trang bị chiến đấu)
             int[][] bonusPool = {
-                {14, 3, Math.max(6, maxStat / 2)},
-                {5, 5, Math.max(10, (maxStat * 2) / 3)},
-                {94, 5, Math.max(10, maxStat / 2 + 2)},
-                {108, 5, Math.max(10, maxStat / 2 + 2)},
-                {95, 5, Math.max(10, maxStat / 2 + 2)},
-                {96, 5, Math.max(10, maxStat / 2 + 2)},
-                {101, 10, Math.max(20, maxStat + 10)},
-                {98, 5, Math.max(10, maxStat / 2)},
-                {99, 5, Math.max(10, maxStat / 2)}
+                {14, 3, Math.max(6, maxStat / 2)},           // Chí mạng+#%
+                {5, 5, Math.max(10, (maxStat * 2) / 3)},     // +#% sức đánh chí mạng
+                {94, 5, Math.max(10, maxStat / 2 + 2)},      // Giáp +#%
+                {108, 5, Math.max(10, maxStat / 2 + 2)},     // +#% Né đòn
+                {95, 5, Math.max(10, maxStat / 2 + 2)},      // Biến #% tấn công thành HP
+                {96, 5, Math.max(10, maxStat / 2 + 2)},      // Biến #% tấn công thành KI
+                {98, 5, Math.max(10, maxStat / 2)},          // Xuyên giáp #% chưởng
+                {99, 5, Math.max(10, maxStat / 2)}           // Xuyên giáp #% cận chiến
             };
-            int bonusCount = Util.nextInt(1, 3);
+            int bonusCount = mysteryCount > 0 ? mysteryCount : Util.nextInt(1, 3);
             List<Integer> pickedIndices = new ArrayList<>();
-            for (int b = 0; b < bonusCount; b++) {
+            for (int attempt = 0; attempt < 24 && pickedIndices.size() < bonusCount && pickedIndices.size() < bonusPool.length; attempt++) {
                 int idx = Util.nextInt(0, bonusPool.length - 1);
                 if (!pickedIndices.contains(idx)) {
                     pickedIndices.add(idx);
@@ -158,6 +162,7 @@ public class ItemService {
         List<Item.ItemOption> tailOpts = new ArrayList<>();
         List<Integer> existingOptIds = new ArrayList<>();
         int combatSubCount = 0;
+        int mysteryCount = 0;
 
         for (Item.ItemOption io : baseOptions) {
             if (io == null || io.optionTemplate == null) {
@@ -165,6 +170,10 @@ public class ItemService {
             }
             Item.ItemOption copyOpt = new Item.ItemOption(io);
             int optId = copyOpt.optionTemplate.id;
+            if (optId == 210) {
+                mysteryCount += Math.max(1, copyOpt.param);
+                continue;
+            }
             existingOptIds.add(optId);
             switch (optId) {
                 case 50, 77, 103 -> {
@@ -190,7 +199,7 @@ public class ItemService {
                     mainAndSubOpts.add(copyOpt);
                     combatSubCount++;
                 }
-                case 0, 5, 6, 7, 8, 14, 19, 22, 23, 27, 28, 47, 79, 80, 81, 94, 95, 96, 97, 98, 99, 100, 101, 108, 114, 117, 160, 162, 170, 210, 236 -> {
+                case 0, 5, 6, 7, 8, 14, 19, 22, 23, 27, 28, 47, 79, 80, 81, 94, 95, 96, 97, 98, 99, 100, 101, 108, 114, 117, 160, 162, 170, 236 -> {
                     if (copyOpt.param > 1) {
                         int minSub = Math.max(1, (copyOpt.param * 60) / 100);
                         copyOpt.param = Util.nextInt(minSub, copyOpt.param);
@@ -222,21 +231,59 @@ public class ItemService {
                 }
             }
 
-            int extraBonusCount = (combatSubCount == 0) ? Util.nextInt(2, 3) : 1;
-            int[][] costumeBonusPool = {
-                {5, 8, Math.max(12, (maxMainCap * 2) / 3)},   // +#% sức đánh chí mạng
-                {14, 5, Math.max(8, maxMainCap / 2)},         // Chí mạng +#%
-                {95, 8, Math.max(12, maxMainCap / 2 + 2)},    // Hút HP +#%
-                {96, 8, Math.max(12, maxMainCap / 2 + 2)},    // Hút KI +#%
-                {94, 8, Math.max(12, maxMainCap / 2 + 2)},    // Giáp +#%
-                {108, 8, Math.max(12, maxMainCap / 2 + 2)},   // Né đòn +#%
-                {101, 15, Math.max(25, maxMainCap + 10)},     // +#% TNSM
-                {98, 8, Math.max(12, maxMainCap / 2)},        // Xuyên giáp #% chưởng
-                {99, 8, Math.max(12, maxMainCap / 2)},        // Xuyên giáp #% cận chiến
-                {117, 8, Math.max(12, maxMainCap / 2)}        // Đẹp +#% SĐ xung quanh
-            };
+            int extraBonusCount = mysteryCount > 0 ? mysteryCount : ((combatSubCount == 0) ? Util.nextInt(2, 3) : 1);
+
+            // Phân nhánh bể chỉ số bí ẩn ĐÚNG VỚI HỆ CẢI TRANG:
+            // 1) Hệ Up Đệ Tử / Train TNSM (chỉ khi cải trang gốc vốn là đồ Train/Đệ tử: có opt 160, 101, 79, 88, 155)
+            boolean isTrainOrPetCostume = existingOptIds.contains(160) || existingOptIds.contains(101)
+                    || existingOptIds.contains(79) || existingOptIds.contains(88) || existingOptIds.contains(155);
+            // 2) Hệ Chưởng / KI / Laze (có opt 159 ST chưởng, 66 ST Laze, hoặc 98 XG chưởng)
+            boolean isKiBlastCostume = existingOptIds.contains(159) || existingOptIds.contains(66) || existingOptIds.contains(98);
+            // 3) Hệ Phát Nổ / Bom / Phản Đòn (có opt 153 ST nổ hoặc 97 Phản ST)
+            boolean isExplosionCostume = existingOptIds.contains(153) || existingOptIds.contains(97);
+
+            int[][] costumeBonusPool;
+            if (isTrainOrPetCostume) {
+                costumeBonusPool = new int[][]{
+                    {101, 15, Math.max(25, maxMainCap + 10)},     // +#% TNSM
+                    {160, 15, Math.max(25, maxMainCap + 5)},      // +#% TNSM đệ tử
+                    {95, 8, Math.max(12, maxMainCap / 2 + 2)},    // Hút HP +#%
+                    {96, 8, Math.max(12, maxMainCap / 2 + 2)},    // Hút KI +#%
+                    {94, 6, Math.max(10, maxMainCap / 2)},        // Giáp +#%
+                    {108, 6, Math.max(10, maxMainCap / 2)}        // Né đòn +#%
+                };
+            } else if (isKiBlastCostume) {
+                // Cải trang sát thương Chưởng / Laze: chỉ ra XG chưởng, Chí mạng, SĐCM, Hút KI/HP (KHÔNG ra TNSM hay XGCC)
+                costumeBonusPool = new int[][]{
+                    {98, 8, Math.max(15, maxMainCap / 2 + 1)},    // Xuyên giáp #% chưởng
+                    {14, 5, Math.max(10, maxMainCap / 3 + 1)},    // Chí mạng +#%
+                    {5, 8, Math.max(15, maxMainCap / 2 + 2)},     // +#% sức đánh chí mạng
+                    {96, 8, Math.max(14, maxMainCap / 2 + 2)},    // Hút KI +#%
+                    {95, 8, Math.max(14, maxMainCap / 2 + 2)}     // Hút HP +#%
+                };
+            } else if (isExplosionCostume) {
+                // Cải trang Phát Nổ / Bom HP: chỉ ra Phản ST, Giáp, Hút HP, SĐCM, Né đòn (KHÔNG ra TNSM)
+                costumeBonusPool = new int[][]{
+                    {97, 6, Math.max(12, maxMainCap / 2)},        // Phản #% sát thương
+                    {94, 8, Math.max(15, maxMainCap / 2 + 2)},    // Giáp +#%
+                    {95, 8, Math.max(15, maxMainCap / 2 + 2)},    // Hút HP +#%
+                    {5, 8, Math.max(14, maxMainCap / 2)},         // +#% sức đánh chí mạng
+                    {108, 6, Math.max(12, maxMainCap / 2)}        // Né đòn +#%
+                };
+            } else {
+                // Cải trang Cận Chiến / Sát Thương / PK: chỉ ra SĐCM, Chí mạng, XG cận chiến, Hút HP/KI, Giáp (KHÔNG ra TNSM)
+                costumeBonusPool = new int[][]{
+                    {5, 8, Math.max(15, maxMainCap / 2 + 2)},     // +#% sức đánh chí mạng
+                    {14, 5, Math.max(10, maxMainCap / 3 + 1)},    // Chí mạng +#%
+                    {99, 8, Math.max(15, maxMainCap / 2 + 1)},    // Xuyên giáp #% cận chiến
+                    {95, 8, Math.max(14, maxMainCap / 2 + 2)},    // Hút HP +#%
+                    {96, 8, Math.max(14, maxMainCap / 2 + 2)},    // Hút KI +#%
+                    {94, 6, Math.max(12, maxMainCap / 2)}         // Giáp +#%
+                };
+            }
+
             int added = 0;
-            for (int attempt = 0; attempt < 12 && added < extraBonusCount; attempt++) {
+            for (int attempt = 0; attempt < 24 && added < extraBonusCount; attempt++) {
                 int[] bp = costumeBonusPool[Util.nextInt(0, costumeBonusPool.length - 1)];
                 if (!existingOptIds.contains(bp[0])) {
                     existingOptIds.add(bp[0]);
@@ -257,19 +304,47 @@ public class ItemService {
         }
         int p50 = -1, p77 = -1, p103 = -1;
         int combatSubCount = 0;
+        boolean hasMystery210 = false;
+        boolean hasPetOpt = false;
+        boolean hasCombatSkillOpt = false;
+        Item.ItemOption wrongTnsmOpt = null;
+        List<Integer> existingIds = new ArrayList<>();
+
         for (Item.ItemOption io : item.itemOptions) {
             if (io == null || io.optionTemplate == null) {
                 continue;
             }
             int id = io.optionTemplate.id;
+            existingIds.add(id);
             if (id == 50) p50 = io.param;
             else if (id == 77) p77 = io.param;
             else if (id == 103) p103 = io.param;
+            else if (id == 210) hasMystery210 = true;
             else if (id != 30 && id != 73 && id != 93) {
                 combatSubCount++;
+                if (id == 160 || id == 79 || id == 88 || id == 155) {
+                    hasPetOpt = true;
+                } else if (id == 159 || id == 153 || id == 66 || id == 5 || id == 14 || id == 98 || id == 99 || id == 106 || id == 26 || id == 29 || id == 116 || id == 117 || id == 33) {
+                    hasCombatSkillOpt = true;
+                } else if (id == 101) {
+                    wrongTnsmOpt = io;
+                }
             }
         }
-        if (p50 > 0 && p77 > 0 && p103 > 0 && (combatSubCount == 0 || (p50 == p77 && p77 == p103 && combatSubCount <= 1))) {
+        // Tự động sửa các cải trang sát thương cũ từng bị random nhầm ra dòng TNSM (opt 101) sang chỉ số chiến đấu chuẩn
+        if (wrongTnsmOpt != null && !hasPetOpt && hasCombatSkillOpt && item.template.id != 1362) {
+            int[] replacementChoices = existingIds.contains(159) || existingIds.contains(66)
+                    ? new int[]{98, 14, 5, 96, 95}
+                    : new int[]{5, 14, 99, 95, 96, 94};
+            for (int cand : replacementChoices) {
+                if (!existingIds.contains(cand)) {
+                    wrongTnsmOpt.optionTemplate = ItemService.gI().getItemOptionTemplate(cand);
+                    wrongTnsmOpt.param = (cand == 14) ? Util.nextInt(5, 10) : Util.nextInt(8, 15);
+                    break;
+                }
+            }
+        }
+        if (hasMystery210 || (p50 > 0 && p77 > 0 && p103 > 0 && (combatSubCount == 0 || (p50 == p77 && p77 == p103 && combatSubCount <= 1)))) {
             List<Item.ItemOption> snapshot = new ArrayList<>();
             for (Item.ItemOption io : item.itemOptions) {
                 snapshot.add(new Item.ItemOption(io));

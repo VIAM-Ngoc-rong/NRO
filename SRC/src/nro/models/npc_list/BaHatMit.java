@@ -37,6 +37,10 @@ public class BaHatMit extends Npc {
     @Override
     public void openBaseMenu(Player player) {
         if (canOpenNpc(player)) {
+            if (player.combineNew != null) {
+                player.combineNew.clearItemCombine();
+                player.combineNew.clearParamCombine();
+            }
             switch (this.mapId) {
                 case 5 ->
                     this.createOtherMenu(player, ConstNpc.BASE_MENU,
@@ -148,10 +152,7 @@ public class BaHatMit extends Npc {
                                         "Cường hóa\nlỗ sao\npha lê",
                                         "Tạo đá\nHematite");
                             case 1 ->
-                                createOtherMenu(player, 4,
-                                        "Ta có thể giúp gì cho ngươi ?",
-                                        "Chuyển hóa\nVàng",
-                                        "Chuyển hóa\nNgọc");
+                                CombineService.gI().openTabCombine(player, CombineService.CHUYEN_HOA_TRANG_BI_VANG);
                             case 2 ->
                                 ChangeMapService.gI().changeMapNonSpaceship(player, 112, 200 + Util.nextInt(-100, 100), 408);
                             case 3 ->

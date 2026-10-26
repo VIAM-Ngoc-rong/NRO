@@ -1814,13 +1814,17 @@ public class InventoryService {
     }
 
     private void handleOption210(Item item) {
+        if (item != null && item.template != null && item.template.type == 5) {
+            ItemService.gI().upgradeFlatCostumeIfNeeded(item);
+            return;
+        }
         for (int i = 0; i < item.itemOptions.size(); i++) {
             Item.ItemOption io = item.itemOptions.get(i);
             if (io.optionTemplate.id == 210) {
                 int option210Index = i;
                 item.itemOptions.remove(i);
                 int numberOfOptionsToAdd = io.param;
-                int[] allOptions = {8, 14, 108, 94, 108, 16, 80, 81, 97, 100, 101, 104, 106};
+                int[] allOptions = {5, 14, 94, 95, 96, 98, 99, 108};
                 List<Integer> selectedOptions = new ArrayList<>();
                 while (selectedOptions.size() < numberOfOptionsToAdd && selectedOptions.size() < allOptions.length) {
                     int randomIndex = (int) (Math.random() * allOptions.length);
@@ -1831,14 +1835,7 @@ public class InventoryService {
                 }
                 List<Item.ItemOption> newOptions = new ArrayList<>();
                 for (int option : selectedOptions) {
-                    int newParam = 0;
-                    if (option == 8 || option == 14 || option == 108 || option == 94 || option == 108) {
-                        newParam = 3 + (int) (Math.random() * 3);
-                    } else if (option == 16 || option == 80 || option == 81 || option == 97 || option == 100 || option == 101 || option == 104) {
-                        newParam = 10 + (int) (Math.random() * 16);
-                    } else if (option == 106) {
-                        newParam = 0;
-                    }
+                    int newParam = (option == 14) ? (4 + (int) (Math.random() * 6)) : (6 + (int) (Math.random() * 10));
                     newOptions.add(new Item.ItemOption(option, newParam));
                 }
                 item.itemOptions.addAll(option210Index, newOptions);

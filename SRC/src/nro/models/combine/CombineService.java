@@ -579,6 +579,8 @@ public class CombineService {
 
     public void openTabCombine(Player player, int type, boolean keepExistingSelection) {
         if (!keepExistingSelection) {
+            player.combineNew.clearItemCombine();
+            player.combineNew.clearParamCombine();
             player.combineNew.setTypeCombine(type);
             InventoryService.gI().sendItemBags(player);
         } else {
@@ -601,7 +603,7 @@ public class CombineService {
                 msg.cleanup();
             }
         }
-        if (!player.combineNew.itemsCombine.isEmpty()) {
+        if (keepExistingSelection && !player.combineNew.itemsCombine.isEmpty()) {
             reOpenItemCombine(player);
         }
     }
@@ -962,7 +964,7 @@ public class CombineService {
                 return "Ta sẽ phù phép\ncho trang bị của ngươi\ntrở thành trang bị pha lê";
             case CHUYEN_HOA_TRANG_BI_NGOC:
             case CHUYEN_HOA_TRANG_BI_VANG:
-                return "Lưu ý trang bị mới\nphải hơn trang bị gốc\n1 bậc";
+                return "Ta sẽ phù phép\nchuyển Cấp [+], Sao Pha Lê & SKH\nsang Phôi trang bị mới";
             case PHAN_RA_TRANG_BI_KH:
                 return "Ta sẽ phù phép\nphân rã Đồ Kích Hoạt thành Vàng,\nHồng Ngọc, Đá Ngũ Sắc, Khoáng TC & Thức Ăn";
             case TAI_TAO_CAPSULE_KH:
@@ -1042,7 +1044,7 @@ public class CombineService {
                         + "Cách 2 (Tinh luyện): Chọn 1 Cải trang vĩnh viễn + x5 Đá Ngũ Sắc + 200Tr Vàng -> +1~2% SĐ/HP/KI (Tối đa 45%)";
             case CHUYEN_HOA_TRANG_BI_NGOC:
             case CHUYEN_HOA_TRANG_BI_VANG:
-                return "Vào hành trang\nChọn trang bị gốc\n(Áo,quần,găng,giày hoặc rada)\ntừ cấp[+4] trở lên\nChọn tiếp trang bị mới\nchưa nâng cấp cần nhập thể\nsau đó chọn 'Nâng cấp'";
+                return "Vào hành trang\nChọn 1 Trang bị gốc (có SPL, Cấp [+] hoặc SKH)\nChọn tiếp 1 Phôi trang bị mới cùng loại & cùng hành tinh\nCần 2 tỷ vàng -> Chuyển toàn bộ SPL, Cấp [+] và SKH sang Phôi mới";
             case NHAP_NGOC_RONG:
                 return "Vào hành trang\nChọn 7 viên ngọc cùng sao\nSau đó chọn 'Làm phép'";
             case NANG_CAP_VAT_PHAM:
