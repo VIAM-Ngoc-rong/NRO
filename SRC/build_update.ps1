@@ -6,17 +6,29 @@ javac -proc:none -encoding UTF-8 -d build/classes -cp "build/classes;lib/*" `
     src/nro/models/data/LocalManager.java `
     src/nro/models/data/DataGame.java `
     src/nro/models/data/ItemData.java `
+    src/nro/models/database/ShopDAO.java `
     src/nro/models/server/Manager.java `
+    src/nro/models/server/Command.java `
+    src/nro/models/server/Controller.java `
     src/nro/models/player/Inventory.java `
+    src/nro/models/player/Player.java `
     src/nro/models/services/InventoryService.java `
+    src/nro/models/services/ItemService.java `
     src/nro/models/services/Service.java `
     src/nro/models/services_func/UseItem.java `
+    src/nro/models/combine/Combine.java `
     src/nro/models/combine/CombineService.java `
+    src/nro/models/combine/ChuyenHoaTrangBi_Vang.java `
+    src/nro/models/combine/ChuyenHoaTrangBi_Ngoc.java `
     src/nro/models/npc/NpcFactory.java `
+    src/nro/models/npc_list/BaHatMit.java `
     src/nro/models/npc_list/BoMong.java `
+    src/nro/models/npc_list/KyGui.java `
+    src/nro/models/shop_ky_gui/ConsignShopService.java `
     src/nro/models/task/SideTask.java `
     src/nro/models/services/TaskService.java `
-    src/nro/models/boss/Boss.java
+    src/nro/models/boss/Boss.java `
+    src/nro/models/boss/Boss_Manager/BossManager.java
 
 if ($LASTEXITCODE -ne 0) {
     throw "Loi bien dich javac!"
@@ -31,6 +43,7 @@ $classRoot = Join-Path $PSScriptRoot "build\classes"
 
 $pkgs = @(
     "nro\models\data",
+    "nro\models\database",
     "nro\models\server",
     "nro\models\player",
     "nro\models\services",
@@ -38,8 +51,10 @@ $pkgs = @(
     "nro\models\combine",
     "nro\models\npc",
     "nro\models\npc_list",
+    "nro\models\shop_ky_gui",
     "nro\models\task",
-    "nro\models\boss"
+    "nro\models\boss",
+    "nro\models\boss\Boss_Manager"
 )
 
 $zip = [System.IO.Compression.ZipFile]::Open($jarPath, [System.IO.Compression.ZipArchiveMode]::Update)

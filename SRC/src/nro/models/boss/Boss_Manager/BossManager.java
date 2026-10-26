@@ -477,16 +477,21 @@ public class BossManager implements Runnable {
                 msg.writer().writeShort(boss.data[lv].getOutfit()[1]);
                 msg.writer().writeShort(boss.data[lv].getOutfit()[2]);
                 msg.writer().writeUTF(boss.data[lv].getName());
+                boolean isHuntingThis = player.isAutoHuntBoss && player.isMatchingAutoBoss(boss);
                 if (boss.zone != null && !boss.isDie()) {
-                    msg.writer().writeUTF(boss.zone.map.mapName + " (Bấm đến Khu 0)");
+                    msg.writer().writeUTF(boss.zone.map.mapName + (isHuntingThis ? " [Đang Tự Săn]" : " (Chọn Săn/Đến)"));
                     if (player.isAdmin()) {
-                        msg.writer().writeUTF(boss.zone.map.mapName + " (" + boss.zone.map.mapId + ") khu " + boss.zone.zoneId + " - Bấm Chọn để đến Khu 0");
+                        msg.writer().writeUTF(boss.zone.map.mapName + " (" + boss.zone.map.mapId + ") khu " + boss.zone.zoneId
+                                + (isHuntingThis ? " - [ĐANG TỰ SĂN]" : " - Bấm Chọn để Đến hoặc Tự Động Săn"));
                     } else {
-                        msg.writer().writeUTF("Đang ở " + boss.zone.map.mapName + " (" + boss.zone.map.mapId + ")\nBấm Chọn để dịch chuyển đến Khu 0!");
+                        msg.writer().writeUTF("Đang ở " + boss.zone.map.mapName + " (" + boss.zone.map.mapId + ")"
+                                + (isHuntingThis ? " [ĐANG TỰ SĂN]" : "\nBấm Chọn để Đến Khu 0 hoặc Bật Tự Động Săn!"));
                     }
                 } else {
-                    msg.writer().writeUTF("Đang chờ hồi sinh");
-                    msg.writer().writeUTF("Chưa xuất hiện");
+                    msg.writer().writeUTF(isHuntingThis ? "Chờ ra [Đang Tự Săn]" : "Đang chờ hồi sinh");
+                    msg.writer().writeUTF(isHuntingThis
+                            ? "Đang hẹn Tự Động Săn (Boss vừa xuất hiện sẽ tự đến dò khu & tàn sát)"
+                            : "Chưa xuất hiện - Bấm Chọn để Hẹn Tự Động Săn khi Boss xuất hiện!");
                 }
             }
             player.sendMessage(msg);

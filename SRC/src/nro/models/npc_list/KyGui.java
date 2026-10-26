@@ -26,14 +26,9 @@ public class KyGui extends Npc {
             switch (select) {
                 case 0 ->
                     NpcService.gI().createTutorial(pl, tempId, avartar,
-                            "Cửa hàng chuyên nhận ký gửi mua bán vật phẩm\nChỉ với 5 ngọc\nGiá trị ký gửi 10k-200Tr vàng hoặc 2-2k ngọc\nMột người bán, vạn người mua, mại dô, mại dô");
-                case 1 -> {
-                    if (pl.getSession().actived) {
-                        ConsignShopService.gI().openShopKyGui(pl);
-                        return;
-                    }
-                    this.npcChat(pl, "Bạn chưa kích hoạt thành viên!!!");
-                }
+                            "Cửa hàng chuyên nhận ký gửi mua bán vật phẩm\nĐơn vị giao dịch: Thỏi Vàng và Hồng Ngọc (Phí sàn 10%)\nPhí đăng bán: 1 Thỏi Vàng | Đưa lên Top: 2 Thỏi Vàng\nMột người bán, vạn người mua, mại dô, mại dô");
+                case 1 ->
+                    ConsignShopService.gI().openShopKyGui(pl);
             }
         }
     }

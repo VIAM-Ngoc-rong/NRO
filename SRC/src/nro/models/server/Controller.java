@@ -669,27 +669,7 @@ public class Controller implements IMessageHandler {
                                 SuperRankService.gI().competing(player, _id);
                             }
                             default -> {
-                                Boss boss = BossManager.gI().getBoss(_id);
-                                if (boss != null && boss.zone != null && !boss.isDie()) {
-                                    int targetMapId = boss.zone.map.mapId;
-                                    nro.models.map.Zone zone0 = MapService.gI().getZoneByMapIDAndZoneID(targetMapId, 0);
-                                    if (zone0 != null) {
-                                        if (player.zone != null && !MapService.gI().isHome(player.zone.map.mapId)
-                                                && !MapService.gI().isMapPhoBan(player.zone.map.mapId)
-                                                && !MapService.gI().isMapMaBu(player.zone.map.mapId)
-                                                && !MapService.gI().isMapBlackBallWar(player.zone.map.mapId)
-                                                && !MapService.gI().isMapOffline(player.zone.map.mapId)) {
-                                            player.mapBeforeCapsule = player.zone;
-                                        }
-                                        player.changeMapVIP = true;
-                                        ChangeMapService.gI().changeMapBySpaceShip(player, targetMapId, 0, -1);
-                                        Service.gI().sendThongBao(player, "Đã dịch chuyển tới " + boss.zone.map.mapName + " (Khu 0). Hãy dò từ Khu 1 trở đi để tìm " + boss.name + "!");
-                                    } else {
-                                        Service.gI().sendThongBao(player, "Không thể dịch chuyển đến " + boss.zone.map.mapName + "!");
-                                    }
-                                } else {
-                                    Service.gI().sendThongBao(player, "Boss này hiện chưa xuất hiện, vui lòng chờ hồi sinh!");
-                                }
+                                nro.models.npc.NpcFactory.openMenuSelectBossAction(player, _id);
                             }
                         }
                     }

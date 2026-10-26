@@ -76,11 +76,13 @@ public class ChuyenHoaTrangBi_Vang {
                 continue;
             }
             int id = io.optionTemplate.id;
-            if (id == 72 || id == 209) {
+            if (id == 72) {
                 continue;
             }
             if (isBaseStatOption(id)) {
                 npcSay.append("|1|").append(io.getOptionString()).append("\n");
+            } else if (id == 209) {
+                npcSay.append("|7|").append(io.getOptionString()).append("\n");
             } else if (XoaThuocTinhSKH.isSkhOption(id)) {
                 npcSay.append("|6|").append(io.getOptionString()).append("\n");
             } else {
@@ -182,7 +184,7 @@ public class ChuyenHoaTrangBi_Vang {
         boolean gocHasSkh = XoaThuocTinhSKH.hasSkhOption(trangBiGoc);
         boolean gocHasSpl = hasSplAttributes(trangBiGoc);
 
-        // 1. Giữ chỉ số gốc của Phôi mới (nâng theo cấp [+] của trang bị gốc) và các dòng đặc trưng của Phôi (như yêu cầu SM 21)
+        // 1. Giữ chỉ số gốc của Phôi mới (tính theo cấp [+] và số lần rớt cấp Option 209 của trang bị gốc)
         for (ItemOption io : phoiMoi.itemOptions) {
             if (io == null || io.optionTemplate == null) {
                 continue;
@@ -205,7 +207,7 @@ public class ChuyenHoaTrangBi_Vang {
             result.add(new ItemOption(id, value));
         }
 
-        // 2. Chuyển Cấp [+], Sao Pha Lê (107, 102, 228 & dòng SPL) và Thuộc tính SKH từ Trang bị gốc sang Phôi mới
+        // 2. Chuyển Cấp [+], số lần rớt cấp (209), Sao Pha Lê (107, 102, 228 & dòng SPL) và Thuộc tính SKH từ Trang bị gốc sang Phôi mới
         if (finalLevel > 0) {
             result.add(new ItemOption(72, finalLevel));
         }
@@ -218,8 +220,8 @@ public class ChuyenHoaTrangBi_Vang {
                 continue;
             }
             int id = io.optionTemplate.id;
-            // Bỏ qua chỉ số gốc, cấp [+] (đã thêm ở trên), và dòng yêu cầu SM của đồ gốc
-            if (isBaseStatOption(id) || id == 72 || id == 209 || id == 21 || id == 15 || id == 41) {
+            // Bỏ qua chỉ số gốc, cấp [+], rớt cấp (đã thêm ở trên), dòng ký gửi (86, 87) và dòng yêu cầu SM của đồ gốc
+            if (isBaseStatOption(id) || id == 72 || id == 209 || id == 21 || id == 15 || id == 41 || id == 86 || id == 87) {
                 continue;
             }
             if ((id == 30 || id == 73) && hasOptionList(result, id)) {
