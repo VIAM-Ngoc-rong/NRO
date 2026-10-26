@@ -137,7 +137,7 @@ public class SkillService {
             switch (skillId) {
                 case Skill.SUPER_KAME, Skill.LIEN_HOAN_CHUONG, Skill.MA_PHONG_BA -> {
                     player.newSkill.setSkillSpecial(dir, dx, dy, x, y);
-                    newSkillNotFocus(player, status);
+                    newSkillNotFocus(player, status == -1 ? 20 : status);
                     AchievementService.gI().checkDoneTask(player, ConstAchievement.TUYET_KY_THANH_THAO);
                 }
             }

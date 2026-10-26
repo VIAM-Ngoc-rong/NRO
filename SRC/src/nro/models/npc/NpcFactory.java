@@ -1,5 +1,7 @@
 package nro.models.npc;
 
+import java.util.ArrayList;
+import nro.models.skill.Skill;
 import nro.models.npc_list.Whis;
 import nro.models.npc_list.LinhCanh;
 import nro.models.npc_list.Bulma;
@@ -819,6 +821,9 @@ public class NpcFactory {
                                 player.toggleAutoHuntAllBoss();
                             }
                             case 2 -> {
+                                openMenuSelectAutoHuntSkills(player);
+                            }
+                            case 3 -> {
                                 if (boss != null && boss.zone != null && !boss.isDie()) {
                                     int targetMapId = boss.zone.map.mapId;
                                     nro.models.map.Zone zone0 = nro.models.map.service.MapService.gI().getZoneByMapIDAndZoneID(targetMapId, 0);
@@ -840,14 +845,39 @@ public class NpcFactory {
                                     Service.gI().sendThongBao(player, "Boss này hiện chưa xuất hiện! Bạn có thể bấm 'Thêm Vào DS Tự Săn' để tự đến khi Boss hồi sinh.");
                                 }
                             }
-                            case 3 -> {
+                            case 4 -> {
                                 if (player.isAutoHuntBoss) {
                                     player.stopAutoHuntBoss();
                                 } else {
                                     BossManager.gI().showListBoss(player);
                                 }
                             }
-                            case 4 -> {
+                            case 5 -> {
+                                BossManager.gI().showListBoss(player);
+                            }
+                        }
+                    }
+                    case 9906 -> {
+                        List<Skill> learned = new ArrayList<>();
+                        if (player.playerSkill != null && player.playerSkill.skills != null) {
+                            for (Skill s : player.playerSkill.skills) {
+                                if (s != null && s.skillId != -1 && s.point > 0 && s.template != null
+                                        && s.template.id != Skill.TRI_THUONG && s.template.id != Skill.TAI_TAO_NANG_LUONG) {
+                                    learned.add(s);
+                                }
+                            }
+                        }
+                        if (select == 0) {
+                            player.resetAutoHuntSkillsToShortcut();
+                            openMenuSelectAutoHuntSkills(player);
+                        } else if (select >= 1 && select <= learned.size()) {
+                            Skill chosen = learned.get(select - 1);
+                            player.toggleAutoHuntSkill(chosen.template.id);
+                            openMenuSelectAutoHuntSkills(player);
+                        } else if (select == learned.size() + 1) {
+                            if (player.pendingAutoBossIndex >= 0) {
+                                openMenuSelectBossAction(player, player.pendingAutoBossIndex);
+                            } else {
                                 BossManager.gI().showListBoss(player);
                             }
                         }
@@ -1017,20 +1047,54 @@ public class NpcFactory {
         sb.append("|2|DS Đang Tự Săn: ").append(player.isAutoHuntBoss
                 ? ("|1|[" + player.getAutoHuntBossSummary() + "]\n")
                 : "|7|[Đang Tắt]\n");
-        sb.append("|0|(Bạn có thể chọn NHIỀU Boss vào danh sách hoặc bật 'Săn Tất Cả Boss'! Con nào sống sẽ tự đến dò khu & Tàn Sát trước, săn xong tự chuyển sang con tiếp theo!)");
+        sb.append("|2|Chiêu Săn Boss: |1|").append(player.getAutoHuntSkillSummary()).append("\n");
+        sb.append("|0|(Mặc định tự dùng TẤT CẢ chiêu đang gán trên Ô Kỹ Năng của bạn, hoặc bấm 'Chọn Chiêu Săn Boss' để bật/tắt từng chiêu!)");
 
         String opt0 = (isHuntingThis && !player.isAutoHuntAllBoss)
                 ? ("Bỏ Khỏi DS\n" + bossName)
                 : ("Thêm Vào DS\n" + bossName);
         String opt1 = player.isAutoHuntAllBoss ? "Tắt Săn\nTất Cả Boss" : "Bật Săn\nTất Cả Boss";
-        String opt2 = isAlive ? ("Đến Khu 0\n" + boss.zone.map.mapName) : "Đến Khu 0\n(Chờ Boss ra)";
+        String opt2 = "Chọn Chiêu\nSăn Boss";
+        String opt3 = isAlive ? ("Đến Khu 0\n" + boss.zone.map.mapName) : "Đến Khu 0\n(Chờ Boss ra)";
         if (player.isAutoHuntBoss) {
             NpcService.gI().createMenuConMeo(player, 9905, -1, sb.toString(),
-                    opt0, opt1, opt2, "Tắt Toàn Bộ\nTự Săn", "Danh sách\nBoss", "Đóng");
+                    opt0, opt1, opt2, opt3, "Tắt Toàn Bộ\nTự Săn", "Danh sách\nBoss", "Đóng");
         } else {
             NpcService.gI().createMenuConMeo(player, 9905, -1, sb.toString(),
-                    opt0, opt1, opt2, "Danh sách\nBoss", "Đóng");
+                    opt0, opt1, opt2, opt3, "Danh sách\nBoss", "Đóng");
         }
+    }
+
+    public static void openMenuSelectAutoHuntSkills(Player player) {
+        if (player == null) {
+            return;
+        }
+        List<Skill> learned = new ArrayList<>();
+        if (player.playerSkill != null && player.playerSkill.skills != null) {
+            for (Skill s : player.playerSkill.skills) {
+                if (s != null && s.skillId != -1 && s.point > 0 && s.template != null
+                        && s.template.id != Skill.TRI_THUONG && s.template.id != Skill.TAI_TAO_NANG_LUONG) {
+                    learned.add(s);
+                }
+            }
+        }
+        StringBuilder sb = new StringBuilder();
+        sb.append("|7|=== CÀI ĐẶT CHIÊU TỰ ĐỘNG SĂN BOSS ===\n");
+        sb.append("|2|Chế độ hiện tại: |1|")
+                .append(player.autoHuntCustomSkillIds.isEmpty() ? "Tự động theo Ô Kỹ Năng (Shortcut)" : "Tự chọn chiêu")
+                .append("\n");
+        sb.append("|2|Các chiêu đang dùng: |1|").append(player.getAutoHuntSkillSummary()).append("\n");
+        sb.append("|0|(Bấm vào từng chiêu bên dưới để Bật/Tắt khi Săn Boss, hoặc chọn 'Dùng Theo Ô Kỹ Năng' để dùng tất cả chiêu bạn gán trên màn hình!)");
+
+        List<String> menuOpts = new ArrayList<>();
+        menuOpts.add("Dùng Theo\nÔ Kỹ Năng");
+        for (Skill s : learned) {
+            boolean active = player.isSkillSelectedForAutoHunt(s.template.id);
+            menuOpts.add(s.template.name + "\n" + (active ? "[Đang Bật]" : "[Đang Tắt]"));
+        }
+        menuOpts.add("Quay lại");
+        menuOpts.add("Đóng");
+        NpcService.gI().createMenuConMeo(player, 9906, -1, sb.toString(), menuOpts.toArray(new String[0]));
     }
 
     public static void openMenuTienIch(Player player) {

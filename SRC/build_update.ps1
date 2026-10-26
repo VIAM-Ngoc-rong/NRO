@@ -15,6 +15,7 @@ javac -proc:none -encoding UTF-8 -d build/classes -cp "build/classes;lib/*" `
     src/nro/models/services/InventoryService.java `
     src/nro/models/services/ItemService.java `
     src/nro/models/services/Service.java `
+    src/nro/models/services/SkillService.java `
     src/nro/models/services_func/UseItem.java `
     src/nro/models/combine/Combine.java `
     src/nro/models/combine/CombineService.java `

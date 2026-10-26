@@ -88,6 +88,8 @@ public class Player implements Runnable {
     public boolean isAutoHuntAllBoss = false;
     public final List<Long> autoHuntBossGroupKeys = new java.util.concurrent.CopyOnWriteArrayList<>();
     public final List<String> autoHuntBossNames = new java.util.concurrent.CopyOnWriteArrayList<>();
+    public final List<Integer> autoHuntCustomSkillIds = new java.util.concurrent.CopyOnWriteArrayList<>();
+    public int autoHuntSkillRotateIndex = 0;
     public nro.models.boss.Boss currentLockedAutoBoss = null;
     public int pendingAutoBossIndex = -1;
     public int targetAutoBossIndex = -1;
@@ -2083,6 +2085,211 @@ public class Player implements Runnable {
         return this.autoHuntBossNames.size() + " mục tiêu (" + joined + ")";
     }
 
+    public List<Skill> getActiveAutoHuntSkills() {
+        List<Skill> result = new ArrayList<>();
+        if (this.playerSkill == null || this.playerSkill.skills == null) {
+            return result;
+        }
+        // 1. Nếu người chơi đã tự chọn chiêu săn Boss riêng trong Menu
+        if (!this.autoHuntCustomSkillIds.isEmpty()) {
+            for (int tempId : this.autoHuntCustomSkillIds) {
+                Skill s = this.playerSkill.getSkillbyId(tempId);
+                if (s != null && s.skillId != -1 && s.point > 0 && s.template != null && !result.contains(s)) {
+                    result.add(s);
+                }
+            }
+            if (!result.isEmpty()) {
+                return result;
+            }
+        }
+        // 2. Mặc định: Lấy TẤT CẢ các chiêu người chơi đang gán trên 10 Ô Kỹ Năng (skillShortCut)
+        if (this.playerSkill.skillShortCut != null) {
+            for (byte scId : this.playerSkill.skillShortCut) {
+                if (scId != -1) {
+                    Skill s = this.playerSkill.getSkillbyId(scId);
+                    if (s != null && s.skillId != -1 && s.point > 0 && s.template != null && !result.contains(s)) {
+                        result.add(s);
+                    }
+                }
+            }
+        }
+        // 3. Dự phòng nếu Ô Kỹ Năng trống: lấy toàn bộ chiêu đã học
+        if (result.isEmpty()) {
+            for (Skill s : this.playerSkill.skills) {
+                if (s != null && s.skillId != -1 && s.point > 0 && s.template != null && !result.contains(s)) {
+                    result.add(s);
+                }
+            }
+        }
+        return result;
+    }
+
+    public boolean isSkillSelectedForAutoHunt(int skillTempId) {
+        for (Skill s : getActiveAutoHuntSkills()) {
+            if (s.template != null && s.template.id == skillTempId) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public String getAutoHuntSkillSummary() {
+        List<Skill> active = getActiveAutoHuntSkills();
+        if (active.isEmpty()) {
+            return "Chưa có chiêu";
+        }
+        List<String> names = new ArrayList<>();
+        for (Skill s : active) {
+            if (s.template != null && s.template.name != null) {
+                names.add(s.template.name);
+            }
+        }
+        String mode = this.autoHuntCustomSkillIds.isEmpty() ? "Theo Ô Kỹ Năng: " : "Tự Chọn: ";
+        return mode + String.join(", ", names);
+    }
+
+    public void toggleAutoHuntSkill(int skillTempId) {
+        if (this.autoHuntCustomSkillIds.isEmpty()) {
+            for (Skill s : getActiveAutoHuntSkills()) {
+                if (s.template != null && !this.autoHuntCustomSkillIds.contains((int) s.template.id)) {
+                    this.autoHuntCustomSkillIds.add((int) s.template.id);
+                }
+            }
+        }
+        Skill sk = this.playerSkill != null ? this.playerSkill.getSkillbyId(skillTempId) : null;
+        String skName = (sk != null && sk.template != null) ? sk.template.name : ("Chiêu #" + skillTempId);
+        int idx = this.autoHuntCustomSkillIds.indexOf(skillTempId);
+        if (idx >= 0) {
+            if (this.autoHuntCustomSkillIds.size() <= 1) {
+                Service.gI().sendThongBao(this, "Phải giữ lại ít nhất 1 chiêu để Săn Boss!");
+                return;
+            }
+            this.autoHuntCustomSkillIds.remove(idx);
+            Service.gI().sendThongBao(this, "Đã TẮT dùng chiêu [" + skName + "] khi Săn Boss!");
+        } else {
+            this.autoHuntCustomSkillIds.add(skillTempId);
+            Service.gI().sendThongBao(this, "Đã BẬT dùng chiêu [" + skName + "] khi Săn Boss!");
+        }
+    }
+
+    public void resetAutoHuntSkillsToShortcut() {
+        this.autoHuntCustomSkillIds.clear();
+        Service.gI().sendThongBao(this, "Đã đặt lại: Tự động dùng TẤT CẢ chiêu đang gán trên Ô Kỹ Năng (" + getAutoHuntSkillSummary() + ")!");
+    }
+
+    private boolean isAutoSkillReady(Skill s) {
+        if (s == null || s.skillId == -1 || s.point <= 0 || s.template == null) {
+            return false;
+        }
+        if (!Util.canDoWithTime(s.lastTimeUseThisSkill, Math.max(200, s.coolDown - 50))) {
+            return false;
+        }
+        if (s.template.id == Skill.KAIOKEN && this.nPoint.hp <= this.nPoint.hpMax * 20L / 100L) {
+            return false;
+        }
+        return switch (s.template.manaUseType) {
+            case 0 -> this.nPoint.mp >= s.manaUse;
+            case 1 -> this.nPoint.mp >= (this.nPoint.mpMax * s.manaUse / 100L);
+            case 2 -> this.nPoint.mp > 0;
+            default -> true;
+        };
+    }
+
+    private Skill chooseNextAutoHuntSkill(nro.models.boss.Boss targetBoss) {
+        List<Skill> activeSkills = getActiveAutoHuntSkills();
+        if (activeSkills.isEmpty()) {
+            return null;
+        }
+
+        // 1. Ưu tiên các chiêu Buff / Khống chế đang có trên Ô Kỹ Năng (hoặc đã chọn) khi cần thiết
+        for (Skill s : activeSkills) {
+            if (!isAutoSkillReady(s)) {
+                continue;
+            }
+            switch (s.template.id) {
+                case Skill.KHIEN_NANG_LUONG -> {
+                    if (this.effectSkill != null && !this.effectSkill.isShielding) {
+                        return s;
+                    }
+                }
+                case Skill.BIEN_KHI -> {
+                    if (this.effectSkill != null && !this.effectSkill.isMonkey) {
+                        return s;
+                    }
+                }
+                case Skill.HUYT_SAO -> {
+                    if (this.effectSkill != null && this.effectSkill.tiLeHPHuytSao <= 0) {
+                        return s;
+                    }
+                }
+                case Skill.DE_TRUNG -> {
+                    if (this.mobMe == null) {
+                        return s;
+                    }
+                }
+                case Skill.DICH_CHUYEN_TUC_THOI -> {
+                    if (targetBoss.effectSkill != null && !targetBoss.effectSkill.isBlindDCTT) {
+                        return s;
+                    }
+                }
+                case Skill.THAI_DUONG_HA_SAN -> {
+                    if (targetBoss.effectSkill != null && !targetBoss.effectSkill.isStun
+                            && !targetBoss.effectSkill.isBlindDCTT && !targetBoss.effectSkill.isThoiMien) {
+                        return s;
+                    }
+                }
+                case Skill.THOI_MIEN -> {
+                    if (targetBoss.effectSkill != null && !targetBoss.effectSkill.isThoiMien && !targetBoss.effectSkill.isStun) {
+                        return s;
+                    }
+                }
+                case Skill.SOCOLA -> {
+                    if (targetBoss.effectSkill != null && !targetBoss.effectSkill.isSocola) {
+                        return s;
+                    }
+                }
+                case Skill.TROI -> {
+                    if (this.effectSkill != null && !this.effectSkill.useTroi
+                            && targetBoss.effectSkill != null && !targetBoss.effectSkill.anTroi) {
+                        return s;
+                    }
+                }
+            }
+        }
+
+        // 2. Ưu tiên Tuyệt Kỹ & Chiêu Đặc Biệt sát thương lớn nếu người chơi có gán trên Ô Kỹ Năng
+        for (Skill s : activeSkills) {
+            if (!isAutoSkillReady(s)) {
+                continue;
+            }
+            switch (s.template.id) {
+                case Skill.SUPER_KAME, Skill.LIEN_HOAN_CHUONG, Skill.MA_PHONG_BA,
+                     Skill.QUA_CAU_KENH_KHI, Skill.MAKANKOSAPPO, Skill.TU_SAT -> {
+                    return s;
+                }
+            }
+        }
+
+        // 3. Lọc danh sách các chiêu Tấn công (Chưởng / Kaioken / Liên hoàn / Đấm) trong Ô Kỹ Năng đang hồi xong
+        List<Skill> readyAttackSkills = new ArrayList<>();
+        for (Skill s : activeSkills) {
+            if (!isAutoSkillReady(s)) {
+                continue;
+            }
+            switch (s.template.id) {
+                case Skill.KAMEJOKO, Skill.MASENKO, Skill.ANTOMIC, Skill.KAIOKEN,
+                     Skill.LIEN_HOAN, Skill.DRAGON, Skill.DEMON, Skill.GALICK -> {
+                    readyAttackSkills.add(s);
+                }
+            }
+        }
+        if (!readyAttackSkills.isEmpty()) {
+            this.autoHuntSkillRotateIndex = (this.autoHuntSkillRotateIndex + 1) % readyAttackSkills.size();
+            return readyAttackSkills.get(this.autoHuntSkillRotateIndex);
+        }
+        return null;
+    }
+
     public void startAutoHuntBoss(int bossIndex) {
         toggleAutoHuntBoss(bossIndex);
     }
@@ -2408,64 +2615,74 @@ public class Player implements Runnable {
                 return;
             }
 
-            // B3: Đã ở đúng Khu có Boss -> Bật Đệ tử Tấn công, áp sát Boss trên mặt đất và Tàn Sát!
+            // B3: Đã ở đúng Khu có Boss -> Bật Đệ tử Tấn công, áp sát Boss trên mặt đất và dùng tất cả chiêu trên Ô Kỹ Năng!
             if (this.pet != null && !this.pet.isDie() && this.pet.status != Pet.ATTACK && this.pet.status != Pet.GOHOME) {
                 this.pet.changeStatus(Pet.ATTACK);
             }
 
-            if (Util.getDistance(this, targetBoss) > 120 && Util.canDoWithTime(this.lastTimeAutoHuntAction, 2000)) {
+            if (Util.getDistance(this, targetBoss) > 75 && Util.canDoWithTime(this.lastTimeAutoHuntAction, 1200)) {
                 this.lastTimeAutoHuntAction = System.currentTimeMillis();
-                int bx = targetBoss.location.x + Util.nextInt(-25, 25);
+                int bx = targetBoss.location.x + Util.nextInt(-20, 20);
                 if (bx < 50) {
                     bx = 50;
                 } else if (bx > this.zone.map.mapWidth - 50) {
                     bx = this.zone.map.mapWidth - 50;
                 }
                 int by = this.zone.map.yPhysicInTop(bx, targetBoss.location.y);
-                PlayerService.gI().playerMove(this, bx, by);
-                Service.gI().resetPoint(this, bx, by);
+                Service.gI().setPos(this, bx, by);
+            }
+
+            if (this.newSkill != null && this.newSkill.isStartSkillSpecial) {
+                return;
             }
 
             if (nro.models.services.SkillService.gI().canAttackPlayer(this, targetBoss)
-                    && Util.canDoWithTime(this.lastTimeAutoHuntAttack, 350)) {
-                this.lastTimeAutoHuntAttack = System.currentTimeMillis();
+                    && Util.canDoWithTime(this.lastTimeAutoHuntAttack, 300)) {
                 if (this.playerSkill != null && this.playerSkill.skills != null) {
-                    Skill chosenSkill = null;
-                    // Ưu tiên bật Khiên năng lượng nếu có và đã hồi chiêu
-                    if (this.effectSkill != null && !this.effectSkill.isShielding) {
-                        for (Skill s : this.playerSkill.skills) {
-                            if (s != null && s.skillId != -1 && s.template != null
-                                    && s.template.id == Skill.KHIEN_NANG_LUONG
-                                    && Util.canDoWithTime(s.lastTimeUseThisSkill, s.coolDown)) {
-                                chosenSkill = s;
-                                break;
+                    // Xử lý bước 2 của các chiêu gồng (Quả Cầu Kênh Khí / Laze / Tự Sát) nếu đang gồng
+                    if (this.playerSkill.prepareQCKK) {
+                        if (Util.canDoWithTime(this.playerSkill.lastTimePrepareQCKK, 1600)) {
+                            Skill qckk = this.playerSkill.getSkillbyId(Skill.QUA_CAU_KENH_KHI);
+                            if (qckk != null) {
+                                this.lastTimeAutoHuntAttack = System.currentTimeMillis();
+                                this.playerSkill.skillSelect = qckk;
+                                nro.models.services.SkillService.gI().useSkill(this, targetBoss, null, -1, null);
+                            } else {
+                                this.playerSkill.prepareQCKK = false;
                             }
                         }
+                        return;
                     }
-                    // Chọn kỹ năng tấn công (Liên hoàn / Đấm / Chưởng) đã hồi chiêu
-                    if (chosenSkill == null) {
-                        int[] attackSkillPriority = {
-                            Skill.LIEN_HOAN, Skill.DRAGON, Skill.DEMON, Skill.GALICK,
-                            Skill.KAMEJOKO, Skill.MASENKO, Skill.ANTOMIC, Skill.KAIOKEN
-                        };
-                        for (int prefId : attackSkillPriority) {
-                            for (Skill s : this.playerSkill.skills) {
-                                if (s != null && s.skillId != -1 && s.template != null
-                                        && s.template.id == prefId
-                                        && Util.canDoWithTime(s.lastTimeUseThisSkill, s.coolDown)) {
-                                    if (prefId == Skill.KAIOKEN && this.nPoint.hp <= this.nPoint.hpMax * 20L / 100L) {
-                                        continue;
-                                    }
-                                    chosenSkill = s;
-                                    break;
-                                }
-                            }
-                            if (chosenSkill != null) {
-                                break;
+                    if (this.playerSkill.prepareLaze) {
+                        if (Util.canDoWithTime(this.playerSkill.lastTimePrepareLaze, 1600)) {
+                            Skill laze = this.playerSkill.getSkillbyId(Skill.MAKANKOSAPPO);
+                            if (laze != null) {
+                                this.lastTimeAutoHuntAttack = System.currentTimeMillis();
+                                this.playerSkill.skillSelect = laze;
+                                nro.models.services.SkillService.gI().useSkill(this, targetBoss, null, -1, null);
+                            } else {
+                                this.playerSkill.prepareLaze = false;
                             }
                         }
+                        return;
                     }
+                    if (this.playerSkill.prepareTuSat) {
+                        if (Util.canDoWithTime(this.playerSkill.lastTimePrepareTuSat, 1600)) {
+                            Skill bom = this.playerSkill.getSkillbyId(Skill.TU_SAT);
+                            if (bom != null) {
+                                this.lastTimeAutoHuntAttack = System.currentTimeMillis();
+                                this.playerSkill.skillSelect = bom;
+                                nro.models.services.SkillService.gI().useSkill(this, targetBoss, null, -1, null);
+                            } else {
+                                this.playerSkill.prepareTuSat = false;
+                            }
+                        }
+                        return;
+                    }
+
+                    Skill chosenSkill = chooseNextAutoHuntSkill(targetBoss);
                     if (chosenSkill != null) {
+                        this.lastTimeAutoHuntAttack = System.currentTimeMillis();
                         this.playerSkill.skillSelect = chosenSkill;
                         nro.models.services.SkillService.gI().useSkill(this, targetBoss, null, -1, null);
                     }
