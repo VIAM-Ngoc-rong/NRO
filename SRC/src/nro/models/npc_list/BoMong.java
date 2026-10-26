@@ -49,6 +49,7 @@ public class BoMong extends Npc {
                             if (player.playerTask.sideTask.template != null) {
                                 String npcSay = "Nhiệm vụ hiện tại: " + player.playerTask.sideTask.getName() + " ("
                                         + player.playerTask.sideTask.getLevel() + ")"
+                                        + "\nBản đồ: " + player.playerTask.sideTask.getMapLocation()
                                         + "\nHiện tại đã hoàn thành: " + player.playerTask.sideTask.count + "/"
                                         + player.playerTask.sideTask.maxCount + " ("
                                         + player.playerTask.sideTask.getPercentProcess() + "%)\nSố nhiệm vụ còn lại trong ngày: "

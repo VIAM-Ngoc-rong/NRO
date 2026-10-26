@@ -1281,7 +1281,8 @@ public class TaskService {
             player.playerTask.sideTask.leftTask--;
             player.playerTask.sideTask.level = level;
             player.playerTask.sideTask.receivedTime = System.currentTimeMillis();
-            Service.gI().sendThongBao(player, "Bạn nhận được nhiệm vụ: " + player.playerTask.sideTask.getName());
+            Service.gI().sendThongBao(player, "Bạn nhận được nhiệm vụ: " + player.playerTask.sideTask.getName()
+                    + " tại " + player.playerTask.sideTask.getMapLocation());
         } else {
             Service.gI().sendThongBao(player,
                     "Bạn đã nhận hết nhiệm vụ hôm nay. Hãy chờ tới ngày mai rồi nhận tiếp");

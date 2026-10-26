@@ -13,6 +13,9 @@ javac -proc:none -encoding UTF-8 -d build/classes -cp "build/classes;lib/*" `
     src/nro/models/services_func/UseItem.java `
     src/nro/models/combine/CombineService.java `
     src/nro/models/npc/NpcFactory.java `
+    src/nro/models/npc_list/BoMong.java `
+    src/nro/models/task/SideTask.java `
+    src/nro/models/services/TaskService.java `
     src/nro/models/boss/Boss.java
 
 if ($LASTEXITCODE -ne 0) {
@@ -34,6 +37,8 @@ $pkgs = @(
     "nro\models\services_func",
     "nro\models\combine",
     "nro\models\npc",
+    "nro\models\npc_list",
+    "nro\models\task",
     "nro\models\boss"
 )
 
@@ -59,6 +64,9 @@ try {
 Copy-Item $jarPath (Join-Path $PSScriptRoot "20.jar") -Force
 if (Test-Path "E:\NRO\20.jar") {
     Copy-Item $jarPath "E:\NRO\20.jar" -Force
+}
+if (Test-Path "E:\NRO\Server_Local\20.jar") {
+    Copy-Item $jarPath "E:\NRO\Server_Local\20.jar" -Force
 }
 
 Write-Host "HOAN TAT! Da cap nhat dist/NgocRongOnline.jar va 20.jar thanh cong!" -ForegroundColor Green
