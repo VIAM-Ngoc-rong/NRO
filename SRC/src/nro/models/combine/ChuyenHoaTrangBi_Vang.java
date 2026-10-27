@@ -23,9 +23,10 @@ public class ChuyenHoaTrangBi_Vang {
 
     public static void chuyenHoaTrangBiVang(Player player) {
         if (player.combineNew.itemsCombine.size() != 2) {
-            CombineService.gI().baHatMit.createOtherMenu(player, ConstNpc.IGNORE_MENU,
-                    "Hãy chọn 1 Trang bị gốc (có Sao Pha Lê, Cấp [+] hoặc thuộc tính SKH) và 1 Phôi trang bị mới cùng loại & cùng hành tinh!",
-                    "Đóng");
+            CombineService.gI().baHatMit.createOtherMenu(player, ConstNpc.MENU_START_COMBINE,
+                    "Hãy chọn 1 Trang bị gốc (có Sao Pha Lê, Cấp [+] hoặc thuộc tính SKH) và 1 Phôi trang bị mới cùng loại & cùng hành tinh!\n"
+                    + "|7|(Mẹo: Bạn có thể bỏ trực tiếp 2 món trùng tên vào, hoặc chọn 1 món trước rồi bấm 'Chọn nhanh Đồ cùng loại' bên dưới)",
+                    "Đóng", "Chọn nhanh\nĐồ cùng loại", "Đổi sang\nTrang kế");
             return;
         }
 
@@ -57,15 +58,15 @@ public class ChuyenHoaTrangBi_Vang {
             return;
         }
 
-        int levelTrangBi = getLevel(trangBiGoc);
+        int levelTrangBi = Math.max(getLevel(trangBiGoc), getLevel(trangBiCanChuyenHoa));
         List<ItemOption> previewOptions = buildTransferredOptions(trangBiGoc, trangBiCanChuyenHoa);
 
         StringBuilder npcSay = new StringBuilder();
-        npcSay.append("|2|Trang bị gốc: ").append(trangBiGoc.getName());
-        if (levelTrangBi > 0) {
-            npcSay.append(" [+").append(levelTrangBi).append("]");
+        npcSay.append("|2|Trang bị gốc (tiêu hao): ").append(trangBiGoc.getName());
+        if (getLevel(trangBiGoc) > 0) {
+            npcSay.append(" [+").append(getLevel(trangBiGoc)).append("]");
         }
-        npcSay.append("\n|2|Phôi mới nhận thuộc tính: ").append(trangBiCanChuyenHoa.getName());
+        npcSay.append("\n|2|Phôi mới nhận toàn bộ thuộc tính: ").append(trangBiCanChuyenHoa.getName());
         if (levelTrangBi > 0) {
             npcSay.append(" [+").append(levelTrangBi).append("]");
         }
@@ -105,7 +106,6 @@ public class ChuyenHoaTrangBi_Vang {
 
     public static void thucHienChuyenHoa(Player player) {
         if (player.combineNew.itemsCombine.size() != 2) {
-            Service.gI().sendThongBao(player, "Hãy chọn đúng 1 Trang bị gốc và 1 Phôi trang bị mới!");
             return;
         }
         Item item0 = player.combineNew.itemsCombine.get(0);
@@ -132,19 +132,17 @@ public class ChuyenHoaTrangBi_Vang {
 
         List<ItemOption> transferredOptions = buildTransferredOptions(trangBiGoc, trangBiCanChuyenHoa);
 
-        Item newItem = ItemService.gI().createNewItem(trangBiCanChuyenHoa.template.id);
-        newItem.itemOptions.clear();
-        newItem.itemOptions.addAll(transferredOptions);
+        // Cập nhật trực tiếp lên trangBiCanChuyenHoa trong túi để giữ nguyên vật phẩm mới, chỉ tiêu hao trangBiGoc
+        trangBiCanChuyenHoa.itemOptions.clear();
+        trangBiCanChuyenHoa.itemOptions.addAll(transferredOptions);
 
         player.inventory.gold -= GOLD_CHUYEN_HOA;
         Service.gI().sendMoney(player);
         InventoryService.gI().subQuantityItemsBag(player, trangBiGoc, 1);
-        InventoryService.gI().subQuantityItemsBag(player, trangBiCanChuyenHoa, 1);
-        InventoryService.gI().addItemBag(player, newItem);
         InventoryService.gI().sendItemBags(player);
         CombineService.gI().reOpenItemCombine(player);
         CombineService.gI().sendEffectSuccessCombine(player);
-        Service.gI().sendThongBao(player, "Chuyển hóa thuộc tính sang " + newItem.getName() + " thành công!");
+        Service.gI().sendThongBao(player, "Chuyển hóa toàn bộ thuộc tính sang " + trangBiCanChuyenHoa.getName() + " thành công!");
     }
 
     /**
@@ -178,22 +176,35 @@ public class ChuyenHoaTrangBi_Vang {
         int levelPhoi = getLevel(phoiMoi);
         int rotCapPhoi = getRotCap(phoiMoi);
 
-        int finalLevel = levelGoc > 0 ? levelGoc : levelPhoi;
-        int finalRotCap = levelGoc > 0 ? rotCapGoc : rotCapPhoi;
+        int finalLevel = Math.max(levelGoc, levelPhoi);
+        int finalRotCap = (levelGoc >= levelPhoi) ? rotCapGoc : rotCapPhoi;
+
+        int starSlotsGoc = getOptionParam(trangBiGoc, 107);
+        int starSlotsPhoi = getOptionParam(phoiMoi, 107);
+        int imbuedStarsGoc = getOptionParam(trangBiGoc, 102);
+        int imbuedStarsPhoi = getOptionParam(phoiMoi, 102);
+        int cuongHoaGoc = getOptionParam(trangBiGoc, 228);
+        int cuongHoaPhoi = getOptionParam(phoiMoi, 228);
+
+        // Giữ số lỗ Sao Pha Lê cao nhất giữa đồ gốc và phôi mới (VD: 6s chuyển sang phôi 7s -> thành 7s với 6 sao đã ép + 1 ô trống)
+        int finalStarSlots = Math.max(starSlotsGoc, starSlotsPhoi);
+        int finalImbuedStars = imbuedStarsGoc > 0 ? imbuedStarsGoc : imbuedStarsPhoi;
+        finalStarSlots = Math.max(finalStarSlots, finalImbuedStars);
+        int finalCuongHoa = Math.max(cuongHoaGoc, cuongHoaPhoi);
 
         boolean gocHasSkh = XoaThuocTinhSKH.hasSkhOption(trangBiGoc);
-        boolean gocHasSpl = hasSplAttributes(trangBiGoc);
+        boolean useGocImbuedSplStats = imbuedStarsGoc > 0 || (imbuedStarsPhoi == 0 && hasSplStatOptions(trangBiGoc));
 
-        // 1. Giữ chỉ số gốc của Phôi mới (tính theo cấp [+] và số lần rớt cấp Option 209 của trang bị gốc)
+        // 1. Giữ chỉ số gốc của Phôi mới (tính theo cấp [+] cao nhất)
         for (ItemOption io : phoiMoi.itemOptions) {
             if (io == null || io.optionTemplate == null) {
                 continue;
             }
             int id = io.optionTemplate.id;
-            if (id == 72 || id == 209) {
+            if (id == 72 || id == 209 || id == 107 || id == 102 || id == 228) {
                 continue;
             }
-            if (gocHasSpl && isSplRelatedOption(id)) {
+            if (useGocImbuedSplStats && isSplStatOption(id)) {
                 continue;
             }
             if (gocHasSkh && XoaThuocTinhSKH.isSkhOption(id)) {
@@ -207,7 +218,7 @@ public class ChuyenHoaTrangBi_Vang {
             result.add(new ItemOption(id, value));
         }
 
-        // 2. Chuyển Cấp [+], số lần rớt cấp (209), Sao Pha Lê (107, 102, 228 & dòng SPL) và Thuộc tính SKH từ Trang bị gốc sang Phôi mới
+        // 2. Chuyển Cấp [+], số lần rớt cấp (209)
         if (finalLevel > 0) {
             result.add(new ItemOption(72, finalLevel));
         }
@@ -215,19 +226,35 @@ public class ChuyenHoaTrangBi_Vang {
             result.add(new ItemOption(209, finalRotCap));
         }
 
+        // 3. Chuyển các dòng chỉ số Sao Pha Lê đã ép và thuộc tính SKH từ Trang bị gốc sang Phôi mới
         for (ItemOption io : trangBiGoc.itemOptions) {
             if (io == null || io.optionTemplate == null) {
                 continue;
             }
             int id = io.optionTemplate.id;
-            // Bỏ qua chỉ số gốc, cấp [+], rớt cấp (đã thêm ở trên), dòng ký gửi (86, 87) và dòng yêu cầu SM của đồ gốc
-            if (isBaseStatOption(id) || id == 72 || id == 209 || id == 21 || id == 15 || id == 41 || id == 86 || id == 87) {
+            // Bỏ qua chỉ số gốc, cấp [+], rớt cấp, số lỗ sao (107/102/228 sẽ thêm chuẩn ở dưới), dòng ký gửi (86, 87) và yêu cầu SM của đồ gốc
+            if (isBaseStatOption(id) || id == 72 || id == 209 || id == 107 || id == 102 || id == 228
+                    || id == 21 || id == 15 || id == 41 || id == 86 || id == 87) {
+                continue;
+            }
+            if (!useGocImbuedSplStats && isSplStatOption(id)) {
                 continue;
             }
             if ((id == 30 || id == 73) && hasOptionList(result, id)) {
                 continue;
             }
             result.add(new ItemOption(id, io.param));
+        }
+
+        // 4. Gắn số SPL đã ép (102), lỗ cường hóa (228) và tổng số lỗ SPL (107 = max(gốc, phôi))
+        if (finalImbuedStars > 0) {
+            result.add(new ItemOption(102, finalImbuedStars));
+        }
+        if (finalCuongHoa > 0) {
+            result.add(new ItemOption(228, finalCuongHoa));
+        }
+        if (finalStarSlots > 0) {
+            result.add(new ItemOption(107, finalStarSlots));
         }
 
         return result;
@@ -276,10 +303,38 @@ public class ChuyenHoaTrangBi_Vang {
     }
 
     public static boolean isSplRelatedOption(int id) {
-        return id == 107 || id == 102 || id == 228
-                || id == 50 || id == 77 || id == 103 || id == 80 || id == 81
+        return id == 107 || id == 102 || id == 228 || isSplStatOption(id);
+    }
+
+    public static boolean isSplStatOption(int id) {
+        return id == 50 || id == 77 || id == 103 || id == 80 || id == 81
                 || id == 94 || id == 95 || id == 96 || id == 97 || id == 98
                 || id == 99 || id == 100 || id == 101 || id == 108 || id == 153 || id == 160;
+    }
+
+    public static boolean hasSplStatOptions(Item item) {
+        if (item == null || item.itemOptions == null) {
+            return false;
+        }
+        for (ItemOption io : item.itemOptions) {
+            if (io != null && io.optionTemplate != null && isSplStatOption(io.optionTemplate.id)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static int getOptionParam(Item item, int optionId) {
+        if (item == null || item.itemOptions == null) {
+            return 0;
+        }
+        int maxParam = 0;
+        for (ItemOption io : item.itemOptions) {
+            if (io != null && io.optionTemplate != null && io.optionTemplate.id == optionId) {
+                maxParam = Math.max(maxParam, io.param);
+            }
+        }
+        return maxParam;
     }
 
     public static int getLevel(Item item) {

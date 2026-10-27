@@ -16,7 +16,7 @@ import nro.models.player_system.Template;
 
 public class ItemData {
 
-    public static final int SPLIT_TEMPLATE_ID = 1150;
+    public static final int SPLIT_TEMPLATE_ID = 1350;
     public static final int VIRTUAL_BTN_BASE_ID = 2200;
     public static final int ALIAS_EQUIP_COPIES = 4;
 
@@ -192,7 +192,7 @@ public class ItemData {
         updateItemTemplate(session, split, Manager.ITEM_TEMPLATES.size());
     }
 
-    private static void updateItemOptionItemplate(MySession session) {
+    public static void updateItemOptionItemplate(MySession session) {
         Message msg;
         try {
             msg = new Message(-28);

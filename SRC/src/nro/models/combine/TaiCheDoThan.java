@@ -31,6 +31,8 @@ public class TaiCheDoThan {
 
         StringBuilder listInfo = new StringBuilder();
         int countDTL = 0;
+        int countSKH = 0;
+        int countSPL = 0;
 
         for (Item item : player.combineNew.itemsCombine) {
             if (item == null || !item.isNotNullItem()) {
@@ -43,19 +45,36 @@ public class TaiCheDoThan {
                         item.template.name + " không phải là Đồ Thần Linh!\nChỉ có thể tái chế trang bị Thần Linh.", "Đóng");
                 return;
             }
-            listInfo.append("|1|- ").append(item.template.name).append("\n");
+            boolean hasSkh = DapDoKichHoat.isItemKichHoat(item);
+            int star = PhanRaDoSao.getStar(item);
+            listInfo.append("|1|- ").append(item.template.name)
+                    .append(hasSkh ? " [SKH]" : "")
+                    .append(star > 0 ? " [" + star + " sao]" : "")
+                    .append("\n");
             countDTL++;
+            if (hasSkh) {
+                countSKH++;
+            }
+            if (star > 0) {
+                countSPL++;
+            }
         }
 
         StringBuilder npcSay = new StringBuilder();
         npcSay.append("|2|Tái chế ").append(countDTL).append(" món Đồ Thần Linh:\n");
         npcSay.append(listInfo);
-        npcSay.append("|2|Phần thưởng nhận được (mỗi món):\n");
-        npcSay.append("|0|+ 200 - 400 Triệu Vàng\n");
-        npcSay.append("|0|+ 50 - 100 Hồng Ngọc\n");
-        npcSay.append("|0|+ 3 - 5 Đá Ngũ Sắc\n");
-        npcSay.append("|0|+ 1 - 2 Khoáng Tái Chế\n");
-        npcSay.append("|0|+ 10 - 20 Thức Ăn Hủy Diệt\n");
+        npcSay.append("|2|Phần thưởng nhận được (mỗi món Đồ Thần):\n");
+        npcSay.append("|0|+ 300 - 500 Triệu Vàng\n");
+        npcSay.append("|0|+ 80 - 150 Hồng Ngọc\n");
+        npcSay.append("|0|+ 5 - 8 Đá Ngũ Sắc\n");
+        npcSay.append("|0|+ 2 - 3 Khoáng Tái Chế\n");
+        npcSay.append("|0|+ 15 - 30 Thức Ăn Hủy Diệt\n");
+        if (countSKH > 0) {
+            npcSay.append("|6|+ Cộng thêm có SKH (x").append(countSKH).append("): +100-200Tr Vàng, +30-60 Hồng Ngọc, +2-4 ĐNS, +1-2 Khoáng TC, +5-10 Thức Ăn/món\n");
+        }
+        if (countSPL > 0) {
+            npcSay.append("|7|+ Cộng thêm có Sao Pha Lê (x").append(countSPL).append("): Nhận thêm Vàng, Hồng Ngọc, ĐNS, SPL Cấp 1/2 & Hematite theo số sao!\n");
+        }
         npcSay.append("|2|Chi phí: Miễn phí (Tỉ lệ thành công 100%)");
 
         CombineService.gI().baHatMit.createOtherMenu(player, ConstNpc.MENU_START_COMBINE,
@@ -90,14 +109,74 @@ public class TaiCheDoThan {
         int totalDaNguSac = 0;
         int totalKhoang = 0;
         int totalThucAn = 0;
+        int totalSpl1 = 0;
+        int totalSpl2 = 0;
+        int totalHematite = 0;
+        int totalCapsuleKH = 0;
 
         for (Item item : validItems) {
+            boolean hasSkh = DapDoKichHoat.isItemKichHoat(item);
+            int star = PhanRaDoSao.getStar(item);
             InventoryService.gI().subQuantityItemsBag(player, item, 1);
-            totalGold += Util.nextInt(200, 400) * 1_000_000L;
-            totalRuby += Util.nextInt(50, 100);
-            totalDaNguSac += Util.nextInt(3, 5);
-            totalKhoang += Util.nextInt(1, 2);
-            totalThucAn += Util.nextInt(10, 20);
+
+            totalGold += Util.nextInt(300, 500) * 1_000_000L;
+            totalRuby += Util.nextInt(80, 150);
+            totalDaNguSac += Util.nextInt(5, 8);
+            totalKhoang += Util.nextInt(2, 3);
+            totalThucAn += Util.nextInt(15, 30);
+
+            if (hasSkh) {
+                totalGold += Util.nextInt(100, 200) * 1_000_000L;
+                totalRuby += Util.nextInt(30, 60);
+                totalDaNguSac += Util.nextInt(2, 4);
+                totalKhoang += Util.nextInt(1, 2);
+                totalThucAn += Util.nextInt(5, 10);
+            }
+
+            if (star >= 1) {
+                if (star <= 2) {
+                    totalDaNguSac += 1;
+                    totalGold += Util.nextInt(20, 40) * 1_000_000L;
+                    totalRuby += Util.nextInt(5, 10);
+                    int splCount = Util.nextInt(1, 2);
+                    for (int i = 0; i < splCount; i++) {
+                        InventoryService.gI().addItemBag(player, PhanRaDoSao.createRandomSaoPhaLeCap1(1));
+                        totalSpl1++;
+                    }
+                } else if (star <= 4) {
+                    totalDaNguSac += 2;
+                    totalGold += Util.nextInt(50, 100) * 1_000_000L;
+                    totalRuby += Util.nextInt(15, 30);
+                    int splCount = Util.nextInt(2, 3);
+                    for (int i = 0; i < splCount; i++) {
+                        InventoryService.gI().addItemBag(player, PhanRaDoSao.createRandomSaoPhaLeCap1(1));
+                        totalSpl1++;
+                    }
+                    if (Util.isTrue(30, 100)) {
+                        totalHematite += 1;
+                    }
+                } else if (star <= 6) {
+                    totalDaNguSac += 4;
+                    totalGold += Util.nextInt(150, 250) * 1_000_000L;
+                    totalRuby += Util.nextInt(40, 80);
+                    totalHematite += Util.nextInt(1, 2);
+                    InventoryService.gI().addItemBag(player, PhanRaDoSao.createRandomSaoPhaLeCap2(1));
+                    totalSpl2++;
+                } else {
+                    totalDaNguSac += 8;
+                    totalGold += Util.nextInt(300, 500) * 1_000_000L;
+                    totalRuby += Util.nextInt(100, 200);
+                    totalHematite += Util.nextInt(3, 5);
+                    int spl2Count = Util.nextInt(1, 2);
+                    for (int i = 0; i < spl2Count; i++) {
+                        InventoryService.gI().addItemBag(player, PhanRaDoSao.createRandomSaoPhaLeCap2(1));
+                        totalSpl2++;
+                    }
+                    if (Util.isTrue(30, 100)) {
+                        totalCapsuleKH += 1;
+                    }
+                }
+            }
         }
 
         if (totalDaNguSac > 0) {
@@ -107,6 +186,14 @@ public class TaiCheDoThan {
         if (totalKhoang > 0) {
             Item khoang = ItemService.gI().createNewItem((short) 1656, totalKhoang);
             InventoryService.gI().addItemBag(player, khoang);
+        }
+        if (totalHematite > 0) {
+            Item hematite = ItemService.gI().createNewItem((short) 1423, totalHematite);
+            InventoryService.gI().addItemBag(player, hematite);
+        }
+        if (totalCapsuleKH > 0) {
+            Item capsule = ItemService.gI().createNewItem((short) 1655, totalCapsuleKH);
+            InventoryService.gI().addItemBag(player, capsule);
         }
         if (totalThucAn > 0) {
             short foodId = findBestThucAnId(player);
@@ -132,7 +219,11 @@ public class TaiCheDoThan {
                 + totalRuby + " Hồng Ngọc, "
                 + totalDaNguSac + " Đá Ngũ Sắc, "
                 + totalKhoang + " Khoáng tái chế, "
-                + totalThucAn + " Thức ăn");
+                + totalThucAn + " Thức ăn"
+                + (totalSpl1 > 0 ? ", " + totalSpl1 + " SPL cấp 1" : "")
+                + (totalSpl2 > 0 ? ", " + totalSpl2 + " SPL cấp 2" : "")
+                + (totalHematite > 0 ? ", " + totalHematite + " Đá Hematite" : "")
+                + (totalCapsuleKH > 0 ? ", " + totalCapsuleKH + " Capsule KH" : ""));
     }
 
     private static short findBestThucAnId(Player player) {

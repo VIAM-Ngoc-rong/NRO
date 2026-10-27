@@ -380,11 +380,29 @@ public class CombineService {
             return;
         }
         int type = player.combineNew.typeCombine;
+        if (type == CHUYEN_HOA_TRANG_BI_VANG || type == CHUYEN_HOA_TRANG_BI_NGOC) {
+            if (player.combineNew.itemsCombine.size() < 2) {
+                if (n == 10) {
+                    selectAllValidItemsInCurrentTab(player);
+                    openTabCombine(player, type, true);
+                    refreshCombineInfoDisplay(player);
+                    return;
+                } else if (n == 100) {
+                    switchBagTabInCombine(player);
+                    return;
+                }
+            }
+            player.idMark.setIndexMenu(ConstNpc.IGNORE_MENU);
+            player.combineNew.clearParamCombine();
+            player.combineNew.lastTimeCombine = System.currentTimeMillis();
+            return;
+        }
         if (type == PHAN_RA_TRANG_BI_KH || type == PHAN_RA_DO_SAO
                 || type == PHAN_RA_DO_THAN_LINH || type == DAP_DO_KICH_HOAT) {
             if (n == 10) {
                 selectAllValidItemsInCurrentTab(player);
                 openTabCombine(player, type, true);
+                refreshCombineInfoDisplay(player);
                 return;
             } else if (n == 100) {
                 switchBagTabInCombine(player);
@@ -420,7 +438,7 @@ public class CombineService {
             case PHAN_RA_TRANG_BI_KH -> PhanRaTrangBi.isValidItem(item);
             case PHAN_RA_DO_SAO -> PhanRaDoSao.isValidItem(item);
             case PHAN_RA_DO_THAN_LINH -> item.isDTL();
-            case DAP_DO_KICH_HOAT -> DapDoKichHoat.isItemKichHoat(item);
+            case DAP_DO_KICH_HOAT -> DapDoKichHoat.isValidFodderForBulkSelect(item);
             default -> false;
         };
     }
@@ -428,7 +446,7 @@ public class CombineService {
     private boolean autoExpandSameTemplateItems(Player player, java.util.Map<Integer, Integer> prevCountByTemplate) {
         int type = player.combineNew.typeCombine;
         if (type != PHAN_RA_TRANG_BI_KH && type != PHAN_RA_DO_SAO
-                && type != PHAN_RA_DO_THAN_LINH && type != DAP_DO_KICH_HOAT) {
+                && type != PHAN_RA_DO_THAN_LINH) {
             return false;
         }
         java.util.List<Item> currentList = player.combineNew.itemsCombine;
@@ -508,7 +526,44 @@ public class CombineService {
             return;
         }
         int type = player.combineNew.typeCombine;
-        for (int i = 0; i < player.inventory.itemsBag.size(); i++) {
+        int activeTab = Math.max(0, Math.min(nro.models.player.Inventory.NUM_QUICK_TABS - 1, player.inventory.currentBagTab));
+        int tabStart = activeTab * nro.models.player.Inventory.BAG_VIEW_SIZE;
+        int tabEnd = Math.min(player.inventory.itemsBag.size(), tabStart + nro.models.player.Inventory.BAG_VIEW_SIZE);
+
+        if (type == CHUYEN_HOA_TRANG_BI_VANG || type == CHUYEN_HOA_TRANG_BI_NGOC) {
+            Item first = player.combineNew.itemsCombine.isEmpty() ? null : player.combineNew.itemsCombine.get(0);
+            for (int i = tabStart; i < tabEnd; i++) {
+                if (player.combineNew.itemsCombine.size() >= 2) {
+                    break;
+                }
+                Item it = player.inventory.itemsBag.get(i);
+                if (!ChuyenHoaTrangBi_Vang.isEquipItem(it)) {
+                    continue;
+                }
+                boolean exists = false;
+                for (Item ex : player.combineNew.itemsCombine) {
+                    if (ex == it) {
+                        exists = true;
+                        break;
+                    }
+                }
+                if (exists) {
+                    continue;
+                }
+                if (first == null) {
+                    if (ChuyenHoaTrangBi_Vang.hasTransferableAttributes(it)) {
+                        first = it;
+                        player.combineNew.itemsCombine.add(it);
+                    }
+                } else if (ChuyenHoaTrangBi_Vang.isCheckTrungTypevsGender(first, it)) {
+                    player.combineNew.itemsCombine.add(it);
+                    break;
+                }
+            }
+            return;
+        }
+
+        for (int i = tabStart; i < tabEnd; i++) {
             Item it = player.inventory.itemsBag.get(i);
             if (!isItemValidForBulkCombine(type, it)) {
                 continue;

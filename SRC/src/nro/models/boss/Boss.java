@@ -125,6 +125,7 @@ public class Boss extends Player implements IBoss {
 
     public long lastTimeAttacked;
     public long lastRecordedHp;
+    public long firstEncounterPlayerTimeMs;
     public boolean pendingIdleDespawn;
     public long timeTriggerIdleDespawn;
     public boolean pendingNotifyJoinMap;
@@ -151,7 +152,7 @@ public class Boss extends Player implements IBoss {
         this.data = data;
         this.name = this.data[0].getName();
         int cfgRest = this.data[0].getSecondsRest();
-        this.secondsRest = (cfgRest > 0 && cfgRest < 86400) ? Util.nextInt(30, 60) : cfgRest;
+        this.secondsRest = (cfgRest > 0 && cfgRest < 86400) ? Util.nextInt(300, 600) : cfgRest;
         this.bossStatus = BossStatus.REST;
         BossManager.gI().addBoss(this);
 
@@ -180,7 +181,7 @@ public class Boss extends Player implements IBoss {
         this.data = data;
         this.name = this.data[0].getName();
         int cfgRest = this.data[0].getSecondsRest();
-        this.secondsRest = (cfgRest > 0 && cfgRest < 86400) ? Util.nextInt(30, 60) : cfgRest;
+        this.secondsRest = (cfgRest > 0 && cfgRest < 86400) ? Util.nextInt(300, 600) : cfgRest;
         this.bossStatus = BossStatus.REST;
         switch (bossType) {
             case YARDART ->
@@ -297,6 +298,7 @@ public class Boss extends Player implements IBoss {
         long now = System.currentTimeMillis();
         this.lastTimeSpawnOnMap = now;
         this.lastTimeAttacked = now;
+        this.firstEncounterPlayerTimeMs = 0L;
         this.lastRecordedHp = this.nPoint != null ? this.nPoint.hp : 0;
         this.pendingIdleDespawn = false;
         this.timeTriggerIdleDespawn = 0;
@@ -365,6 +367,7 @@ public class Boss extends Player implements IBoss {
     public void recordBossAttacked() {
         long now = System.currentTimeMillis();
         this.lastTimeAttacked = now;
+        this.recordFirstPlayerEncounter();
         Boss root = this.parentBoss != null ? this.parentBoss : this;
         root.lastTimeAttacked = now;
         if (root.bossAppearTogether != null && root.currentLevel >= 0
@@ -376,6 +379,47 @@ public class Boss extends Player implements IBoss {
                 }
             }
         }
+    }
+
+    public void recordFirstPlayerEncounter() {
+        long now = System.currentTimeMillis();
+        if (this.firstEncounterPlayerTimeMs <= 0L) {
+            this.firstEncounterPlayerTimeMs = now;
+        }
+        Boss root = this.parentBoss != null ? this.parentBoss : this;
+        if (root.firstEncounterPlayerTimeMs <= 0L) {
+            root.firstEncounterPlayerTimeMs = now;
+        }
+        if (root.bossAppearTogether != null && root.currentLevel >= 0
+                && root.currentLevel < root.bossAppearTogether.length
+                && root.bossAppearTogether[root.currentLevel] != null) {
+            for (Boss sub : root.bossAppearTogether[root.currentLevel]) {
+                if (sub != null && sub.firstEncounterPlayerTimeMs <= 0L) {
+                    sub.firstEncounterPlayerTimeMs = now;
+                }
+            }
+        }
+    }
+
+    public long getGroupFirstEncounterTimeMs() {
+        Boss root = this.parentBoss != null ? this.parentBoss : this;
+        long earliest = 0L;
+        if (this.firstEncounterPlayerTimeMs > 0L) {
+            earliest = this.firstEncounterPlayerTimeMs;
+        }
+        if (root.firstEncounterPlayerTimeMs > 0L) {
+            earliest = (earliest == 0L) ? root.firstEncounterPlayerTimeMs : Math.min(earliest, root.firstEncounterPlayerTimeMs);
+        }
+        if (root.bossAppearTogether != null && root.currentLevel >= 0
+                && root.currentLevel < root.bossAppearTogether.length
+                && root.bossAppearTogether[root.currentLevel] != null) {
+            for (Boss sub : root.bossAppearTogether[root.currentLevel]) {
+                if (sub != null && sub.firstEncounterPlayerTimeMs > 0L) {
+                    earliest = (earliest == 0L) ? sub.firstEncounterPlayerTimeMs : Math.min(earliest, sub.firstEncounterPlayerTimeMs);
+                }
+            }
+        }
+        return earliest;
     }
 
     public long getGroupLastTimeAttacked() {
@@ -423,6 +467,7 @@ public class Boss extends Player implements IBoss {
         long now = System.currentTimeMillis();
         root.pendingIdleDespawn = false;
         root.pendingNotifyJoinMap = false;
+        root.firstEncounterPlayerTimeMs = 0L;
         if (root.bossAppearTogether != null && root.currentLevel >= 0
                 && root.currentLevel < root.bossAppearTogether.length
                 && root.bossAppearTogether[root.currentLevel] != null) {
@@ -430,6 +475,7 @@ public class Boss extends Player implements IBoss {
                 if (sub != null) {
                     sub.pendingIdleDespawn = false;
                     sub.pendingNotifyJoinMap = false;
+                    sub.firstEncounterPlayerTimeMs = 0L;
                     if (sub.zone != null) {
                         ChangeMapService.gI().exitMap(sub);
                     }
@@ -617,6 +663,20 @@ public class Boss extends Player implements IBoss {
             }
         }
         this.nPoint.mp = this.nPoint.mpg;
+        if (!this.isDie() && this.zone != null
+                && (this.bossStatus == BossStatus.CHAT_S || this.bossStatus == BossStatus.ACTIVE || this.bossStatus == BossStatus.AFK)) {
+            if (this.hasRealPlayerInZone()) {
+                this.recordFirstPlayerEncounter();
+            }
+            if (!this.isExcludedFrom5MinReset()) {
+                long firstEncounter = this.getGroupFirstEncounterTimeMs();
+                if (firstEncounter > 0L && Util.canDoWithTime(firstEncounter, 600_000L)) {
+                    this.chat("Đã hết 10 phút giao chiến, tạm biệt!");
+                    this.despawnIdleBossGroup();
+                    return;
+                }
+            }
+        }
         if (!this.isDie() && this.nPoint != null && this.nPoint.hpMax > 0) {
             if (this.lastRecordedHp > 0 && this.nPoint.hp < this.lastRecordedHp) {
                 this.recordBossAttacked();
@@ -1349,6 +1409,7 @@ public class Boss extends Player implements IBoss {
     public void leaveMap() {
         this.pendingNotifyJoinMap = false;
         this.pendingIdleDespawn = false;
+        this.firstEncounterPlayerTimeMs = 0L;
         if (this.currentLevel < this.data.length - 1) {
             this.lastZone = this.zone;
             this.changeStatus(BossStatus.RESPAWN);
@@ -1357,7 +1418,7 @@ public class Boss extends Player implements IBoss {
             this.lastZone = null;
             int cfgRest = this.data[0].getSecondsRest();
             if (cfgRest > 0 && cfgRest < 86400) {
-                this.secondsRest = Util.nextInt(30, 60);
+                this.secondsRest = Util.nextInt(300, 600);
             }
             this.lastTimeRest = System.currentTimeMillis();
             this.changeStatus(BossStatus.REST);
@@ -1491,7 +1552,16 @@ public class Boss extends Player implements IBoss {
     }
 
     public void leaveMapNew() {
-        // Không tự biến mất theo thời gian; Boss chỉ biến mất khi bị tiêu diệt
+        if (!this.isDie() && this.zone != null && !this.isExcludedFrom5MinReset()) {
+            if (this.hasRealPlayerInZone()) {
+                this.recordFirstPlayerEncounter();
+            }
+            long firstEncounter = this.getGroupFirstEncounterTimeMs();
+            if (firstEncounter > 0L && Util.canDoWithTime(firstEncounter, 600_000L)) {
+                this.chat("Đã hết 10 phút giao chiến, tạm biệt!");
+                this.despawnIdleBossGroup();
+            }
+        }
     }
 
     @Override

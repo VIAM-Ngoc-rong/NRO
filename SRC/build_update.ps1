@@ -31,6 +31,10 @@ javac -proc:none -encoding UTF-8 -d build/classes -cp "build/classes;lib/*" `
     src/nro/models/combine/CombineService.java `
     src/nro/models/combine/ChuyenHoaTrangBi_Vang.java `
     src/nro/models/combine/ChuyenHoaTrangBi_Ngoc.java `
+    src/nro/models/combine/TaiCheDoThan.java `
+    src/nro/models/combine/PhanRaTrangBiKichHoat.java `
+    src/nro/models/combine/PhanRaDoSao.java `
+    src/nro/models/combine/DapDoKichHoat.java `
     src/nro/models/npc/NpcFactory.java `
     src/nro/models/npc_list/BaHatMit.java `
     src/nro/models/npc_list/BoMong.java `

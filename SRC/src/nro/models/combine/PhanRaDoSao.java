@@ -19,6 +19,8 @@ import nro.models.utils.Util;
  */
 public class PhanRaDoSao {
 
+    private static final int[] THUC_AN_IDS = {663, 664, 665, 666, 667};
+
     public static void showInfoCombine(Player player) {
         if (player.combineNew.itemsCombine.isEmpty()) {
             CombineService.gI().baHatMit.createOtherMenu(player, ConstNpc.MENU_START_COMBINE,
@@ -33,6 +35,8 @@ public class PhanRaDoSao {
         int count3_4 = 0;
         int count5_6 = 0;
         int count7_9 = 0;
+        int countDTL = 0;
+        int countSKH = 0;
 
         for (Item item : player.combineNew.itemsCombine) {
             if (item == null || !item.isNotNullItem()) {
@@ -45,18 +49,24 @@ public class PhanRaDoSao {
                         item.template.name + " không phải là trang bị có thể phân rã!", "Đóng");
                 return;
             }
-            if (DapDoKichHoat.isItemKichHoat(item)) {
-                CombineService.gI().baHatMit.createOtherMenu(player, ConstNpc.IGNORE_MENU,
-                        item.template.name + " là trang bị Kích Hoạt!\nVui lòng dùng mục Phân rã Trang bị Kích hoạt.", "Đóng");
-                return;
-            }
             int star = getStar(item);
             if (star < 1) {
                 CombineService.gI().baHatMit.createOtherMenu(player, ConstNpc.IGNORE_MENU,
                         item.template.name + " chưa có Sao Pha Lê (cần ít nhất 1 sao)!", "Đóng");
                 return;
             }
-            listInfo.append("|1|- ").append(item.template.name).append(" [").append(star).append(" sao]\n");
+            boolean isHigh = item.isDTL() || item.isDHD() || item.isDTS();
+            boolean isSkh = DapDoKichHoat.isItemKichHoat(item);
+            listInfo.append("|1|- ").append(item.template.name).append(" [").append(star).append(" sao")
+                    .append(isHigh ? " - Đồ Thần/HD" : "")
+                    .append(isSkh ? " - Có SKH" : "")
+                    .append("]\n");
+            if (isHigh) {
+                countDTL++;
+            }
+            if (isSkh) {
+                countSKH++;
+            }
             if (star <= 2) {
                 count1_2++;
             } else if (star <= 4) {
@@ -84,6 +94,12 @@ public class PhanRaDoSao {
         if (count7_9 > 0) {
             npcSay.append("|0|+ Đồ 7s+ (x").append(count7_9).append("): 8 Đá Ngũ Sắc, 300-500Tr Vàng, 3-5 Đá Hematite, 1-2 SPL Cấp 2, 100-200 Hồng Ngọc, 30% Capsule KH/món\n");
         }
+        if (countDTL > 0) {
+            npcSay.append("|7|+ Cộng thêm Đồ Thần/HD (x").append(countDTL).append("): +250-400Tr Vàng, +60-120 Hồng Ngọc, +4-6 ĐNS, +1-2 Khoáng TC, +10-20 Thức Ăn/món\n");
+        }
+        if (countSKH > 0) {
+            npcSay.append("|6|+ Cộng thêm thuộc tính SKH (x").append(countSKH).append("): +100-200Tr Vàng, +30-60 Hồng Ngọc, +2-4 ĐNS, +1-2 Khoáng TC, +5-10 Thức Ăn/món\n");
+        }
         npcSay.append("|2|Chi phí: Miễn phí (Tỉ lệ thành công 100%)");
 
         CombineService.gI().baHatMit.createOtherMenu(player, ConstNpc.MENU_START_COMBINE,
@@ -108,7 +124,6 @@ public class PhanRaDoSao {
         for (Item item : player.combineNew.itemsCombine) {
             if (item == null || !item.isNotNullItem() || item.quantity < 1
                     || !CombineSystem.isTrangBiPhaLeHoa(item)
-                    || DapDoKichHoat.isItemKichHoat(item)
                     || getStar(item) < 1) {
                 Service.gI().sendThongBao(player, "Có vật phẩm không hợp lệ trong danh sách phân rã!");
                 return;
@@ -119,6 +134,8 @@ public class PhanRaDoSao {
         long totalGold = 0;
         int totalRuby = 0;
         int totalDaNguSac = 0;
+        int totalKhoang = 0;
+        int totalThucAn = 0;
         int totalSpl1 = 0;
         int totalSpl2 = 0;
         int totalHematite = 0;
@@ -126,6 +143,8 @@ public class PhanRaDoSao {
 
         for (Item item : validItems) {
             int star = getStar(item);
+            boolean isHighEquip = item.isDTL() || item.isDHD() || item.isDTS();
+            boolean isSkhEquip = DapDoKichHoat.isItemKichHoat(item);
             InventoryService.gI().subQuantityItemsBag(player, item, 1);
 
             if (star <= 2) {
@@ -170,13 +189,37 @@ public class PhanRaDoSao {
                     totalCapsuleKH += 1;
                 }
             }
+
+            if (isHighEquip) {
+                totalGold += Util.nextInt(250, 400) * 1_000_000L;
+                totalRuby += Util.nextInt(60, 120);
+                totalDaNguSac += Util.nextInt(4, 6);
+                totalKhoang += Util.nextInt(1, 2);
+                totalThucAn += Util.nextInt(10, 20);
+            }
+            if (isSkhEquip) {
+                totalGold += Util.nextInt(100, 200) * 1_000_000L;
+                totalRuby += Util.nextInt(30, 60);
+                totalDaNguSac += Util.nextInt(2, 4);
+                totalKhoang += Util.nextInt(1, 2);
+                totalThucAn += Util.nextInt(5, 10);
+            }
         }
 
         if (totalDaNguSac > 0) {
             Item dns = ItemService.gI().createNewItem((short) 674, totalDaNguSac);
             InventoryService.gI().addItemBag(player, dns);
         }
-
+        if (totalKhoang > 0) {
+            Item khoang = ItemService.gI().createNewItem((short) 1656, totalKhoang);
+            InventoryService.gI().addItemBag(player, khoang);
+        }
+        if (totalThucAn > 0) {
+            short foodId = (short) THUC_AN_IDS[Util.nextInt(0, THUC_AN_IDS.length - 1)];
+            Item food = ItemService.gI().createNewItem(foodId, totalThucAn);
+            food.itemOptions.add(new ItemOption(30, 0));
+            InventoryService.gI().addItemBag(player, food);
+        }
         if (totalHematite > 0) {
             Item hematite = ItemService.gI().createNewItem((short) 1423, totalHematite);
             InventoryService.gI().addItemBag(player, hematite);
@@ -203,6 +246,12 @@ public class PhanRaDoSao {
             msg.append(totalDaNguSac).append(" Đá Ngũ Sắc, ");
         }
         msg.append(Util.numberToMoney(totalGold)).append(" vàng, ").append(totalRuby).append(" Hồng Ngọc");
+        if (totalKhoang > 0) {
+            msg.append(", ").append(totalKhoang).append(" Khoáng TC");
+        }
+        if (totalThucAn > 0) {
+            msg.append(", ").append(totalThucAn).append(" Thức ăn");
+        }
         if (totalSpl1 > 0) {
             msg.append(", ").append(totalSpl1).append(" SPL cấp 1");
         }
@@ -237,7 +286,7 @@ public class PhanRaDoSao {
         return 0;
     }
 
-    private static Item createRandomSaoPhaLeCap1(int quantity) {
+    public static Item createRandomSaoPhaLeCap1(int quantity) {
         int tempId = Util.nextInt(441, 447);
         Item item = ItemService.gI().createNewItem((short) tempId, quantity);
         item.itemOptions.clear();
@@ -245,7 +294,7 @@ public class PhanRaDoSao {
         return item;
     }
 
-    private static Item createRandomSaoPhaLeCap2(int quantity) {
+    public static Item createRandomSaoPhaLeCap2(int quantity) {
         int index = Util.nextInt(0, 6);
         int tempId = 1416 + index;
         Item item = ItemService.gI().createNewItem((short) tempId, quantity);

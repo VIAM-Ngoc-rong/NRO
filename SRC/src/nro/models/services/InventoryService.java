@@ -691,11 +691,11 @@ public class InventoryService {
                 index = 7;
                 break;
             case 25:
-                index = player.isPet ? 8 : 10;
+                index = player.isPet ? 7 : 10;
                 break;
         }
-        // Cho phép mọi loại Đệ tử (Thường, Mabư, Broly, Uub, Kid Beer, Jiren) mặc Đeo lưng (type 11) & Sách Tuyệt Kỹ (type 25)
-        if (player.isPet && (item.template.type == 23 || item.template.type == 24 || item.template.type == 27)) {
+        // Cho phép mọi loại Đệ tử mặc Đeo lưng (type 11 -> ô 8), Sách Tuyệt Kỹ (type 25 -> ô 7) & Linh Thú (type 27 -> ô 7)
+        if (player.isPet && (item.template.type == 23 || item.template.type == 24)) {
             Player recipient = ((Pet) player).master;
             if (recipient == null) {
                 recipient = player;
@@ -1036,7 +1036,7 @@ public class InventoryService {
                     continue;
                 }
                 short realTempId = item.template.id;
-                if (isCombining && !isStackableItem(item) && item.template.type >= 0 && item.template.type <= 4) {
+                if (!isStackableItem(item) && item.template.type >= 0 && item.template.type <= 4) {
                     int occ = equipCounts.getOrDefault(realTempId, 0);
                     equipCounts.put(realTempId, occ + 1);
                     slotTempIds[idx] = nro.models.data.ItemData.getEquipAliasTemplateId(realTempId, occ);
