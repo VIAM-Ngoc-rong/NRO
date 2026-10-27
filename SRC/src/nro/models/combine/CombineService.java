@@ -172,6 +172,38 @@ public class CombineService {
             return;
         }
 
+        int combineType = player.combineNew.typeCombine;
+        if (combineType == CHUYEN_HOA_TRANG_BI_VANG || combineType == CHUYEN_HOA_TRANG_BI_NGOC) {
+            if (player.combineNew.itemsCombine.size() == 1 && prevItems.isEmpty()) {
+                Item first = player.combineNew.itemsCombine.get(0);
+                if (ChuyenHoaTrangBi_Vang.isEquipItem(first) && first.template != null) {
+                    int activeTab = Math.max(0, Math.min(nro.models.player.Inventory.NUM_QUICK_TABS - 1, player.inventory.currentBagTab));
+                    int tabStart = activeTab * nro.models.player.Inventory.BAG_VIEW_SIZE;
+                    int tabEnd = Math.min(player.inventory.itemsBag.size(), tabStart + nro.models.player.Inventory.BAG_VIEW_SIZE);
+                    for (int i = tabStart; i < tabEnd; i++) {
+                        Item candidate = player.inventory.itemsBag.get(i);
+                        if (candidate != null && candidate != first && candidate.isNotNullItem()
+                                && candidate.template != null && candidate.template.id == first.template.id
+                                && ChuyenHoaTrangBi_Vang.isCheckTrungTypevsGender(first, candidate)
+                                && (ChuyenHoaTrangBi_Vang.hasTransferableAttributes(first) || ChuyenHoaTrangBi_Vang.hasTransferableAttributes(candidate))) {
+                            player.combineNew.itemsCombine.add(candidate);
+                            hadDuplicateOrInvalid = true;
+                            break;
+                        }
+                    }
+                }
+            } else if (player.combineNew.itemsCombine.size() > 2) {
+                Item first = player.combineNew.itemsCombine.get(0);
+                Item newest = player.combineNew.itemsCombine.get(player.combineNew.itemsCombine.size() - 1);
+                player.combineNew.itemsCombine.clear();
+                player.combineNew.itemsCombine.add(first);
+                if (newest != first) {
+                    player.combineNew.itemsCombine.add(newest);
+                }
+                hadDuplicateOrInvalid = true;
+            }
+        }
+
         if (hadDuplicateOrInvalid) {
             reOpenItemCombine(player);
         }

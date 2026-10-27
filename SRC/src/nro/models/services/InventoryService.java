@@ -1036,13 +1036,7 @@ public class InventoryService {
                     continue;
                 }
                 short realTempId = item.template.id;
-                if (!isStackableItem(item) && item.template.type >= 0 && item.template.type <= 4) {
-                    int occ = equipCounts.getOrDefault(realTempId, 0);
-                    equipCounts.put(realTempId, occ + 1);
-                    slotTempIds[idx] = nro.models.data.ItemData.getEquipAliasTemplateId(realTempId, occ);
-                } else {
-                    slotTempIds[idx] = realTempId;
-                }
+                slotTempIds[idx] = realTempId;
             }
 
             int curTab = activeTab + 1;

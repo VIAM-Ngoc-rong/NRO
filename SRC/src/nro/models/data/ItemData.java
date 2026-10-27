@@ -16,9 +16,9 @@ import nro.models.player_system.Template;
 
 public class ItemData {
 
-    public static final int SPLIT_TEMPLATE_ID = 1350;
+    public static final int SPLIT_TEMPLATE_ID = 1150;
     public static final int VIRTUAL_BTN_BASE_ID = 2200;
-    public static final int ALIAS_EQUIP_COPIES = 4;
+    public static final int ALIAS_EQUIP_COPIES = 1;
 
     private static volatile int cachedBaseTemplateCount = -1;
     private static volatile byte[] cachedPart2Payload = null;
@@ -121,7 +121,7 @@ public class ItemData {
             outer:
             for (int copy = 0; copy < ALIAS_EQUIP_COPIES; copy++) {
                 for (Template.ItemTemplate it : equipTemplates) {
-                    if (dos.size() > 57500 || currentId >= 32000) {
+                    if (dos.size() > 28000 || currentId >= 32000) {
                         break outer;
                     }
                     String name = it.name != null ? it.name : "";
