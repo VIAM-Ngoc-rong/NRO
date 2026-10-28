@@ -57,7 +57,7 @@ if [ -z "$JAVAC_BIN" ]; then
         fi
     done
 fi
-if [ -z "$JAVAC_BIN" ] && command -v apt-get >/dev/null 2>&1; then
+if [ "$AUTO_COMPILE" = "1" ] && [ -z "$JAVAC_BIN" ] && command -v apt-get >/dev/null 2>&1; then
     echo "Đang cài đặt trình biên dịch javac (JDK Headless) cho VPS..."
     JAVA_VER=$(java -version 2>&1 | awk -F '"' '/version/ {print $2}' | cut -d'.' -f1)
     apt-get update -qq >/dev/null 2>&1 || true
@@ -70,7 +70,8 @@ if [ -z "$JAVAC_BIN" ] && command -v apt-get >/dev/null 2>&1; then
     JAVAC_BIN=$(command -v javac 2>/dev/null || true)
 fi
 
-if [ -n "$JAVAC_BIN" ]; then
+# Chỉ tự biên dịch trên VPS khi đặt AUTO_COMPILE=1 (mặc định dùng .class đã build sẵn bằng build_update.ps1; javac với -proc:none không chạy Lombok nên sẽ lỗi)
+if [ "$AUTO_COMPILE" = "1" ] && [ -n "$JAVAC_BIN" ]; then
     mkdir -p build/classes
     OUTDATED_JAVA=""
     while IFS= read -r -d '' jfile; do
