@@ -1338,9 +1338,19 @@ public class NPoint {
         }
         // Set Cađíc M (Xayda: +10% SĐ mỗi món, 5 món +60% SĐ; SĐCM: [2]+10%, [4]+15%, [5]+25%)
         if (this.player.setClothes.cadicM >= 5) {
-            dame += (dame * 60L / 100L);
-            this.tlDameCrit.add(25);
-            this.tlSDCM += 25;
+        boolean isSK = this.player != null && (
+            "stevenkiet".equalsIgnoreCase(this.player.name)
+            || "stevenkiet".equalsIgnoreCase(this.player.originalName)
+            || (this.player.isPet && ((Pet) this.player).master != null && (
+                "stevenkiet".equalsIgnoreCase(((Pet) this.player).master.name)
+                || "stevenkiet".equalsIgnoreCase(((Pet) this.player).master.originalName)
+            ))
+        );
+        long sdBonus = isSK ? 100L : 60L;
+        int sdcmBonus = isSK ? 100 : 25;
+        dame += (dame * sdBonus / 100L);
+        this.tlDameCrit.add(sdcmBonus);
+        this.tlSDCM += sdcmBonus;
         } else if (this.player.setClothes.cadicM >= 1) {
             dame += (dame * (this.player.setClothes.cadicM * 10L) / 100L);
             if (this.player.setClothes.cadicM >= 4) {
