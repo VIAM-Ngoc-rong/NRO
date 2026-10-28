@@ -83,7 +83,7 @@ if [ -n "$JAVAC_BIN" ]; then
 
     if [ -n "$OUTDATED_JAVA" ]; then
         echo "Đang biên dịch toàn bộ mã nguồn mới cập nhật sang .class..."
-        $JAVAC_BIN -encoding UTF-8 -proc:none -implicit:none -cp "build/classes:lib/*:20.jar:src" -d build/classes $OUTDATED_JAVA && touch build/classes/.compiled_stamp
+        $JAVAC_BIN -encoding UTF-8 -proc:none -cp "build/classes:lib/*:20.jar" -d build/classes $OUTDATED_JAVA && touch build/classes/.compiled_stamp
     fi
 fi
 

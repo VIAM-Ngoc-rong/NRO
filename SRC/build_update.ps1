@@ -6,6 +6,7 @@ javac -proc:none -encoding UTF-8 -d build/classes -cp "build/classes;lib/*" `
     src/nro/models/data/LocalManager.java `
     src/nro/models/data/DataGame.java `
     src/nro/models/data/ItemData.java `
+    src/nro/models/network/Network.java `
     src/nro/models/database/ShopDAO.java `
     src/nro/models/event/EventManager.java `
     src/nro/models/server/ServerManager.java `
@@ -62,6 +63,7 @@ $classRoot = Join-Path $PSScriptRoot "build\classes"
 
 $pkgs = @(
     "nro\models\data",
+    "nro\models\network",
     "nro\models\database",
     "nro\models\event",
     "nro\models\server",
