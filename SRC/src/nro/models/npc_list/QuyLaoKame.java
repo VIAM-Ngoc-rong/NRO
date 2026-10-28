@@ -247,6 +247,7 @@ public class QuyLaoKame extends Npc {
                     + Util.numberToMoney(cost) + " điểm (Hiện có: " + Util.numberToMoney(player.pointSanBoss) + " điểm)");
             return;
         }
+        int oldLevel = player.levelHaoQuang;
         player.pointSanBoss -= cost;
         player.levelHaoQuang = targetLevel;
         player.nPoint.calPoint();
@@ -255,6 +256,10 @@ public class QuyLaoKame extends Npc {
         Service.gI().Send_Info_NV(player);
         Service.gI().Send_Caitrang(player);
         RadarService.gI().sendAura(player, player.getAura(), player.getEffFront());
+        if (oldLevel > 0) {
+            Service.gI().removeEffPlayer(player, 89 + Math.min(8, oldLevel));
+        }
+        Service.gI().sendEffPlayer(player);
         Service.gI().sendThongBao(player, "Chúc mừng bạn đã đổi thành công Vòng Chân Cấp " + targetLevel + "!");
     }
 
