@@ -64,14 +64,30 @@ public class DataGame {
         }
     }
 
+    private static volatile byte[] CACHED_DART;
+    private static volatile byte[] CACHED_ARROW;
+    private static volatile byte[] CACHED_EFFECT;
+    private static volatile byte[] CACHED_IMAGE;
+    private static volatile byte[] CACHED_PART;
+    private static volatile byte[] CACHED_SKILL;
+    private static volatile byte[] CACHED_TILE_SET_INFO;
+
     //vData
     public static void updateData(MySession session) {
-        final byte[] dart = FileIO.readFile("data/update_data/dart");
-        final byte[] arrow = FileIO.readFile("data/update_data/arrow");
-        final byte[] effect = FileIO.readFile("data/update_data/effect");
-        final byte[] image = FileIO.readFile("data/update_data/image");
-        final byte[] part = FileIO.readFile("data/update_data/part");
-        final byte[] skill = FileIO.readFile("data/update_data/skill");
+        if (CACHED_DART == null) {
+            CACHED_DART = FileIO.readFile("data/update_data/dart");
+            CACHED_ARROW = FileIO.readFile("data/update_data/arrow");
+            CACHED_EFFECT = FileIO.readFile("data/update_data/effect");
+            CACHED_IMAGE = FileIO.readFile("data/update_data/image");
+            CACHED_PART = FileIO.readFile("data/update_data/part");
+            CACHED_SKILL = FileIO.readFile("data/update_data/skill");
+        }
+        final byte[] dart = CACHED_DART;
+        final byte[] arrow = CACHED_ARROW;
+        final byte[] effect = CACHED_EFFECT;
+        final byte[] image = CACHED_IMAGE;
+        final byte[] part = CACHED_PART;
+        final byte[] skill = CACHED_SKILL;
 
         Message msg;
         try {
@@ -356,7 +372,13 @@ public class DataGame {
     public static void sendTileSetInfo(MySession session) {
         Message msg;
         try {
-            final byte[] data = FileIO.readFile("data/map/tile_set_info");
+            if (CACHED_TILE_SET_INFO == null) {
+                CACHED_TILE_SET_INFO = FileIO.readFile("data/map/tile_set_info");
+            }
+            final byte[] data = CACHED_TILE_SET_INFO;
+            if (data == null) {
+                return;
+            }
             msg = new Message(-82);
             msg.writer().write(data);
             session.sendMessage(msg);
@@ -458,27 +480,21 @@ public class DataGame {
             File[] files = dir.listFiles();
             if (files != null) {
                 for (final File fileEntry : files) {
-                    String original = fileEntry.getName();
-                    try (FileChannel fileChannel = FileChannel.open(fileEntry.toPath(), StandardOpenOption.READ)) {
-                        ByteBuffer buffer = ByteBuffer.allocate(1024 * 1024);
-                        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                        int bytesRead;
-                        while ((bytesRead = fileChannel.read(buffer)) > 0) {
-                            buffer.flip();
-                            byteArrayOutputStream.write(buffer.array(), 0, bytesRead);
-                            buffer.clear();
-                        }
-                        byte[] res = byteArrayOutputStream.toByteArray();
-                        msg = new Message(-74);
-                        msg.writer().writeByte(2);
-                        msg.writer().writeUTF(original);
-                        msg.writer().writeInt(res.length);
-                        msg.writer().write(res);
-                        session.sendMessage(msg);
-                        msg.cleanup();
-                    } catch (IOException e) {
-                        Logger.logException(DataGame.class, e);
+                    if (!fileEntry.isFile()) {
+                        continue;
                     }
+                    String original = fileEntry.getName();
+                    byte[] res = FileIO.readFile(fileEntry.getPath());
+                    if (res == null) {
+                        continue;
+                    }
+                    msg = new Message(-74);
+                    msg.writer().writeByte(2);
+                    msg.writer().writeUTF(original);
+                    msg.writer().writeInt(res.length);
+                    msg.writer().write(res);
+                    session.sendMessage(msg);
+                    msg.cleanup();
                 }
             }
             msg = new Message(-74);

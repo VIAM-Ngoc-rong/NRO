@@ -18,6 +18,7 @@ import nro.models.interfaces.ISession;
 import nro.models.network.Network;
 import nro.models.network.MyKeyHandler;
 import nro.models.network.MySession;
+import nro.models.network.SessionManager;
 import nro.models.services_dungeon.NgocRongNamecService;
 import nro.models.utils.Logger;
 import nro.models.utils.TimeUtil;
@@ -308,8 +309,39 @@ public class ServerManager {
         // Định kỳ mỗi 30 giây lưu tổng thời gian hoạt động của Server (cộng dồn qua bảo trì & cập nhật)
         topUpdater.scheduleAtFixedRate(ServerManager::saveServerUptime, 30, 30, TimeUnit.SECONDS);
 
+        // Định kỳ mỗi 60 giây tự động dọn rác bộ nhớ RAM (GC) và kết nối ngắt để RAM luôn ổn định ~200-350MB 24/7
+        topUpdater.scheduleAtFixedRate(this::runPeriodicMemoryCleanup, 60, 60, TimeUnit.SECONDS);
+
         // Định kỳ mỗi 15 phút tự động dọn rác log hệ thống, MySQL binlog và server.log để chống tràn ổ cứng (No space left on device) lúc nửa đêm
         topUpdater.scheduleAtFixedRate(this::runPeriodicDiskCleanup, 5, 15, TimeUnit.MINUTES);
+    }
+
+    private void runPeriodicMemoryCleanup() {
+        try {
+            SessionManager.gI().cleanupSessions();
+            for (nro.models.map.Map map : Manager.MAPS) {
+                if (map == null || map.zones == null) {
+                    continue;
+                }
+                for (nro.models.map.Zone z : map.zones) {
+                    if (z == null || z.mobs == null) {
+                        continue;
+                    }
+                    for (int i = 0; i < z.mobs.size(); i++) {
+                        nro.models.mob.Mob m = z.mobs.get(i);
+                        if (m != null && m.temporaryEnemies != null && !m.temporaryEnemies.isEmpty()) {
+                            m.temporaryEnemies.removeIf(p -> p == null || p.zone != z || p.getSession() == null || !p.getSession().isConnected());
+                        }
+                    }
+                }
+            }
+            Runtime rt = Runtime.getRuntime();
+            long usedMb = (rt.totalMemory() - rt.freeMemory()) / (1024 * 1024);
+            if (usedMb > 380) {
+                System.gc();
+            }
+        } catch (Exception ignored) {
+        }
     }
 
     private void runPeriodicDiskCleanup() {

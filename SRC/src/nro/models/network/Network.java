@@ -129,8 +129,8 @@ public class Network implements INetwork, Runnable {
                     socket.setTcpNoDelay(true);
 
                     ISession session = SessionFactory.gI().cloneSession(this.sessionClone, socket);
-                    this.acceptHandler.sessionInit(session);
                     SessionManager.gI().putSession(session);
+                    this.acceptHandler.sessionInit(session);
                 }
             } catch (IOException ex) {
                 Logger.error("IOException in Network loop: " + ex.getMessage());
