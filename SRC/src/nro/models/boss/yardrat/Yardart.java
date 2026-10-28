@@ -236,9 +236,11 @@ public abstract class Yardart extends Boss {
 
             boolean isSpecialSkill = SkillUtil.isUseSkillSpecial(plAtt)
                     || (this.effectSkill != null && this.effectSkill.isBinh);
-            long maxDamage = Math.max(1L, (long) this.nPoint.hpMax * (isSpecialSkill ? 3L : 1L) / 100L);
-            if (damage > maxDamage) {
-                damage = maxDamage;
+            if (!isSpecialSkill) {
+                long maxDamage = Math.max(1L, (long) this.nPoint.hpMax / 100L);
+                if (damage > maxDamage) {
+                    damage = maxDamage;
+                }
             }
             if (this.nPoint.hp > damage) {
                 this.nPoint.subHP(damage);

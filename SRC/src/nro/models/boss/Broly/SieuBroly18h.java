@@ -103,9 +103,9 @@ public class SieuBroly18h extends Boss {
                     && plAtt.playerSkill.skillSelect.template.id == Skill.TU_SAT;
             boolean isSpecialSkill = SkillUtil.isUseSkillSpecial(plAtt)
                     || (this.effectSkill != null && this.effectSkill.isBinh);
-            if (!isTuSat && this.nPoint.hpMax > 0) {
+            if (!isTuSat && !isSpecialSkill && this.nPoint.hpMax > 0) {
                 double hpRatio = Math.max(0.0, Math.min(1.0, (double) this.nPoint.hp / (double) this.nPoint.hpMax));
-                double maxPercent = (0.001 + (0.004 * hpRatio)) * (isSpecialSkill ? 3.0 : 1.0);
+                double maxPercent = 0.001 + (0.004 * hpRatio);
                 long maxDamage = Math.max(1L, (long) (this.nPoint.hpMax * maxPercent));
                 if (damage > maxDamage) {
                     damage = maxDamage;

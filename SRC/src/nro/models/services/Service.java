@@ -2124,8 +2124,8 @@ public class Service {
     public void sendEffPlayer(Player pl) {
         if (pl.isPl()) {
             if (pl.levelHaoQuang > 0) {
-                int effVongChan = 89 + Math.min(8, pl.levelHaoQuang);
-                Service.gI().sendEffAllPlayer(pl, effVongChan, 0, -1, 1);
+                int effVongChan = 109 + Math.min(8, pl.levelHaoQuang);
+                Service.gI().sendEffAllPlayer(pl, effVongChan, 1, -1, 1);
             }
             if (pl.setClothes.songoku >= 5
                     || pl.setClothes.kaioken >= 5
@@ -2152,8 +2152,8 @@ public class Service {
             for (Player plM : pl.zone.getPlayers()) {
                 if (plM.isPl()) {
                     if (plM.levelHaoQuang > 0) {
-                        int effVongChan = 89 + Math.min(8, plM.levelHaoQuang);
-                        Service.gI().sendEffPlayer(plM, pl, effVongChan, 0, -1, 1);
+                        int effVongChan = 109 + Math.min(8, plM.levelHaoQuang);
+                        Service.gI().sendEffPlayer(plM, pl, effVongChan, 1, -1, 1);
                     }
                 }
             }

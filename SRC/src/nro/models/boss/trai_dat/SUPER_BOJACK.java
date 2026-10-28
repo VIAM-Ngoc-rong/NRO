@@ -67,7 +67,9 @@ public class SUPER_BOJACK extends Boss {
             }
             boolean isSpecialSkill = nro.models.utils.SkillUtil.isUseSkillSpecial(plAtt)
                     || (this.effectSkill != null && this.effectSkill.isBinh);
-            damage = Math.max(1L, (long) this.nPoint.hpMax * (isSpecialSkill ? 3L : 1L) / 100L);
+            if (!isSpecialSkill) {
+                damage = Math.max(1L, (long) this.nPoint.hpMax / 100L);
+            }
             this.nPoint.subHP(damage);
             if (isDie()) {
                 this.setDie(plAtt);

@@ -114,8 +114,8 @@ public class SuperBroly extends Boss {
                     && plAtt.playerSkill.skillSelect.template.id == Skill.TU_SAT;
             boolean isSpecialSkill = SkillUtil.isUseSkillSpecial(plAtt)
                     || (this.effectSkill != null && this.effectSkill.isBinh);
-            if (!isTuSat) {
-                long maxDamage = Math.max(1L, (long) this.nPoint.hpMax * (isSpecialSkill ? 3L : 1L) / 100L);
+            if (!isTuSat && !isSpecialSkill) {
+                long maxDamage = Math.max(1L, (long) this.nPoint.hpMax / 100L);
                 if (damage > maxDamage) {
                     damage = maxDamage;
                 }

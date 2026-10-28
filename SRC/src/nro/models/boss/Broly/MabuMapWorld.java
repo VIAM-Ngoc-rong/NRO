@@ -93,8 +93,8 @@ public class MabuMapWorld extends Boss {
                     && plAtt.playerSkill.skillSelect.template.id == Skill.TU_SAT;
             boolean isSpecialSkill = SkillUtil.isUseSkillSpecial(plAtt)
                     || (this.effectSkill != null && this.effectSkill.isBinh);
-            if (!isTuSat && this.nPoint.hpMax > 0) {
-                long maxDamage = Math.max(1L, (long) this.nPoint.hpMax * (isSpecialSkill ? 15L : 5L) / 100L);
+            if (!isTuSat && !isSpecialSkill && this.nPoint.hpMax > 0) {
+                long maxDamage = Math.max(1L, (long) this.nPoint.hpMax * 5L / 100L);
                 if (damage > maxDamage) {
                     damage = maxDamage;
                 }
