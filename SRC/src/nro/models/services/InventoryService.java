@@ -777,6 +777,8 @@ public class InventoryService {
                     }
                     Service.gI().Send_Caitrang(player.pet);
                     Service.gI().Send_Caitrang(player);
+                    Service.gI().sendFlagBag(player.pet);
+                    Service.gI().sendFlagBag(player);
                 }
             } else {
                 Service.gI().sendThongBao(player, "Đệ tử phải đạt 1tr5 sức mạnh mới có thể mặc");
@@ -795,6 +797,8 @@ public class InventoryService {
             Service.gI().point(player);
             Service.gI().Send_Caitrang(player.pet);
             Service.gI().Send_Caitrang(player);
+            Service.gI().sendFlagBag(player.pet);
+            Service.gI().sendFlagBag(player);
             Service.gI().showInfoPet(player);
         }
     }
@@ -1169,12 +1173,45 @@ public class InventoryService {
         if (player.getSession() != null) {
             Message msg;
             try {
+                if (player.nPoint != null) {
+                    player.nPoint.calPoint();
+                    player.nPoint.lastSentTlSDCM = player.nPoint.tlSDCM;
+                }
                 List<Item> itemsBody = player.inventory.itemsBody;
+                int rawBodySdcm = 0;
+                int carrierIdx = -1;
+                int firstNonNullIdx = -1;
+                for (int i = 0; i < itemsBody.size(); i++) {
+                    Item it = itemsBody.get(i);
+                    if (it != null && it.isNotNullItem() && it.itemOptions != null) {
+                        if (firstNonNullIdx == -1) {
+                            firstNonNullIdx = i;
+                        }
+                        for (Item.ItemOption io : it.itemOptions) {
+                            if (io == null || io.optionTemplate == null) {
+                                continue;
+                            }
+                            int opId = io.optionTemplate.id;
+                            if (opId == 5) {
+                                rawBodySdcm += io.param;
+                            }
+                            if (carrierIdx == -1 && i < 5 && ((opId >= 237 && opId <= 248) || (opId >= 127 && opId <= 144))) {
+                                carrierIdx = i;
+                            }
+                        }
+                    }
+                }
+                if (carrierIdx == -1) {
+                    carrierIdx = firstNonNullIdx;
+                }
+                int bonusSdcm = (player.nPoint != null) ? Math.max(0, player.nPoint.tlSDCM - rawBodySdcm) : 0;
+
                 msg = new Message(-37);
                 msg.writer().writeByte(0);
                 msg.writer().writeShort(player.getHead());
                 msg.writer().writeByte(itemsBody.size());
-                for (Item item : itemsBody) {
+                for (int idx = 0; idx < itemsBody.size(); idx++) {
+                    Item item = itemsBody.get(idx);
                     if (!item.isNotNullItem()) {
                         msg.writer().writeShort(-1);
                     } else {
@@ -1184,7 +1221,19 @@ public class InventoryService {
                         msg.writer().writeUTF(item.getInfo());
                         msg.writer().writeUTF(item.getContent());
                         List<Item.ItemOption> itemOptions = item.itemOptions;
-                        msg.writer().writeByte(itemOptions.size());
+                        boolean addBonusHere = (idx == carrierIdx && bonusSdcm > 0);
+                        boolean hasExistingOp5 = false;
+                        if (addBonusHere) {
+                            for (Item.ItemOption io : itemOptions) {
+                                if (io != null && io.optionTemplate != null && io.optionTemplate.id == 5) {
+                                    hasExistingOp5 = true;
+                                    break;
+                                }
+                            }
+                        }
+                        int optCountToWrite = itemOptions.size() + (addBonusHere && !hasExistingOp5 ? 1 : 0);
+                        msg.writer().writeByte(optCountToWrite);
+                        boolean mergedOp5 = false;
                         for (Item.ItemOption itemOption : itemOptions) {
                             if (itemOption.optionTemplate.id == 213) {
                                 int opId = 213;
@@ -1198,10 +1247,18 @@ public class InventoryService {
                                 }
                                 msg.writer().writeByte(opId);
                                 msg.writer().writeShort(param);
+                            } else if (addBonusHere && !mergedOp5 && itemOption.optionTemplate.id == 5) {
+                                mergedOp5 = true;
+                                msg.writer().writeByte(5);
+                                msg.writer().writeShort(itemOption.param + bonusSdcm);
                             } else {
                                 msg.writer().writeByte(itemOption.optionTemplate.id);
                                 msg.writer().writeShort(itemOption.param);
                             }
+                        }
+                        if (addBonusHere && !hasExistingOp5) {
+                            msg.writer().writeByte(5);
+                            msg.writer().writeShort(bonusSdcm);
                         }
                     }
                 }

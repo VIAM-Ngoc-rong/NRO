@@ -96,7 +96,7 @@ public class QuyLaoKame extends Npc {
             ArrayList<String> menu = new ArrayList<>();
             if (!player.canReward) {
                 menu.add("Nói\nchuyện");
-                menu.add("PK\nBang Hội");
+                menu.add("PK Bang Hội\n& Cá Nhân");
                 menu.add("Đổi điểm\nsự kiện\n[" + player.event.getEventPoint() + "]");
                 menu.add("Đổi điểm\nsăn Boss\n[" + player.pointSanBoss + "]");
                 menu.add("Nhận quà\nKOL");
@@ -211,11 +211,11 @@ public class QuyLaoKame extends Npc {
                 + "|2|Điểm săn Boss hiện tại: " + Util.numberToMoney(player.pointSanBoss) + " điểm\n"
                 + "Vòng Chân đang kích hoạt: " + curAuraInfo + "\n"
                 + "|1|• Cấp 1 (100 điểm): +3% SĐ, HP, KI\n"
-                + "• Cấp 2 (5.00 điểm): +5% SĐ, HP, KI, Hút HP, Hút KI\n"
+                + "• Cấp 2 (500 điểm): +5% SĐ, HP, KI, Hút HP, Hút KI\n"
                 + "• Cấp 3 (1.000 điểm): +10% SĐ, HP, KI, Hút HP, Hút KI";
         this.createOtherMenu(player, 99, npcSay,
                 "Vòng Chân\nCấp 1\n(100 đ)",
-                "Vòng Chân\nCấp 2\n(5.00 đ)",
+                "Vòng Chân\nCấp 2\n(500 đ)",
                 "Vòng Chân\nCấp 3\n(1.000 đ)",
                 "Đóng");
     }

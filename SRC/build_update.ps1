@@ -18,6 +18,7 @@ javac -proc:none -encoding UTF-8 -d build/classes -cp "build/classes;lib/*" `
     src/nro/models/player/NPoint.java `
     src/nro/models/player/SetClothes.java `
     src/nro/models/player/Player.java `
+    src/nro/models/player/Pet.java `
     src/nro/models/mob/Mob.java `
     src/nro/models/map/Zone.java `
     src/nro/models/map/service/ChangeMapService.java `
@@ -39,10 +40,13 @@ javac -proc:none -encoding UTF-8 -d build/classes -cp "build/classes;lib/*" `
     src/nro/models/npc_list/BaHatMit.java `
     src/nro/models/npc_list/BoMong.java `
     src/nro/models/npc_list/KyGui.java `
+    src/nro/models/npc_list/QuyLaoKame.java `
+    src/nro/models/matches/dai_hoi_vo_thuat/ClanMartialArtsService.java `
     src/nro/models/shop_ky_gui/ConsignShopService.java `
     src/nro/models/task/SideTask.java `
     src/nro/models/services/TaskService.java `
     src/nro/models/boss/Boss.java `
+    src/nro/models/boss/Broly/Broly.java `
     src/nro/models/boss/Boss_Manager/BossManager.java
 
 if ($LASTEXITCODE -ne 0) {
@@ -70,9 +74,11 @@ $pkgs = @(
     "nro\models\combine",
     "nro\models\npc",
     "nro\models\npc_list",
+    "nro\models\matches\dai_hoi_vo_thuat",
     "nro\models\shop_ky_gui",
     "nro\models\task",
     "nro\models\boss",
+    "nro\models\boss\Broly",
     "nro\models\boss\Boss_Manager"
 )
 

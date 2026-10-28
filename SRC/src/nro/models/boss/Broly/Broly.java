@@ -214,12 +214,17 @@ public class Broly extends Boss {
         Zone zone = this.zone;
         int x = this.location.x;
         int y = this.location.y;
+        boolean canSpawnSuper = zone != null && zone.zoneId >= 2 && this.nPoint != null && this.nPoint.hpMax >= 1_000_000;
+        this.firstEncounterPlayerTimeMs = 0L;
         ChangeMapService.gI().exitMap(this);
-        try {
-            new SuperBroly(zone, x, y);
-        } catch (Exception ex) {
+        if (canSpawnSuper) {
+            try {
+                new SuperBroly(zone, x, y);
+            } catch (Exception ex) {
+            }
         }
         this.lastZone = null;
+        this.secondsRest = 300;
         this.lastTimeRest = System.currentTimeMillis();
         this.changeStatus(BossStatus.REST);
     }

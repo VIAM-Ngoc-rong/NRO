@@ -1146,7 +1146,7 @@ public class Player implements Runnable {
         if (TaskService.gI().getIdTask(this) == ConstTask.TASK_3_2) {
             return 28;
         }
-        if (this.inventory.itemsBody.size() >= 11) {
+        if (this.inventory.itemsBody.size() >= 9) {
             if (this.inventory.itemsBody.get(8).isNotNullItem()) {
                 short part = this.inventory.itemsBody.get(8).template.part;
                 if (part >= 0 && part <= 255 && FlagBagService.gI().getFlagBag(part) != null) {
@@ -1155,7 +1155,7 @@ public class Player implements Runnable {
             }
         }
         if (this.isPet && this.inventory.itemsBody.size() >= 8) {
-            if (this.inventory.itemsBody.get(7).isNotNullItem()) {
+            if (this.inventory.itemsBody.get(7).isNotNullItem() && this.inventory.itemsBody.get(7).template.type == 11) {
                 short part = this.inventory.itemsBody.get(7).template.part;
                 if (part >= 0 && part <= 255 && FlagBagService.gI().getFlagBag(part) != null) {
                     return part;

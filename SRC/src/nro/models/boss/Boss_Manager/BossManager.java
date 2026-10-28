@@ -191,7 +191,7 @@ public class BossManager implements Runnable {
                 b.secondsRest = 60;
             }
             b.lastTimeRest = now - (b.secondsRest * 1000L) + (delaySec * 1000L);
-            delaySec += nro.models.utils.Util.nextInt(15, 25);
+            delaySec += nro.models.utils.Util.nextInt(2, 4);
         }
     }
 
@@ -479,19 +479,32 @@ public class BossManager implements Runnable {
                 msg.writer().writeUTF(boss.data[lv].getName());
                 boolean isHuntingThis = player.isAutoHuntBoss && player.isMatchingAutoBoss(boss);
                 if (boss.zone != null && !boss.isDie()) {
+                    long firstEnc = boss.getGroupFirstEncounterTimeMs();
+                    String despawnTag = "";
+                    if (firstEnc > 0L) {
+                        long remDespawnSec = Math.max(0L, (firstEnc + 900_000L - System.currentTimeMillis()) / 1000L);
+                        despawnTag = " [Còn " + (remDespawnSec / 60) + "p" + (remDespawnSec % 60) + "s]";
+                    }
                     msg.writer().writeUTF(boss.zone.map.mapName + (isHuntingThis ? " [Đang Tự Săn]" : " (Chọn Săn/Đến)"));
                     if (player.isAdmin()) {
                         msg.writer().writeUTF(boss.zone.map.mapName + " (" + boss.zone.map.mapId + ") khu " + boss.zone.zoneId
-                                + (isHuntingThis ? " - [ĐANG TỰ SĂN]" : " - Bấm Chọn để Đến hoặc Tự Động Săn"));
+                                + despawnTag + (isHuntingThis ? " - [ĐANG TỰ SĂN]" : " - Bấm Chọn để Đến hoặc Tự Động Săn"));
                     } else {
-                        msg.writer().writeUTF("Đang ở " + boss.zone.map.mapName + " (" + boss.zone.map.mapId + ")"
+                        msg.writer().writeUTF("Đang ở " + boss.zone.map.mapName + " (" + boss.zone.map.mapId + ")" + despawnTag
                                 + (isHuntingThis ? " [ĐANG TỰ SĂN]" : "\nBấm Chọn để Đến Khu 0 hoặc Bật Tự Động Săn!"));
                     }
                 } else {
-                    msg.writer().writeUTF(isHuntingThis ? "Chờ ra [Đang Tự Săn]" : "Đang chờ hồi sinh");
+                    Boss restRef = (boss.parentBoss != null && boss.secondsRest <= 0) ? boss.parentBoss : boss;
+                    long remRestSec = (restRef.secondsRest > 0 && restRef.lastTimeRest > 0)
+                            ? Math.max(0L, (restRef.lastTimeRest + restRef.secondsRest * 1000L - System.currentTimeMillis()) / 1000L)
+                            : 0L;
+                    String restStr = remRestSec > 0
+                            ? (" (" + (remRestSec / 60) + "p" + (remRestSec % 60) + "s)")
+                            : "";
+                    msg.writer().writeUTF(isHuntingThis ? ("Chờ ra" + restStr + " [Tự Săn]") : ("Chờ hồi sinh" + restStr));
                     msg.writer().writeUTF(isHuntingThis
-                            ? "Đang hẹn Tự Động Săn (Boss vừa xuất hiện sẽ tự đến dò khu & tàn sát)"
-                            : "Chưa xuất hiện - Bấm Chọn để Hẹn Tự Động Săn khi Boss xuất hiện!");
+                            ? ("Đang hẹn Tự Động Săn" + restStr + " (Boss vừa xuất hiện sẽ tự đến dò khu & tàn sát)")
+                            : ("Chưa xuất hiện" + restStr + " - Bấm Chọn để Hẹn Tự Động Săn khi Boss xuất hiện!"));
                 }
             }
             player.sendMessage(msg);

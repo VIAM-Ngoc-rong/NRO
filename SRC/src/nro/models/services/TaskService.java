@@ -1338,6 +1338,9 @@ public class TaskService {
                         player.inventory.addGold(goldReward);
                         Service.gI().sendMoney(player);
                     }
+                    if (player.playerTask.sideTask.level >= ConstTask.HARD) {
+                        player.dailySuperHardQuestCompletionCount += (player.playerTask.sideTask.level == ConstTask.HELL) ? 2 : 1;
+                    }
                     BadgesTaskService.updateCountBagesTask(player, ConstTaskBadges.NONG_DAN_CHAM_CHI, 1);
 
                     StringBuilder msgReward = new StringBuilder("Hoàn thành nhiệm vụ! Bạn nhận được: ");

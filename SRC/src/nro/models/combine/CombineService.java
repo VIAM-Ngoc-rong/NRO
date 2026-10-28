@@ -1138,7 +1138,7 @@ public class CombineService {
                 return "vào hành trang\nChọn trang bị\n(Áo, quần, găng, giày hoặc rađa)\nChọn loại đá để nâng cấp\n"
                         + "Sau đó chọn 'Nâng cấp'";
             case PHAN_RA_DO_THAN_LINH:
-                return "Vào hành trang\nChọn 1 hoặc nhiều món Đồ Thần Linh cần tái chế\nNhận 200-400Tr Vàng, 50-100 Hồng Ngọc, 3-5 Đá Ngũ Sắc, 1-2 Khoáng Tái Chế và 10-20 Thức Ăn Hủy Diệt mỗi món";
+                return "Vào hành trang\nChọn 1 hoặc nhiều món Đồ Thần Linh cần tái chế\nNhận 50-150Tr Vàng, 10-20 Hồng Ngọc, Đá Ngũ Sắc, Khoáng Tái Chế & Thức Ăn Hủy Diệt (Cộng dồn thêm nếu có SKH/SPL)";
             case XOA_THUOC_TINH_SKH:
                 return "Vào hành trang\nChọn 1 trang bị đang có thuộc tính Set Kích Hoạt (SKH)\nCần 200 triệu vàng -> Xóa sạch dòng SKH, giữ nguyên cấp [+], chỉ số gốc và toàn bộ Sao Pha Lê";
             case CHE_TAO_TRANG_BI_THIEN_SU:

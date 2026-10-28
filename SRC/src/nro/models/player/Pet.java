@@ -821,10 +821,22 @@ public class Pet extends Player {
         }
     }
 
+    private boolean hasValidDisguise() {
+        if (this.inventory != null && this.inventory.itemsBody != null && this.inventory.itemsBody.size() > 5) {
+            Item ct = this.inventory.itemsBody.get(5);
+            return ct != null && ct.isNotNullItem() && ct.template != null
+                    && ct.template.head != -1 && ct.template.body != -1 && ct.template.leg != -1;
+        }
+        return false;
+    }
+
     public short getAvatar() {
+        if (this.isTransform && hasValidDisguise()) {
+            return (short) this.inventory.itemsBody.get(5).template.head;
+        }
         switch (this.typePet) {
             case 1:
-                return 297;
+                return (short) (this.isTransform ? 439 : 297);
             case 2:
                 return 946;
             case 3:
@@ -834,6 +846,9 @@ public class Pet extends Player {
             case 5:
                 return (short) (this.isTransform ? 1083 : 1080);
             default:
+                if (hasValidDisguise()) {
+                    return (short) this.inventory.itemsBody.get(5).template.head;
+                }
                 return PET_ID[3][this.gender];
         }
     }
@@ -853,8 +868,10 @@ public class Pet extends Player {
             return (short) ConstPlayer.HEADMONKEY[effectSkill.levelMonkey - 1];
         } else if (effectSkill != null && effectSkill.isSocola) {
             return 412;
+        } else if (this.isTransform && hasValidDisguise()) {
+            return (short) inventory.itemsBody.get(5).template.head;
         } else if (this.typePet == 1) {
-            return 297;
+            return (short) (this.isTransform ? 439 : 297);
         } else if (this.typePet == 2) {
             return 946;
         } else if (this.typePet == 3) {
@@ -891,11 +908,13 @@ public class Pet extends Player {
             return 193;
         } else if (effectSkill != null && effectSkill.isSocola) {
             return 413;
-        } else if (this.typePet == 1 && !this.isTransform) {
-            return 298;
-        } else if (this.typePet == 2 && !this.isTransform) {
+        } else if (this.isTransform && hasValidDisguise()) {
+            return (short) inventory.itemsBody.get(5).template.body;
+        } else if (this.typePet == 1) {
+            return (short) (this.isTransform ? 440 : 298);
+        } else if (this.typePet == 2) {
             return 947;
-        } else if (this.typePet == 3 && !this.isTransform) {
+        } else if (this.typePet == 3) {
             return 1423;
         } else if (this.typePet == 4) {
             return 877;
@@ -932,11 +951,13 @@ public class Pet extends Player {
             return 194;
         } else if (effectSkill != null && effectSkill.isSocola) {
             return 414;
-        } else if (this.typePet == 1 && !this.isTransform) {
-            return 299;
-        } else if (this.typePet == 2 && !this.isTransform) {
+        } else if (this.isTransform && hasValidDisguise()) {
+            return (short) inventory.itemsBody.get(5).template.leg;
+        } else if (this.typePet == 1) {
+            return (short) (this.isTransform ? 441 : 299);
+        } else if (this.typePet == 2) {
             return 948;
-        } else if (this.typePet == 3 && !this.isTransform) {
+        } else if (this.typePet == 3) {
             return 1424;
         } else if (this.typePet == 4) {
             return 878;
@@ -1162,6 +1183,9 @@ public class Pet extends Player {
             this.isTransform = !this.isTransform;
             Service.gI().Send_Caitrang(this);
             Service.gI().chat(this, "Kakarotttt!! Sức mạnh Siêu Xayda Huyền Thoại!");
+        }
+        if (this.master != null) {
+            Service.gI().showInfoPet(this.master);
         }
     }
 

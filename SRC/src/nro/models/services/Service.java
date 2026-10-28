@@ -768,6 +768,10 @@ public class Service {
         player.nPoint.calPoint();
         Send_Info_NV(player);
         if (!player.isPet && !player.isBot && !player.isBoss && !player.isNewPet) {
+            if (player.nPoint.lastSentTlSDCM != player.nPoint.tlSDCM) {
+                player.nPoint.lastSentTlSDCM = player.nPoint.tlSDCM;
+                InventoryService.gI().sendItemBody(player);
+            }
             Message msg;
             try {
                 msg = new Message(-42);

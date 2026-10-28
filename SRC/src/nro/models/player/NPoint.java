@@ -88,6 +88,7 @@ public class NPoint {
      */
     public List<Integer> tlDameCrit;
     public int tlSDCM;
+    public int lastSentTlSDCM = -1;
 
     /**
      * Tỉ lệ hp, mp cộng thêm

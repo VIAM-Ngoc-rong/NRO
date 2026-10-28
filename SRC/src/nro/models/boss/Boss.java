@@ -152,7 +152,7 @@ public class Boss extends Player implements IBoss {
         this.data = data;
         this.name = this.data[0].getName();
         int cfgRest = this.data[0].getSecondsRest();
-        this.secondsRest = (cfgRest > 0 && cfgRest < 86400) ? Util.nextInt(300, 600) : cfgRest;
+        this.secondsRest = (cfgRest > 0 && cfgRest < 86400) ? 300 : cfgRest;
         this.bossStatus = BossStatus.REST;
         BossManager.gI().addBoss(this);
 
@@ -181,7 +181,7 @@ public class Boss extends Player implements IBoss {
         this.data = data;
         this.name = this.data[0].getName();
         int cfgRest = this.data[0].getSecondsRest();
-        this.secondsRest = (cfgRest > 0 && cfgRest < 86400) ? Util.nextInt(300, 600) : cfgRest;
+        this.secondsRest = (cfgRest > 0 && cfgRest < 86400) ? 300 : cfgRest;
         this.bossStatus = BossStatus.REST;
         switch (bossType) {
             case YARDART ->
@@ -670,8 +670,8 @@ public class Boss extends Player implements IBoss {
             }
             if (!this.isExcludedFrom5MinReset()) {
                 long firstEncounter = this.getGroupFirstEncounterTimeMs();
-                if (firstEncounter > 0L && Util.canDoWithTime(firstEncounter, 600_000L)) {
-                    this.chat("Đã hết 10 phút giao chiến, tạm biệt!");
+                if (firstEncounter > 0L && Util.canDoWithTime(firstEncounter, 900_000L)) {
+                    this.chat("Đã hết 15 phút giao chiến, tạm biệt!");
                     this.despawnIdleBossGroup();
                     return;
                 }
@@ -1418,7 +1418,7 @@ public class Boss extends Player implements IBoss {
             this.lastZone = null;
             int cfgRest = this.data[0].getSecondsRest();
             if (cfgRest > 0 && cfgRest < 86400) {
-                this.secondsRest = Util.nextInt(300, 600);
+                this.secondsRest = 300;
             }
             this.lastTimeRest = System.currentTimeMillis();
             this.changeStatus(BossStatus.REST);
@@ -1557,8 +1557,8 @@ public class Boss extends Player implements IBoss {
                 this.recordFirstPlayerEncounter();
             }
             long firstEncounter = this.getGroupFirstEncounterTimeMs();
-            if (firstEncounter > 0L && Util.canDoWithTime(firstEncounter, 600_000L)) {
-                this.chat("Đã hết 10 phút giao chiến, tạm biệt!");
+            if (firstEncounter > 0L && Util.canDoWithTime(firstEncounter, 900_000L)) {
+                this.chat("Đã hết 15 phút giao chiến, tạm biệt!");
                 this.despawnIdleBossGroup();
             }
         }
