@@ -77,8 +77,9 @@ public class ChangeMapService {
                             msg.writer().writeUTF("Về nhà");
                             msg.writer().writeUTF(zone.map.planetName);
                         } else if (!bossNames.isEmpty()) {
-                            msg.writer().writeUTF(zone.map.mapName + " (Khu 0)");
-                            msg.writer().writeUTF("Boss: " + bossNames);
+                            boolean unlocked = canPlayerJoinMap(pl, zone.map.mapId);
+                            msg.writer().writeUTF(zone.map.mapName + (unlocked ? " (Khu 0)" : " [Chưa mở map]"));
+                            msg.writer().writeUTF("Boss: " + bossNames + (unlocked ? "" : " (Cần làm NV)"));
                         } else {
                             msg.writer().writeUTF(zone.map.mapName);
                             msg.writer().writeUTF(zone.map.planetName);
@@ -1037,7 +1038,7 @@ public class ChangeMapService {
                     if (TaskService.gI().getIdTask(player) < ConstTask.TASK_20_0) {
                         return null;
                     }
-
+                    break;
                 case 102: //nhà bunma
                 case 92: //thành phố phía đông
                 case 93: //thành phố phía nam
@@ -1047,6 +1048,7 @@ public class ChangeMapService {
                         return null;
                     }
                     break;
+                case 104: //sân sau siêu thị
                 case 97: //thành phố phía bắc
                 case 98: //ngọn núi phía bắc
                 case 99: //thung lũng phía bắc
@@ -1101,6 +1103,26 @@ public class ChangeMapService {
             }
         }
         return zoneJoin;
+    }
+
+    public boolean canPlayerJoinMap(Player player, int mapId) {
+        if (player == null) {
+            return false;
+        }
+        if (player.isAdmin()) {
+            return true;
+        }
+        Zone z0 = MapService.gI().getZoneByMapIDAndZoneID(mapId, 0);
+        if (z0 == null) {
+            return false;
+        }
+        boolean oldVip = player.changeMapVIP;
+        try {
+            player.changeMapVIP = false;
+            return checkMapCanJoin(player, z0) != null;
+        } finally {
+            player.changeMapVIP = oldVip;
+        }
     }
 
     public Zone checkMapCanJoinByYardart(Player player, Zone zoneJoin) {

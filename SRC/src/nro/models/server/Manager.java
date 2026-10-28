@@ -903,10 +903,12 @@ public final class Manager {
                 optionTemp.id = rs.getInt("id");
                 optionTemp.name = rs.getString("name");
                 switch (optionTemp.id) {
+                    case 39 -> optionTemp.name = "$[ĐÃ KHÓA BẢO VỆ - Chống vứt/bán/phân rã]";
                     case 66 -> optionTemp.name = "+#% sát thương chiêu Laze";
                     case 73 -> optionTemp.name = "$Đang mở Trang # ở đầu Bể Chung";
                     case 153 -> optionTemp.name = "+#% sát thương chiêu phát nổ";
                     case 159 -> optionTemp.name = "+#% sát thương đòn chưởng";
+                    case 209 -> optionTemp.name = "$[Set Đồ Nhanh #]";
                     case 210 -> optionTemp.name = "# dòng chỉ số bí ẩn";
                     case 237 -> optionTemp.name = "Set Nail chiến binh Namếc (+12% HP/Giáp, +8% SĐ mỗi món)";
                     case 238 -> optionTemp.name = "$[2] +24% HP/Giáp, +16% SĐ, +15% SĐ chí mạng";

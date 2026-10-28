@@ -44,6 +44,7 @@ javac -proc:none -encoding UTF-8 -d build/classes -cp "build/classes;lib/*" `
     src/nro/models/npc_list/KyGui.java `
     src/nro/models/npc_list/QuyLaoKame.java `
     src/nro/models/utils/SkillUtil.java `
+    src/nro/models/shop/ShopService.java `
     src/nro/models/matches/dai_hoi_vo_thuat/ClanMartialArtsService.java `
     src/nro/models/shop_ky_gui/ConsignShopService.java `
     src/nro/models/task/SideTask.java `
@@ -101,6 +102,7 @@ $pkgs = @(
     "nro\models\npc",
     "nro\models\npc_list",
     "nro\models\utils",
+    "nro\models\shop",
     "nro\models\matches\dai_hoi_vo_thuat",
     "nro\models\shop_ky_gui",
     "nro\models\task",

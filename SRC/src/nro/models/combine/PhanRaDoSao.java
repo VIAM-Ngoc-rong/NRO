@@ -44,6 +44,11 @@ public class PhanRaDoSao {
                         "Vật phẩm không hợp lệ!", "Đóng");
                 return;
             }
+            if (InventoryService.isItemLocked(item)) {
+                CombineService.gI().baHatMit.createOtherMenu(player, ConstNpc.IGNORE_MENU,
+                        "Trang bị [" + item.template.name + "] đang được KHÓA bảo vệ!\nHãy mở khóa trong Menu Tiện Ích nếu muốn phân rã.", "Đóng");
+                return;
+            }
             if (!CombineSystem.isTrangBiPhaLeHoa(item)) {
                 CombineService.gI().baHatMit.createOtherMenu(player, ConstNpc.IGNORE_MENU,
                         item.template.name + " không phải là trang bị có thể phân rã!", "Đóng");
@@ -269,6 +274,7 @@ public class PhanRaDoSao {
 
     public static boolean isValidItem(Item item) {
         return item != null && item.isNotNullItem() && item.quantity >= 1
+                && !InventoryService.isItemLocked(item)
                 && CombineSystem.isTrangBiPhaLeHoa(item)
                 && !DapDoKichHoat.isItemKichHoat(item)
                 && getStar(item) >= 1;

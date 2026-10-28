@@ -113,15 +113,364 @@ public class InventoryService {
         //**********************************************************************
     }
 
+    public static final int OPTION_ID_LOCKED_ITEM = 39;
+    public static final int OPTION_ID_EQUIP_SET = 209;
+    public static final int MAX_EQUIP_SETS = 5;
+
+    public static boolean isItemLocked(Item item) {
+        if (item == null || !item.isNotNullItem() || item.itemOptions == null) {
+            return false;
+        }
+        for (Item.ItemOption io : item.itemOptions) {
+            if (io != null && io.optionTemplate != null && io.optionTemplate.id == OPTION_ID_LOCKED_ITEM) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static void setItemLock(Item item, boolean locked) {
+        if (item == null || !item.isNotNullItem()) {
+            return;
+        }
+        if (item.itemOptions == null) {
+            item.itemOptions = new ArrayList<>();
+        }
+        item.itemOptions.removeIf(io -> io != null && io.optionTemplate != null && io.optionTemplate.id == OPTION_ID_LOCKED_ITEM);
+        if (locked) {
+            item.itemOptions.add(new Item.ItemOption(OPTION_ID_LOCKED_ITEM, 1));
+        }
+    }
+
+    public static boolean toggleItemLock(Item item) {
+        boolean newState = !isItemLocked(item);
+        setItemLock(item, newState);
+        return newState;
+    }
+
+    public static boolean isLockableEquipment(Item item) {
+        if (item == null || !item.isNotNullItem() || item.template == null) {
+            return false;
+        }
+        if (ItemData.isQuickTabButtonTemplateId(item.template.id)) {
+            return false;
+        }
+        int type = item.template.type;
+        return (type >= 0 && type <= 5)
+                || type == 11 || type == 21 || type == 23 || type == 24
+                || type == 25 || type == 32 || type == 35 || type == 36 || type == 72
+                || item.isDTL() || item.isDHD() || item.isDTS()
+                || (type == 27 && !item.template.isUpToUp);
+    }
+
+    public static boolean isItemInEquipSet(Item item, int setIndex) {
+        if (item == null || !item.isNotNullItem() || item.itemOptions == null || setIndex < 1 || setIndex > MAX_EQUIP_SETS) {
+            return false;
+        }
+        for (Item.ItemOption io : item.itemOptions) {
+            if (io != null && io.optionTemplate != null && io.optionTemplate.id == OPTION_ID_EQUIP_SET && io.param == setIndex) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static void removeItemFromEquipSet(Item item, int setIndex) {
+        if (item == null || !item.isNotNullItem() || item.itemOptions == null) {
+            return;
+        }
+        item.itemOptions.removeIf(io -> io != null && io.optionTemplate != null
+                && io.optionTemplate.id == OPTION_ID_EQUIP_SET && io.param == setIndex);
+    }
+
+    public static void addItemToEquipSet(Item item, int setIndex) {
+        if (item == null || !item.isNotNullItem() || setIndex < 1 || setIndex > MAX_EQUIP_SETS) {
+            return;
+        }
+        if (item.itemOptions == null) {
+            item.itemOptions = new ArrayList<>();
+        }
+        removeItemFromEquipSet(item, setIndex);
+        item.itemOptions.add(new Item.ItemOption(OPTION_ID_EQUIP_SET, setIndex));
+    }
+
+    public void clearEquipSet(Player player, int setIndex) {
+        if (player == null || player.inventory == null || setIndex < 1 || setIndex > MAX_EQUIP_SETS) {
+            return;
+        }
+        for (Item it : player.inventory.itemsBody) {
+            removeItemFromEquipSet(it, setIndex);
+        }
+        for (Item it : player.inventory.itemsBag) {
+            removeItemFromEquipSet(it, setIndex);
+        }
+        for (Item it : player.inventory.itemsBox) {
+            removeItemFromEquipSet(it, setIndex);
+        }
+        if (player.pet != null && player.pet.inventory != null) {
+            for (Item it : player.pet.inventory.itemsBody) {
+                removeItemFromEquipSet(it, setIndex);
+            }
+        }
+        sendItemBody(player);
+        sendItemBags(player);
+    }
+
+    public List<Item> getItemsInEquipSet(Player player, int setIndex) {
+        List<Item> result = new ArrayList<>();
+        if (player == null || player.inventory == null || setIndex < 1 || setIndex > MAX_EQUIP_SETS) {
+            return result;
+        }
+        for (Item it : player.inventory.itemsBody) {
+            if (isItemInEquipSet(it, setIndex)) {
+                result.add(it);
+            }
+        }
+        if (player.pet != null && player.pet.inventory != null) {
+            for (Item it : player.pet.inventory.itemsBody) {
+                if (isItemInEquipSet(it, setIndex)) {
+                    result.add(it);
+                }
+            }
+        }
+        for (Item it : player.inventory.itemsBag) {
+            if (isItemInEquipSet(it, setIndex)) {
+                result.add(it);
+            }
+        }
+        return result;
+    }
+
+    public String getEquipSetSummary(Player player, int setIndex) {
+        List<Item> list = getItemsInEquipSet(player, setIndex);
+        if (list.isEmpty()) {
+            return "Chưa thiết lập (0 món)";
+        }
+        StringBuilder sb = new StringBuilder();
+        sb.append(list.size()).append(" món (");
+        for (int i = 0; i < list.size(); i++) {
+            if (i > 0) {
+                sb.append(", ");
+            }
+            sb.append(list.get(i).template.name);
+        }
+        sb.append(")");
+        return sb.toString();
+    }
+
+    public String saveCurrentBodyToEquipSet(Player player, int setIndex, boolean fromPet) {
+        if (player == null || player.inventory == null || setIndex < 1 || setIndex > MAX_EQUIP_SETS) {
+            return "Set đồ không hợp lệ!";
+        }
+        if (fromPet && (player.pet == null || player.pet.inventory == null)) {
+            return "Bạn hiện chưa có Đệ tử để lấy trang bị!";
+        }
+        List<Item> srcBody = fromPet ? player.pet.inventory.itemsBody : player.inventory.itemsBody;
+        List<Item> validItems = new ArrayList<>();
+        for (Item it : srcBody) {
+            if (it != null && it.isNotNullItem() && it.template != null) {
+                validItems.add(it);
+            }
+        }
+        if (validItems.isEmpty()) {
+            return (fromPet ? "Đệ tử" : "Sư phụ") + " hiện chưa mặc trang bị nào để lưu vào Set " + setIndex + "!";
+        }
+        clearEquipSet(player, setIndex);
+        StringBuilder names = new StringBuilder();
+        for (int i = 0; i < validItems.size(); i++) {
+            Item it = validItems.get(i);
+            addItemToEquipSet(it, setIndex);
+            setItemLock(it, true);
+            if (i > 0) {
+                names.append(", ");
+            }
+            names.append(it.template.name);
+        }
+        sendItemBody(player);
+        sendItemBags(player);
+        return "Đã lưu " + validItems.size() + " món của " + (fromPet ? "Đệ tử" : "Sư phụ")
+                + " vào Set Đồ số " + setIndex + " (đồng thời tự động Khóa bảo vệ): " + names;
+    }
+
+    private static int getTargetBodySlot(Player targetPl, Item item) {
+        if (item == null || !item.isNotNullItem() || item.template == null) {
+            return -1;
+        }
+        return switch (item.template.type) {
+            case 0, 1, 2, 3, 4, 5 -> item.template.type;
+            case 32 -> 6;
+            case 23, 24 -> targetPl.isPet ? -1 : 9;
+            case 11 -> 8;
+            case 27 -> 7;
+            case 25 -> targetPl.isPet ? 7 : 10;
+            default -> -1;
+        };
+    }
+
+    private static boolean canEquipOnTarget(Player targetPl, Item item, List<String> skipReasons) {
+        if (targetPl == null || item == null || !item.isNotNullItem() || item.template == null) {
+            return false;
+        }
+        int slot = getTargetBodySlot(targetPl, item);
+        if (slot < 0) {
+            return false;
+        }
+        if (item.template.gender < 3 && item.template.gender != targetPl.gender) {
+            if (skipReasons != null) {
+                skipReasons.add(item.template.name + " (khác hành tinh)");
+            }
+            return false;
+        }
+        long powerRequire = item.template.strRequire;
+        if (item.itemOptions != null) {
+            for (Item.ItemOption io : item.itemOptions) {
+                if (io != null && io.optionTemplate != null && io.optionTemplate.id == 21) {
+                    powerRequire = io.param * 1_000_000_000L;
+                    break;
+                }
+            }
+        }
+        if (targetPl.nPoint.power < powerRequire) {
+            if (skipReasons != null) {
+                skipReasons.add(item.template.name + " (chưa đủ SM)");
+            }
+            return false;
+        }
+        return true;
+    }
+
+    public String equipSetForTarget(Player player, int setIndex, boolean forPet) {
+        if (player == null || player.inventory == null || setIndex < 1 || setIndex > MAX_EQUIP_SETS) {
+            return "Set đồ không hợp lệ!";
+        }
+        if (forPet) {
+            if (player.pet == null || player.pet.inventory == null) {
+                return "Bạn hiện chưa có Đệ tử!";
+            }
+            if (player.pet.nPoint.power < 1_500_000L) {
+                return "Đệ tử phải đạt 1tr5 sức mạnh mới có thể mặc trang bị!";
+            }
+        }
+        List<Item> allSetItems = getItemsInEquipSet(player, setIndex);
+        if (allSetItems.isEmpty()) {
+            return "Set đồ số " + setIndex + " chưa được thiết lập (hoặc trang bị đang cất trong Rương đồ)!";
+        }
+
+        Player targetPl = forPet ? player.pet : player;
+        Player otherPl = forPet ? player : player.pet;
+        List<Item> targetBody = targetPl.inventory.itemsBody;
+        int alreadyWorn = 0;
+        int newlyEquipped = 0;
+        List<String> skipReasons = new ArrayList<>();
+
+        for (Item it : targetBody) {
+            if (isItemInEquipSet(it, setIndex)) {
+                alreadyWorn++;
+            }
+        }
+
+        // 1. Mặc các món của Set đang nằm trong Hành trang
+        for (int i = 0; i < player.inventory.itemsBag.size(); i++) {
+            Item bagItem = player.inventory.itemsBag.get(i);
+            if (!isItemInEquipSet(bagItem, setIndex)) {
+                continue;
+            }
+            if (!canEquipOnTarget(targetPl, bagItem, skipReasons)) {
+                continue;
+            }
+            Item swapped = putItemBody(targetPl, bagItem);
+            player.inventory.itemsBag.set(i, swapped);
+            newlyEquipped++;
+        }
+
+        // 2. Mặc các món của Set đang nằm trên người nhân vật còn lại (Sư phụ <-> Đệ tử)
+        if (otherPl != null && otherPl.inventory != null) {
+            List<Item> otherBody = otherPl.inventory.itemsBody;
+            for (int j = 0; j < otherBody.size(); j++) {
+                Item otherItem = otherBody.get(j);
+                if (!isItemInEquipSet(otherItem, setIndex)) {
+                    continue;
+                }
+                if (!canEquipOnTarget(targetPl, otherItem, skipReasons)) {
+                    continue;
+                }
+                Item oldOnTarget = putItemBody(targetPl, otherItem);
+                if (oldOnTarget != null && oldOnTarget.isNotNullItem()) {
+                    if (canEquipOnTarget(otherPl, oldOnTarget, null) && getTargetBodySlot(otherPl, oldOnTarget) == j) {
+                        otherBody.set(j, oldOnTarget);
+                    } else {
+                        otherBody.set(j, ItemService.gI().createItemNull());
+                        Item leftover = putItemBag(player, oldOnTarget);
+                        if (leftover != null && leftover.isNotNullItem()) {
+                            // Nếu hành trang đầy thì trả lại vị trí cũ
+                            putItemBody(targetPl, oldOnTarget);
+                            otherBody.set(j, otherItem);
+                            newlyEquipped--;
+                            skipReasons.add("Hành trang đầy");
+                        }
+                    }
+                } else {
+                    otherBody.set(j, ItemService.gI().createItemNull());
+                }
+                newlyEquipped++;
+            }
+        }
+
+        player.setClothes.setup();
+        if (player.pet != null) {
+            player.pet.setClothes.setup();
+            player.pet.nPoint.calPoint();
+        }
+        player.nPoint.calPoint();
+
+        sendItemBags(player);
+        sendItemBody(player);
+        Service.gI().point(player);
+        Service.gI().Send_Caitrang(player);
+        Service.gI().sendFlagBag(player);
+        if (player.pet != null) {
+            Service.gI().Send_Caitrang(player.pet);
+            Service.gI().sendFlagBag(player.pet);
+            Service.gI().showInfoPet(player);
+        }
+
+        String targetName = forPet ? "Đệ tử" : "Sư phụ";
+        StringBuilder msg = new StringBuilder();
+        if (newlyEquipped > 0 || alreadyWorn > 0) {
+            msg.append("Đã mặc Set Đồ số ").append(setIndex).append(" cho ").append(targetName)
+                    .append(" (Mặc mới: ").append(newlyEquipped).append(" món, Đang mặc sẵn: ").append(alreadyWorn).append(" món)!");
+        } else {
+            msg.append("Không thể mặc Set Đồ số ").append(setIndex).append(" cho ").append(targetName).append("!");
+        }
+        if (!skipReasons.isEmpty()) {
+            msg.append(" Bỏ qua: ").append(String.join(", ", skipReasons));
+        }
+        return msg.toString();
+    }
+
     public void throwItem(Player player, int where, int index) {
         Item itemThrow = null;
         if (where == 0) {
+            if (index < 0 || index >= player.inventory.itemsBody.size()) {
+                return;
+            }
             itemThrow = player.inventory.itemsBody.get(index);
+            if (isItemLocked(itemThrow)) {
+                Service.gI().sendThongBao(player, "Trang bị [" + itemThrow.template.name + "] đang được KHÓA bảo vệ! Hãy mở khóa trong Menu Tiện Ích nếu muốn vứt.");
+                return;
+            }
             removeItemBody(player, index);
             sendItemBody(player);
             Service.gI().Send_Caitrang(player);
         } else if (where == 1) {
+            if (index < 0 || index >= player.inventory.itemsBag.size()) {
+                return;
+            }
             itemThrow = player.inventory.itemsBag.get(index);
+            if (isItemLocked(itemThrow)) {
+                Service.gI().sendThongBao(player, "Trang bị [" + itemThrow.template.name + "] đang được KHÓA bảo vệ! Hãy mở khóa trong Menu Tiện Ích nếu muốn vứt.");
+                return;
+            }
             if (itemThrow.template != null && itemThrow.template.id == 570) {
                 Service.gI().sendThongBao(player, "Không thể bỏ vật phẩm này.");
                 return;

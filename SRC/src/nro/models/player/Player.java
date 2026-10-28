@@ -465,6 +465,9 @@ public class Player implements Runnable {
         if (item == null || !item.isNotNullItem() || item.template == null) {
             return false;
         }
+        if (InventoryService.isItemLocked(item)) {
+            return false;
+        }
         int type = item.template.type;
         if (type < 0 || type > 4) {
             return false;
@@ -493,6 +496,9 @@ public class Player implements Runnable {
                 }
                 if (opId >= 34 && opId <= 36) {
                     return false; // Tinh ấn / Nguyệt ấn / Nhật ấn
+                }
+                if (opId == InventoryService.OPTION_ID_EQUIP_SET) {
+                    return false; // Trang bị thuộc Set Đồ Nhanh
                 }
             }
         }
@@ -2403,6 +2409,9 @@ public class Player implements Runnable {
         if (b == null || !this.isAutoHuntBoss || !isHuntableWorldBoss(b)) {
             return false;
         }
+        if (b.zone != null && b.zone.map != null && !ChangeMapService.gI().canPlayerJoinMap(this, b.zone.map.mapId)) {
+            return false;
+        }
         if (this.isAutoHuntAllBoss) {
             return true;
         }
@@ -2484,7 +2493,9 @@ public class Player implements Runnable {
             nro.models.boss.Boss fallbackWaiting = null;
             for (long wantedGroup : this.autoHuntBossGroupKeys) {
                 for (nro.models.boss.Boss b : nro.models.boss.Boss_Manager.BossManager.gI().getBosses()) {
-                    if (b != null && b.zone != null && !b.isDie() && isHuntableWorldBoss(b)) {
+                    if (b != null && b.zone != null && b.zone.map != null && !b.isDie()
+                            && isHuntableWorldBoss(b)
+                            && ChangeMapService.gI().canPlayerJoinMap(this, b.zone.map.mapId)) {
                         boolean matchGroup = (getBossGroupKey(b.id) == wantedGroup)
                                 || (b.parentBoss != null && getBossGroupKey(b.parentBoss.id) == wantedGroup);
                         if (matchGroup) {
@@ -2568,6 +2579,13 @@ public class Player implements Runnable {
             }
 
             int targetMapId = targetBoss.zone.map.mapId;
+            if (!ChangeMapService.gI().canPlayerJoinMap(this, targetMapId)) {
+                if (Util.canDoWithTime(this.lastTimeAutoHuntWaitNotify, 10000)) {
+                    this.lastTimeAutoHuntWaitNotify = System.currentTimeMillis();
+                    Service.gI().sendThongBao(this, "[Tự Săn Boss] Chưa đủ nhiệm vụ để qua bản đồ " + targetBoss.zone.map.mapName + "!");
+                }
+                return;
+            }
             // B1: Nếu đang ở khác bản đồ -> Dịch chuyển xuống mặt đất tại Khu 0 của bản đồ Boss
             if (this.zone.map.mapId != targetMapId) {
                 if (Util.canDoWithTime(this.lastTimeAutoHuntAction, 2200)) {

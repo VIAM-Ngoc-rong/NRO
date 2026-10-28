@@ -402,7 +402,28 @@ public class Command {
             return true;
         }
 
+        if (lowerText.matches("^(s[1-5]|set\\s*[1-5])$")) {
+            int setIdx = Integer.parseInt(lowerText.replaceAll("[^1-5]", ""));
+            String msg = InventoryService.gI().equipSetForTarget(player, setIdx, false);
+            Service.gI().sendThongBao(player, msg);
+            return true;
+        }
+        if (lowerText.matches("^(d[1-5]|pset\\s*[1-5]|dt\\s*[1-5])$")) {
+            int setIdx = Integer.parseInt(lowerText.replaceAll("[^1-5]", ""));
+            String msg = InventoryService.gI().equipSetForTarget(player, setIdx, true);
+            Service.gI().sendThongBao(player, msg);
+            return true;
+        }
+
         switch (lowerText) {
+            case "set", "setdo", "doido" -> {
+                nro.models.npc.NpcFactory.openMenuDoiDoNhanh(player);
+                return true;
+            }
+            case "khoa", "khoado", "khoatrangbi" -> {
+                nro.models.npc.NpcFactory.openMenuKhoaTrangBi(player);
+                return true;
+            }
             case "tab", "tui", "tuidong", "hanhtrang" -> {
                 nro.models.npc.NpcFactory.openMenuBagTab(player);
                 return true;
@@ -425,7 +446,7 @@ public class Command {
                 nro.models.boss.Boss_Manager.BossManager.gI().showListBoss(player);
                 return true;
             }
-            case "auto", "menu", "tienich", "caidat", "hotro" -> {
+            case "x", "auto", "menu", "tienich", "caidat", "hotro" -> {
                 nro.models.npc.NpcFactory.openMenuTienIch(player);
                 return true;
             }

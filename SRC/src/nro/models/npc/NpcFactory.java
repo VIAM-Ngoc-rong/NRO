@@ -771,9 +771,40 @@ public class NpcFactory {
                     case 9900 -> {
                         switch (select) {
                             case 0 -> {
+                                openMenuDoiDoNhanh(player);
+                            }
+                            case 1 -> {
+                                openMenuBagTab(player);
+                            }
+                            case 2 -> {
+                                openMenuAutoTreoMay(player);
+                            }
+                            case 3 -> {
+                                nro.models.server.ServerNotify.gI().sendActiveBossesToPlayer(player);
+                                BossManager.gI().showListBoss(player);
+                            }
+                            case 4 -> {
+                                openMenuQuanLyDeTu(player);
+                            }
+                            case 5 -> {
+                                openMenuCongNhanh(player);
+                            }
+                            case 6 -> {
+                                if (player.isAutoHuntBoss) {
+                                    player.stopAutoHuntBoss();
+                                    openMenuTienIch(player);
+                                } else {
+                                    Service.gI().openFlagUI(player);
+                                }
+                            }
+                        }
+                    }
+                    case 9916 -> {
+                        switch (select) {
+                            case 0 -> {
                                 player.isAutoBuffPea = !player.isAutoBuffPea;
                                 Service.gI().sendThongBao(player, "Auto Buff Đậu (Sư phụ & Đệ tử): " + (player.isAutoBuffPea ? "[Bật]" : "[Tắt]"));
-                                openMenuTienIch(player);
+                                openMenuAutoTreoMay(player);
                             }
                             case 1 -> {
                                 player.isAutoCleanBag = !player.isAutoCleanBag;
@@ -781,30 +812,169 @@ public class NpcFactory {
                                     player.autoCleanTrashAndSellItems();
                                 }
                                 Service.gI().sendThongBao(player, "Auto Treo Quái (Chống đầy túi & tự bán đồ rác): " + (player.isAutoCleanBag ? "[Bật]" : "[Tắt]"));
-                                openMenuTienIch(player);
+                                openMenuAutoTreoMay(player);
                             }
                             case 2 -> {
+                                boolean enableBoth = !(player.isAutoBuffPea && player.isAutoCleanBag);
+                                player.isAutoBuffPea = enableBoth;
+                                player.isAutoCleanBag = enableBoth;
+                                if (enableBoth) {
+                                    player.autoCleanTrashAndSellItems();
+                                }
+                                Service.gI().sendThongBao(player, (enableBoth ? "Đã BẬT" : "Đã TẮT") + " cả Auto Buff Đậu & Auto Treo Quái!");
+                                openMenuAutoTreoMay(player);
+                            }
+                            case 3 -> {
                                 nro.models.server.ServerNotify.gI().sendActiveBossesToPlayer(player);
                                 BossManager.gI().showListBoss(player);
                             }
+                            case 4 -> {
+                                openMenuSelectAutoHuntSkills(player);
+                            }
+                            default -> {
+                                openMenuTienIch(player);
+                            }
+                        }
+                    }
+                    case 9907 -> {
+                        switch (select) {
+                            case 0 -> openMenuMacNhanhSetDo(player, false);
+                            case 1 -> openMenuMacNhanhSetDo(player, true);
+                            case 2 -> openMenuChonSetDeLuu(player);
+                            case 3 -> openMenuKhoaTrangBi(player);
+                            case 4 -> {
+                                int count = lockAllEquippedItems(player, true);
+                                Service.gI().sendThongBao(player, "Đã KHÓA bảo vệ tất cả " + count + " trang bị đang mặc trên Sư phụ & Đệ tử!");
+                                openMenuDoiDoNhanh(player);
+                            }
+                            case 5 -> openMenuBagTab(player);
+                            default -> openMenuTienIch(player);
+                        }
+                    }
+                    case 9908 -> {
+                        if (select >= 0 && select < InventoryService.MAX_EQUIP_SETS) {
+                            String msg = InventoryService.gI().equipSetForTarget(player, select + 1, false);
+                            Service.gI().sendThongBao(player, msg);
+                        } else if (select == InventoryService.MAX_EQUIP_SETS) {
+                            openMenuChonSetDeLuu(player);
+                        } else {
+                            openMenuDoiDoNhanh(player);
+                        }
+                    }
+                    case 9909 -> {
+                        if (select >= 0 && select < InventoryService.MAX_EQUIP_SETS) {
+                            String msg = InventoryService.gI().equipSetForTarget(player, select + 1, true);
+                            Service.gI().sendThongBao(player, msg);
+                        } else if (select == InventoryService.MAX_EQUIP_SETS) {
+                            openMenuChonSetDeLuu(player);
+                        } else {
+                            openMenuDoiDoNhanh(player);
+                        }
+                    }
+                    case 9911 -> {
+                        if (select >= 0 && select < InventoryService.MAX_EQUIP_SETS) {
+                            openMenuChiTietThietLapSet(player, select + 1);
+                        } else {
+                            openMenuDoiDoNhanh(player);
+                        }
+                    }
+                    case 9912 -> {
+                        int setIdx = getPendingEquipSetIndex(player);
+                        switch (select) {
+                            case 0 -> {
+                                String msg = InventoryService.gI().saveCurrentBodyToEquipSet(player, setIdx, false);
+                                Service.gI().sendThongBao(player, msg);
+                                openMenuChiTietThietLapSet(player, setIdx);
+                            }
+                            case 1 -> {
+                                String msg = InventoryService.gI().saveCurrentBodyToEquipSet(player, setIdx, true);
+                                Service.gI().sendThongBao(player, msg);
+                                openMenuChiTietThietLapSet(player, setIdx);
+                            }
+                            case 2 -> {
+                                String msg = InventoryService.gI().equipSetForTarget(player, setIdx, false);
+                                Service.gI().sendThongBao(player, msg);
+                            }
                             case 3 -> {
-                                openMenuCongNhanh(player);
+                                String msg = InventoryService.gI().equipSetForTarget(player, setIdx, true);
+                                Service.gI().sendThongBao(player, msg);
                             }
                             case 4 -> {
-                                openMenuQuanLyDeTu(player);
+                                InventoryService.gI().clearEquipSet(player, setIdx);
+                                Service.gI().sendThongBao(player, "Đã xóa thiết lập của Set Đồ số " + setIdx + "!");
+                                openMenuChiTietThietLapSet(player, setIdx);
                             }
-                            case 5 -> {
-                                openMenuBagTab(player);
+                            default -> openMenuChonSetDeLuu(player);
+                        }
+                    }
+                    case 9910 -> {
+                        switch (select) {
+                            case 0 -> openMenuKhoaDoSuPhu(player);
+                            case 1 -> openMenuKhoaDoDeTu(player);
+                            case 2 -> openMenuKhoaDoHanhTrang(player, 0);
+                            case 3 -> {
+                                int count = lockAllEquippedItems(player, true);
+                                Service.gI().sendThongBao(player, "Đã KHÓA bảo vệ tất cả " + count + " trang bị đang mặc trên Sư phụ & Đệ tử!");
+                                openMenuKhoaTrangBi(player);
                             }
-                            case 6 -> {
-                                Service.gI().openFlagUI(player);
+                            case 4 -> {
+                                int count = lockAllEquippedItems(player, false);
+                                Service.gI().sendThongBao(player, "Đã MỞ KHÓA cho " + count + " trang bị đang mặc trên Sư phụ & Đệ tử!");
+                                openMenuKhoaTrangBi(player);
                             }
-                            case 7 -> {
-                                if (player.isAutoHuntBoss) {
-                                    player.stopAutoHuntBoss();
-                                    openMenuTienIch(player);
-                                }
-                            }
+                            default -> openMenuDoiDoNhanh(player);
+                        }
+                    }
+                    case 9913 -> {
+                        List<Item> bodyItems = getNonNullItems(player.inventory.itemsBody);
+                        if (select >= 0 && select < bodyItems.size()) {
+                            Item target = bodyItems.get(select);
+                            boolean locked = InventoryService.toggleItemLock(target);
+                            InventoryService.gI().sendItemBody(player);
+                            InventoryService.gI().sendItemBags(player);
+                            Service.gI().sendThongBao(player, (locked ? "Đã KHÓA bảo vệ: " : "Đã MỞ KHÓA: ") + target.template.name);
+                            openMenuKhoaDoSuPhu(player);
+                        } else {
+                            openMenuKhoaTrangBi(player);
+                        }
+                    }
+                    case 9914 -> {
+                        if (player.pet == null || player.pet.inventory == null) {
+                            openMenuKhoaTrangBi(player);
+                            return;
+                        }
+                        List<Item> petItems = getNonNullItems(player.pet.inventory.itemsBody);
+                        if (select >= 0 && select < petItems.size()) {
+                            Item target = petItems.get(select);
+                            boolean locked = InventoryService.toggleItemLock(target);
+                            InventoryService.gI().sendItemBody(player);
+                            InventoryService.gI().sendItemBags(player);
+                            Service.gI(). showInfoPet(player);
+                            Service.gI().sendThongBao(player, (locked ? "Đã KHÓA bảo vệ đồ Đệ tử: " : "Đã MỞ KHÓA đồ Đệ tử: ") + target.template.name);
+                            openMenuKhoaDoDeTu(player);
+                        } else {
+                            openMenuKhoaTrangBi(player);
+                        }
+                    }
+                    case 9915 -> {
+                        int page = getPendingLockBagPage(player);
+                        List<Item> bagEquips = getLockableBagItemsInCurrentTab(player);
+                        int pageSize = 6;
+                        int totalPages = Math.max(1, (bagEquips.size() + pageSize - 1) / pageSize);
+                        page = Math.max(0, Math.min(page, totalPages - 1));
+                        int start = page * pageSize;
+                        int end = Math.min(bagEquips.size(), start + pageSize);
+                        int countOnPage = end - start;
+                        if (select >= 0 && select < countOnPage) {
+                            Item target = bagEquips.get(start + select);
+                            boolean locked = InventoryService.toggleItemLock(target);
+                            InventoryService.gI().sendItemBags(player);
+                            Service.gI().sendThongBao(player, (locked ? "Đã KHÓA bảo vệ: " : "Đã MỞ KHÓA: ") + target.template.name);
+                            openMenuKhoaDoHanhTrang(player, page);
+                        } else if (totalPages > 1 && select == countOnPage) {
+                            openMenuKhoaDoHanhTrang(player, (page + 1) % totalPages);
+                        } else {
+                            openMenuKhoaTrangBi(player);
                         }
                     }
                     case 9905 -> {
@@ -826,6 +996,10 @@ public class NpcFactory {
                             case 3 -> {
                                 if (boss != null && boss.zone != null && !boss.isDie()) {
                                     int targetMapId = boss.zone.map.mapId;
+                                    if (!ChangeMapService.gI().canPlayerJoinMap(player, targetMapId)) {
+                                        Service.gI().sendThongBao(player, "Bạn chưa qua được bản đồ " + boss.zone.map.mapName + " (chưa hoàn thành nhiệm vụ yêu cầu)!");
+                                        return;
+                                    }
                                     nro.models.map.Zone zone0 = nro.models.map.service.MapService.gI().getZoneByMapIDAndZoneID(targetMapId, 0);
                                     if (zone0 != null) {
                                         if (player.zone != null && !nro.models.map.service.MapService.gI().isHome(player.zone.map.mapId)
@@ -970,12 +1144,7 @@ public class NpcFactory {
                     }
                     case 9902 -> {
                         if (player.pet == null) {
-                            if (select == 0) {
-                                PetService.gI().createNormalPet(player);
-                                Service.gI().sendThongBao(player, "Bạn vừa nhận được Đệ tử miễn phí!");
-                            } else {
-                                openMenuTienIch(player);
-                            }
+                            openMenuTienIch(player);
                             return;
                         }
                         switch (select) {
@@ -1015,6 +1184,8 @@ public class NpcFactory {
                                 }
                             }
                             case 6 ->
+                                openMenuMacNhanhSetDo(player, true);
+                            case 7 ->
                                 openMenuTienIch(player);
                         }
                     }
@@ -1100,36 +1271,344 @@ public class NpcFactory {
     public static void openMenuTienIch(Player player) {
         int curTab = player.inventory.currentBagTab + 1;
         int totalTabs = player.inventory.getTotalBagTabs();
-        String npcSay = "|7|=== BẢNG ĐIỀU KHIỂN TIỆN ÍCH ===\n"
-                + "|2|Thời gian Server đã hoạt động: |1|" + nro.models.server.ServerManager.getFormattedUptimeHours() + "\n"
-                + "|2|Auto Buff Đậu (Sư phụ & Đệ): " + (player.isAutoBuffPea ? "|1|[Đang Bật]" : "|7|[Đang Tắt]") + "\n"
-                + "|2|Auto Treo Quái (Chống đầy túi): " + (player.isAutoCleanBag ? "|1|[Đang Bật]" : "|7|[Đang Tắt]") + "\n"
-                + "|2|Auto Săn Boss: " + (player.isAutoHuntBoss ? ("|1|[" + player.getAutoHuntBossSummary() + "]") : "|7|[Đang Tắt]") + "\n"
-                + "|2|Hành trang: |1|Trang " + curTab + "/" + totalTabs + " (" + player.inventory.getUsedSlotsInBag() + "/600 ô - 120 ô/Trang)\n"
-                + "|2|Điểm Săn Boss hiện có: |1|" + player.pointSanBoss + " điểm\n"
-                + "|0|(Mẹo: Mở Danh sách Boss -> Chọn nhiều Boss vào DS Tự Săn hoặc bật Săn Tất Cả Boss!)";
-        if (player.isAutoHuntBoss) {
-            NpcService.gI().createMenuConMeo(player, 9900, -1, npcSay,
-                    "Auto Đậu\n" + (player.isAutoBuffPea ? "[Tắt]" : "[Bật]"),
-                    "Treo Quái\n" + (player.isAutoCleanBag ? "[Tắt]" : "[Bật]"),
-                    "Danh sách &\nTự Săn Boss",
-                    "Cộng nhanh\nChỉ số",
-                    "Quản lý\nĐệ tử",
-                    "Tab Túi Đồ\n[Tab " + curTab + "/" + totalTabs + "]",
-                    "Đổi Cờ\nPK",
-                    "Tắt Tự Săn\nBoss",
-                    "Đóng");
-        } else {
-            NpcService.gI().createMenuConMeo(player, 9900, -1, npcSay,
-                    "Auto Đậu\n" + (player.isAutoBuffPea ? "[Tắt]" : "[Bật]"),
-                    "Treo Quái\n" + (player.isAutoCleanBag ? "[Tắt]" : "[Bật]"),
-                    "Danh sách &\nTự Săn Boss",
-                    "Cộng nhanh\nChỉ số",
-                    "Quản lý\nĐệ tử",
-                    "Tab Túi Đồ\n[Tab " + curTab + "/" + totalTabs + "]",
-                    "Đổi Cờ\nPK",
-                    "Đóng");
+        String autoStatus = (player.isAutoBuffPea && player.isAutoCleanBag) ? "[Đậu+Treo: Bật]"
+                : player.isAutoBuffPea ? "[Auto Đậu: Bật]"
+                : player.isAutoCleanBag ? "[Treo Quái: Bật]" : "[Đang Tắt]";
+        String npcSay = "|7|=== BẢNG ĐIỀU KHIỂN TIỆN ÍCH (PHÍM X) ===\n"
+                + "|2|Thời gian Server hoạt động: |1|" + nro.models.server.ServerManager.getFormattedUptimeHours() + "\n"
+                + "|2|Auto Buff Đậu (Sư phụ & Đệ): " + (player.isAutoBuffPea ? "|1|[Đang Bật]" : "|7|[Đang Tắt]")
+                + " |2|| Auto Treo Quái: " + (player.isAutoCleanBag ? "|1|[Đang Bật]\n" : "|7|[Đang Tắt]\n")
+                + "|2|Auto Săn Boss: " + (player.isAutoHuntBoss ? ("|1|[" + player.getAutoHuntBossSummary() + "]\n") : "|7|[Đang Tắt]\n")
+                + "|2|Hành trang: |1|Trang " + curTab + "/" + totalTabs + " (" + player.inventory.getUsedSlotsInBag() + "/600 ô) |2|| Điểm Săn Boss: |1|" + player.pointSanBoss + " điểm\n"
+                + "|0|(Mẹo: Chat 's1'..'s5' mặc nhanh Set 1..5 Sư phụ | Chat 'd1'..'d5' mặc nhanh Set 1..5 Đệ tử!)";
+        NpcService.gI().createMenuConMeo(player, 9900, -1, npcSay,
+                "Trang Bị &\nSet Đồ",
+                "Tab Túi Đồ\n[Trang " + curTab + "/" + totalTabs + "]",
+                "Auto Treo Máy\n" + autoStatus,
+                "Danh Sách &\nTự Săn Boss",
+                "Quản Lý\nĐệ Tử",
+                "Cộng Nhanh\nChỉ Số",
+                player.isAutoHuntBoss ? "Tắt Tự Săn\nBoss" : "Đổi Cờ\nPK");
+    }
+
+    public static void openMenuAutoTreoMay(Player player) {
+        if (player == null) {
+            return;
         }
+        boolean bothOn = player.isAutoBuffPea && player.isAutoCleanBag;
+        String npcSay = "|7|=== CÀI ĐẶT AUTO TREO MÁY & DỌN TÚI ===\n"
+                + "|2|• Auto Buff Đậu (Sư phụ & Đệ tử): " + (player.isAutoBuffPea ? "|1|[ĐANG BẬT]\n" : "|7|[ĐANG TẮT]\n")
+                + "|2|• Auto Treo Quái (Chống đầy túi & tự bán đồ rác): " + (player.isAutoCleanBag ? "|1|[ĐANG BẬT]\n" : "|7|[ĐANG TẮT]\n")
+                + "|2|• Auto Săn Boss: " + (player.isAutoHuntBoss ? ("|1|[" + player.getAutoHuntBossSummary() + "]\n") : "|7|[ĐANG TẮT]\n")
+                + "|2|• Chiêu Săn Boss: |1|" + player.getAutoHuntSkillSummary() + "\n"
+                + "|0|(Lưu ý: Các trang bị đã KHÓA bảo vệ hoặc nằm trong Set Đồ 1..5 sẽ không bao giờ bị tự động bán!)";
+        NpcService.gI().createMenuConMeo(player, 9916, -1, npcSay,
+                "Auto Đậu\n" + (player.isAutoBuffPea ? "[Tắt]" : "[Bật]"),
+                "Treo Quái\n" + (player.isAutoCleanBag ? "[Tắt]" : "[Bật]"),
+                bothOn ? "Tắt Cả Hai\n(Đậu + Treo)" : "Bật Cả Hai\n(Đậu + Treo)",
+                "Danh Sách &\nTự Săn Boss",
+                "Chọn Chiêu\nSăn Boss",
+                "Quay lại");
+    }
+
+    private static int getPendingEquipSetIndex(Player player) {
+        if (player != null && player.idMark != null && player.idMark.getTagNameShop() != null
+                && player.idMark.getTagNameShop().startsWith("EQUIP_SET_")) {
+            try {
+                return Integer.parseInt(player.idMark.getTagNameShop().substring("EQUIP_SET_".length()));
+            } catch (Exception ignored) {
+            }
+        }
+        return 1;
+    }
+
+    private static void setPendingEquipSetIndex(Player player, int setIndex) {
+        if (player != null && player.idMark != null) {
+            player.idMark.setTagNameShop("EQUIP_SET_" + setIndex);
+        }
+    }
+
+    private static int getPendingLockBagPage(Player player) {
+        if (player != null && player.idMark != null && player.idMark.getTagNameShop() != null
+                && player.idMark.getTagNameShop().startsWith("LOCK_BAG_PAGE_")) {
+            try {
+                return Integer.parseInt(player.idMark.getTagNameShop().substring("LOCK_BAG_PAGE_".length()));
+            } catch (Exception ignored) {
+            }
+        }
+        return 0;
+    }
+
+    private static void setPendingLockBagPage(Player player, int page) {
+        if (player != null && player.idMark != null) {
+            player.idMark.setTagNameShop("LOCK_BAG_PAGE_" + page);
+        }
+    }
+
+    public static void openMenuDoiDoNhanh(Player player) {
+        if (player == null || player.inventory == null) {
+            return;
+        }
+        int curTab = player.inventory.currentBagTab + 1;
+        int totalTabs = player.inventory.getTotalBagTabs();
+        StringBuilder sb = new StringBuilder();
+        sb.append("|7|=== QUẢN LÝ TRANG BỊ: ĐỔI ĐỒ NHANH & KHÓA BẢO VỆ ===\n");
+        for (int i = 1; i <= InventoryService.MAX_EQUIP_SETS; i++) {
+            sb.append("|2|• Set ").append(i).append(": |1|")
+                    .append(InventoryService.gI().getEquipSetSummary(player, i)).append("\n");
+        }
+        sb.append("|0|• Chat nhanh 's1'..'s5' (Mặc cho Sư phụ) hoặc 'd1'..'d5' (Mặc cho Đệ tử).\n")
+                .append("• Trang bị đã KHÓA sẽ chống vứt nhầm, chống bán Shop và chống phân rã!");
+        NpcService.gI().createMenuConMeo(player, 9907, -1, sb.toString(),
+                "Mặc Nhanh\nCho Sư Phụ",
+                "Mặc Nhanh\nCho Đệ Tử",
+                "Thiết Lập /\nLưu Set Đồ",
+                "Khóa / Mở Khóa\nTrang Bị",
+                "Khóa TẤT CẢ\nĐồ Đang Mặc",
+                "Tab Túi Đồ\n[Trang " + curTab + "/" + totalTabs + "]",
+                "Quay lại");
+    }
+
+    public static void openMenuMacNhanhSetDo(Player player, boolean forPet) {
+        if (player == null || player.inventory == null) {
+            return;
+        }
+        String targetLabel = forPet ? "ĐỆ TỬ" : "SƯ PHỤ";
+        StringBuilder sb = new StringBuilder();
+        sb.append("|7|=== MẶC NHANH SET ĐỒ CHO ").append(targetLabel).append(" ===\n");
+        for (int i = 1; i <= InventoryService.MAX_EQUIP_SETS; i++) {
+            sb.append("|2|• Set ").append(i).append(": |1|")
+                    .append(InventoryService.gI().getEquipSetSummary(player, i)).append("\n");
+        }
+        sb.append("|0|Chọn Set đồ bên dưới để mặc ngay cho ").append(forPet ? "Đệ tử" : "Sư phụ").append(":");
+        NpcService.gI().createMenuConMeo(player, forPet ? 9909 : 9908, -1, sb.toString(),
+                "Mặc Set 1\n(" + (forPet ? "Đệ Tử" : "Sư Phụ") + ")",
+                "Mặc Set 2\n(" + (forPet ? "Đệ Tử" : "Sư Phụ") + ")",
+                "Mặc Set 3\n(" + (forPet ? "Đệ Tử" : "Sư Phụ") + ")",
+                "Mặc Set 4\n(" + (forPet ? "Đệ Tử" : "Sư Phụ") + ")",
+                "Mặc Set 5\n(" + (forPet ? "Đệ Tử" : "Sư Phụ") + ")",
+                "Thiết Lập /\nLưu Set Đồ",
+                "Quay lại");
+    }
+
+    public static void openMenuChonSetDeLuu(Player player) {
+        if (player == null || player.inventory == null) {
+            return;
+        }
+        StringBuilder sb = new StringBuilder();
+        sb.append("|7|=== THIẾT LẬP & LƯU SET ĐỒ NHANH (SET 1 .. SET 5) ===\n");
+        for (int i = 1; i <= InventoryService.MAX_EQUIP_SETS; i++) {
+            sb.append("|2|• Set ").append(i).append(": |1|")
+                    .append(InventoryService.gI().getEquipSetSummary(player, i)).append("\n");
+        }
+        sb.append("|0|Hãy chọn Set đồ bạn muốn thiết lập (lưu đồ đang mặc của Sư phụ hoặc Đệ tử vào Set đó):");
+        NpcService.gI().createMenuConMeo(player, 9911, -1, sb.toString(),
+                "Thiết Lập\nSet Đồ 1",
+                "Thiết Lập\nSet Đồ 2",
+                "Thiết Lập\nSet Đồ 3",
+                "Thiết Lập\nSet Đồ 4",
+                "Thiết Lập\nSet Đồ 5",
+                "Quay lại");
+    }
+
+    public static void openMenuChiTietThietLapSet(Player player, int setIndex) {
+        if (player == null || player.inventory == null) {
+            return;
+        }
+        setPendingEquipSetIndex(player, setIndex);
+        StringBuilder sb = new StringBuilder();
+        sb.append("|7|=== CẤU HÌNH SET ĐỒ SỐ ").append(setIndex).append(" ===\n");
+        sb.append("|2|Trang bị trong Set ").append(setIndex).append(": |1|")
+                .append(InventoryService.gI().getEquipSetSummary(player, setIndex)).append("\n");
+        sb.append("|0|Lưu ý: Khi lưu Set đồ, các trang bị trong Set sẽ tự động được KHÓA bảo vệ để tránh vứt/bán/phân rã nhầm!");
+        NpcService.gI().createMenuConMeo(player, 9912, -1, sb.toString(),
+                "Lưu Đồ Sư Phụ\nvào Set " + setIndex,
+                "Lưu Đồ Đệ Tử\nvào Set " + setIndex,
+                "Mặc Set " + setIndex + "\nCho Sư Phụ",
+                "Mặc Set " + setIndex + "\nCho Đệ Tử",
+                "Xóa Thiết Lập\nSet " + setIndex,
+                "Quay lại");
+    }
+
+    private static List<Item> getNonNullItems(List<Item> list) {
+        List<Item> res = new ArrayList<>();
+        if (list == null) {
+            return res;
+        }
+        for (Item it : list) {
+            if (it != null && it.isNotNullItem() && it.template != null) {
+                res.add(it);
+            }
+        }
+        return res;
+    }
+
+    private static List<Item> getLockableBagItemsInCurrentTab(Player player) {
+        List<Item> res = new ArrayList<>();
+        if (player == null || player.inventory == null || player.inventory.itemsBag == null) {
+            return res;
+        }
+        int tab = Math.max(0, Math.min(nro.models.player.Inventory.NUM_QUICK_TABS - 1, player.inventory.currentBagTab));
+        int start = tab * nro.models.player.Inventory.BAG_VIEW_SIZE;
+        int end = Math.min(player.inventory.itemsBag.size(), start + nro.models.player.Inventory.BAG_VIEW_SIZE);
+        for (int i = start; i < end; i++) {
+            Item it = player.inventory.itemsBag.get(i);
+            if (InventoryService.isLockableEquipment(it)) {
+                res.add(it);
+            }
+        }
+        return res;
+    }
+
+    private static int lockAllEquippedItems(Player player, boolean locked) {
+        int count = 0;
+        if (player == null || player.inventory == null) {
+            return count;
+        }
+        for (Item it : player.inventory.itemsBody) {
+            if (it != null && it.isNotNullItem()) {
+                InventoryService.setItemLock(it, locked);
+                count++;
+            }
+        }
+        if (player.pet != null && player.pet.inventory != null) {
+            for (Item it : player.pet.inventory.itemsBody) {
+                if (it != null && it.isNotNullItem()) {
+                    InventoryService.setItemLock(it, locked);
+                    count++;
+                }
+            }
+        }
+        InventoryService.gI().sendItemBody(player);
+        InventoryService.gI().sendItemBags(player);
+        if (player.pet != null) {
+            Service.gI().showInfoPet(player);
+        }
+        return count;
+    }
+
+    public static void openMenuKhoaTrangBi(Player player) {
+        if (player == null || player.inventory == null) {
+            return;
+        }
+        int lockedMaster = 0;
+        int totalMaster = 0;
+        for (Item it : player.inventory.itemsBody) {
+            if (it != null && it.isNotNullItem()) {
+                totalMaster++;
+                if (InventoryService.isItemLocked(it)) {
+                    lockedMaster++;
+                }
+            }
+        }
+        int lockedPet = 0;
+        int totalPet = 0;
+        if (player.pet != null && player.pet.inventory != null) {
+            for (Item it : player.pet.inventory.itemsBody) {
+                if (it != null && it.isNotNullItem()) {
+                    totalPet++;
+                    if (InventoryService.isItemLocked(it)) {
+                        lockedPet++;
+                    }
+                }
+            }
+        }
+        int lockedBag = 0;
+        for (Item it : player.inventory.itemsBag) {
+            if (it != null && it.isNotNullItem() && InventoryService.isItemLocked(it)) {
+                lockedBag++;
+            }
+        }
+        int curTab = player.inventory.currentBagTab + 1;
+        StringBuilder sb = new StringBuilder();
+        sb.append("|7|=== KHÓA BẢO VỆ TRANG BỊ (CHỐNG VỨT / BÁN / PHÂN RÃ NHẦM) ===\n");
+        sb.append("|2|• Đồ Sư phụ đang mặc: |1|Đã khóa ").append(lockedMaster).append("/").append(totalMaster).append(" món\n");
+        sb.append("|2|• Đồ Đệ tử đang mặc: |1|").append(player.pet != null ? ("Đã khóa " + lockedPet + "/" + totalPet + " món\n") : "Chưa có Đệ tử\n");
+        sb.append("|2|• Trang bị khóa trong Hành trang: |1|").append(lockedBag).append(" món\n");
+        sb.append("|0|Trang bị đã khóa sẽ KHÔNG THỂ vứt ra đất, bán vào Shop, tự động bán rác hoặc phân rã tại Bà Hạt Mít!");
+        NpcService.gI().createMenuConMeo(player, 9910, -1, sb.toString(),
+                "Khóa/Mở Đồ\nSư Phụ Mặc",
+                "Khóa/Mở Đồ\nĐệ Tử Mặc",
+                "Khóa/Mở Đồ\nHành Trang (T" + curTab + ")",
+                "Khóa TẤT CẢ\nĐồ Đang Mặc",
+                "Mở Khóa TẤT CẢ\nĐồ Đang Mặc",
+                "Quay lại");
+    }
+
+    public static void openMenuKhoaDoSuPhu(Player player) {
+        List<Item> bodyItems = getNonNullItems(player.inventory.itemsBody);
+        if (bodyItems.isEmpty()) {
+            Service.gI().sendThongBao(player, "Sư phụ hiện chưa mặc trang bị nào!");
+            openMenuKhoaTrangBi(player);
+            return;
+        }
+        StringBuilder sb = new StringBuilder("|7|=== KHÓA / MỞ KHÓA ĐỒ SƯ PHỤ ĐANG MẶC ===\n");
+        List<String> opts = new ArrayList<>();
+        for (Item it : bodyItems) {
+            boolean locked = InventoryService.isItemLocked(it);
+            sb.append(locked ? "|1|[ĐÃ KHÓA] " : "|7|[Chưa khóa] ").append(it.template.name).append("\n");
+            opts.add(it.template.name + "\n" + (locked ? "[ĐÃ KHÓA]" : "[Chưa khóa]"));
+        }
+        sb.append("|0|Bấm vào trang bị bên dưới để Khóa hoặc Mở khóa ngay:");
+        opts.add("Quay lại");
+        NpcService.gI().createMenuConMeo(player, 9913, -1, sb.toString(), opts.toArray(new String[0]));
+    }
+
+    public static void openMenuKhoaDoDeTu(Player player) {
+        if (player.pet == null || player.pet.inventory == null) {
+            Service.gI().sendThongBao(player, "Bạn hiện chưa có Đệ tử!");
+            openMenuKhoaTrangBi(player);
+            return;
+        }
+        List<Item> petItems = getNonNullItems(player.pet.inventory.itemsBody);
+        if (petItems.isEmpty()) {
+            Service.gI().sendThongBao(player, "Đệ tử hiện chưa mặc trang bị nào!");
+            openMenuKhoaTrangBi(player);
+            return;
+        }
+        StringBuilder sb = new StringBuilder("|7|=== KHÓA / MỞ KHÓA ĐỒ ĐỆ TỬ ĐANG MẶC ===\n");
+        List<String> opts = new ArrayList<>();
+        for (Item it : petItems) {
+            boolean locked = InventoryService.isItemLocked(it);
+            sb.append(locked ? "|1|[ĐÃ KHÓA] " : "|7|[Chưa khóa] ").append(it.template.name).append("\n");
+            opts.add(it.template.name + "\n" + (locked ? "[ĐÃ KHÓA]" : "[Chưa khóa]"));
+        }
+        sb.append("|0|Bấm vào trang bị bên dưới để Khóa hoặc Mở khóa ngay:");
+        opts.add("Quay lại");
+        NpcService.gI().createMenuConMeo(player, 9914, -1, sb.toString(), opts.toArray(new String[0]));
+    }
+
+    public static void openMenuKhoaDoHanhTrang(Player player, int page) {
+        List<Item> bagEquips = getLockableBagItemsInCurrentTab(player);
+        int curTab = player.inventory.currentBagTab + 1;
+        if (bagEquips.isEmpty()) {
+            Service.gI().sendThongBao(player, "Không có trang bị nào ở Hành trang Trang " + curTab + "!");
+            openMenuKhoaTrangBi(player);
+            return;
+        }
+        int pageSize = 6;
+        int totalPages = Math.max(1, (bagEquips.size() + pageSize - 1) / pageSize);
+        page = Math.max(0, Math.min(page, totalPages - 1));
+        setPendingLockBagPage(player, page);
+        int start = page * pageSize;
+        int end = Math.min(bagEquips.size(), start + pageSize);
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("|7|=== KHÓA / MỞ KHÓA TRANG BỊ TRONG HÀNH TRANG (TAB ").append(curTab)
+                .append(" - MỤC ").append(page + 1).append("/").append(totalPages).append(") ===\n");
+        List<String> opts = new ArrayList<>();
+        for (int i = start; i < end; i++) {
+            Item it = bagEquips.get(i);
+            boolean locked = InventoryService.isItemLocked(it);
+            sb.append(locked ? "|1|[ĐÃ KHÓA] " : "|7|[Chưa khóa] ").append(it.template.name).append("\n");
+            opts.add(it.template.name + "\n" + (locked ? "[ĐÃ KHÓA]" : "[Chưa khóa]"));
+        }
+        sb.append("|0|Bấm vào trang bị bên dưới để Khóa hoặc Mở khóa:");
+        if (totalPages > 1) {
+            opts.add("Trang kế\n(" + ((page + 1) % totalPages + 1) + "/" + totalPages + ")");
+        }
+        opts.add("Quay lại");
+        NpcService.gI().createMenuConMeo(player, 9915, -1, sb.toString(), opts.toArray(new String[0]));
     }
 
     public static void openMenuBagTab(Player player) {
@@ -1215,8 +1694,7 @@ public class NpcFactory {
     public static void openMenuQuanLyDeTu(Player player) {
         if (player.pet == null) {
             NpcService.gI().createMenuConMeo(player, 9902, -1,
-                    "Bạn hiện chưa có Đệ tử.\nBạn có muốn nhận ngay 1 Đệ tử miễn phí không?",
-                    "Nhận Đệ tử\nMiễn phí",
+                    "Bạn hiện chưa có Đệ tử.\nHãy đi săn Super Broly hoặc Broly 18h để thu phục Đệ tử!",
                     "Quay lại");
             return;
         }
@@ -1232,6 +1710,7 @@ public class NpcFactory {
                 "Về nhà",
                 "Biến hình",
                 "Mặc Sách\nTuyệt Kỹ",
+                "Đổi Đồ Nhanh\nCho Đệ Tử",
                 "Quay lại");
     }
 

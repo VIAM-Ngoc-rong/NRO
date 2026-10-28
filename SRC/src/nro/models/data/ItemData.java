@@ -202,8 +202,12 @@ public class ItemData {
             msg.writer().writeByte(Manager.ITEM_OPTION_TEMPLATES.size());
             for (ItemOptionTemplate io : Manager.ITEM_OPTION_TEMPLATES) {
                 String optName = io.name;
-                if (io.id == 73 && (optName == null || optName.isEmpty())) {
+                if (io.id == 39) {
+                    optName = "$[ĐÃ KHÓA BẢO VỆ - Chống vứt/bán/phân rã]";
+                } else if (io.id == 73 && (optName == null || optName.isEmpty())) {
                     optName = "$Đang mở Trang # ở đầu Bể Chung";
+                } else if (io.id == 209) {
+                    optName = "$[Set Đồ Nhanh #]";
                 }
                 msg.writer().writeUTF(optName != null ? optName : "");
                 msg.writer().writeByte(io.type);

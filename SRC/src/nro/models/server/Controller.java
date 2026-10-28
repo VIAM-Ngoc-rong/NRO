@@ -355,7 +355,7 @@ public class Controller implements IMessageHandler {
                         byte act = _msg.reader().readByte();
                         switch (act) {
                             case 0 ->
-                                nro.models.npc.NpcFactory.openMenuBagTab(player);
+                                nro.models.npc.NpcFactory.openMenuTienIch(player);
                             case 1 ->
                                 Service.gI().chooseFlag(player, _msg.reader().readByte());
                         }
@@ -762,6 +762,7 @@ public class Controller implements IMessageHandler {
                     case 13:
                         //client ok
                         if (player != null && player.isPl()) {
+                            ItemData.updateItemOptionItemplate(_session);
                             Service.gI().player(player);
                             nro.models.services.InventoryService.gI().sendItemBags(player);
                             Service.gI().Send_Caitrang(player);

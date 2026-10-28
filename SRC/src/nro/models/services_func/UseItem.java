@@ -416,6 +416,10 @@ public class UseItem {
                         if (!item.isNotNullItem()) {
                             return;
                         }
+                        if (InventoryService.isItemLocked(item)) {
+                            Service.gI().sendThongBao(player, "Trang bị [" + item.template.name + "] đang được KHÓA bảo vệ! Hãy mở khóa trong Menu Tiện Ích nếu muốn vứt.");
+                            return;
+                        }
                         msg = new Message(-43);
                         msg.writer().writeByte(type);
                         msg.writer().writeByte(where);
@@ -2235,6 +2239,11 @@ public class UseItem {
             return;
         }
         Zone zoneChose = pl.mapCapsule.get(index);
+        if (!ChangeMapService.gI().canPlayerJoinMap(pl, zoneChose.map.mapId)) {
+            Service.gI().sendThongBao(pl, "Bạn chưa qua được bản đồ " + zoneChose.map.mapName + " (chưa hoàn thành nhiệm vụ yêu cầu)!");
+            Service.gI().hideWaitDialog(pl);
+            return;
+        }
         //Kiểm tra số lượng người trong khu
 
         if (zoneChose.getNumOfPlayers() > 25

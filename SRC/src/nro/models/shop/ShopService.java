@@ -1143,6 +1143,10 @@ public class ShopService {
             item = pl.inventory.itemsBag.get(bagIndex);
         }
         if (item != null && item.isNotNullItem()) {
+            if (InventoryService.isItemLocked(item)) {
+                Service.gI().sendThongBao(pl, "Trang bị [" + item.template.name + "] đang được KHÓA bảo vệ! Hãy mở khóa trong Menu Tiện Ích nếu muốn bán.");
+                return;
+            }
             if (item.template.id == 570) {
                 Service.gI().sendThongBao(pl, "Bạn không thể bán vật phẩm này");
                 return;
@@ -1202,6 +1206,10 @@ public class ShopService {
             item = pl.inventory.itemsBag.get(bagIndex);
         }
         if (item != null) {
+            if (InventoryService.isItemLocked(item)) {
+                Service.gI().sendThongBao(pl, "Trang bị [" + item.template.name + "] đang được KHÓA bảo vệ! Hãy mở khóa trong Menu Tiện Ích nếu muốn bán.");
+                return;
+            }
             if (item.template.id == 570) {
                 Service.gI().sendThongBao(pl, "Bạn không thể bán vật phẩm này");
                 return;

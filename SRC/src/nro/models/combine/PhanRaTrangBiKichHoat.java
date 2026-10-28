@@ -53,6 +53,11 @@ public class PhanRaTrangBiKichHoat {
                             "Vật phẩm không hợp lệ!", "Đóng");
                     return;
                 }
+                if (InventoryService.isItemLocked(item)) {
+                    CombineService.gI().baHatMit.createOtherMenu(player, ConstNpc.IGNORE_MENU,
+                            "Trang bị [" + item.template.name + "] đang được KHÓA bảo vệ!\nHãy mở khóa trong Menu Tiện Ích nếu muốn phân rã.", "Đóng");
+                    return;
+                }
                 if (!isValidItem(item)) {
                     CombineService.gI().baHatMit.createOtherMenu(player, ConstNpc.IGNORE_MENU,
                             item.template.name + " không phải là Trang bị Kích Hoạt hợp lệ!", "Đóng");
@@ -326,6 +331,9 @@ public class PhanRaTrangBiKichHoat {
 
         public static boolean isValidItem(Item item) {
             if (item == null || !item.isNotNullItem() || item.template == null || item.itemOptions == null) {
+                return false;
+            }
+            if (InventoryService.isItemLocked(item)) {
                 return false;
             }
             if (item.template.type < 0 || item.template.type > 4) {
