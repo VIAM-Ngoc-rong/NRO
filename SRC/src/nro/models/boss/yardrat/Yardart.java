@@ -234,7 +234,7 @@ public abstract class Yardart extends Boss {
                 damage = damage / 1;
             }
 
-            boolean isSpecialSkill = SkillUtil.isUseSkillSpecial(plAtt)
+            boolean isSpecialSkill = piercing || SkillUtil.isUseSkillSpecial(plAtt)
                     || (this.effectSkill != null && this.effectSkill.isBinh);
             if (!isSpecialSkill) {
                 long maxDamage = Math.max(1L, (long) this.nPoint.hpMax / 100L);

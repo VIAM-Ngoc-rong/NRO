@@ -257,7 +257,7 @@ public class QuyLaoKame extends Npc {
         Service.gI().Send_Caitrang(player);
         RadarService.gI().sendAura(player, player.getAura(), player.getEffFront());
         if (oldLevel > 0) {
-            Service.gI().removeEffPlayer(player, 109 + Math.min(8, oldLevel));
+            Service.gI().removeEffPlayer(player, 119 + Math.min(8, oldLevel));
         }
         Service.gI().sendEffPlayer(player);
         Service.gI().sendThongBao(player, "Chúc mừng bạn đã đổi thành công Vòng Chân Cấp " + targetLevel + "!");

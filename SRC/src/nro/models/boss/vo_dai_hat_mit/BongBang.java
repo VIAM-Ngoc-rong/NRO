@@ -58,7 +58,7 @@ public class BongBang extends DeathOrAliveArena {
             if (plAtt != null && plAtt.idNRNM != -1) {
                 return 1;
             }
-            boolean isSpecialSkill = SkillUtil.isUseSkillSpecial(plAtt)
+            boolean isSpecialSkill = piercing || SkillUtil.isUseSkillSpecial(plAtt)
                     || (this.effectSkill != null && this.effectSkill.isBinh);
             if (!isSpecialSkill) {
                 long maxDamage = Math.max(1L, (long) this.nPoint.hpMax / 10L);

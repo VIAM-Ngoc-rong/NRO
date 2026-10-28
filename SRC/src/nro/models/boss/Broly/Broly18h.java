@@ -108,7 +108,7 @@ public class Broly18h extends Boss {
             boolean isTuSat = plAtt != null && plAtt.playerSkill != null
                     && plAtt.playerSkill.skillSelect != null
                     && plAtt.playerSkill.skillSelect.template.id == Skill.TU_SAT;
-            boolean isSpecialSkill = SkillUtil.isUseSkillSpecial(plAtt)
+            boolean isSpecialSkill = piercing || SkillUtil.isUseSkillSpecial(plAtt)
                     || (this.effectSkill != null && this.effectSkill.isBinh);
             if (!isTuSat && !isSpecialSkill && this.nPoint.hpMax > 0) {
                 double hpRatio = Math.max(0.0, Math.min(1.0, (double) this.nPoint.hp / (double) this.nPoint.hpMax));

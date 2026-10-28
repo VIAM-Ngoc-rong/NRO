@@ -39,15 +39,39 @@ javac -proc:none -encoding UTF-8 -d build/classes -cp "build/classes;lib/*" `
     src/nro/models/combine/DapDoKichHoat.java `
     src/nro/models/npc/NpcFactory.java `
     src/nro/models/npc_list/BaHatMit.java `
+    src/nro/models/npc_list/Bill.java `
     src/nro/models/npc_list/BoMong.java `
     src/nro/models/npc_list/KyGui.java `
     src/nro/models/npc_list/QuyLaoKame.java `
+    src/nro/models/utils/SkillUtil.java `
     src/nro/models/matches/dai_hoi_vo_thuat/ClanMartialArtsService.java `
     src/nro/models/shop_ky_gui/ConsignShopService.java `
     src/nro/models/task/SideTask.java `
     src/nro/models/services/TaskService.java `
     src/nro/models/boss/Boss.java `
     src/nro/models/boss/Broly/Broly.java `
+    src/nro/models/boss/Broly/SuperBroly.java `
+    src/nro/models/boss/Broly/Broly18h.java `
+    src/nro/models/boss/Broly/SieuBroly18h.java `
+    src/nro/models/boss/Broly/KidBuWorld.java `
+    src/nro/models/boss/Broly/MabuMapWorld.java `
+    src/nro/models/boss/yardrat/Yardart.java `
+    src/nro/models/boss/vo_dai_hat_mit/DeathOrAliveArena.java `
+    src/nro/models/boss/vo_dai_hat_mit/BongBang.java `
+    src/nro/models/boss/vo_dai_hat_mit/Dracula.java `
+    src/nro/models/boss/vo_dai_hat_mit/NguoiVoHinh.java `
+    src/nro/models/boss/vo_dai_hat_mit/ThoDauBac.java `
+    src/nro/models/boss/vo_dai_hat_mit/VuaQuySaTang.java `
+    src/nro/models/boss/trai_dat/BIDO.java `
+    src/nro/models/boss/trai_dat/BOJACK.java `
+    src/nro/models/boss/trai_dat/BUJIN.java `
+    src/nro/models/boss/trai_dat/KOGU.java `
+    src/nro/models/boss/trai_dat/SUPER_BOJACK.java `
+    src/nro/models/boss/trai_dat/ZANGYA.java `
+    src/nro/models/boss/event/Halloween/BiMa.java `
+    src/nro/models/boss/event/Halloween/Doi.java `
+    src/nro/models/boss/event/Halloween/MaTroi.java `
+    src/nro/models/boss/Boss_mini/Odo.java `
     src/nro/models/boss/Boss_Manager/BossManager.java
 
 if ($LASTEXITCODE -ne 0) {
@@ -76,11 +100,17 @@ $pkgs = @(
     "nro\models\combine",
     "nro\models\npc",
     "nro\models\npc_list",
+    "nro\models\utils",
     "nro\models\matches\dai_hoi_vo_thuat",
     "nro\models\shop_ky_gui",
     "nro\models\task",
     "nro\models\boss",
     "nro\models\boss\Broly",
+    "nro\models\boss\yardrat",
+    "nro\models\boss\vo_dai_hat_mit",
+    "nro\models\boss\trai_dat",
+    "nro\models\boss\event\Halloween",
+    "nro\models\boss\Boss_mini",
     "nro\models\boss\Boss_Manager"
 )
 

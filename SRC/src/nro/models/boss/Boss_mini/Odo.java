@@ -64,9 +64,11 @@ public class Odo extends Boss {
     @Override
     public int injured(Player plAtt, long damage, boolean piercing, boolean isMobAttack) {
         if (!this.isDie()) {
-            boolean isSpecialSkill = SkillUtil.isUseSkillSpecial(plAtt)
+            boolean isSpecialSkill = piercing || SkillUtil.isUseSkillSpecial(plAtt)
                     || (this.effectSkill != null && this.effectSkill.isBinh);
-            damage = isSpecialSkill ? 150000 : 50000;
+            if (!isSpecialSkill && damage > 50000) {
+                damage = 50000;
+            }
             this.nPoint.subHP(damage);
             if (isDie()) {
                 this.setDie(plAtt);

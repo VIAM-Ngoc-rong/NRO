@@ -60,7 +60,7 @@ public class BOJACK extends Boss {
             if (plAtt != null && plAtt.idNRNM != -1) {
                 return 1;
             }
-            boolean isSpecialSkill = nro.models.utils.SkillUtil.isUseSkillSpecial(plAtt)
+            boolean isSpecialSkill = piercing || nro.models.utils.SkillUtil.isUseSkillSpecial(plAtt)
                     || (this.effectSkill != null && this.effectSkill.isBinh);
             if (!isSpecialSkill) {
                 damage = Math.max(1L, (long) this.nPoint.hpMax / 100L);

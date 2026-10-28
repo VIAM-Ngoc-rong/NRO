@@ -139,7 +139,7 @@ public class Broly extends Boss {
             boolean isTuSat = plAtt != null && plAtt.playerSkill != null
                     && plAtt.playerSkill.skillSelect != null
                     && plAtt.playerSkill.skillSelect.template.id == Skill.TU_SAT;
-            boolean isSpecialSkill = SkillUtil.isUseSkillSpecial(plAtt)
+            boolean isSpecialSkill = piercing || SkillUtil.isUseSkillSpecial(plAtt)
                     || (this.effectSkill != null && this.effectSkill.isBinh);
             if (!isTuSat && !isSpecialSkill) {
                 long maxDamage = Math.max(1L, (long) this.nPoint.hpMax / 100L);
