@@ -200,40 +200,48 @@ public class QuyLaoKame extends Npc {
         }
     }
 
+    /** Điểm săn Boss cần để lên từng cấp Vòng Chân (cấp 1..8). Phải lên tuần tự từng cấp. */
+    public static final int[] HAO_QUANG_COST = {100, 500, 1_000, 2_500, 5_000, 8_000, 14_000, 24_000};
+
+    private static String haoQuangStatText(int level) {
+        int dame = nro.models.player.NPoint.HAO_QUANG_TL[level - 1];
+        int hut = nro.models.player.NPoint.HAO_QUANG_HUT[level - 1];
+        return "+" + dame + "% SĐ, HP, KI" + (hut > 0 ? ", Hút HP, KI +" + hut + "%" : "");
+    }
+
     private void openDoiDiemSanBossMenu(Player player) {
-        String curAuraInfo = switch (player.levelHaoQuang) {
-            case 1 -> "Vòng Chân Cấp 1 (+3% SĐ, HP, KI)";
-            case 2 -> "Vòng Chân Cấp 2 (+5% SĐ, HP, KI, Hút HP, KI)";
-            case 3 -> "Vòng Chân Cấp 3 (+10% SĐ, HP, KI, Hút HP, KI)";
-            default -> "Chưa sở hữu";
-        };
-        String npcSay = "|7|ĐỔI ĐIỂM SĂN BOSS LẤY VÒNG CHÂN\n"
-                + "|2|Điểm săn Boss hiện tại: " + Util.numberToMoney(player.pointSanBoss) + " điểm\n"
-                + "Vòng Chân đang kích hoạt: " + curAuraInfo + "\n"
-                + "|1|• Cấp 1 (100 điểm): +3% SĐ, HP, KI\n"
-                + "• Cấp 2 (500 điểm): +5% SĐ, HP, KI, Hút HP, Hút KI\n"
-                + "• Cấp 3 (1.000 điểm): +10% SĐ, HP, KI, Hút HP, Hút KI";
-        this.createOtherMenu(player, 99, npcSay,
-                "Vòng Chân\nCấp 1\n(100 đ)",
-                "Vòng Chân\nCấp 2\n(500 đ)",
-                "Vòng Chân\nCấp 3\n(1.000 đ)",
-                "Đóng");
+        int cur = Math.max(0, Math.min(8, player.levelHaoQuang));
+        String curAuraInfo = cur > 0 ? "Vòng Chân Cấp " + cur + " (" + haoQuangStatText(cur) + ")" : "Chưa sở hữu";
+        StringBuilder sb = new StringBuilder();
+        sb.append("|7|ĐỔI ĐIỂM SĂN BOSS LẤY VÒNG CHÂN\n")
+                .append("|2|Điểm săn Boss hiện tại: ").append(Util.numberToMoney(player.pointSanBoss)).append(" điểm\n")
+                .append("Vòng Chân đang kích hoạt: ").append(curAuraInfo).append("\n|1|");
+        for (int lv = 1; lv <= 8; lv++) {
+            sb.append(lv == cur ? "▶ " : "• ").append("Cấp ").append(lv == 8 ? "8 (MAX)" : String.valueOf(lv))
+                    .append(" (").append(Util.numberToMoney(HAO_QUANG_COST[lv - 1])).append(" điểm): ")
+                    .append(haoQuangStatText(lv)).append("\n");
+        }
+        sb.append("|7|Phải nâng tuần tự từng cấp, không được bỏ qua cấp.");
+        if (cur >= 8) {
+            this.createOtherMenu(player, 99, sb.toString(), "Đóng");
+        } else {
+            int next = cur + 1;
+            this.createOtherMenu(player, 99, sb.toString(),
+                    "Nâng lên\nCấp " + next + "\n(" + Util.numberToMoney(HAO_QUANG_COST[next - 1]) + " đ)",
+                    "Đóng");
+        }
     }
 
     private void handleConfirmDoiHaoQuang(Player player, int select) {
-        if (select < 0 || select > 2) {
+        if (select != 0) {
             return;
         }
-        int targetLevel = select + 1;
-        int cost = switch (targetLevel) {
-            case 1 -> 100;
-            case 2 -> 500;
-            default -> 1000;
-        };
-        if (player.levelHaoQuang >= targetLevel) {
-            Service.gI().sendThongBao(player, "Bạn đã sở hữu Vòng Chân cấp " + player.levelHaoQuang + " rồi!");
+        if (player.levelHaoQuang >= 8) {
+            Service.gI().sendThongBao(player, "Vòng Chân của bạn đã đạt cấp tối đa!");
             return;
         }
+        int targetLevel = Math.max(0, player.levelHaoQuang) + 1;
+        int cost = HAO_QUANG_COST[targetLevel - 1];
         if (player.pointSanBoss < cost) {
             Service.gI().sendThongBao(player, "Bạn không đủ điểm săn Boss! Cần "
                     + Util.numberToMoney(cost) + " điểm (Hiện có: " + Util.numberToMoney(player.pointSanBoss) + " điểm)");

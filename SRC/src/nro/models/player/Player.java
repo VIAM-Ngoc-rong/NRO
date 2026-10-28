@@ -881,11 +881,8 @@ public class Player implements Runnable {
     public byte getEffFront() {
         byte eff = -1;
         if (this.levelHaoQuang > 0) {
-            eff = switch (this.levelHaoQuang) {
-                case 1 -> 6;
-                case 2 -> 7;
-                default -> 8;
-            };
+            // Vòng Chân cấp 1..8 -> hiệu ứng 90..97 (data/effdata/DataEffect_90..97)
+            eff = (byte) (89 + Math.min(8, this.levelHaoQuang));
         }
         if (this.inventory == null) {
             return eff;

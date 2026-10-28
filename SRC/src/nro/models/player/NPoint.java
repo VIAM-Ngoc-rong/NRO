@@ -34,6 +34,10 @@ import nro.models.utils.TimeUtil;
  */
 public class NPoint {
 
+    /** Vòng Chân (Hào Quang săn Boss) cấp 1..8: % SĐ/HP/KI và % hút HP/KI. */
+    public static final int[] HAO_QUANG_TL = {2, 4, 6, 8, 10, 12, 14, 16};
+    public static final int[] HAO_QUANG_HUT = {0, 2, 4, 6, 8, 10, 12, 14};
+
     public static final byte MAX_LIMIT = 11;
 
     @Setter
@@ -254,22 +258,13 @@ public class NPoint {
         int lvHQ = this.player.isPet && ((Pet) this.player).master != null
                 ? ((Pet) this.player).master.levelHaoQuang
                 : this.player.levelHaoQuang;
-        if (lvHQ == 1) {
-            this.tlDame.add(3);
-            this.tlHp.add(3);
-            this.tlMp.add(3);
-        } else if (lvHQ == 2) {
-            this.tlDame.add(5);
-            this.tlHp.add(5);
-            this.tlMp.add(5);
-            this.tlHutHp += 5;
-            this.tlHutMp += 5;
-        } else if (lvHQ >= 3) {
-            this.tlDame.add(10);
-            this.tlHp.add(10);
-            this.tlMp.add(10);
-            this.tlHutHp += 10;
-            this.tlHutMp += 10;
+        if (lvHQ >= 1) {
+            int idxHQ = Math.min(lvHQ, HAO_QUANG_TL.length) - 1;
+            this.tlDame.add(HAO_QUANG_TL[idxHQ]);
+            this.tlHp.add(HAO_QUANG_TL[idxHQ]);
+            this.tlMp.add(HAO_QUANG_TL[idxHQ]);
+            this.tlHutHp += HAO_QUANG_HUT[idxHQ];
+            this.tlHutMp += HAO_QUANG_HUT[idxHQ];
         }
         // Chỉ số Nội Tại Bang Hội & Hào Quang Bang Hội
         nro.models.clan.Clan myClan = this.player.isPet && ((Pet) this.player).master != null

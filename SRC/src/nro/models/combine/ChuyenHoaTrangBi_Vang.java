@@ -58,6 +58,13 @@ public class ChuyenHoaTrangBi_Vang {
             return;
         }
 
+        if (XoaThuocTinhSKH.hasSkhOption(trangBiGoc) && isDoHuyDiet(trangBiCanChuyenHoa)) {
+            CombineService.gI().baHatMit.createOtherMenu(player, ConstNpc.IGNORE_MENU,
+                    "Thuộc tính SKH chỉ được chuyển hóa từ đồ Thần Linh trở xuống, không thể chuyển lên đồ Hủy Diệt!",
+                    "Đóng");
+            return;
+        }
+
         int levelTrangBi = Math.max(getLevel(trangBiGoc), getLevel(trangBiCanChuyenHoa));
         List<ItemOption> previewOptions = buildTransferredOptions(trangBiGoc, trangBiCanChuyenHoa);
 
@@ -122,6 +129,11 @@ public class ChuyenHoaTrangBi_Vang {
 
         if (!hasTransferableAttributes(trangBiGoc)) {
             Service.gI().sendThongBao(player, "Trang bị gốc chưa có Sao Pha Lê, Cấp [+] hoặc SKH để chuyển hóa!");
+            return;
+        }
+
+        if (XoaThuocTinhSKH.hasSkhOption(trangBiGoc) && isDoHuyDiet(trangBiCanChuyenHoa)) {
+            Service.gI().sendThongBao(player, "SKH chỉ được chuyển hóa từ đồ Thần Linh trở xuống, không thể chuyển lên đồ Hủy Diệt!");
             return;
         }
 
@@ -258,6 +270,10 @@ public class ChuyenHoaTrangBi_Vang {
         }
 
         return result;
+    }
+
+    public static boolean isDoHuyDiet(Item item) {
+        return item != null && item.template != null && item.template.id >= 650 && item.template.id <= 662;
     }
 
     public static boolean isEquipItem(Item item) {
