@@ -882,6 +882,7 @@ public final class Manager {
             try (PreparedStatement psUpdateOpt = ConnectionDatabase.prepareStatement(
                     "UPDATE item_option_template SET NAME = CASE id "
                     + "WHEN 66 THEN '+#% sát thương chiêu Laze' "
+                    + "WHEN 73 THEN '' "
                     + "WHEN 153 THEN '+#% sát thương chiêu phát nổ' "
                     + "WHEN 159 THEN '+#% sát thương đòn chưởng' "
                     + "WHEN 210 THEN '# dòng chỉ số bí ẩn' "
@@ -897,7 +898,7 @@ public final class Manager {
                     + "WHEN 246 THEN '$[2] +20% SĐ/HP/Giáp, +8% CM, +10% SĐ chí mạng' "
                     + "WHEN 247 THEN '$[4] +40% SĐ/HP/Giáp, +16% CM, +15% SĐCM, Giảm hao HP & +50% SĐ Kaioken' "
                     + "WHEN 248 THEN '$[5] +60% SĐ/HP/Giáp, +20% CM, +25% SĐCM, Giảm hao HP & +100% SĐ Kaioken' "
-                    + "ELSE NAME END WHERE id IN (66, 153, 159, 210, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248)")) {
+                    + "ELSE NAME END WHERE id IN (66, 73, 153, 159, 210, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248)")) {
                 psUpdateOpt.executeUpdate();
             } catch (Exception ignored) {
             }
@@ -910,7 +911,7 @@ public final class Manager {
                 switch (optionTemp.id) {
                     case 39 -> optionTemp.name = "$[ĐÃ KHÓA BẢO VỆ - Chống vứt/bán/phân rã]";
                     case 66 -> optionTemp.name = "+#% sát thương chiêu Laze";
-                    case 73 -> optionTemp.name = "$Đang mở Trang # ở đầu Bể Chung";
+                    case 73 -> optionTemp.name = "";
                     case 138 -> optionTemp.name = "$+100% HP (đủ 5 món)";
                     case 142 -> optionTemp.name = "$+100% KI, +50% SĐ Laze (đủ 5 món)";
                     case 153 -> optionTemp.name = "+#% sát thương chiêu phát nổ";

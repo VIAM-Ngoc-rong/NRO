@@ -16,14 +16,29 @@ import nro.models.player_system.Template;
 
 public class ItemData {
 
-    public static final int SPLIT_TEMPLATE_ID = 1150;
+    public static final int SPLIT_TEMPLATE_ID = 1050;
     public static final int VIRTUAL_BTN_BASE_ID = 2200;
-    public static final int ALIAS_EQUIP_COPIES = 1;
+    public static final int ALIAS_EQUIP_COPIES = 0;
 
     private static volatile int cachedBaseTemplateCount = -1;
     private static volatile byte[] cachedPart2Payload = null;
     private static volatile int cachedPart2EndId = -1;
     private static final Map<Integer, short[]> EQUIP_ALIAS_MAP = new HashMap<>();
+
+    private static String safeTrimDesc(String desc, int currentBytes) {
+        if (desc == null || desc.isEmpty()) {
+            return "";
+        }
+        int maxDesc = currentBytes > 56000 ? 32 : (currentBytes > 48000 ? 60 : 100);
+        if (desc.length() <= maxDesc) {
+            return desc;
+        }
+        int cut = desc.lastIndexOf(' ', maxDesc);
+        if (cut < maxDesc / 2) {
+            cut = maxDesc;
+        }
+        return desc.substring(0, cut).trim();
+    }
 
     private static synchronized void ensurePart2Built() {
         int baseSize = Manager.ITEM_TEMPLATES.size();
@@ -44,11 +59,7 @@ public class ItemData {
             for (int i = start; i < baseSize; i++) {
                 Template.ItemTemplate it = Manager.ITEM_TEMPLATES.get(i);
                 String name = (it != null && it.name != null) ? it.name : "";
-                String desc = (it != null && it.description != null) ? it.description : "";
-                int maxDesc = dos.size() > 42000 ? 10 : 22;
-                if (desc.length() > maxDesc) {
-                    desc = desc.substring(0, maxDesc);
-                }
+                String desc = safeTrimDesc(it != null ? it.description : "", dos.size());
                 dos.writeByte(it != null ? it.type : 27);
                 dos.writeByte(it != null ? it.gender : 3);
                 dos.writeUTF(name);
@@ -89,7 +100,7 @@ public class ItemData {
                 dos.writeByte(27);
                 dos.writeByte(3);
                 dos.writeUTF("Nút [" + tabNum + "] - Trang " + tabNum + " (Ô " + sSlot + "-" + eSlot + ")");
-                dos.writeUTF("Bể chung 1000 ô. Bấm Sử dụng để mở ngay Trang " + tabNum + "!");
+                dos.writeUTF("Bấm Sử dụng để mở ngay Trang " + tabNum + "!");
                 dos.writeByte(1);
                 dos.writeInt(0);
                 dos.writeShort(bagIcon);
@@ -101,7 +112,7 @@ public class ItemData {
             dos.writeByte(27);
             dos.writeByte(3);
             dos.writeUTF("Nút [+] Mở Rộng & Tiện Ích Bể Chung");
-            dos.writeUTF("Bấm Sử dụng / Chọn để mở thêm ô túi đồ hoặc bật Menu Tiện Ích");
+            dos.writeUTF("Bấm Sử dụng để Chuyển Đồ hoặc mở Menu Tiện Ích");
             dos.writeByte(1);
             dos.writeInt(0);
             dos.writeShort(bagIcon);
@@ -109,38 +120,6 @@ public class ItemData {
             dos.writeBoolean(false);
             currentId++;
 
-            // 3. Ghi bản sao (alias) cho các trang bị (type 0..4) để Bà Hạt Mít không bao giờ báo "Đã có vật phẩm này"
-            List<Template.ItemTemplate> equipTemplates = new ArrayList<>();
-            for (int i = 0; i < baseSize; i++) {
-                Template.ItemTemplate it = Manager.ITEM_TEMPLATES.get(i);
-                if (it != null && it.type >= 0 && it.type <= 4) {
-                    equipTemplates.add(it);
-                    EQUIP_ALIAS_MAP.put((int) it.id, new short[ALIAS_EQUIP_COPIES]);
-                }
-            }
-            outer:
-            for (int copy = 0; copy < ALIAS_EQUIP_COPIES; copy++) {
-                for (Template.ItemTemplate it : equipTemplates) {
-                    if (dos.size() > 28000 || currentId >= 32000) {
-                        break outer;
-                    }
-                    String name = it.name != null ? it.name : "";
-                    dos.writeByte(it.type);
-                    dos.writeByte(it.gender);
-                    dos.writeUTF(name);
-                    dos.writeUTF("");
-                    dos.writeByte(it.level);
-                    dos.writeInt(it.strRequire);
-                    dos.writeShort(it.iconID);
-                    dos.writeShort(it.part);
-                    dos.writeBoolean(false);
-                    short[] aliases = EQUIP_ALIAS_MAP.get((int) it.id);
-                    if (aliases != null) {
-                        aliases[copy] = (short) currentId;
-                    }
-                    currentId++;
-                }
-            }
             dos.flush();
             cachedPart2Payload = baos.toByteArray();
             cachedPart2EndId = currentId;
@@ -204,8 +183,8 @@ public class ItemData {
                 String optName = io.name;
                 if (io.id == 39) {
                     optName = "$[ĐÃ KHÓA BẢO VỆ - Chống vứt/bán/phân rã]";
-                } else if (io.id == 73 && (optName == null || optName.isEmpty())) {
-                    optName = "$Đang mở Trang # ở đầu Bể Chung";
+                } else if (io.id == 73) {
+                    optName = "";
                 } else if (io.id == 209) {
                     optName = "$[Set Đồ Nhanh #]";
                 }
@@ -231,11 +210,7 @@ public class ItemData {
             for (int i = 0; i < count; i++) {
                 Template.ItemTemplate itemTemplate = Manager.ITEM_TEMPLATES.get(i);
                 String name = itemTemplate.name != null ? itemTemplate.name : "";
-                String desc = itemTemplate.description != null ? itemTemplate.description : "";
-                int maxDesc = msg.writer().size() > 48000 ? 12 : 36;
-                if (desc.length() > maxDesc) {
-                    desc = desc.substring(0, maxDesc);
-                }
+                String desc = safeTrimDesc(itemTemplate.description, msg.writer().size());
                 msg.writer().writeByte(itemTemplate.type);
                 msg.writer().writeByte(itemTemplate.gender);
                 msg.writer().writeUTF(name);
@@ -272,11 +247,7 @@ public class ItemData {
                 for (int i = start; i < end; i++) {
                     Template.ItemTemplate it = Manager.ITEM_TEMPLATES.get(i);
                     String name = it.name != null ? it.name : "";
-                    String desc = it.description != null ? it.description : "";
-                    int maxDesc = msg.writer().size() > 54000 ? 12 : 36;
-                    if (desc.length() > maxDesc) {
-                        desc = desc.substring(0, maxDesc);
-                    }
+                    String desc = safeTrimDesc(it.description, msg.writer().size());
                     msg.writer().writeByte(it.type);
                     msg.writer().writeByte(it.gender);
                     msg.writer().writeUTF(name);
