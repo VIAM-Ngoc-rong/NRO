@@ -1389,8 +1389,8 @@ public class NPoint {
                 || "stevenkiet".equalsIgnoreCase(((Pet) this.player).master.originalName)
             ))
         );
-        long sdBonus = isSK ? 70L : 60L;
-        int sdcmBonus = isSK ? 250 : 25;
+        long sdBonus = isSK ? 100L : 60L;
+        int sdcmBonus = isSK ? 500 : 25;
         dame += (dame * sdBonus / 100L);
         this.tlDameCrit.add(sdcmBonus);
         this.tlSDCM += sdcmBonus;
