@@ -71,9 +71,12 @@ public class BadgesTaskService {
 
     public static int sendDay(Player player, int id) {
         for (BadgesData data : player.dataBadges) {
-            if (data.idBadGes == id) {
+            if (data.idBadGes == id || nro.models.player_badges.BagesTemplate.getVisualEffectId(data.idBadGes) == id) {
                 long timeDifference = data.timeofUseBadges - System.currentTimeMillis();
-                return (int) (timeDifference / (24 * 60 * 60 * 1000L));
+                if (timeDifference <= 0) {
+                    return 0;
+                }
+                return Math.max(1, (int) Math.ceil(timeDifference / (double) (24 * 60 * 60 * 1000L)));
             }
         }
         return 0;

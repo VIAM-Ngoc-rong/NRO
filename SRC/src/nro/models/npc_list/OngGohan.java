@@ -55,12 +55,12 @@ public class OngGohan extends Npc {
         this.createOtherMenu(player, 9905,
                 "|7|=== BẢNG XẾP HẠNG & PHẦN THƯỞNG TOP NGÀY ===\n"
                 + "|2|Vinh danh những chiến binh xuất sắc nhất toàn máy chủ!\n"
-                + "|1|Đặc quyền Top 1 - Top 10 mỗi bảng: Nhận thưởng hằng ngày (Thỏi vàng, Hồng ngọc, Ngọc Rồng 3 Sao, Rương SKH, Điểm Săn Boss)!\n"
+                + "|1|Đặc quyền TOP 1 mỗi bảng hằng ngày: Nhận 1 Danh Hiệu Top 1 (Tăng +5% HP, +5% SĐ, +5% KI - HSD 1 ngày)!\n"
                 + "|0|Hãy chọn hạng mục con muốn xem hoặc nhận thưởng:",
                 "Top\nSức Mạnh",
                 "Top\nNhiệm Vụ",
                 "Top Đòn Đánh\nCao Nhất",
-                "Nhận Thưởng\nTop Ngày",
+                "Nhận Thưởng\nTop 1 Ngày",
                 "Đóng");
     }
 
@@ -247,36 +247,35 @@ public class OngGohan extends Npc {
 
         try (Connection con = LocalManager.getConnection()) {
             ensureTopDailyRewardTable(con);
-            claimedPower = hasClaimedTopDailyReward(con, today, 0, (int) player.id, accId, rankPower);
-            claimedTask = hasClaimedTopDailyReward(con, today, 1, (int) player.id, accId, rankTask);
-            claimedDame = hasClaimedTopDailyReward(con, today, 2, (int) player.id, accId, rankDame);
+            claimedPower = hasClaimedTopDailyReward(con, today, 0, (int) player.id, accId, 1);
+            claimedTask = hasClaimedTopDailyReward(con, today, 1, (int) player.id, accId, 1);
+            claimedDame = hasClaimedTopDailyReward(con, today, 2, (int) player.id, accId, 1);
         } catch (Exception ignored) {
         }
 
-        String stPower = (rankPower >= 1 && rankPower <= 10)
-                ? ("Hạng " + rankPower + (claimedPower ? " [Đã nhận hôm nay]" : " [CÓ THỂ NHẬN]"))
-                : (rankPower > 0 ? "Hạng " + rankPower + " (Cần Top 1-10)" : "Chưa xếp hạng");
-        String stTask = (rankTask >= 1 && rankTask <= 10)
-                ? ("Hạng " + rankTask + (claimedTask ? " [Đã nhận hôm nay]" : " [CÓ THỂ NHẬN]"))
-                : (rankTask > 0 ? "Hạng " + rankTask + " (Cần Top 1-10)" : "Chưa xếp hạng");
-        String stDame = (rankDame >= 1 && rankDame <= 10)
-                ? ("Hạng " + rankDame + (claimedDame ? " [Đã nhận hôm nay]" : " [CÓ THỂ NHẬN]"))
-                : (rankDame > 0 ? "Hạng " + rankDame + " (Cần Top 1-10)" : "Chưa xếp hạng");
+        String stPower = (rankPower == 1)
+                ? ("Hạng 1" + (claimedPower ? " [Đã nhận hôm nay]" : " [CÓ THỂ NHẬN]"))
+                : (rankPower > 0 ? "Hạng " + rankPower + " (Chỉ thưởng Top 1)" : "Chưa xếp hạng");
+        String stTask = (rankTask == 1)
+                ? ("Hạng 1" + (claimedTask ? " [Đã nhận hôm nay]" : " [CÓ THỂ NHẬN]"))
+                : (rankTask > 0 ? "Hạng " + rankTask + " (Chỉ thưởng Top 1)" : "Chưa xếp hạng");
+        String stDame = (rankDame == 1)
+                ? ("Hạng 1" + (claimedDame ? " [Đã nhận hôm nay]" : " [CÓ THỂ NHẬN]"))
+                : (rankDame > 0 ? "Hạng " + rankDame + " (Chỉ thưởng Top 1)" : "Chưa xếp hạng");
 
-        String info = "|7|=== PHẦN THƯỞNG TOP HẰNG NGÀY (" + today + ") ===\n"
+        String info = "|7|=== PHẦN THƯỞNG TOP 1 HẰNG NGÀY (" + today + ") ===\n"
                 + "|2|• Top Sức Mạnh: " + stPower + "\n"
                 + "• Top Nhiệm Vụ: " + stTask + "\n"
                 + "• Top Đòn Đánh: " + stDame + "\n"
-                + "|1|--- CƠ CẤU PHẦN THƯỞNG MỖI BẢNG (1 LẦN/NGÀY) ---\n"
-                + "• TOP 1: 50 Thỏi vàng + 3.000 Hồng ngọc + 100k Ngọc + 3 NR 3 Sao + 1 Rương SKH + 20 Điểm Boss/SK\n"
-                + "• TOP 2: 30 Thỏi vàng + 2.000 Hồng ngọc + 50k Ngọc + 2 NR 3 Sao + 15 Điểm Boss/SK\n"
-                + "• TOP 3: 20 Thỏi vàng + 1.500 Hồng ngọc + 30k Ngọc + 1 NR 3 Sao + 10 Điểm Boss/SK\n"
-                + "• TOP 4-10: 10 Thỏi vàng + 800 Hồng ngọc + 20k Ngọc + 5 Điểm Boss/SK";
+                + "|1|--- PHẦN THƯỞNG ĐẶC QUYỀN TOP 1 MỖI NGÀY ---\n"
+                + "• Chỉ dành riêng cho người chơi đứng TOP 1 mỗi bảng\n"
+                + "• Phần thưởng: 1 Danh Hiệu Top 1 (Tăng +5% HP, +5% SĐ, +5% KI)\n"
+                + "• Thời hạn sử dụng: 1 ngày (24 giờ kể từ lúc nhận)";
 
         this.createOtherMenu(player, 9906, info,
-                "Nhận Quà\nTop Sức Mạnh",
-                "Nhận Quà\nTop Nhiệm Vụ",
-                "Nhận Quà\nTop Đòn Đánh",
+                "Nhận Danh Hiệu\nTop 1 Sức Mạnh",
+                "Nhận Danh Hiệu\nTop 1 Nhiệm Vụ",
+                "Nhận Danh Hiệu\nTop 1 Đòn Đánh",
                 "Quay lại");
     }
 
@@ -294,59 +293,22 @@ public class OngGohan extends Npc {
         List<HomeTopRow> sorted = getSortedTopList(rowMap, category);
         int rank = findPlayerRank(sorted, player.id);
 
-        if (rank < 1 || rank > 10) {
-            Service.gI().sendThongBao(player, "Bạn hiện đứng Hạng " + (rank > 0 ? rank : "N/A") + " bảng " + catName + ". Chỉ Top 1 - Top 10 mới được nhận thưởng hằng ngày!");
+        if (rank != 1) {
+            Service.gI().sendThongBao(player, "Bạn hiện đứng Hạng " + (rank > 0 ? rank : "N/A") + " bảng " + catName + ". Chỉ duy nhất TOP 1 mới được nhận Danh Hiệu hằng ngày!");
             return;
         }
-        if (InventoryService.gI().getCountEmptyBag(player) < 2) {
-            Service.gI().sendThongBao(player, "Vui lòng dọn trống ít nhất 2 ô hành trang trước khi nhận thưởng Top ngày!");
+        if (InventoryService.gI().getCountEmptyBag(player) < 1) {
+            Service.gI().sendThongBao(player, "Vui lòng dọn trống ít nhất 1 ô hành trang trước khi nhận Danh Hiệu Top 1!");
             return;
         }
 
         String today = getTodayDateKey();
         int accId = player.getSession().userId;
 
-        int goldBars;
-        int rubyAdd;
-        int gemAdd;
-        int nr3StarCount;
-        int skhBoxAdd;
-        int bossEventPoints;
-
-        if (rank == 1) {
-            goldBars = 50;
-            rubyAdd = 3_000;
-            gemAdd = 100_000;
-            nr3StarCount = 3;
-            skhBoxAdd = 1;
-            bossEventPoints = 20;
-        } else if (rank == 2) {
-            goldBars = 30;
-            rubyAdd = 2_000;
-            gemAdd = 50_000;
-            nr3StarCount = 2;
-            skhBoxAdd = 0;
-            bossEventPoints = 15;
-        } else if (rank == 3) {
-            goldBars = 20;
-            rubyAdd = 1_500;
-            gemAdd = 30_000;
-            nr3StarCount = 1;
-            skhBoxAdd = 0;
-            bossEventPoints = 10;
-        } else {
-            goldBars = 10;
-            rubyAdd = 800;
-            gemAdd = 20_000;
-            nr3StarCount = 0;
-            skhBoxAdd = 0;
-            bossEventPoints = 5;
-        }
-
         try (Connection con = LocalManager.getConnection()) {
             ensureTopDailyRewardTable(con);
-            if (hasClaimedTopDailyReward(con, today, category, (int) player.id, accId, rank)) {
-                Service.gI().sendThongBao(player, "Hôm nay bạn (hoặc vị trí Hạng " + rank + " bảng " + catName + ") đã nhận phần thưởng ngày rồi! Hãy quay lại vào ngày mai.");
+            if (hasClaimedTopDailyReward(con, today, category, (int) player.id, accId, 1)) {
+                Service.gI().sendThongBao(player, "Hôm nay vị trí TOP 1 bảng " + catName + " đã nhận Danh Hiệu ngày rồi! Hãy quay lại vào ngày mai.");
                 return;
             }
 
@@ -356,53 +318,64 @@ public class OngGohan extends Npc {
                 psIns.setInt(2, category);
                 psIns.setInt(3, (int) player.id);
                 psIns.setInt(4, accId);
-                psIns.setInt(5, rank);
+                psIns.setInt(5, 1);
                 psIns.executeUpdate();
             }
-
-            if (skhBoxAdd > 0) {
-                try (PreparedStatement psSkh = con.prepareStatement(
-                        "UPDATE account SET ruong_skh = ruong_skh + ? WHERE id = ?")) {
-                    psSkh.setInt(1, skhBoxAdd);
-                    psSkh.setInt(2, accId);
-                    psSkh.executeUpdate();
-                }
-                player.getSession().ruongSkh += skhBoxAdd;
-            }
         } catch (Exception e) {
-            Logger.logException(OngGohan.class, e, "Lỗi nhận thưởng Top hằng ngày: " + player.name);
-            Service.gI().sendThongBao(player, "Có lỗi xảy ra khi nhận thưởng Top ngày, vui lòng thử lại!");
+            Logger.logException(OngGohan.class, e, "Lỗi nhận thưởng Top 1 hằng ngày: " + player.name);
+            Service.gI().sendThongBao(player, "Có lỗi xảy ra khi nhận thưởng Top 1 ngày, vui lòng thử lại!");
             return;
         }
 
-        Item thoiVang = ItemService.gI().createNewItem((short) 457, goldBars);
-        InventoryService.gI().addItemBag(player, thoiVang);
+        long expireTime = System.currentTimeMillis() + 86_400_000L;
+        int top1BadgeId = nro.models.player_badges.BagesTemplate.TOP1_BADGE_ID_BASE + category;
+        int visualEffId = nro.models.player_badges.BagesTemplate.getVisualEffectId(top1BadgeId);
+        int badgeItemId = nro.models.player_badges.BagesTemplate.getTop1BadgeItemId(category);
 
-        if (nr3StarCount > 0) {
-            Item nr3s = ItemService.gI().createNewItem((short) 16, nr3StarCount);
-            InventoryService.gI().addItemBag(player, nr3s);
+        if (player.dataBadges != null) {
+            for (nro.models.player.BadgesData bd : player.dataBadges) {
+                bd.isUse = false;
+            }
+            nro.models.player.BadgesData existing = null;
+            for (nro.models.player.BadgesData bd : player.dataBadges) {
+                if (bd.idBadGes == top1BadgeId) {
+                    existing = bd;
+                    break;
+                }
+            }
+            if (existing != null) {
+                existing.timeofUseBadges = expireTime;
+                existing.isUse = true;
+            } else {
+                player.dataBadges.add(new nro.models.player.BadgesData(top1BadgeId, expireTime, true));
+            }
         }
 
-        player.inventory.ruby = (int) Math.min(2_000_000_000L, (long) player.inventory.ruby + rubyAdd);
-        player.inventory.gem = (int) Math.min(2_000_000_000L, (long) player.inventory.gem + gemAdd);
-        player.pointSanBoss += bossEventPoints;
-        if (player.event != null) {
-            player.event.addEventPoint(bossEventPoints);
+        if (player.badges != null && visualEffId != -1) {
+            player.badges.idBadges = visualEffId;
+            player.badges.timeofUseBadges = expireTime;
+            Service.gI().sendBadgesPlayer(player, 5, visualEffId);
         }
 
+        Item badgeItem = ItemService.gI().createNewItem((short) badgeItemId, 1);
+        badgeItem.itemOptions.clear();
+        badgeItem.itemOptions.add(new Item.ItemOption(50, 5));
+        badgeItem.itemOptions.add(new Item.ItemOption(77, 5));
+        badgeItem.itemOptions.add(new Item.ItemOption(103, 5));
+        badgeItem.itemOptions.add(new Item.ItemOption(93, 1));
+        badgeItem.itemOptions.add(new Item.ItemOption(30, 0));
+        InventoryService.gI().addItemBag(player, badgeItem);
         InventoryService.gI().sendItemBags(player);
-        Service.gI().sendMoney(player);
 
-        String rewardMsg = "Chúc mừng Hạng " + rank + " [" + catName + "]! Nhận: "
-                + goldBars + " Thỏi vàng, "
-                + Util.formatNumber(rubyAdd) + " Hồng ngọc, "
-                + Util.formatNumber(gemAdd) + " Ngọc xanh"
-                + (nr3StarCount > 0 ? (", " + nr3StarCount + " Ngọc Rồng 3 Sao") : "")
-                + (skhBoxAdd > 0 ? (", +" + skhBoxAdd + " Rương SKH") : "")
-                + ", +" + bossEventPoints + " Điểm Boss/SK!";
+        if (player.nPoint != null) {
+            player.nPoint.calPoint();
+            Service.gI().point(player);
+        }
+
+        String rewardMsg = "Chúc mừng TOP 1 [" + catName + "]! Bạn nhận được Danh Hiệu Top 1 (" + badgeItem.template.name + ": +5% HP, +5% SĐ, +5% KI - HSD 1 ngày) và đã tự động kích hoạt!";
         Service.gI().sendThongBao(player, rewardMsg);
-        nro.models.server.ServerNotify.gI().notify("Vinh danh Top Ngày: Chiến binh [" + player.name
-                + "] (Hạng " + rank + " " + catName + ") vừa nhận phần thưởng hằng ngày rực rỡ tại nhà!");
+        nro.models.server.ServerNotify.gI().notify("Vinh danh TOP 1 Ngày: Chiến binh [" + player.name
+                + "] (Quán quân " + catName + ") vừa nhận Danh Hiệu Top 1 (+5% HP, SĐ, KI) tại nhà!");
         openMenuThuongTopNgay(player);
     }
 

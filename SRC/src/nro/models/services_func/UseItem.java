@@ -1210,6 +1210,28 @@ public class UseItem {
                                 }
                             }
                             break;
+                            default: {
+                                nro.models.player_badges.BagesTemplate badgeTemp = nro.models.player_badges.BagesTemplate.fineBadgesbyIdItem(item.template.id);
+                                if (badgeTemp != null) {
+                                    nro.models.player_badges.BadgesService.turnOnBadges(pl, badgeTemp.idEffect);
+                                    int effId = badgeTemp.idEffect;
+                                    for (nro.models.player_badges.BadgesData bd : pl.dataBadges) {
+                                        if (bd != null && bd.isUse) {
+                                            effId = nro.models.player_badges.BagesTemplate.getVisualEffectId(bd.idBadGes);
+                                            pl.badges.idBadges = bd.idBadGes;
+                                            break;
+                                        }
+                                    }
+                                    if (effId != -1) {
+                                        Service.gI().sendBadgesPlayer(pl, 5, effId);
+                                    }
+                                    pl.nPoint.calPoint();
+                                    Service.gI().point(pl);
+                                    PlayerService.gI().sendInfoHpMpMoney(pl);
+                                    Service.gI().sendThongBao(pl, "Đã kích hoạt danh hiệu [" + item.template.name + "] (+5% HP, SĐ, KI)!");
+                                }
+                                break;
+                            }
                         }
                         break;
                 }

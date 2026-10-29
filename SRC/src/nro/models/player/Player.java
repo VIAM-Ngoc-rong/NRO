@@ -753,18 +753,23 @@ public class Player implements Runnable {
     }
 
     public void autoSendBadges() {
+        int activeBadge = -1;
         Iterator<BadgesData> iterator = dataBadges.iterator();
         while (iterator.hasNext()) {
             BadgesData data = iterator.next();
             if (System.currentTimeMillis() >= data.timeofUseBadges) {
                 iterator.remove();
             } else if (data.isUse) {
-                badges.idBadges = data.idBadGes;
+                activeBadge = data.idBadGes;
             }
         }
+        badges.idBadges = activeBadge;
 
         if (badges.idBadges != -1 && Util.canDoWithTime(badges.lastTimeSendBadges, 10000)) {
-            Service.gI().sendBadgesPlayer(this, 5, badges.idBadges);
+            int visualEffId = nro.models.player_badges.BagesTemplate.getVisualEffectId(badges.idBadges);
+            if (visualEffId != -1) {
+                Service.gI().sendBadgesPlayer(this, 5, visualEffId);
+            }
             badges.lastTimeSendBadges = System.currentTimeMillis();
             this.nPoint.update();
             Service.gI().point(this);
