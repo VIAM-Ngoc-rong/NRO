@@ -268,9 +268,9 @@ public class ShopDAO {
             {898,  50, 32, 77, 28, 103, 45, 210, 3},                          // Zamasu (32% SĐ, 45% KI + 3 dòng bí ẩn)
             {1396, 50, 33, 77, 28, 103, 50, 99, 15, 210, 3},                  // Super Píc (33% SĐ, 50% KI, XGCC 15% + 3 dòng bí ẩn)
 
-            // --- NAMEK: Nhánh Chuyên KI / Laze (%KI cực cao 80-100% + Ngẫu nhiên 25-75% ST Laze + 2 dòng chỉ số bí ẩn hệ KI/Chưởng) ---
-            {738,  50, 26, 77, 26, 103, 80, 66, 75, 210, 2},                  // Dr. Lychee (80% KI, 25-75% ST Laze + 2 dòng bí ẩn)
-            {1567, 50, 27, 77, 26, 103, 100, 66, 75, 210, 2},                 // Frieren (100% KI, 25-75% ST Laze + 2 dòng bí ẩn)
+            // --- NAMEK: Nhánh Chuyên KI / Laze (%KI cao 45-75% + Ngẫu nhiên 25-75% ST Laze + 2 dòng chỉ số bí ẩn hệ KI/Chưởng) ---
+            {738,  50, 26, 77, 26, 103, 65, 66, 75, 210, 2},                  // Dr. Lychee (45-65% KI, 25-75% ST Laze + 2 dòng bí ẩn)
+            {1567, 50, 27, 77, 26, 103, 75, 66, 75, 210, 2},                  // Frieren (45-75% KI, 25-75% ST Laze + 2 dòng bí ẩn)
 
             // --- XAYDA: Nhánh Đánh Tay / Biến Khỉ (Tăng %SĐ & %HP + 3 dòng chỉ số bí ẩn hệ Cận Chiến) ---
             {1783, 50, 32, 77, 50, 103, 27, 210, 3},                          // Broly (32% SĐ, 50% HP + 3 dòng bí ẩn)
@@ -278,9 +278,9 @@ public class ShopDAO {
             {1454, 50, 32, 77, 45, 103, 28, 5, 15, 210, 3},                   // Super Black Goku Rose (32% SĐ, 45% HP, SĐCM 15% + 3 dòng bí ẩn)
             {1697, 50, 33, 77, 45, 103, 28, 5, 15, 14, 10, 210, 2},           // Gogeta (33% SĐ, 45% HP, SĐCM 15%, CM 10% + 2 dòng bí ẩn)
 
-            // --- XAYDA: Nhánh Chuyên HP / Đánh Bom (%HP cực cao 80-100% + Ngẫu nhiên 25-75% ST Nổ + 2 dòng chỉ số bí ẩn hệ Nổ/HP) ---
-            {1744, 50, 26, 77, 80, 103, 25, 153, 75, 210, 2},                 // Cađíc SSJ2 M (80% HP, 25-75% ST Nổ + 2 dòng bí ẩn)
-            {1693, 50, 27, 77, 100, 103, 26, 153, 75, 210, 2}                 // Cađíc SSJ4 (100% HP, 25-75% ST Nổ + 2 dòng bí ẩn)
+            // --- XAYDA: Nhánh Chuyên HP / Đánh Bom (%HP cao 45-75% + Ngẫu nhiên 25-75% ST Nổ + 2 dòng chỉ số bí ẩn hệ Nổ/HP) ---
+            {1744, 50, 26, 77, 65, 103, 25, 153, 75, 210, 2},                 // Cađíc SSJ2 M (45-65% HP, 25-75% ST Nổ + 2 dòng bí ẩn)
+            {1693, 50, 27, 77, 75, 103, 26, 153, 75, 210, 2}                  // Cađíc SSJ4 (45-75% HP, 25-75% ST Nổ + 2 dòng bí ẩn)
         };
 
         ItemTemplate rubyTemp = ItemService.gI().getTemplate((short) 861);

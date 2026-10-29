@@ -178,7 +178,7 @@ public class ItemService {
             switch (optId) {
                 case 50, 77, 103 -> {
                     if (copyOpt.param > 1) {
-                        int minMain = Math.max(10, (copyOpt.param * 70) / 100);
+                        int minMain = copyOpt.param >= 60 ? 45 : Math.max(10, (copyOpt.param * 70) / 100);
                         int maxMain = Math.max(copyOpt.param, minMain + 4);
                         copyOpt.param = Util.nextInt(minMain, maxMain);
                     }
