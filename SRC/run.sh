@@ -67,7 +67,7 @@ if [ -z "$JAVAC_BIN" ]; then
         fi
     done
 fi
-if [ "$AUTO_COMPILE" = "1" ] && [ -z "$JAVAC_BIN" ] && command -v apt-get >/dev/null 2>&1; then
+if [ -z "$JAVAC_BIN" ] && command -v apt-get >/dev/null 2>&1; then
     echo "Đang cài đặt trình biên dịch javac (JDK Headless) cho VPS..."
     JAVA_VER=$(java -version 2>&1 | awk -F '"' '/version/ {print $2}' | cut -d'.' -f1)
     apt-get update -qq >/dev/null 2>&1 || true
@@ -80,22 +80,34 @@ if [ "$AUTO_COMPILE" = "1" ] && [ -z "$JAVAC_BIN" ] && command -v apt-get >/dev/
     JAVAC_BIN=$(command -v javac 2>/dev/null || true)
 fi
 
-# Chỉ tự biên dịch trên VPS khi đặt AUTO_COMPILE=1 (mặc định dùng .class đã build sẵn bằng build_update.ps1; javac với -proc:none không chạy Lombok nên sẽ lỗi)
-if [ "$AUTO_COMPILE" = "1" ] && [ -n "$JAVAC_BIN" ]; then
+if [ -n "$JAVAC_BIN" ]; then
     mkdir -p build/classes
-    OUTDATED_JAVA=""
-    while IFS= read -r -d '' jfile; do
-        rel="${jfile#src/}"
-        cfile="build/classes/${rel%.java}.class"
-        if [ ! -f "$cfile" ] || [ "$jfile" -nt "$cfile" ]; then
-            OUTDATED_JAVA="$OUTDATED_JAVA $jfile"
-        fi
-    done < <(find src -name "*.java" -print0 2>/dev/null)
-
-    if [ -n "$OUTDATED_JAVA" ]; then
-        echo "Đang biên dịch toàn bộ mã nguồn mới cập nhật sang .class..."
-        $JAVAC_BIN -encoding UTF-8 -proc:none -cp "build/classes:lib/*:20.jar" -d build/classes $OUTDATED_JAVA && touch build/classes/.compiled_stamp
-    fi
+    echo "Đang đồng bộ biên dịch các file cập nhật mới nhất sang build/classes..."
+    $JAVAC_BIN -encoding UTF-8 -proc:none -cp "build/classes:lib/*:20.jar" -d build/classes \
+        src/nro/models/event/EventManager.java \
+        src/nro/models/map/service/MapService.java \
+        src/nro/models/map/service/ChangeMapService.java \
+        src/nro/models/npc/NpcFactory.java \
+        src/nro/models/server/ServerNotify.java \
+        src/nro/models/server/AdminWebServer.java \
+        src/nro/models/server/Manager.java \
+        src/nro/models/player/Player.java \
+        src/nro/models/player/NPoint.java \
+        src/nro/models/database/MrBlue.java \
+        src/nro/models/database/PlayerDAO.java \
+        src/nro/models/database/ShopDAO.java \
+        src/nro/models/services/ItemService.java \
+        src/nro/models/mob/Mob.java \
+        src/nro/models/boss/Boss.java \
+        src/nro/models/combine/TaiCheDoThan.java \
+        src/nro/models/combine/DapDoKichHoat.java \
+        src/nro/models/combine/CheTaoTrangBiThienSu.java \
+        src/nro/models/combine/PhaLeHoaTrangBi.java \
+        src/nro/models/combine/CombineSystem.java \
+        src/nro/models/map/phoban/RedRibbonHQ.java \
+        src/nro/models/npc_list/OngGohan.java \
+        src/nro/models/npc_list/OngMoori.java \
+        src/nro/models/npc_list/OngParagus.java
 fi
 
 OLD_PIDS=$(pgrep -f "java.*(nro.models.server.ServerManager|20.jar|NgocRongOnline.jar)" || true)
