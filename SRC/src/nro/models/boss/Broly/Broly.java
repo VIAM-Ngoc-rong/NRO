@@ -56,9 +56,10 @@ public class Broly extends Boss {
     @Override
     public void joinMap() {
         this.name = "Broly " + Util.nextInt(10, 100);
-        this.nPoint.hpMax = Util.nextInt(500, 100000);
+        this.nPoint.hpMax = Util.nextInt(500, 100_000);
+        this.nPoint.hpg = this.nPoint.hpMax;
         this.nPoint.hp = this.nPoint.hpMax;
-        this.nPoint.dame = this.nPoint.hpMax / 100;
+        this.nPoint.dame = Math.max(10, this.nPoint.hpMax / 100);
         this.nPoint.crit = Util.nextInt(50);
         this.joinMap2();
         st = System.currentTimeMillis();
@@ -66,16 +67,6 @@ public class Broly extends Boss {
 
     @Override
     public void reward(Player plKill) {
-        if (plKill == null) {
-            return;
-        }
-        Player plOwner = plKill.isPet ? ((Pet) plKill).master : plKill;
-        if (plOwner == null) {
-            plOwner = plKill;
-        }
-        if (plOwner.pet == null) {
-            PetService.gI().createNormalPet(plOwner);
-        }
     }
 
     public void joinMap2() {
@@ -202,11 +193,12 @@ public class Broly extends Boss {
     }
 
     private void tangChiSo() {
-        int hpMax = this.nPoint.hpMax;
+        long hpMax = this.nPoint.hpMax;
         int rand = Util.nextInt(10, 100);
-        hpMax = hpMax + hpMax / rand < 16_070_777 ? hpMax + hpMax / rand : 16_070_777;
-        this.nPoint.hpMax = hpMax;
-        this.nPoint.dame = hpMax / 10;
+        hpMax = hpMax + hpMax / rand < 16_070_777L ? hpMax + hpMax / rand : 16_070_777L;
+        this.nPoint.hpg = (int) hpMax;
+        this.nPoint.hpMax = (int) hpMax;
+        this.nPoint.dame = (int) (hpMax / 10L);
     }
 
     @Override

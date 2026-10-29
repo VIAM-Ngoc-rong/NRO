@@ -11,7 +11,9 @@ import nro.models.map.Zone;
 import nro.models.map.service.ChangeMapService;
 import nro.models.player.Pet;
 import nro.models.player.Player;
+import nro.models.services.PetService;
 import nro.models.services.Service;
+import nro.models.services.SkillService;
 import nro.models.services.TaskService;
 import nro.models.skill.Skill;
 import nro.models.utils.SkillUtil;
@@ -20,20 +22,25 @@ import nro.models.utils.Util;
 public class MabuMapWorld extends Boss {
 
     public MabuMapWorld(Zone targetZone) throws Exception {
+        this(targetZone, -1, -1);
+    }
+
+    public MabuMapWorld(Zone zone, int x, int y) throws Exception {
         super(BossID.MABU_MAP - Util.nextInt(1, 100000), false, false, new BossData(
                 "Mabư Mập",
                 ConstPlayer.XAYDA,
                 new short[]{297, 298, 299, -1, -1, -1},
-                15_000,
-                new int[]{10_000_000},
+                500,
+                new int[]{7_500_000},
                 new int[]{5, 13, 20, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38},
                 new int[][]{
-                    {Skill.DRAGON, 7, 1000},
-                    {Skill.DEMON, 7, 1000},
-                    {Skill.GALICK, 7, 1000},
-                    {Skill.KAMEJOKO, 7, 1000},
-                    {Skill.MASENKO, 7, 1000},
-                    {Skill.ANTOMIC, 7, 1000}
+                    {Skill.TAI_TAO_NANG_LUONG, 1, 1000}, {Skill.TAI_TAO_NANG_LUONG, 2, 1000}, {Skill.TAI_TAO_NANG_LUONG, 3, 1000}, {Skill.TAI_TAO_NANG_LUONG, 4, 1000}, {Skill.TAI_TAO_NANG_LUONG, 5, 1000}, {Skill.TAI_TAO_NANG_LUONG, 6, 1000}, {Skill.TAI_TAO_NANG_LUONG, 7, 1000},
+                    {Skill.DRAGON, 1, 1000}, {Skill.DRAGON, 2, 1000}, {Skill.DRAGON, 3, 1000}, {Skill.DRAGON, 4, 1000}, {Skill.DRAGON, 5, 1000}, {Skill.DRAGON, 6, 1000}, {Skill.DRAGON, 7, 1000},
+                    {Skill.DEMON, 1, 1000}, {Skill.DEMON, 2, 1000}, {Skill.DEMON, 3, 1000}, {Skill.DEMON, 4, 1000}, {Skill.DEMON, 5, 1000}, {Skill.DEMON, 6, 1000}, {Skill.DEMON, 7, 1000},
+                    {Skill.GALICK, 1, 1000}, {Skill.GALICK, 2, 1000}, {Skill.GALICK, 3, 1000}, {Skill.GALICK, 4, 1000}, {Skill.GALICK, 5, 1000}, {Skill.GALICK, 6, 1000}, {Skill.GALICK, 7, 1000},
+                    {Skill.KAMEJOKO, 1, 1000}, {Skill.KAMEJOKO, 2, 1000}, {Skill.KAMEJOKO, 3, 1000}, {Skill.KAMEJOKO, 4, 1000}, {Skill.KAMEJOKO, 5, 1000}, {Skill.KAMEJOKO, 6, 1000}, {Skill.KAMEJOKO, 7, 1000},
+                    {Skill.MASENKO, 1, 1000}, {Skill.MASENKO, 2, 1000}, {Skill.MASENKO, 3, 1000}, {Skill.MASENKO, 4, 1000}, {Skill.MASENKO, 5, 1000}, {Skill.MASENKO, 6, 1000}, {Skill.MASENKO, 7, 1000},
+                    {Skill.ANTOMIC, 1, 1000}, {Skill.ANTOMIC, 2, 1000}, {Skill.ANTOMIC, 3, 1000}, {Skill.ANTOMIC, 4, 1000}, {Skill.ANTOMIC, 5, 1000}, {Skill.ANTOMIC, 6, 1000}, {Skill.ANTOMIC, 7, 1000}
                 },
                 new String[]{"|-1|Bư! Bư! Biến tất cả thành kẹo socola!"},
                 new String[]{
@@ -44,29 +51,32 @@ public class MabuMapWorld extends Boss {
                 new String[]{"|-1|Bư đau quá..."},
                 1
         ));
-        this.zoneFinal = targetZone;
+        this.zone = zone;
+        this.location.x = x;
+        this.location.y = y;
         this.changeStatus(BossStatus.RESPAWN);
     }
 
     @Override
     public void initBase() {
         super.initBase();
-        // Lượng máu giống cơ chế của Broly thường: 1.000.000 - 20.000.000 HP
-        this.nPoint.hpg = Util.nextInt(1_000_000, 20_000_000);
-        this.nPoint.hpMax = this.nPoint.hpg;
+        this.name = "Mabư Mập " + Util.nextInt(10, 100);
+        // Máu x5 so với Super Broly: 7.500.000 - 80.353.885 HP
+        this.nPoint.hpMax = Util.nextInt(7_500_000, 80_353_885);
+        this.nPoint.hpg = this.nPoint.hpMax;
         this.nPoint.hp = this.nPoint.hpMax;
-        this.nPoint.dameg = Math.max(5_000, this.nPoint.hpMax / 1000);
+        this.nPoint.dameg = this.nPoint.hpMax / 100;
         this.nPoint.dame = this.nPoint.dameg;
-        this.nPoint.crit = 20;
+        this.nPoint.crit = Util.nextInt(50);
         this.bossDamageReductionFactor = 1;
     }
 
     @Override
     public void joinMap() {
-        if (this.zoneFinal != null) {
-            this.zone = this.zoneFinal;
-            int x = this.zone.map.mapWidth > 100 ? Util.nextInt(100, this.zone.map.mapWidth - 100) : Util.nextInt(100);
-            int y = this.zone.map.yPhysicInTop(x, 100);
+        if (this.zone != null) {
+            int x = this.location.x > 0 ? this.location.x
+                    : (this.zone.map.mapWidth > 100 ? Util.nextInt(100, this.zone.map.mapWidth - 100) : Util.nextInt(100));
+            int y = this.location.y > 0 ? this.location.y : this.zone.map.yPhysicInTop(x, 100);
             ChangeMapService.gI().changeMap(this, this.zone, x, y);
             Service.gI().sendFlagBag(this);
             this.notifyJoinMap();
@@ -74,6 +84,7 @@ public class MabuMapWorld extends Boss {
         } else {
             super.joinMap();
         }
+        PetService.gI().createNormalPet(this);
     }
 
     @Override
@@ -86,15 +97,19 @@ public class MabuMapWorld extends Boss {
             if (plAtt != null && plAtt.idNRNM != -1) {
                 return 1;
             }
+            if (Util.isTrue(1, 30)) {
+                this.playerSkill.skillSelect = this.playerSkill.skills.get(Util.nextInt(0, 6));
+                this.tangChiSo();
+                SkillService.gI().useSkill(this, null, null, -1, null);
+            }
             damage = this.nPoint.subDameInjureWithDeff(damage);
-            // Đánh vào Mabư Mập tối đa 5% máu mỗi đòn (chiêu đặc biệt gấp 3 = 15%)
             boolean isTuSat = plAtt != null && plAtt.playerSkill != null
                     && plAtt.playerSkill.skillSelect != null
                     && plAtt.playerSkill.skillSelect.template.id == Skill.TU_SAT;
             boolean isSpecialSkill = piercing || SkillUtil.isUseSkillSpecial(plAtt)
                     || (this.effectSkill != null && this.effectSkill.isBinh);
-            if (!isTuSat && !isSpecialSkill && this.nPoint.hpMax > 0) {
-                long maxDamage = Math.max(1L, (long) this.nPoint.hpMax * 5L / 100L);
+            if (!isTuSat && !isSpecialSkill) {
+                long maxDamage = Math.max(1L, (long) this.nPoint.hpMax / 100L);
                 if (damage > maxDamage) {
                     damage = maxDamage;
                 }
@@ -110,6 +125,53 @@ public class MabuMapWorld extends Boss {
     }
 
     @Override
+    public void attack() {
+        if (Util.canDoWithTime(this.lastTimeAttack, 100) && this.typePk == ConstPlayer.PK_ALL) {
+            this.lastTimeAttack = System.currentTimeMillis();
+            try {
+                Player pl = getPlayerAttack();
+                if (pl == null || pl.isDie()) {
+                    return;
+                }
+                this.playerSkill.skillSelect = this.playerSkill.skills.get(Util.nextInt(7, this.playerSkill.skills.size() - 1));
+                if (Util.getDistance(this, pl) <= this.getRangeCanAttackWithSkillSelect()) {
+                    if (Util.isTrue(5, 20)) {
+                        if (SkillUtil.isUseSkillChuong(this)) {
+                            this.moveTo(pl.location.x + (Util.getOne(-1, 1) * Util.nextInt(20, 200)),
+                                    Util.nextInt(10) % 2 == 0 ? pl.location.y : pl.location.y - Util.nextInt(0, 70));
+                        } else {
+                            this.moveTo(pl.location.x + (Util.getOne(-1, 1) * Util.nextInt(10, 40)),
+                                    Util.nextInt(10) % 2 == 0 ? pl.location.y : pl.location.y - Util.nextInt(0, 50));
+                        }
+                    }
+                    if (Util.isTrue(1, 100)) {
+                        this.playerSkill.skillSelect = this.playerSkill.skills.get(Util.nextInt(0, 6));
+                        this.tangChiSo();
+                    }
+
+                    SkillService.gI().useSkill(this, pl, null, -1, null);
+                    checkPlayerDie(pl);
+                } else {
+                    if (Util.isTrue(1, 2)) {
+                        this.moveToPlayer(pl);
+                    }
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
+
+    private void tangChiSo() {
+        long hpMax = this.nPoint.hpMax;
+        int rand = Util.nextInt(80, 100);
+        hpMax = hpMax + hpMax / rand < 80_353_885L ? hpMax + hpMax / rand : 80_353_885L;
+        this.nPoint.hpg = (int) hpMax;
+        this.nPoint.hpMax = (int) hpMax;
+        this.nPoint.dame = (int) (hpMax / 10L);
+    }
+
+    @Override
     public void reward(Player plKill) {
         TaskService.gI().checkDoneTaskKillBoss(plKill, this);
         if (plKill == null || this.zone == null) {
@@ -122,7 +184,7 @@ public class MabuMapWorld extends Boss {
         int x = this.location.x;
         int y = this.zone.map.yPhysicInTop(x, this.location.y - 24);
 
-        // Khi tiêu diệt Mabư Mập sẽ rớt ra Trứng Mabư (ID 568)
+        // Khi tiêu diệt Mabư Mập 100% rớt ra Trứng Mabư (ID 568)
         ItemMap eggMap = new ItemMap(this.zone, 568, 1, x, y, plOwner.id);
         Service.gI().dropItemMap(this.zone, eggMap);
     }
@@ -130,6 +192,9 @@ public class MabuMapWorld extends Boss {
     @Override
     public void leaveMap() {
         ChangeMapService.gI().exitMap(this);
+        if (this.pet != null) {
+            ChangeMapService.gI().exitMap(this.pet);
+        }
         this.lastZone = null;
         this.lastTimeRest = System.currentTimeMillis();
         this.changeStatus(BossStatus.REST);

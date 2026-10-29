@@ -342,6 +342,12 @@ public class Boss extends Player implements IBoss {
 
     public boolean isBrolyBoss() {
         return this.id == BossID.BROLY || this.id == BossID.SUPER_BROLY
+                || (this instanceof nro.models.boss.Broly.Broly)
+                || (this instanceof nro.models.boss.Broly.SuperBroly)
+                || (this instanceof nro.models.boss.Broly.Broly18h)
+                || (this instanceof nro.models.boss.Broly.SieuBroly18h)
+                || (this instanceof nro.models.boss.Broly.KidBuWorld)
+                || (this instanceof nro.models.boss.Broly.MabuMapWorld)
                 || (this.name != null && this.name.toLowerCase().contains("broly"));
     }
 
@@ -689,7 +695,7 @@ public class Boss extends Player implements IBoss {
                 if (!this.isUsingTTNL && this.nPoint.hp > 0 && this.nPoint.hp < 2000) {
                     this.startBossTTNL();
                 }
-            } else if (!this.isUsingTTNL && this.nPoint.hp > 0 && this.nPoint.hp < (this.nPoint.hpMax * 30L / 100L)
+            } else if (!this.isBrolyBoss() && !this.isUsingTTNL && this.nPoint.hp > 0 && this.nPoint.hp < (this.nPoint.hpMax * 30L / 100L)
                     && (this.lastTimeStartTTNL == 0 || Util.canDoWithTime(this.lastTimeStartTTNL, 60000))) {
                 this.startBossTTNL();
             }

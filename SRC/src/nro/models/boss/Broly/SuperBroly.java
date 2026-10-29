@@ -49,6 +49,7 @@ public class SuperBroly extends Boss {
         this.zone = zone;
         this.location.x = x;
         this.location.y = y;
+        this.changeStatus(BossStatus.RESPAWN);
     }
 
     @Override
@@ -74,6 +75,7 @@ public class SuperBroly extends Boss {
     public void joinMap() {
         this.name = "Super Broly " + Util.nextInt(10, 100);
         this.nPoint.hpMax = Util.nextInt(1_500_000, 16_070_777);
+        this.nPoint.hpg = this.nPoint.hpMax;
         this.nPoint.hp = this.nPoint.hpMax;
         this.nPoint.dame = this.nPoint.hpMax / 100;
         this.nPoint.crit = Util.nextInt(50);
@@ -172,11 +174,12 @@ public class SuperBroly extends Boss {
     }
 
     private void tangChiSo() {
-        int hpMax = this.nPoint.hpMax;
+        long hpMax = this.nPoint.hpMax;
         int rand = Util.nextInt(80, 100);
-        hpMax = hpMax + hpMax / rand < 16_070_777 ? hpMax + hpMax / rand : 16_070_777;
-        this.nPoint.hpMax = hpMax;
-        this.nPoint.dame = hpMax / 10;
+        hpMax = hpMax + hpMax / rand < 16_070_777L ? hpMax + hpMax / rand : 16_070_777L;
+        this.nPoint.hpg = (int) hpMax;
+        this.nPoint.hpMax = (int) hpMax;
+        this.nPoint.dame = (int) (hpMax / 10L);
     }
 
     @Override

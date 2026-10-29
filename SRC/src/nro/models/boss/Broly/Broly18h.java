@@ -1,49 +1,38 @@
 package nro.models.boss.Broly;
 
-import java.util.List;
 import nro.models.boss.Boss;
 import nro.models.boss.BossData;
 import nro.models.boss.BossID;
 import nro.models.consts.AppearType;
 import nro.models.consts.BossStatus;
 import nro.models.consts.ConstPlayer;
-import nro.models.item.Item;
-import nro.models.map.ItemMap;
 import nro.models.map.Zone;
-import nro.models.player.Pet;
+import nro.models.map.service.ChangeMapService;
 import nro.models.player.Player;
-import nro.models.services.ItemService;
-import nro.models.services.PetService;
-import nro.models.services.Service;
+import nro.models.services.SkillService;
 import nro.models.services.TaskService;
 import nro.models.skill.Skill;
 import nro.models.utils.SkillUtil;
-import nro.models.utils.TimeUtil;
 import nro.models.utils.Util;
 
 public class Broly18h extends Boss {
-
-    private static final int[] LEVEL_12_EQUIPS = {
-        240, 241, 244, 245, 248, 249, 252, 253,
-        256, 257, 260, 261, 264, 265, 268, 269,
-        272, 273, 276, 277, 280, 281
-    };
 
     public Broly18h() throws Exception {
         super(BossID.BROLY_18H - Util.nextInt(1, 100000), false, true, new BossData(
                 "Broly",
                 ConstPlayer.XAYDA,
                 new short[]{1080, 1081, 1082, -1, -1, -1},
-                15_000,
-                new int[]{10_000_000},
+                1_000,
+                new int[]{5_000},
                 new int[]{5, 13, 20, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38},
                 new int[][]{
-                    {Skill.DRAGON, 7, 1000},
-                    {Skill.DEMON, 7, 1000},
-                    {Skill.GALICK, 7, 1000},
-                    {Skill.KAMEJOKO, 7, 1000},
-                    {Skill.MASENKO, 7, 1000},
-                    {Skill.ANTOMIC, 7, 1000}
+                    {Skill.TAI_TAO_NANG_LUONG, 1, 1000}, {Skill.TAI_TAO_NANG_LUONG, 2, 1000}, {Skill.TAI_TAO_NANG_LUONG, 3, 1000}, {Skill.TAI_TAO_NANG_LUONG, 4, 1000}, {Skill.TAI_TAO_NANG_LUONG, 5, 1000}, {Skill.TAI_TAO_NANG_LUONG, 6, 1000}, {Skill.TAI_TAO_NANG_LUONG, 7, 100},
+                    {Skill.DRAGON, 1, 1000}, {Skill.DRAGON, 2, 1000}, {Skill.DRAGON, 3, 1000}, {Skill.DRAGON, 4, 1000}, {Skill.DRAGON, 5, 1000}, {Skill.DRAGON, 6, 1000}, {Skill.DRAGON, 7, 1000},
+                    {Skill.DEMON, 1, 1000}, {Skill.DEMON, 2, 1000}, {Skill.DEMON, 3, 1000}, {Skill.DEMON, 4, 1000}, {Skill.DEMON, 5, 1000}, {Skill.DEMON, 6, 1000}, {Skill.DEMON, 7, 1000},
+                    {Skill.GALICK, 1, 1000}, {Skill.GALICK, 2, 1000}, {Skill.GALICK, 3, 1000}, {Skill.GALICK, 4, 1000}, {Skill.GALICK, 5, 1000}, {Skill.GALICK, 6, 1000}, {Skill.GALICK, 7, 1000},
+                    {Skill.KAMEJOKO, 1, 1000}, {Skill.KAMEJOKO, 2, 1000}, {Skill.KAMEJOKO, 3, 1000}, {Skill.KAMEJOKO, 4, 1000}, {Skill.KAMEJOKO, 5, 1000}, {Skill.KAMEJOKO, 6, 1000}, {Skill.KAMEJOKO, 7, 1000},
+                    {Skill.MASENKO, 1, 1000}, {Skill.MASENKO, 2, 1000}, {Skill.MASENKO, 3, 1000}, {Skill.MASENKO, 4, 1000}, {Skill.MASENKO, 5, 1000}, {Skill.MASENKO, 6, 1000}, {Skill.MASENKO, 7, 1000},
+                    {Skill.ANTOMIC, 1, 1000}, {Skill.ANTOMIC, 2, 1000}, {Skill.ANTOMIC, 3, 1000}, {Skill.ANTOMIC, 4, 1000}, {Skill.ANTOMIC, 5, 1000}, {Skill.ANTOMIC, 6, 1000}, {Skill.ANTOMIC, 7, 1000}
                 },
                 new String[]{"|-1|Grrr! Kakarot đâu rồi?!"},
                 new String[]{
@@ -78,18 +67,22 @@ public class Broly18h extends Boss {
     @Override
     public void active() {
         super.active();
+        if (this.nPoint.hpMax == 15_000_000) {
+            this.leaveMap();
+        }
     }
 
     @Override
     public void initBase() {
         super.initBase();
-        // Máu dạng thường: 1.000.000 - 20.000.000 HP
-        this.nPoint.hpg = Util.nextInt(1_000_000, 20_000_000);
-        this.nPoint.hpMax = this.nPoint.hpg;
+        this.name = "Broly " + Util.nextInt(10, 100);
+        // Máu khởi điểm x10 so với Broly thường: 5.000 - 1.000.000 HP
+        this.nPoint.hpMax = Util.nextInt(5_000, 1_000_000);
+        this.nPoint.hpg = this.nPoint.hpMax;
         this.nPoint.hp = this.nPoint.hpMax;
-        this.nPoint.dameg = Math.max(5_000, this.nPoint.hpMax / 1000);
+        this.nPoint.dameg = Math.max(100, this.nPoint.hpMax / 100);
         this.nPoint.dame = this.nPoint.dameg;
-        this.nPoint.crit = 20;
+        this.nPoint.crit = Util.nextInt(50);
         this.bossDamageReductionFactor = 1;
     }
 
@@ -103,17 +96,19 @@ public class Broly18h extends Boss {
             if (plAtt != null && plAtt.idNRNM != -1) {
                 return 1;
             }
+            if (Util.isTrue(1, 10)) {
+                this.playerSkill.skillSelect = this.playerSkill.skills.get(Util.nextInt(0, 6));
+                this.tangChiSo();
+                SkillService.gI().useSkill(this, null, null, -1, null);
+            }
             damage = this.nPoint.subDameInjureWithDeff(damage);
-            // Đánh theo % máu giống Super Broly nhưng giảm dần từ 0.5% xuống 0.1% (chiêu đặc biệt gấp 3 lần %)
             boolean isTuSat = plAtt != null && plAtt.playerSkill != null
                     && plAtt.playerSkill.skillSelect != null
                     && plAtt.playerSkill.skillSelect.template.id == Skill.TU_SAT;
             boolean isSpecialSkill = piercing || SkillUtil.isUseSkillSpecial(plAtt)
                     || (this.effectSkill != null && this.effectSkill.isBinh);
-            if (!isTuSat && !isSpecialSkill && this.nPoint.hpMax > 0) {
-                double hpRatio = Math.max(0.0, Math.min(1.0, (double) this.nPoint.hp / (double) this.nPoint.hpMax));
-                double maxPercent = 0.001 + (0.004 * hpRatio);
-                long maxDamage = Math.max(1L, (long) (this.nPoint.hpMax * maxPercent));
+            if (!isTuSat && !isSpecialSkill) {
+                long maxDamage = Math.max(1L, (long) this.nPoint.hpMax / 100L);
                 if (damage > maxDamage) {
                     damage = maxDamage;
                 }
@@ -129,35 +124,81 @@ public class Broly18h extends Boss {
     }
 
     @Override
+    public void attack() {
+        if (Util.canDoWithTime(this.lastTimeAttack, 100) && this.typePk == ConstPlayer.PK_ALL) {
+            this.lastTimeAttack = System.currentTimeMillis();
+            try {
+                Player pl = getPlayerAttack();
+                if (pl == null || pl.isDie()) {
+                    return;
+                }
+                this.playerSkill.skillSelect = this.playerSkill.skills.get(Util.nextInt(7, this.playerSkill.skills.size() - 1));
+                if (Util.getDistance(this, pl) <= this.getRangeCanAttackWithSkillSelect()) {
+                    if (Util.isTrue(5, 20)) {
+                        if (SkillUtil.isUseSkillChuong(this)) {
+                            this.moveTo(pl.location.x + (Util.getOne(-1, 1) * Util.nextInt(20, 200)),
+                                    Util.nextInt(10) % 2 == 0 ? pl.location.y : pl.location.y - Util.nextInt(0, 70));
+                        } else {
+                            this.moveTo(pl.location.x + (Util.getOne(-1, 1) * Util.nextInt(10, 40)),
+                                    Util.nextInt(10) % 2 == 0 ? pl.location.y : pl.location.y - Util.nextInt(0, 50));
+                        }
+                    }
+                    if (Util.isTrue(1, 100)) {
+                        this.playerSkill.skillSelect = this.playerSkill.skills.get(Util.nextInt(0, 6));
+                        this.tangChiSo();
+                    }
+
+                    SkillService.gI().useSkill(this, pl, null, -1, null);
+                    checkPlayerDie(pl);
+                } else {
+                    if (Util.isTrue(1, 2)) {
+                        this.moveToPlayer(pl);
+                    }
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
+
+    private void tangChiSo() {
+        long hpMax = this.nPoint.hpMax;
+        int rand = Util.nextInt(10, 100);
+        hpMax = hpMax + hpMax / rand < 160_707_770L ? hpMax + hpMax / rand : 160_707_770L;
+        this.nPoint.hpg = (int) hpMax;
+        this.nPoint.hpMax = (int) hpMax;
+        this.nPoint.dame = (int) (hpMax / 10L);
+    }
+
+    @Override
     public void reward(Player plKill) {
         TaskService.gI().checkDoneTaskKillBoss(plKill, this);
-        if (plKill == null || this.zone == null) {
-            return;
-        }
-        Player plOwner = plKill.isPet ? ((Pet) plKill).master : plKill;
-        if (plOwner == null) {
-            plOwner = plKill;
-        }
-        // Hạ Boss Broly thường -> nhận Đệ tử thường (nếu chưa có đệ tử)
-        if (plOwner.pet == null) {
-            PetService.gI().createNormalPet(plOwner);
-        }
     }
 
     @Override
     public void die(Player plKill) {
-        Zone currentZone = this.zone;
-        super.die(plKill);
-        // Sau khi bị tiêu diệt, xuất hiện Siêu Broly ở 1 khu bất kỳ trong cùng Map
-        if (currentZone != null && currentZone.map != null && !currentZone.map.zones.isEmpty()) {
+        this.changeStatus(BossStatus.DIE);
+    }
+
+    @Override
+    public void leaveMap() {
+        Zone zone = this.zone;
+        int x = this.location.x;
+        int y = this.location.y;
+        // Ngưỡng biến hình x10 so với Broly thường: >= 10.000.000 HP
+        boolean canSpawnSuper = zone != null && zone.zoneId >= 1 && this.nPoint != null && this.nPoint.hpMax >= 10_000_000;
+        this.firstEncounterPlayerTimeMs = 0L;
+        ChangeMapService.gI().exitMap(this);
+        if (canSpawnSuper) {
             try {
-                int minIdx = currentZone.map.zones.size() > 1 ? 1 : 0;
-                int randIdx = Util.nextInt(minIdx, currentZone.map.zones.size() - 1);
-                Zone randomZoneInMap = currentZone.map.zones.get(randIdx);
-                new SieuBroly18h(randomZoneInMap);
-            } catch (Exception e) {
+                new SieuBroly18h(zone, x, y);
+            } catch (Exception ex) {
             }
         }
+        this.lastZone = null;
+        this.secondsRest = 300;
+        this.lastTimeRest = System.currentTimeMillis();
+        this.changeStatus(BossStatus.REST);
     }
 }
 

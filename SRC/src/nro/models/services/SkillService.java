@@ -867,7 +867,7 @@ public class SkillService {
                     if (damePST >= plAtt.nPoint.hp) {
                         damePST = plAtt.nPoint.hp - 1;
                     }
-                    if (plAtt.isBoss && !(plAtt instanceof Broly || plAtt instanceof SuperBroly)) {
+                    if (plAtt.isBoss && !((Boss) plAtt).isBrolyBoss()) {
                         if (damePST > plAtt.nPoint.hpMax / 100) {
                             int giamdame = 0;
                             if (plAtt.nPoint.hpMax / 200 > 1) {
