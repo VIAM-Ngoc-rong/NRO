@@ -1184,6 +1184,9 @@
             <h3>Danh Sách Mã Quà Tặng (Giftcode) Đang Hoạt Động Trên Server</h3>
             <span style="font-size:12.5px;color:var(--muted);">Bấm <b>Sửa Code</b> để nạp lên khung thiết lập phía trên, hoặc <b>Reset Lượt Nhận</b> để cho phép tất cả người chơi nhập lại mã đó.</span>
           </div>
+          <div style="display:flex;gap:8px;">
+            <button class="btn-danger btn-sm" onclick="deleteAllGiftcodes()">Xóa Tất Cả Mã Code</button>
+          </div>
         </div>
         <div class="table-wrap">
           <table>
@@ -2493,9 +2496,9 @@
             </td>
             <td>
               <div style="display:flex;gap:6px;flex-wrap:wrap;">
-                <button class="btn-muted btn-sm" onclick="loadGiftcodeToForm('${escapeHtml(gc.code).replace(/'/g, "\\'")}')">Sửa Code</button>
-                <button class="btn-muted btn-sm" onclick="resetGiftcodeUsage('${escapeHtml(gc.code).replace(/'/g, "\\'")}')">Reset Lượt Nhận</button>
-                <button class="btn-danger btn-sm" onclick="deleteGiftcode('${escapeHtml(gc.code).replace(/'/g, "\\'")}', ${gc.id})">Xóa</button>
+                <button class="btn-muted btn-sm" onclick="loadGiftcodeToForm(decodeURIComponent('${encodeURIComponent(gc.code || '')}'))">Sửa Code</button>
+                <button class="btn-muted btn-sm" onclick="resetGiftcodeUsage(decodeURIComponent('${encodeURIComponent(gc.code || '')}'))">Reset Lượt Nhận</button>
+                <button class="btn-danger btn-sm" onclick="deleteGiftcode(decodeURIComponent('${encodeURIComponent(gc.code || '')}'), ${gc.id})">Xóa</button>
               </div>
             </td>
           </tr>
@@ -2520,17 +2523,37 @@
     }
 
     async function resetGiftcodeUsage(code) {
-      if (!confirm(`Cho phép toàn bộ người chơi đã từng nhập mã [${code}] có thể nhập lại mã này?`)) return;
       const res = await postAction({ action: 'reset_giftcode_usage', code });
       showToast(res.message || 'Đã reset lượt nhận!', !res.ok);
       if (res.ok) fetchStatus();
     }
 
     async function deleteGiftcode(code, id) {
-      if (!confirm(`Bạn có chắc chắn muốn xóa mã Giftcode [${code}] không?`)) return;
+      showToast(`Đang xóa mã Giftcode [${code}]...`, false);
       const res = await postAction({ action: 'delete_giftcode', code, id });
       showToast(res.message || 'Đã xóa Giftcode!', !res.ok);
-      if (res.ok) fetchStatus();
+      if (res.ok) {
+        if (Array.isArray(res.giftcodes)) {
+          cachedGiftcodes = res.giftcodes;
+          const gcBadge = document.getElementById('countGiftcodesTab');
+          if (gcBadge) gcBadge.textContent = cachedGiftcodes.length;
+          renderGiftcodesTable();
+        }
+        fetchStatus();
+      }
+    }
+
+    async function deleteAllGiftcodes() {
+      showToast('Đang xóa toàn bộ mã Giftcode...', false);
+      const res = await postAction({ action: 'delete_all_giftcodes' });
+      showToast(res.message || 'Đã xóa toàn bộ Giftcode!', !res.ok);
+      if (res.ok) {
+        cachedGiftcodes = [];
+        const gcBadge = document.getElementById('countGiftcodesTab');
+        if (gcBadge) gcBadge.textContent = '0';
+        renderGiftcodesTable();
+        fetchStatus();
+      }
     }
 
     async function searchItemsDb() {

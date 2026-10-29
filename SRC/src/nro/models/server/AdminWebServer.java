@@ -1854,19 +1854,20 @@ public class AdminWebServer {
                     GiftCode removed = null;
                     for (int i = GiftCodeManager.gI().listGiftCode.size() - 1; i >= 0; i--) {
                         GiftCode gc = GiftCodeManager.gI().listGiftCode.get(i);
-                        if (gc != null && ((targetId > 0 && gc.id == targetId) || (!targetCode.isEmpty() && gc.code != null && gc.code.equalsIgnoreCase(targetCode)))) {
+                        if (gc != null && ((targetId >= 0 && gc.id == targetId)
+                                || (!targetCode.isEmpty() && gc.code != null && gc.code.trim().equalsIgnoreCase(targetCode)))) {
                             removed = GiftCodeManager.gI().listGiftCode.remove(i);
-                            break;
                         }
                     }
                     try (Connection con = LocalManager.getConnection()) {
-                        if (targetId > 0) {
+                        if (targetId >= 0) {
                             try (PreparedStatement ps = con.prepareStatement("DELETE FROM giftcode WHERE id = ?")) {
                                 ps.setInt(1, targetId);
                                 ps.executeUpdate();
                             }
-                        } else if (!targetCode.isEmpty()) {
-                            try (PreparedStatement ps = con.prepareStatement("DELETE FROM giftcode WHERE code = ?")) {
+                        }
+                        if (!targetCode.isEmpty()) {
+                            try (PreparedStatement ps = con.prepareStatement("DELETE FROM giftcode WHERE LOWER(TRIM(code)) = LOWER(TRIM(?))")) {
                                 ps.setString(1, targetCode);
                                 ps.executeUpdate();
                             }
@@ -1877,7 +1878,19 @@ public class AdminWebServer {
                     }
                     ServerNotify.gI().broadcastNotifyTab();
                     String codeLabel = removed != null ? removed.code : targetCode;
-                    sendJson(exchange, 200, "{\"ok\":true,\"message\":" + jsonStr("Đã xóa mã Giftcode [" + codeLabel + "] thành công!") + "}");
+                    sendJson(exchange, 200, "{\"ok\":true,\"message\":" + jsonStr("Đã xóa mã Giftcode [" + codeLabel + "] thành công!") + ",\"giftcodes\":" + serializeGiftCodes() + "}");
+                }
+                case "delete_all_giftcodes" -> {
+                    GiftCodeManager.gI().listGiftCode.clear();
+                    try (Connection con = LocalManager.getConnection();
+                         PreparedStatement ps = con.prepareStatement("DELETE FROM giftcode")) {
+                        ps.executeUpdate();
+                    } catch (Exception e) {
+                        sendJson(exchange, 500, "{\"ok\":false,\"message\":" + jsonStr("Lỗi xóa toàn bộ Giftcode: " + e.getMessage()) + "}");
+                        return;
+                    }
+                    ServerNotify.gI().broadcastNotifyTab();
+                    sendJson(exchange, 200, "{\"ok\":true,\"message\":\"Đã xóa sạch toàn bộ mã Giftcode trên Server!\",\"giftcodes\":[]}");
                 }
                 case "reset_giftcode_usage" -> {
                     String targetCode = params.getOrDefault("code", "").trim();
