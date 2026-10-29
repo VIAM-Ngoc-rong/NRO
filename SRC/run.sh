@@ -96,12 +96,12 @@ if [ -n "$JAVAC_BIN" ]; then
         src/nro/models/npc_list/OngMoori.java \
         src/nro/models/npc_list/OngParagus.java \
         src/nro/models/npc/NpcFactory.java \
+        src/nro/models/mob/Mob.java \
         src/nro/models/server/ServerNotify.java \
         src/nro/models/server/AdminWebServer.java
     $JAVAC_BIN -encoding UTF-8 -proc:none -cp "build/classes:lib/*:20.jar" -d build/classes \
         src/nro/models/database/ShopDAO.java \
         src/nro/models/services/ItemService.java \
-        src/nro/models/mob/Mob.java \
         src/nro/models/boss/Boss.java \
         src/nro/models/combine/TaiCheDoThan.java \
         src/nro/models/combine/DapDoKichHoat.java \

@@ -225,8 +225,12 @@ public class Mob {
         if (pl == null || pl.nPoint == null) {
             return 0;
         }
-        // Máy đấm luyện tập và Mộc nhân: chỉ cộng tiềm năng cho Đệ tử dưới 15 triệu sức mạnh
-        if (this.tempId == ConstMob.MAY_DO_SUC_MANH || this.tempId == ConstMob.MOC_NHAN) {
+        // Máy đấm không cộng tiềm năng / sức mạnh
+        if (this.tempId == ConstMob.MAY_DO_SUC_MANH) {
+            return 0;
+        }
+        // Mộc nhân: chỉ cộng tiềm năng cho Đệ tử dưới 15 triệu sức mạnh
+        if (this.tempId == ConstMob.MOC_NHAN) {
             if (pl.isPet && pl.nPoint.power >= 15_000_000L) {
                 return 0;
             }
