@@ -15,6 +15,9 @@ if [ -d "/etc/mysql/mysql.conf.d" ]; then
     printf "[mysqld]\nskip-log-bin\n" > /etc/mysql/mysql.conf.d/disable_binlog.cnf 2>/dev/null || true
 fi
 mkdir -p lib 2>/dev/null || true
+if [ -f "data/map/tile_set_Info" ] && [ ! -f "data/map/tile_set_info" ]; then
+    cp -f "data/map/tile_set_Info" "data/map/tile_set_info"
+fi
 if [ ! -s "lib/mysql-connector-java-5.1.49.jar" ]; then
     echo "Đang tải thư viện MySQL Connector 5.1.49..."
     curl -sL "https://repo1.maven.org/maven2/mysql/mysql-connector-java/5.1.49/mysql-connector-java-5.1.49.jar" -o "lib/mysql-connector-java-5.1.49.jar" || \
