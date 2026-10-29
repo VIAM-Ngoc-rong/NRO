@@ -44,6 +44,14 @@ public class NPoint {
     private Player player;
     long timeXinbatoBuff;
 
+    public void setPlayer(Player player) {
+        this.player = player;
+    }
+
+    public Player getPlayer() {
+        return this.player;
+    }
+
     public NPoint(Player player) {
         this.player = player;
         this.tlHp = new ArrayList<>();

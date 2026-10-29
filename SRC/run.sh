@@ -85,16 +85,20 @@ if [ -n "$JAVAC_BIN" ]; then
     echo "Đang đồng bộ biên dịch các file cập nhật mới nhất sang build/classes..."
     $JAVAC_BIN -encoding UTF-8 -proc:none -cp "build/classes:lib/*:20.jar" -d build/classes \
         src/nro/models/event/EventManager.java \
-        src/nro/models/map/service/MapService.java \
-        src/nro/models/map/service/ChangeMapService.java \
-        src/nro/models/npc/NpcFactory.java \
-        src/nro/models/server/ServerNotify.java \
-        src/nro/models/server/AdminWebServer.java \
-        src/nro/models/server/Manager.java \
         src/nro/models/player/Player.java \
         src/nro/models/player/NPoint.java \
+        src/nro/models/server/Manager.java \
         src/nro/models/database/MrBlue.java \
         src/nro/models/database/PlayerDAO.java \
+        src/nro/models/map/service/MapService.java \
+        src/nro/models/map/service/ChangeMapService.java \
+        src/nro/models/npc_list/OngGohan.java \
+        src/nro/models/npc_list/OngMoori.java \
+        src/nro/models/npc_list/OngParagus.java \
+        src/nro/models/npc/NpcFactory.java \
+        src/nro/models/server/ServerNotify.java \
+        src/nro/models/server/AdminWebServer.java
+    $JAVAC_BIN -encoding UTF-8 -proc:none -cp "build/classes:lib/*:20.jar" -d build/classes \
         src/nro/models/database/ShopDAO.java \
         src/nro/models/services/ItemService.java \
         src/nro/models/mob/Mob.java \
@@ -104,10 +108,7 @@ if [ -n "$JAVAC_BIN" ]; then
         src/nro/models/combine/CheTaoTrangBiThienSu.java \
         src/nro/models/combine/PhaLeHoaTrangBi.java \
         src/nro/models/combine/CombineSystem.java \
-        src/nro/models/map/phoban/RedRibbonHQ.java \
-        src/nro/models/npc_list/OngGohan.java \
-        src/nro/models/npc_list/OngMoori.java \
-        src/nro/models/npc_list/OngParagus.java
+        src/nro/models/map/phoban/RedRibbonHQ.java 2>/dev/null || true
 fi
 
 OLD_PIDS=$(pgrep -f "java.*(nro.models.server.ServerManager|20.jar|NgocRongOnline.jar)" || true)
