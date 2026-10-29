@@ -53,12 +53,14 @@ public class OngGohan extends Npc {
 
     protected void openMenuBangXepHang(Player player) {
         this.createOtherMenu(player, 9905,
-                "|7|=== BẢNG XẾP HẠNG NHÂN VẬT ===\n"
+                "|7|=== BẢNG XẾP HẠNG & PHẦN THƯỞNG TOP NGÀY ===\n"
                 + "|2|Vinh danh những chiến binh xuất sắc nhất toàn máy chủ!\n"
-                + "|0|Hãy chọn hạng mục xếp hạng con muốn xem:",
+                + "|1|Đặc quyền Top 1 - Top 10 mỗi bảng: Nhận thưởng hằng ngày (Thỏi vàng, Hồng ngọc, Ngọc Rồng 3 Sao, Rương SKH, Điểm Săn Boss)!\n"
+                + "|0|Hãy chọn hạng mục con muốn xem hoặc nhận thưởng:",
                 "Top\nSức Mạnh",
                 "Top\nNhiệm Vụ",
                 "Top Đòn Đánh\nCao Nhất",
+                "Nhận Thưởng\nTop Ngày",
                 "Đóng");
     }
 
@@ -78,110 +80,336 @@ public class OngGohan extends Npc {
         long curDame;
     }
 
+    private Map<Integer, HomeTopRow> loadAllHomeTopRows() {
+        Map<Integer, HomeTopRow> rowMap = new HashMap<>();
+        try (Connection con = LocalManager.getConnection()) {
+            try (PreparedStatement psAlter = con.prepareStatement(
+                    "ALTER TABLE player ADD COLUMN max_dame_hit BIGINT NOT NULL DEFAULT 0")) {
+                psAlter.executeUpdate();
+            } catch (Exception ignored) {
+            }
+            try (PreparedStatement ps = con.prepareStatement(
+                    "SELECT id, name, gender, head, data_point, data_task, max_dame_hit FROM player");
+                 ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    HomeTopRow row = new HomeTopRow();
+                    row.id = rs.getInt("id");
+                    row.name = rs.getString("name");
+                    row.gender = rs.getByte("gender");
+                    row.head = rs.getShort("head");
+                    try {
+                        row.maxDameHit = rs.getLong("max_dame_hit");
+                    } catch (Exception ignored) {
+                    }
+                    try {
+                        JSONArray dp = (JSONArray) JSONValue.parse(rs.getString("data_point"));
+                        if (dp != null && dp.size() > 7) {
+                            row.power = Long.parseLong(String.valueOf(dp.get(1)));
+                            row.tiemNang = Long.parseLong(String.valueOf(dp.get(2)));
+                            row.curDame = Long.parseLong(String.valueOf(dp.get(7)));
+                        }
+                    } catch (Exception ignored) {
+                    }
+                    try {
+                        JSONArray dt = (JSONArray) JSONValue.parse(rs.getString("data_task"));
+                        if (dt != null && dt.size() >= 3) {
+                            row.taskId = Integer.parseInt(String.valueOf(dt.get(0)));
+                            row.taskIndex = Integer.parseInt(String.valueOf(dt.get(1)));
+                            row.taskCount = Integer.parseInt(String.valueOf(dt.get(2)));
+                        }
+                    } catch (Exception ignored) {
+                    }
+                    if (row.maxDameHit < row.curDame) {
+                        row.maxDameHit = row.curDame;
+                    }
+                    rowMap.put(row.id, row);
+                }
+            }
+        } catch (Exception e) {
+            Logger.logException(OngGohan.class, e, "Lỗi đọc dữ liệu BXH tại nhà");
+        }
+
+        for (Player live : new ArrayList<>(Client.gI().getPlayers())) {
+            if (live == null || !live.isPl() || live.isBot || live.nPoint == null) {
+                continue;
+            }
+            int pid = (int) live.id;
+            HomeTopRow row = rowMap.computeIfAbsent(pid, k -> new HomeTopRow());
+            row.id = pid;
+            row.name = live.name;
+            row.gender = live.gender;
+            row.head = live.getHead();
+            row.body = live.getBody();
+            row.leg = live.getLeg();
+            row.power = live.nPoint.power;
+            row.tiemNang = live.nPoint.tiemNang;
+            row.curDame = live.nPoint.dame;
+            row.maxDameHit = Math.max(row.maxDameHit, Math.max(live.max_dame_hit, live.nPoint.dame));
+            if (live.playerTask != null && live.playerTask.taskMain != null) {
+                row.taskId = live.playerTask.taskMain.id;
+                row.taskIndex = live.playerTask.taskMain.index;
+                if (live.playerTask.taskMain.subTasks != null
+                        && row.taskIndex >= 0
+                        && row.taskIndex < live.playerTask.taskMain.subTasks.size()) {
+                    row.taskCount = live.playerTask.taskMain.subTasks.get(row.taskIndex).count;
+                }
+            }
+        }
+        return rowMap;
+    }
+
+    private List<HomeTopRow> getSortedTopList(Map<Integer, HomeTopRow> rowMap, int type) {
+        List<HomeTopRow> list = new ArrayList<>(rowMap.values());
+        switch (type) {
+            case 0 -> // Top Sức Mạnh
+                list.sort((a, b) -> {
+                    int cmp = Long.compare(b.power, a.power);
+                    return cmp != 0 ? cmp : Long.compare(b.tiemNang, a.tiemNang);
+                });
+            case 1 -> // Top Nhiệm Vụ
+                list.sort((a, b) -> {
+                    int c1 = Integer.compare(b.taskId, a.taskId);
+                    if (c1 != 0) return c1;
+                    int c2 = Integer.compare(b.taskIndex, a.taskIndex);
+                    if (c2 != 0) return c2;
+                    int c3 = Integer.compare(b.taskCount, a.taskCount);
+                    return c3 != 0 ? c3 : Long.compare(b.power, a.power);
+                });
+            default -> // Top Đòn Đánh Cao Nhất
+                list.sort((a, b) -> {
+                    int cmp = Long.compare(b.maxDameHit, a.maxDameHit);
+                    if (cmp != 0) return cmp;
+                    int cmp2 = Long.compare(b.curDame, a.curDame);
+                    return cmp2 != 0 ? cmp2 : Long.compare(b.power, a.power);
+                });
+        }
+        return list;
+    }
+
+    private int findPlayerRank(List<HomeTopRow> sortedList, long playerId) {
+        for (int i = 0; i < sortedList.size(); i++) {
+            if (sortedList.get(i).id == (int) playerId) {
+                return i + 1;
+            }
+        }
+        return -1;
+    }
+
+    private void ensureTopDailyRewardTable(Connection con) {
+        try (PreparedStatement ps = con.prepareStatement(
+                "CREATE TABLE IF NOT EXISTS top_daily_reward_claims ("
+                + "claim_date VARCHAR(16) NOT NULL, "
+                + "category INT NOT NULL, "
+                + "player_id INT NOT NULL, "
+                + "account_id INT NOT NULL, "
+                + "rank_pos INT NOT NULL, "
+                + "claimed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, "
+                + "PRIMARY KEY (claim_date, category, player_id))")) {
+            ps.executeUpdate();
+        } catch (Exception ignored) {
+        }
+    }
+
+    private String getTodayDateKey() {
+        return java.time.LocalDate.now(java.time.ZoneId.of("Asia/Ho_Chi_Minh")).toString();
+    }
+
+    private boolean hasClaimedTopDailyReward(Connection con, String dateKey, int category, int playerId, int accountId, int rankPos) {
+        try (PreparedStatement ps = con.prepareStatement(
+                "SELECT 1 FROM top_daily_reward_claims WHERE claim_date = ? AND category = ? AND (player_id = ? OR account_id = ? OR rank_pos = ?) LIMIT 1")) {
+            ps.setString(1, dateKey);
+            ps.setInt(2, category);
+            ps.setInt(3, playerId);
+            ps.setInt(4, accountId);
+            ps.setInt(5, rankPos);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    protected void openMenuThuongTopNgay(Player player) {
+        if (player == null || player.getSession() == null) {
+            return;
+        }
+        Map<Integer, HomeTopRow> rowMap = loadAllHomeTopRows();
+        int rankPower = findPlayerRank(getSortedTopList(rowMap, 0), player.id);
+        int rankTask = findPlayerRank(getSortedTopList(rowMap, 1), player.id);
+        int rankDame = findPlayerRank(getSortedTopList(rowMap, 2), player.id);
+
+        String today = getTodayDateKey();
+        boolean claimedPower = false;
+        boolean claimedTask = false;
+        boolean claimedDame = false;
+        int accId = player.getSession().userId;
+
+        try (Connection con = LocalManager.getConnection()) {
+            ensureTopDailyRewardTable(con);
+            claimedPower = hasClaimedTopDailyReward(con, today, 0, (int) player.id, accId, rankPower);
+            claimedTask = hasClaimedTopDailyReward(con, today, 1, (int) player.id, accId, rankTask);
+            claimedDame = hasClaimedTopDailyReward(con, today, 2, (int) player.id, accId, rankDame);
+        } catch (Exception ignored) {
+        }
+
+        String stPower = (rankPower >= 1 && rankPower <= 10)
+                ? ("Hạng " + rankPower + (claimedPower ? " [Đã nhận hôm nay]" : " [CÓ THỂ NHẬN]"))
+                : (rankPower > 0 ? "Hạng " + rankPower + " (Cần Top 1-10)" : "Chưa xếp hạng");
+        String stTask = (rankTask >= 1 && rankTask <= 10)
+                ? ("Hạng " + rankTask + (claimedTask ? " [Đã nhận hôm nay]" : " [CÓ THỂ NHẬN]"))
+                : (rankTask > 0 ? "Hạng " + rankTask + " (Cần Top 1-10)" : "Chưa xếp hạng");
+        String stDame = (rankDame >= 1 && rankDame <= 10)
+                ? ("Hạng " + rankDame + (claimedDame ? " [Đã nhận hôm nay]" : " [CÓ THỂ NHẬN]"))
+                : (rankDame > 0 ? "Hạng " + rankDame + " (Cần Top 1-10)" : "Chưa xếp hạng");
+
+        String info = "|7|=== PHẦN THƯỞNG TOP HẰNG NGÀY (" + today + ") ===\n"
+                + "|2|• Top Sức Mạnh: " + stPower + "\n"
+                + "• Top Nhiệm Vụ: " + stTask + "\n"
+                + "• Top Đòn Đánh: " + stDame + "\n"
+                + "|1|--- CƠ CẤU PHẦN THƯỞNG MỖI BẢNG (1 LẦN/NGÀY) ---\n"
+                + "• TOP 1: 50 Thỏi vàng + 3.000 Hồng ngọc + 100k Ngọc + 3 NR 3 Sao + 1 Rương SKH + 20 Điểm Boss/SK\n"
+                + "• TOP 2: 30 Thỏi vàng + 2.000 Hồng ngọc + 50k Ngọc + 2 NR 3 Sao + 15 Điểm Boss/SK\n"
+                + "• TOP 3: 20 Thỏi vàng + 1.500 Hồng ngọc + 30k Ngọc + 1 NR 3 Sao + 10 Điểm Boss/SK\n"
+                + "• TOP 4-10: 10 Thỏi vàng + 800 Hồng ngọc + 20k Ngọc + 5 Điểm Boss/SK";
+
+        this.createOtherMenu(player, 9906, info,
+                "Nhận Quà\nTop Sức Mạnh",
+                "Nhận Quà\nTop Nhiệm Vụ",
+                "Nhận Quà\nTop Đòn Đánh",
+                "Quay lại");
+    }
+
+    protected void claimDailyTopReward(Player player, int category) {
+        if (player == null || player.getSession() == null || category < 0 || category > 2) {
+            return;
+        }
+        String catName = switch (category) {
+            case 0 -> "Top Sức Mạnh";
+            case 1 -> "Top Nhiệm Vụ";
+            default -> "Top Đòn Đánh Cao Nhất";
+        };
+
+        Map<Integer, HomeTopRow> rowMap = loadAllHomeTopRows();
+        List<HomeTopRow> sorted = getSortedTopList(rowMap, category);
+        int rank = findPlayerRank(sorted, player.id);
+
+        if (rank < 1 || rank > 10) {
+            Service.gI().sendThongBao(player, "Bạn hiện đứng Hạng " + (rank > 0 ? rank : "N/A") + " bảng " + catName + ". Chỉ Top 1 - Top 10 mới được nhận thưởng hằng ngày!");
+            return;
+        }
+        if (InventoryService.gI().getCountEmptyBag(player) < 2) {
+            Service.gI().sendThongBao(player, "Vui lòng dọn trống ít nhất 2 ô hành trang trước khi nhận thưởng Top ngày!");
+            return;
+        }
+
+        String today = getTodayDateKey();
+        int accId = player.getSession().userId;
+
+        int goldBars;
+        int rubyAdd;
+        int gemAdd;
+        int nr3StarCount;
+        int skhBoxAdd;
+        int bossEventPoints;
+
+        if (rank == 1) {
+            goldBars = 50;
+            rubyAdd = 3_000;
+            gemAdd = 100_000;
+            nr3StarCount = 3;
+            skhBoxAdd = 1;
+            bossEventPoints = 20;
+        } else if (rank == 2) {
+            goldBars = 30;
+            rubyAdd = 2_000;
+            gemAdd = 50_000;
+            nr3StarCount = 2;
+            skhBoxAdd = 0;
+            bossEventPoints = 15;
+        } else if (rank == 3) {
+            goldBars = 20;
+            rubyAdd = 1_500;
+            gemAdd = 30_000;
+            nr3StarCount = 1;
+            skhBoxAdd = 0;
+            bossEventPoints = 10;
+        } else {
+            goldBars = 10;
+            rubyAdd = 800;
+            gemAdd = 20_000;
+            nr3StarCount = 0;
+            skhBoxAdd = 0;
+            bossEventPoints = 5;
+        }
+
+        try (Connection con = LocalManager.getConnection()) {
+            ensureTopDailyRewardTable(con);
+            if (hasClaimedTopDailyReward(con, today, category, (int) player.id, accId, rank)) {
+                Service.gI().sendThongBao(player, "Hôm nay bạn (hoặc vị trí Hạng " + rank + " bảng " + catName + ") đã nhận phần thưởng ngày rồi! Hãy quay lại vào ngày mai.");
+                return;
+            }
+
+            try (PreparedStatement psIns = con.prepareStatement(
+                    "INSERT INTO top_daily_reward_claims (claim_date, category, player_id, account_id, rank_pos) VALUES (?, ?, ?, ?, ?)")) {
+                psIns.setString(1, today);
+                psIns.setInt(2, category);
+                psIns.setInt(3, (int) player.id);
+                psIns.setInt(4, accId);
+                psIns.setInt(5, rank);
+                psIns.executeUpdate();
+            }
+
+            if (skhBoxAdd > 0) {
+                try (PreparedStatement psSkh = con.prepareStatement(
+                        "UPDATE account SET ruong_skh = ruong_skh + ? WHERE id = ?")) {
+                    psSkh.setInt(1, skhBoxAdd);
+                    psSkh.setInt(2, accId);
+                    psSkh.executeUpdate();
+                }
+                player.getSession().ruongSkh += skhBoxAdd;
+            }
+        } catch (Exception e) {
+            Logger.logException(OngGohan.class, e, "Lỗi nhận thưởng Top hằng ngày: " + player.name);
+            Service.gI().sendThongBao(player, "Có lỗi xảy ra khi nhận thưởng Top ngày, vui lòng thử lại!");
+            return;
+        }
+
+        Item thoiVang = ItemService.gI().createNewItem((short) 457, goldBars);
+        InventoryService.gI().addItemBag(player, thoiVang);
+
+        if (nr3StarCount > 0) {
+            Item nr3s = ItemService.gI().createNewItem((short) 16, nr3StarCount);
+            InventoryService.gI().addItemBag(player, nr3s);
+        }
+
+        player.inventory.ruby = (int) Math.min(2_000_000_000L, (long) player.inventory.ruby + rubyAdd);
+        player.inventory.gem = (int) Math.min(2_000_000_000L, (long) player.inventory.gem + gemAdd);
+        player.pointSanBoss += bossEventPoints;
+        if (player.event != null) {
+            player.event.addEventPoint(bossEventPoints);
+        }
+
+        InventoryService.gI().sendItemBags(player);
+        Service.gI().sendMoney(player);
+
+        String rewardMsg = "Chúc mừng Hạng " + rank + " [" + catName + "]! Nhận: "
+                + goldBars + " Thỏi vàng, "
+                + Util.formatNumber(rubyAdd) + " Hồng ngọc, "
+                + Util.formatNumber(gemAdd) + " Ngọc xanh"
+                + (nr3StarCount > 0 ? (", " + nr3StarCount + " Ngọc Rồng 3 Sao") : "")
+                + (skhBoxAdd > 0 ? (", +" + skhBoxAdd + " Rương SKH") : "")
+                + ", +" + bossEventPoints + " Điểm Boss/SK!";
+        Service.gI().sendThongBao(player, rewardMsg);
+        nro.models.server.ServerNotify.gI().notify("Vinh danh Top Ngày: Chiến binh [" + player.name
+                + "] (Hạng " + rank + " " + catName + ") vừa nhận phần thưởng hằng ngày rực rỡ tại nhà!");
+        openMenuThuongTopNgay(player);
+    }
+
     protected void showHomeLeaderboard(Player viewer, int type) {
         try {
-            Map<Integer, HomeTopRow> rowMap = new HashMap<>();
-
-            // 1. Đọc toàn bộ nhân vật từ MySQL
-            try (Connection con = LocalManager.getConnection()) {
-                try (PreparedStatement psAlter = con.prepareStatement(
-                        "ALTER TABLE player ADD COLUMN max_dame_hit BIGINT NOT NULL DEFAULT 0")) {
-                    psAlter.executeUpdate();
-                } catch (Exception ignored) {
-                }
-                try (PreparedStatement ps = con.prepareStatement(
-                        "SELECT id, name, gender, head, data_point, data_task, max_dame_hit FROM player");
-                     ResultSet rs = ps.executeQuery()) {
-                    while (rs.next()) {
-                        HomeTopRow row = new HomeTopRow();
-                        row.id = rs.getInt("id");
-                        row.name = rs.getString("name");
-                        row.gender = rs.getByte("gender");
-                        row.head = rs.getShort("head");
-                        try {
-                            row.maxDameHit = rs.getLong("max_dame_hit");
-                        } catch (Exception ignored) {
-                        }
-                        try {
-                            JSONArray dp = (JSONArray) JSONValue.parse(rs.getString("data_point"));
-                            if (dp != null && dp.size() > 7) {
-                                row.power = Long.parseLong(String.valueOf(dp.get(1)));
-                                row.tiemNang = Long.parseLong(String.valueOf(dp.get(2)));
-                                row.curDame = Long.parseLong(String.valueOf(dp.get(7)));
-                            }
-                        } catch (Exception ignored) {
-                        }
-                        try {
-                            JSONArray dt = (JSONArray) JSONValue.parse(rs.getString("data_task"));
-                            if (dt != null && dt.size() >= 3) {
-                                row.taskId = Integer.parseInt(String.valueOf(dt.get(0)));
-                                row.taskIndex = Integer.parseInt(String.valueOf(dt.get(1)));
-                                row.taskCount = Integer.parseInt(String.valueOf(dt.get(2)));
-                            }
-                        } catch (Exception ignored) {
-                        }
-                        if (row.maxDameHit < row.curDame) {
-                            row.maxDameHit = row.curDame;
-                        }
-                        rowMap.put(row.id, row);
-                    }
-                }
-            } catch (Exception e) {
-                Logger.logException(OngGohan.class, e, "Lỗi đọc dữ liệu BXH tại nhà");
-            }
-
-            // 2. Cập nhật dữ liệu thời gian thực từ những người chơi đang Online
-            for (Player live : new ArrayList<>(Client.gI().getPlayers())) {
-                if (live == null || !live.isPl() || live.isBot || live.nPoint == null) {
-                    continue;
-                }
-                int pid = (int) live.id;
-                HomeTopRow row = rowMap.computeIfAbsent(pid, k -> new HomeTopRow());
-                row.id = pid;
-                row.name = live.name;
-                row.gender = live.gender;
-                row.head = live.getHead();
-                row.body = live.getBody();
-                row.leg = live.getLeg();
-                row.power = live.nPoint.power;
-                row.tiemNang = live.nPoint.tiemNang;
-                row.curDame = live.nPoint.dame;
-                row.maxDameHit = Math.max(row.maxDameHit, Math.max(live.max_dame_hit, live.nPoint.dame));
-                if (live.playerTask != null && live.playerTask.taskMain != null) {
-                    row.taskId = live.playerTask.taskMain.id;
-                    row.taskIndex = live.playerTask.taskMain.index;
-                    if (live.playerTask.taskMain.subTasks != null
-                            && row.taskIndex >= 0
-                            && row.taskIndex < live.playerTask.taskMain.subTasks.size()) {
-                        row.taskCount = live.playerTask.taskMain.subTasks.get(row.taskIndex).count;
-                    }
-                }
-            }
-
-            List<HomeTopRow> list = new ArrayList<>(rowMap.values());
-            switch (type) {
-                case 0 -> // Top Sức Mạnh
-                    list.sort((a, b) -> {
-                        int cmp = Long.compare(b.power, a.power);
-                        return cmp != 0 ? cmp : Long.compare(b.tiemNang, a.tiemNang);
-                    });
-                case 1 -> // Top Nhiệm Vụ
-                    list.sort((a, b) -> {
-                        int c1 = Integer.compare(b.taskId, a.taskId);
-                        if (c1 != 0) return c1;
-                        int c2 = Integer.compare(b.taskIndex, a.taskIndex);
-                        if (c2 != 0) return c2;
-                        int c3 = Integer.compare(b.taskCount, a.taskCount);
-                        return c3 != 0 ? c3 : Long.compare(b.power, a.power);
-                    });
-                default -> // Top Đòn Đánh Cao Nhất
-                    list.sort((a, b) -> {
-                        int cmp = Long.compare(b.maxDameHit, a.maxDameHit);
-                        if (cmp != 0) return cmp;
-                        int cmp2 = Long.compare(b.curDame, a.curDame);
-                        return cmp2 != 0 ? cmp2 : Long.compare(b.power, a.power);
-                    });
-            }
+            Map<Integer, HomeTopRow> rowMap = loadAllHomeTopRows();
+            List<HomeTopRow> list = getSortedTopList(rowMap, type);
 
             int limit = Math.min(50, list.size());
             String title = switch (type) {
@@ -409,6 +637,16 @@ public class OngGohan extends Npc {
             if (player.idMark.getIndexMenu() == 9905) {
                 if (select >= 0 && select <= 2) {
                     showHomeLeaderboard(player, select);
+                } else if (select == 3) {
+                    openMenuThuongTopNgay(player);
+                }
+                return;
+            }
+            if (player.idMark.getIndexMenu() == 9906) {
+                if (select >= 0 && select <= 2) {
+                    claimDailyTopReward(player, select);
+                } else if (select == 3) {
+                    openMenuBangXepHang(player);
                 }
                 return;
             }
