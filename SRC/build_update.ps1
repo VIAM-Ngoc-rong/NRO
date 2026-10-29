@@ -24,6 +24,11 @@ javac -proc:none -encoding UTF-8 -d build/classes -cp "build/classes;lib/*" `
     src/nro/models/player/SetClothes.java `
     src/nro/models/player/Player.java `
     src/nro/models/player/Pet.java `
+    src/nro/models/player_badges/Badges.java `
+    src/nro/models/player_badges/BadgesData.java `
+    src/nro/models/player_badges/BagesTemplate.java `
+    src/nro/models/player_badges/BadgesService.java `
+    src/nro/models/task/BadgesTaskService.java `
     src/nro/models/mob/Mob.java `
     src/nro/models/mob/MobMe.java `
     src/nro/models/mob_bigboss/MayDoSucManh.java `
@@ -127,6 +132,7 @@ $pkgs = @(
     "nro\models\event",
     "nro\models\server",
     "nro\models\player",
+    "nro\models\player_badges",
     "nro\models\mob",
     "nro\models\mob_bigboss",
     "nro\models\map",

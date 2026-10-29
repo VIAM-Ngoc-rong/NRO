@@ -333,11 +333,11 @@ public class OngGohan extends Npc {
         int badgeItemId = nro.models.player_badges.BagesTemplate.getTop1BadgeItemId(category);
 
         if (player.dataBadges != null) {
-            for (nro.models.player.BadgesData bd : player.dataBadges) {
+            for (nro.models.player_badges.BadgesData bd : player.dataBadges) {
                 bd.isUse = false;
             }
-            nro.models.player.BadgesData existing = null;
-            for (nro.models.player.BadgesData bd : player.dataBadges) {
+            nro.models.player_badges.BadgesData existing = null;
+            for (nro.models.player_badges.BadgesData bd : player.dataBadges) {
                 if (bd.idBadGes == top1BadgeId) {
                     existing = bd;
                     break;
@@ -347,13 +347,13 @@ public class OngGohan extends Npc {
                 existing.timeofUseBadges = expireTime;
                 existing.isUse = true;
             } else {
-                player.dataBadges.add(new nro.models.player.BadgesData(top1BadgeId, expireTime, true));
+                player.dataBadges.add(new nro.models.player_badges.BadgesData(top1BadgeId, expireTime, true));
             }
         }
 
         if (player.badges != null && visualEffId != -1) {
-            player.badges.idBadges = visualEffId;
-            player.badges.timeofUseBadges = expireTime;
+            player.badges.idBadges = top1BadgeId;
+            player.badges.lastTimeSendBadges = System.currentTimeMillis();
             Service.gI().sendBadgesPlayer(player, 5, visualEffId);
         }
 
