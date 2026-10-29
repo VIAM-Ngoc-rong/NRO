@@ -449,4 +449,72 @@ public class RedRibbonHQ implements Runnable {
         this.clan = null;
         this.isTimePicking = false;
     }
+
+    public int getId() {
+        return this.id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public List<Zone> getZones() {
+        return this.zones;
+    }
+
+    public Clan getClan() {
+        return this.clan;
+    }
+
+    public void setClan(Clan clan) {
+        this.clan = clan;
+    }
+
+    public long getLastTimeOpen() {
+        return this.lastTimeOpen;
+    }
+
+    public void setLastTimeOpen(long lastTimeOpen) {
+        this.lastTimeOpen = lastTimeOpen;
+    }
+
+    public boolean isOpened() {
+        return this.isOpened;
+    }
+
+    public void setOpened(boolean isOpened) {
+        this.isOpened = isOpened;
+    }
+
+    public boolean isTimePicking() {
+        return this.isTimePicking;
+    }
+
+    public void setTimePicking(boolean isTimePicking) {
+        this.isTimePicking = isTimePicking;
+    }
+
+    public long getLastTimePick() {
+        return this.lastTimePick;
+    }
+
+    public void setLastTimePick(long lastTimePick) {
+        this.lastTimePick = lastTimePick;
+    }
+
+    public boolean isWinDT() {
+        return this.winDT;
+    }
+
+    public void setWinDT(boolean winDT) {
+        this.winDT = winDT;
+    }
+
+    public List<Boss> getBosses() {
+        return this.bosses;
+    }
+
+    public void setBosses(List<Boss> bosses) {
+        this.bosses = bosses;
+    }
 }
