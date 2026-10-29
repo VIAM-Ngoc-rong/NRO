@@ -77,6 +77,14 @@ public class MobEffectSkill {
             msg.writer().writeByte(mob.id);
             Service.gI().sendMessAllPlayerInMap(mob.zone, msg);
             msg.cleanup();
+
+            msg = new Message(-124);
+            msg.writer().writeByte(0);
+            msg.writer().writeByte(1);
+            msg.writer().writeByte(42);
+            msg.writer().writeByte(mob.id);
+            Service.gI().sendMessAllPlayerInMap(mob.zone, msg);
+            msg.cleanup();
         } catch (Exception e) {
         }
     }

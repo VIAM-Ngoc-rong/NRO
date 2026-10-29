@@ -118,6 +118,9 @@ public class Mob {
 
     public void injured(Player plAtt, long damage, boolean dieWhenHpFull) {
         if (!this.isDie()) {
+            if (this.effectSkill != null && this.effectSkill.isSocola && damage > 0) {
+                damage += damage / 5;
+            }
             if (damage >= this.point.hp) {
                 damage = this.point.hp;
             }
@@ -368,7 +371,7 @@ public class Mob {
         try {
             List<Player> players = this.zone.getNotBosses();
             for (Player pl : players) {
-                if (!pl.isDie() && !pl.isBoss && !pl.isNewPet && (pl.satellite == null || !pl.satellite.isDefend) && (pl.effectSkin == null || !pl.effectSkin.isVoHinh) && (this.tempId > 18 || (this.tempId > 9 && this.type == 4)) || isBigBoss()) {
+                if (!pl.isDie() && !pl.isBoss && !pl.isNewPet && (pl.satellite == null || !pl.satellite.isDefend) && (pl.effectSkin == null || !pl.effectSkin.isVoHinh) && (pl.effectSkill == null || !pl.effectSkill.isTanHinh) && (this.tempId > 18 || (this.tempId > 9 && this.type == 4)) || isBigBoss()) {
                     int dis = Util.getDistance(pl, this);
                     if (dis <= distance || isBigBoss()) {
                         plAttack = pl;
@@ -395,7 +398,9 @@ public class Mob {
                         continue;
                     }
                     if (plAttt.isDie() || plAttt.isBoss || (plAttt.satellite != null && plAttt.satellite.isDefend)
-                            || (plAttt.effectSkin != null && plAttt.effectSkin.isVoHinh) || !this.temporaryEnemies.contains(plAttt)) {
+                            || (plAttt.effectSkin != null && plAttt.effectSkin.isVoHinh)
+                            || (plAttt.effectSkill != null && plAttt.effectSkill.isTanHinh)
+                            || !this.temporaryEnemies.contains(plAttt)) {
                         continue;
                     }
                     int d = Util.getDistance(plAttt, this);
@@ -417,6 +422,10 @@ public class Mob {
         }
 
         int dameMob = this.point.getDameAttack();
+
+        if (this.effectSkill != null && this.effectSkill.isSocola) {
+            dameMob /= 2;
+        }
 
         if (player.charms != null && player.charms.tdDaTrau > System.currentTimeMillis()) {
             dameMob /= 2;

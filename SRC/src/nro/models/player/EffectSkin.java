@@ -83,6 +83,33 @@ public class EffectSkin {
     private long lastTimeSocolaXQ;
     private long lastTimeMpHoiCute;
     private long lastTimeLanhXQ;
+    private long lastTimeDoremonBuff;
+
+    private boolean isSameTeam(Player p1, Player p2) {
+        if (p1 == null || p2 == null) {
+            return true;
+        }
+        if (p1.equals(p2) || p1.id == p2.id) {
+            return true;
+        }
+        if (p1.isPet && ((Pet) p1).master != null && ((Pet) p1).master.equals(p2)) {
+            return true;
+        }
+        if (p2.isPet && ((Pet) p2).master != null && ((Pet) p2).master.equals(p1)) {
+            return true;
+        }
+        if (p1.isNewPet && ((NewPet) p1).master != null && ((NewPet) p1).master.equals(p2)) {
+            return true;
+        }
+        if (p2.isNewPet && ((NewPet) p2).master != null && ((NewPet) p2).master.equals(p1)) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean isBrolyCharging(Player pl) {
+        return pl instanceof nro.models.boss.Boss b && b.isBrolyBoss() && b.isUsingTTNL;
+    }
 
     public void update() {
         updateVoHinh();
@@ -98,6 +125,7 @@ public class EffectSkin {
             updateXChuong();
             updateSocolaXQ();
             updateMpHoiCute();
+            updateDoremonBuff();
             updateLanhXungQuanh();
 //            updateHalloween();
         }
@@ -167,33 +195,35 @@ public class EffectSkin {
                         long hpHut = 0;
                         long mpHut = 0;
                         List<Player> players = new ArrayList<>();
-                        List<Player> playersMap = this.player.zone.getNotBosses();
+                        List<Player> playersMap = this.player.zone.getHumanoids();
                         for (int i = playersMap.size() - 1; i >= 0; i--) {
                             Player pl = playersMap.get(i);
-                            if (pl != null && pl.nPoint != null && !this.player.equals(pl) && !pl.isBoss && !pl.isDie()
-                                    && (!this.player.isPet || !((Pet) this.player).master.equals(pl))
-                                    && (!pl.isPet || !((Pet) pl).master.equals(this.player))
-                                    && Util.getDistance(this.player, pl) <= 200) {
+                            if (pl != null && pl.nPoint != null && !isSameTeam(this.player, pl) && !pl.isNewPet && !pl.isDie()
+                                    && Util.getDistance(this.player, pl) <= 250) {
                                 players.add(pl);
                             }
                         }
                         for (Mob mob : this.player.zone.mobs) {
-                            if (mob != null && mob.point.gethp() > 1) {
-                                if (Util.getDistance(this.player, mob) <= 200) {
-                                    int subHp = (int) ((long) mob.point.getHpFull() * param / 100);
+                            if (mob != null && !mob.isDie() && mob.point.gethp() > 1) {
+                                if (Util.getDistance(this.player, mob) <= 250) {
+                                    int subHp = (int) ((long) mob.point.getHpFull() * param / 100L);
                                     if (subHp >= mob.point.gethp()) {
                                         subHp = mob.point.gethp() - 1;
                                     }
                                     if (subHp > 0) {
                                         hpHut += subHp;
-                                        mob.injured(null, subHp, false);
+                                        mob.injured(this.player, subHp, false);
                                     }
                                 }
                             }
                         }
                         for (Player pl : players) {
-                            int subHp = (int) ((long) pl.nPoint.hpMax * param / 100);
-                            int subMp = (int) ((long) pl.nPoint.mpMax * param / 100);
+                            int subHp = (int) ((long) pl.nPoint.hpMax * param / 100L);
+                            int subMp = (int) ((long) pl.nPoint.mpMax * param / 100L);
+                            if (pl.isBoss) {
+                                subHp = Math.min(subHp, Math.min(500_000, Math.max(1, pl.nPoint.hpMax / 100)));
+                                subMp = Math.min(subMp, Math.min(500_000, Math.max(1, pl.nPoint.mpMax / 100)));
+                            }
                             if (subHp >= pl.nPoint.hp) {
                                 subHp = pl.nPoint.hp - 1;
                             }
@@ -212,10 +242,9 @@ public class EffectSkin {
                             Service.gI().Send_Info_NV(pl);
                         }
                         if (hpHut > 0 || mpHut > 0) {
-                            this.player.nPoint.addHp((int) Math.min(Integer.MAX_VALUE, hpHut));
-                            this.player.nPoint.addMp((int) Math.min(Integer.MAX_VALUE, mpHut));
-                            PlayerService.gI().sendInfoHpMpMoney(this.player);
-                            Service.gI().Send_Info_NV(this.player);
+                            PlayerService.gI().hoiPhuc(this.player,
+                                    (int) Math.min(Integer.MAX_VALUE, hpHut),
+                                    (int) Math.min(Integer.MAX_VALUE, mpHut));
                         }
                         this.lastTimeXenHutHpKi = System.currentTimeMillis();
                     }
@@ -231,13 +260,28 @@ public class EffectSkin {
             if (this.player.nPoint != null) {
                 int param = this.player.nPoint.tlHpGiamODo;
                 if (param > 0) {
-                    if (Util.canDoWithTime(lastTimeOdo, 10000)) {
-                        List<Player> playersMap = this.player.zone.getNotBosses();
+                    if (Util.canDoWithTime(lastTimeOdo, 8000)) {
+                        for (Mob mob : this.player.zone.mobs) {
+                            if (mob != null && !mob.isDie() && mob.point.gethp() > 1
+                                    && Util.getDistance(this.player, mob) <= 250) {
+                                int subHp = (int) ((long) mob.point.getHpFull() * param / 100L);
+                                if (subHp >= mob.point.gethp()) {
+                                    subHp = mob.point.gethp() - 1;
+                                }
+                                if (subHp > 0) {
+                                    mob.injured(this.player, subHp, false);
+                                }
+                            }
+                        }
+                        List<Player> playersMap = this.player.zone.getHumanoids();
                         for (int i = playersMap.size() - 1; i >= 0; i--) {
                             Player pl = playersMap.get(i);
-                            if (pl != null && pl.nPoint != null && !this.player.equals(pl) && !pl.isBoss && !pl.isDie()
-                                    && Util.getDistance(this.player, pl) <= 200) {
-                                int subHp = (int) ((long) pl.nPoint.hpMax * param / 100);
+                            if (pl != null && pl.nPoint != null && !isSameTeam(this.player, pl) && !pl.isNewPet && !pl.isDie()
+                                    && Util.getDistance(this.player, pl) <= 250) {
+                                int subHp = (int) ((long) pl.nPoint.hpMax * param / 100L);
+                                if (pl.isBoss) {
+                                    subHp = Math.min(subHp, Math.min(500_000, Math.max(1, pl.nPoint.hpMax / 100)));
+                                }
                                 if (subHp >= pl.nPoint.hp) {
                                     subHp = pl.nPoint.hp - 1;
                                 }
@@ -269,24 +313,32 @@ public class EffectSkin {
                 return;
             }
 
-            int addNeDon = 50;
+            int addNeDon = 25;
+            this.player.nPoint.tlNeDonBuffXinbato = addNeDon;
+            this.player.nPoint.timeXinbatoBuff = System.currentTimeMillis();
 
-            List<Player> playersMap = this.player.zone.getNotBosses();
+            for (Mob mob : this.player.zone.mobs) {
+                if (mob != null && !mob.isDie() && Util.getDistance(this.player, mob) <= 250) {
+                    mob.timeAttack = 3500;
+                }
+            }
+
+            List<Player> playersMap = this.player.zone.getHumanoids();
             for (int i = playersMap.size() - 1; i >= 0; i--) {
                 Player pl = playersMap.get(i);
-                if (pl != null && pl.nPoint != null && !this.player.equals(pl) && !pl.isDie()
-                        && Util.getDistance(this.player, pl) <= 200) {
-
-                    int baseNeDon = pl.nPoint.tlNeDon;
-
-                    int buffNeDon = Math.min(addNeDon, 90 - baseNeDon);
-                    if (buffNeDon > 0) {
-                        pl.nPoint.tlNeDonBuffXinbato = buffNeDon;
-                        pl.nPoint.timeXinbatoBuff = System.currentTimeMillis();
-                        Service.gI().chat(pl, textXinbato[Util.nextInt(0, textXinbato.length - 1)]);
-                        PlayerService.gI().sendInfoHpMpMoney(pl);
-                        Service.gI().Send_Info_NV(pl);
+                if (pl != null && pl.nPoint != null && !this.player.equals(pl) && !pl.isNewPet && !pl.isDie()
+                        && Util.getDistance(this.player, pl) <= 250) {
+                    if (isSameTeam(this.player, pl) || !pl.isBoss) {
+                        int baseNeDon = pl.nPoint.tlNeDon;
+                        int buffNeDon = Math.min(addNeDon, 90 - baseNeDon);
+                        if (buffNeDon > 0) {
+                            pl.nPoint.tlNeDonBuffXinbato = buffNeDon;
+                            pl.nPoint.timeXinbatoBuff = System.currentTimeMillis();
+                        }
                     }
+                    Service.gI().chat(pl, textXinbato[Util.nextInt(0, textXinbato.length - 1)]);
+                    PlayerService.gI().sendInfoHpMpMoney(pl);
+                    Service.gI().Send_Info_NV(pl);
                 }
             }
 
@@ -301,18 +353,19 @@ public class EffectSkin {
         try {
             if (this.player.nPoint != null && this.player.nPoint.tlSexyDame > 0) {
                 if (Util.canDoWithTime(lastTimeThoBulma, 10000)) {
-
                     List<Player> playersMap = this.player.zone.getNotBosses();
                     for (int i = playersMap.size() - 1; i >= 0; i--) {
                         Player pl = playersMap.get(i);
-                        if (pl != null && pl.nPoint != null && !this.player.equals(pl) && !pl.isBoss && !pl.isDie()
-                                && Util.getDistance(this.player, pl) <= 200) {
-                            if (player.nPoint.isThoBulma) {
-                                Service.gI().chat(pl, textThoBulma[Util.nextInt(0, textThoBulma.length - 1)]);
-                            } else {
-                                Service.gI().chat(pl, textBuffSD[Util.nextInt(0, textBuffSD.length - 1)]);
+                        if (pl != null && pl.nPoint != null && !pl.isBoss && !pl.isDie()
+                                && Util.getDistance(this.player, pl) <= 250) {
+                            if (!this.player.equals(pl)) {
+                                if (player.nPoint.isThoBulma) {
+                                    Service.gI().chat(pl, textThoBulma[Util.nextInt(0, textThoBulma.length - 1)]);
+                                } else {
+                                    Service.gI().chat(pl, textBuffSD[Util.nextInt(0, textBuffSD.length - 1)]);
+                                }
                             }
-                            EffectSkillService.gI().setDameBuff(pl, 11000, player.nPoint.tlSexyDame);
+                            EffectSkillService.gI().setDameBuff(pl, 12000, player.nPoint.tlSexyDame);
                         }
                     }
                     this.lastTimeThoBulma = System.currentTimeMillis();
@@ -326,17 +379,22 @@ public class EffectSkin {
     private void updateSocolaXQ() {
         try {
             if (this.player.nPoint != null && this.player.nPoint.isSocolaXQ) {
-                if (Util.canDoWithTime(lastTimeSocolaXQ, 30000)) {
-                    List<Player> playersMap = this.player.zone.getNotBosses();
+                if (Util.canDoWithTime(lastTimeSocolaXQ, 15000)) {
+                    for (Mob mob : this.player.zone.mobs) {
+                        if (mob != null && !mob.isDie() && Util.getDistance(this.player, mob) <= 250) {
+                            EffectSkillService.gI().sendMobToSocola(this.player, mob, 8000);
+                        }
+                    }
+                    List<Player> playersMap = this.player.zone.getHumanoids();
                     for (int i = playersMap.size() - 1; i >= 0; i--) {
                         Player pl = playersMap.get(i);
-                        if (pl != null && pl.nPoint != null && !this.player.equals(pl) && !pl.isBoss && !pl.isDie()
-                                && (!this.player.isPet || !((Pet) this.player).master.equals(pl))
-                                && (!pl.isPet || !((Pet) pl).master.equals(this.player))
-                                && Util.getDistance(this.player, pl) <= 200) {
-                            EffectSkillService.gI().setSocola(pl, System.currentTimeMillis(), 10000);
+                        if (pl != null && pl.nPoint != null && !isSameTeam(this.player, pl) && !pl.isNewPet && !pl.isDie()
+                                && !isBrolyCharging(pl)
+                                && Util.getDistance(this.player, pl) <= 250) {
+                            int duration = pl.isBoss ? 5000 : 10000;
+                            EffectSkillService.gI().setSocola(pl, System.currentTimeMillis(), duration);
                             Service.gI().Send_Caitrang(pl);
-                            ItemTimeService.gI().sendItemTime(pl, 4133, 10);
+                            ItemTimeService.gI().sendItemTime(pl, 4133, duration / 1000);
                             Service.gI().chat(pl, "Biến thành Sôcôla rồi!");
                         }
                     }
@@ -352,20 +410,48 @@ public class EffectSkin {
         try {
             if (this.player.nPoint != null && this.player.nPoint.mpHoiCute > 0) {
                 if (Util.canDoWithTime(lastTimeMpHoiCute, 3000)) {
-                    int mpAdd = this.player.nPoint.mpHoiCute;
+                    int percent = this.player.nPoint.mpHoiCute;
                     List<Player> playersMap = this.player.zone.getNotBosses();
                     for (int i = playersMap.size() - 1; i >= 0; i--) {
                         Player pl = playersMap.get(i);
                         if (pl != null && pl.nPoint != null && !pl.isBoss && !pl.isDie()
-                                && Util.getDistance(this.player, pl) <= 200) {
+                                && Util.getDistance(this.player, pl) <= 250) {
                             if (pl.nPoint.mp < pl.nPoint.mpMax) {
-                                pl.nPoint.addMp(mpAdd);
-                                PlayerService.gI().sendInfoHpMpMoney(pl);
-                                Service.gI().Send_Info_NV(pl);
+                                long mpAdd = Math.max(1L, (long) pl.nPoint.mpMax * percent / 100L);
+                                PlayerService.gI().hoiPhuc(pl, 0, mpAdd);
                             }
                         }
                     }
                     this.lastTimeMpHoiCute = System.currentTimeMillis();
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void updateDoremonBuff() {
+        try {
+            if (this.player.nPoint != null
+                    && (this.player.nPoint.tlHpHoiBanThanVaDongDoi > 0 || this.player.nPoint.tlMpHoiBanThanVaDongDoi > 0)) {
+                if (Util.canDoWithTime(lastTimeDoremonBuff, 8000)) {
+                    int hpPct = this.player.nPoint.tlHpHoiBanThanVaDongDoi;
+                    int mpPct = this.player.nPoint.tlMpHoiBanThanVaDongDoi;
+                    List<Player> playersMap = this.player.zone.getNotBosses();
+                    for (int i = playersMap.size() - 1; i >= 0; i--) {
+                        Player pl = playersMap.get(i);
+                        if (pl != null && pl.nPoint != null && !pl.isBoss && !pl.isDie()
+                                && Util.getDistance(this.player, pl) <= 250) {
+                            long hpAdd = (hpPct > 0 && pl.nPoint.hp < pl.nPoint.hpMax)
+                                    ? Math.max(1L, (long) pl.nPoint.hpMax * hpPct / 100L) : 0L;
+                            long mpAdd = (mpPct > 0 && pl.nPoint.mp < pl.nPoint.mpMax)
+                                    ? Math.max(1L, (long) pl.nPoint.mpMax * mpPct / 100L) : 0L;
+                            if (hpAdd > 0 || mpAdd > 0) {
+                                PlayerService.gI().hoiPhuc(pl, hpAdd, mpAdd);
+                            }
+                        }
+                    }
+                    this.lastTimeDoremonBuff = System.currentTimeMillis();
                 }
             }
         } catch (Exception e) {
@@ -378,14 +464,29 @@ public class EffectSkin {
             if (this.player.nPoint != null && this.player.nPoint.tlLanhXQ > 0) {
                 if (Util.canDoWithTime(lastTimeLanhXQ, 10000)) {
                     int param = this.player.nPoint.tlLanhXQ;
-                    List<Player> playersMap = this.player.zone.getNotBosses();
+                    for (Mob mob : this.player.zone.mobs) {
+                        if (mob != null && !mob.isDie() && mob.point.gethp() > 1
+                                && Util.getDistance(this.player, mob) <= 250) {
+                            int subHp = (int) ((long) mob.point.getHpFull() * param / 100L);
+                            if (subHp >= mob.point.gethp()) {
+                                subHp = mob.point.gethp() - 1;
+                            }
+                            if (subHp > 0) {
+                                mob.injured(this.player, subHp, false);
+                            }
+                            mob.timeAttack = 3500;
+                        }
+                    }
+                    List<Player> playersMap = this.player.zone.getHumanoids();
                     for (int i = playersMap.size() - 1; i >= 0; i--) {
                         Player pl = playersMap.get(i);
-                        if (pl != null && pl.nPoint != null && !this.player.equals(pl) && !pl.isBoss && !pl.isDie()
-                                && (!this.player.isPet || !((Pet) this.player).master.equals(pl))
-                                && (!pl.isPet || !((Pet) pl).master.equals(this.player))
-                                && Util.getDistance(this.player, pl) <= 200) {
-                            int subHp = (int) ((long) pl.nPoint.hpMax * param / 100);
+                        if (pl != null && pl.nPoint != null && !isSameTeam(this.player, pl) && !pl.isNewPet && !pl.isDie()
+                                && !pl.nPoint.isKhongLanh
+                                && Util.getDistance(this.player, pl) <= 250) {
+                            int subHp = (int) ((long) pl.nPoint.hpMax * param / 100L);
+                            if (pl.isBoss) {
+                                subHp = Math.min(subHp, Math.min(500_000, Math.max(1, pl.nPoint.hpMax / 100)));
+                            }
                             if (subHp >= pl.nPoint.hp) {
                                 subHp = pl.nPoint.hp - 1;
                             }
@@ -410,7 +511,7 @@ public class EffectSkin {
         try {
             if (this.player.nPoint != null && this.player.nPoint.isTanHinh) {
                 if (Util.canDoWithTime(lastTimeTanHinh, 5000)) {
-                    EffectSkillService.gI().setIsTanHinh(player, 1500);
+                    EffectSkillService.gI().setIsTanHinh(player, 2000);
                     this.lastTimeTanHinh = System.currentTimeMillis();
                 }
             }
@@ -422,13 +523,22 @@ public class EffectSkin {
     private void updateHoaDa() {
         try {
             if (this.player.nPoint != null && this.player.nPoint.isHoaDa) {
-                if (Util.canDoWithTime(lastTimeHoaDa, 30000)) {
-                    List<Player> playersMap = this.player.zone.getNotBosses();
+                if (Util.canDoWithTime(lastTimeHoaDa, 15000)) {
+                    for (Mob mob : this.player.zone.mobs) {
+                        if (mob != null && !mob.isDie() && Util.getDistance(this.player, mob) <= 250) {
+                            mob.effectSkill.startStun(System.currentTimeMillis(), 5000);
+                            EffectSkillService.gI().sendEffectMob(this.player, mob, EffectSkillService.TURN_ON_EFFECT, EffectSkillService.STONE_EFFECT);
+                            EffectSkillService.gI().sendEffectMob(this.player, mob, EffectSkillService.TURN_ON_EFFECT, EffectSkillService.BLIND_EFFECT);
+                        }
+                    }
+                    List<Player> playersMap = this.player.zone.getHumanoids();
                     for (int i = playersMap.size() - 1; i >= 0; i--) {
                         Player pl = playersMap.get(i);
-                        if (pl != null && pl.nPoint != null && !this.player.equals(pl) && !pl.isBoss && !pl.isDie()
-                                && Util.getDistance(this.player, pl) <= 200) {
-                            EffectSkillService.gI().setIsStone(pl, 6000);
+                        if (pl != null && pl.nPoint != null && !isSameTeam(this.player, pl) && !pl.isNewPet && !pl.isDie()
+                                && !isBrolyCharging(pl)
+                                && Util.getDistance(this.player, pl) <= 250) {
+                            EffectSkillService.gI().setIsStone(pl, pl.isBoss ? 4000 : 6000);
+                            Service.gI().chat(pl, "Bị hóa đá rồi!");
                         }
 
                     }
@@ -444,12 +554,16 @@ public class EffectSkin {
         try {
             if (this.player.nPoint != null && this.player.nPoint.isLamCham) {
                 if (Util.canDoWithTime(lastTimeLamCham, 10000)) {
-
-                    List<Player> playersMap = this.player.zone.getNotBosses();
+                    for (Mob mob : this.player.zone.mobs) {
+                        if (mob != null && !mob.isDie() && Util.getDistance(this.player, mob) <= 250) {
+                            mob.timeAttack = 4000;
+                        }
+                    }
+                    List<Player> playersMap = this.player.zone.getHumanoids();
                     for (int i = playersMap.size() - 1; i >= 0; i--) {
                         Player pl = playersMap.get(i);
-                        if (pl != null && pl.nPoint != null && !this.player.equals(pl) && !pl.isBoss && !pl.isDie()
-                                && Util.getDistance(this.player, pl) <= 200) {
+                        if (pl != null && pl.nPoint != null && !isSameTeam(this.player, pl) && !pl.isNewPet && !pl.isDie()
+                                && Util.getDistance(this.player, pl) <= 250) {
                             Service.gI().chat(pl, "Nặng quá!");
                             EffectSkillService.gI().setIsLamCham(pl, 5000);
                         }

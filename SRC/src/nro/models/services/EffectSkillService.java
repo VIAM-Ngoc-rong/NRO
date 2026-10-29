@@ -400,14 +400,12 @@ public class EffectSkillService {
     }
 
     public void setIsTanHinh(Player player, int time) {
-        Service.gI().setPos2(player, player.location.x, 10000);
         player.effectSkill.isTanHinh = true;
         player.effectSkill.timeTanHinh = time;
         player.effectSkill.lastTimeTanHinh = System.currentTimeMillis();
     }
 
     public void removeTanHinh(Player player) {
-        Service.gI().setPos2(player, player.location.x, player.location.y);
         player.effectSkill.isTanHinh = false;
     }
 

@@ -604,6 +604,78 @@ public class NPoint {
                 }
             }
         }
+        if (this.teleport) {
+            this.tlNeDon += 15;
+            this.tlSpeed += 10;
+        }
+        if (this.player.isPet && ((Pet) this.player).master != null && ((Pet) this.player).master.nPoint != null) {
+            NPoint masterPoint = ((Pet) this.player).master.nPoint;
+            if (masterPoint.isKhongLanh) {
+                this.isKhongLanh = true;
+            }
+            if (this.isKhongLanh && !masterPoint.isKhongLanh) {
+                masterPoint.isKhongLanh = true;
+            }
+            if (this.khangTDHS && !masterPoint.khangTDHS) {
+                masterPoint.khangTDHS = true;
+            }
+        } else if (this.player.isPl() && this.player.pet != null && this.player.pet.nPoint != null) {
+            NPoint petPoint = this.player.pet.nPoint;
+            if (petPoint.isKhongLanh) {
+                this.isKhongLanh = true;
+            }
+            if (this.isKhongLanh && !petPoint.isKhongLanh) {
+                petPoint.isKhongLanh = true;
+            }
+            if (petPoint.khangTDHS) {
+                this.khangTDHS = true;
+            }
+            if (this.player.fusion != null && this.player.fusion.typeFusion != ConstPlayer.NON_FUSION) {
+                if (petPoint.isHoaDa) {
+                    this.isHoaDa = true;
+                }
+                if (petPoint.isSocolaXQ) {
+                    this.isSocolaXQ = true;
+                }
+                if (petPoint.isLamCham) {
+                    this.isLamCham = true;
+                }
+                if (petPoint.isTanHinh) {
+                    this.isTanHinh = true;
+                }
+                if (petPoint.wearingVoHinh) {
+                    this.wearingVoHinh = true;
+                }
+                if (petPoint.isXinbato) {
+                    this.isXinbato = true;
+                }
+                if (petPoint.teleport) {
+                    this.teleport = true;
+                }
+                this.tlHutHpMpXQ = Math.max(this.tlHutHpMpXQ, petPoint.tlHutHpMpXQ);
+                this.tlHpGiamODo = Math.max(this.tlHpGiamODo, petPoint.tlHpGiamODo);
+                this.tlLanhXQ = Math.max(this.tlLanhXQ, petPoint.tlLanhXQ);
+                this.tlSexyDame = Math.max(this.tlSexyDame, petPoint.tlSexyDame);
+                this.mpHoiCute += petPoint.mpHoiCute;
+                this.tlHpHoiBanThanVaDongDoi += petPoint.tlHpHoiBanThanVaDongDoi;
+                this.tlMpHoiBanThanVaDongDoi += petPoint.tlMpHoiBanThanVaDongDoi;
+                this.voHieuChuong += petPoint.voHieuChuong;
+                this.tlHoiMpKhiBiDanh += petPoint.tlHoiMpKhiBiDanh;
+                this.tlHutHp += petPoint.tlHutHp;
+                this.tlHutMp += petPoint.tlHutMp;
+                this.tlHutHpMob += petPoint.tlHutHpMob;
+                this.tlPST += petPoint.tlPST;
+                this.tlGiap += petPoint.tlGiap;
+                this.tlNeDon += petPoint.tlNeDon;
+                this.tlxgc += petPoint.tlxgc;
+                this.tlxgcc += petPoint.tlxgcc;
+                this.tlSDCM += petPoint.tlSDCM;
+                this.critAdd += petPoint.critAdd;
+                this.tlDameChuong += petPoint.tlDameChuong;
+                this.tlDameLaze += petPoint.tlDameLaze;
+                this.tlBom += petPoint.tlBom;
+            }
+        }
         setDameTrainArmor();
         setBasePoint();
         setOutfitFusion();
@@ -751,7 +823,7 @@ public class NPoint {
                 break;
             case 111:
                 this.isXinbato = true;
-                this.tlNeDon += io.param;
+                this.tlNeDon += (io.param > 0 ? io.param : 15);
                 break;
             case 108: //#% Né đòn
                 this.tlNeDon += io.param;
@@ -1541,6 +1613,9 @@ public class NPoint {
         } else if (this.player.setClothes.cadicM >= 1) {
             this.def += this.def * (this.player.setClothes.cadicM * 8) / 100;
         }
+        if (this.tlGiap > 0) {
+            this.def += (int) ((long) this.def * this.tlGiap / 100L);
+        }
     }
 
     private void setCrit() {
@@ -1696,6 +1771,9 @@ public class NPoint {
                     percentDameIntrinsic = intrinsic.param1;
                 }
                 percentDameSkill = skillSelect.damage;
+                if (this.tlxgcc > 0) {
+                    percentXDame += this.tlxgcc;
+                }
                 break;
             case Skill.KAMEJOKO:
                 if (intrinsic.id == 2) {
@@ -1708,6 +1786,9 @@ public class NPoint {
                 if (this.tlDameChuong > 0) {
                     percentXDame += this.tlDameChuong;
                 }
+                if (this.tlxgc > 0) {
+                    percentXDame += this.tlxgc;
+                }
                 break;
             case Skill.GALICK:
                 if (intrinsic.id == 16) {
@@ -1717,6 +1798,9 @@ public class NPoint {
                 if (this.player.setClothes.kakarot == 5) {
                     percentXDame = 100;
                 }
+                if (this.tlxgcc > 0) {
+                    percentXDame += this.tlxgcc;
+                }
                 break;
             case Skill.ANTOMIC:
                 if (intrinsic.id == 17) {
@@ -1725,6 +1809,9 @@ public class NPoint {
                 percentDameSkill = skillSelect.damage;
                 if (this.tlDameChuong > 0) {
                     percentXDame += this.tlDameChuong;
+                }
+                if (this.tlxgc > 0) {
+                    percentXDame += this.tlxgc;
                 }
                 break;
             case Skill.TU_SAT:
@@ -1743,6 +1830,9 @@ public class NPoint {
                     percentDameIntrinsic = intrinsic.param1;
                 }
                 percentDameSkill = skillSelect.damage;
+                if (this.tlxgcc > 0) {
+                    percentXDame += this.tlxgcc;
+                }
                 break;
             case Skill.MASENKO:
                 if (intrinsic != null && intrinsic.id == 9) {
@@ -1757,6 +1847,9 @@ public class NPoint {
                 if (this.tlDameChuong > 0) {
                     percentXDame += this.tlDameChuong;
                 }
+                if (this.tlxgc > 0) {
+                    percentXDame += this.tlxgc;
+                }
                 break;
 
             case Skill.LIEN_HOAN:
@@ -1767,6 +1860,9 @@ public class NPoint {
                 if (this.player.setClothes.ocTieu == 5) {
                     percentXDame = 100;
                 }
+                if (this.tlxgcc > 0) {
+                    percentXDame += this.tlxgcc;
+                }
                 break;
             case Skill.KAIOKEN:
                 percentDameSkill = skillSelect.damage;
@@ -1775,12 +1871,18 @@ public class NPoint {
                 } else if (player.setClothes.thanVuTruKaio >= 5) {
                     percentXDame += 100;
                 }
+                if (this.tlxgcc > 0) {
+                    percentXDame += this.tlxgcc;
+                }
                 break;
             case Skill.DICH_CHUYEN_TUC_THOI:
                 isCrit = true;
                 isCritTele = true;
                 dameAttack = Util.nextInt((int) (int) Math.min(2_147_483_647L, (dameAttack - (dameAttack / 100 * 5))),
                         (int) (int) Math.min(2_147_483_647L, (dameAttack + (dameAttack / 100 * 5))));
+                if (this.tlxgcc > 0) {
+                    percentXDame += this.tlxgcc;
+                }
                 break;
             case Skill.MAKANKOSAPPO:
                 percentDameSkill = skillSelect.damage;
@@ -1790,6 +1892,9 @@ public class NPoint {
                 }
                 if (this.tlDameLaze > 0) {
                     dameSkill += dameSkill * this.tlDameLaze / 100L;
+                }
+                if (this.tlxgc > 0) {
+                    dameSkill += dameSkill * this.tlxgc / 100L;
                 }
                 return recordAndClampDame(dameSkill);
             case Skill.QUA_CAU_KENH_KHI:
@@ -1833,6 +1938,9 @@ public class NPoint {
                 percentDameSkill = skillSelect.damage;
                 if (this.tlDameChuong > 0) {
                     percentXDame += this.tlDameChuong;
+                }
+                if (this.tlxgc > 0) {
+                    percentXDame += this.tlxgc;
                 }
                 break;
         }
@@ -1997,8 +2105,12 @@ public class NPoint {
                 if (((Pet) this.player).master.itemTime.isUseBuaSanta) {
                     tiemNang += tn * 2;
                 }
+                int totalTlTNSMPet = this.tlTNSMPet;
                 if (((Pet) this.player).master.nPoint != null && ((Pet) this.player).master.nPoint.tlTNSMPet > 0) {
-                    tiemNang += tn / 100 * (((Pet) this.player).master.nPoint.tlTNSMPet + 100);
+                    totalTlTNSMPet += ((Pet) this.player).master.nPoint.tlTNSMPet;
+                }
+                if (totalTlTNSMPet > 0) {
+                    tiemNang += tn / 100 * (totalTlTNSMPet + 100);
                 }
             }
             if (MapService.gI().isMapNguHanhSon(this.player.zone.map.mapId)) {
@@ -2059,7 +2171,14 @@ public class NPoint {
     }
 
     public int subDameInjureWithDeff(long dame) {
+        return subDameInjureWithDeff(dame, 0);
+    }
+
+    public int subDameInjureWithDeff(long dame, int pierceDefPercent) {
         long def = this.def;
+        if (pierceDefPercent > 0) {
+            def -= def * Math.min(100, pierceDefPercent) / 100L;
+        }
         dame -= def;
         if (this.player != null && this.player.setClothes != null) {
             if (this.player.setClothes.nail == 5) {

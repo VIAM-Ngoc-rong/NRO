@@ -1230,9 +1230,10 @@ public class Player implements Runnable {
 
             if (plAtt != null && plAtt.playerSkill.skillSelect != null) {
                 switch (plAtt.playerSkill.skillSelect.template.id) {
-                    case Skill.KAMEJOKO, Skill.MASENKO, Skill.ANTOMIC -> {
+                    case Skill.KAMEJOKO, Skill.MASENKO, Skill.ANTOMIC, Skill.SUPER_KAME, Skill.LIEN_HOAN_CHUONG, Skill.MAKANKOSAPPO, Skill.QUA_CAU_KENH_KHI -> {
                         if (this.nPoint.voHieuChuong > 0) {
                             PlayerService.gI().hoiPhuc(this, 0, damage * this.nPoint.voHieuChuong / 100L);
+                            Service.gI().chat(this, "Hấp thụ chưởng!");
                             return 0;
                         }
                     }
@@ -1245,9 +1246,17 @@ public class Player implements Runnable {
                 }
             }
 
+            if (this.effectSkill != null && this.effectSkill.isTanHinh && Util.isTrue(50, 100)) {
+                return 0;
+            }
+
             int tlGiap = this.nPoint.tlGiap;
             int tlNeDon = this.nPoint.tlNeDon;
+            if (this.nPoint.tlNeDonBuffXinbato > 0 && System.currentTimeMillis() - this.nPoint.timeXinbatoBuff <= 12000) {
+                tlNeDon += this.nPoint.tlNeDonBuffXinbato;
+            }
             int tlNeDonXinbato = this.nPoint.tlNeDonXinbato;
+            int pierceDefPercent = 0;
 
             if (plAtt != null && !isMobAttack && plAtt.playerSkill.skillSelect != null) {
                 switch (plAtt.playerSkill.skillSelect.template.id) {
@@ -1258,14 +1267,16 @@ public class Player implements Runnable {
                 }
 
                 switch (plAtt.playerSkill.skillSelect.template.id) {
-                    case Skill.KAMEJOKO, Skill.MASENKO, Skill.ANTOMIC -> {
+                    case Skill.KAMEJOKO, Skill.MASENKO, Skill.ANTOMIC, Skill.SUPER_KAME, Skill.LIEN_HOAN_CHUONG, Skill.MAKANKOSAPPO, Skill.QUA_CAU_KENH_KHI -> {
+                        pierceDefPercent = plAtt.nPoint.tlxgc;
                         if (tlGiap - plAtt.nPoint.tlxgc >= 0) {
                             tlGiap -= plAtt.nPoint.tlxgc;
                         } else {
                             tlGiap = 0;
                         }
                     }
-                    case Skill.DRAGON, Skill.DEMON, Skill.GALICK, Skill.LIEN_HOAN, Skill.KAIOKEN -> {
+                    case Skill.DRAGON, Skill.DEMON, Skill.GALICK, Skill.LIEN_HOAN, Skill.KAIOKEN, Skill.DICH_CHUYEN_TUC_THOI -> {
+                        pierceDefPercent = plAtt.nPoint.tlxgcc;
                         if (tlGiap - plAtt.nPoint.tlxgcc >= 0) {
                             tlGiap -= plAtt.nPoint.tlxgcc;
                         } else {
@@ -1305,7 +1316,7 @@ public class Player implements Runnable {
             damage -= ((damage / 100) * tlGiap);
 
             if (!piercing) {
-                damage = this.nPoint.subDameInjureWithDeff(damage);
+                damage = this.nPoint.subDameInjureWithDeff(damage, pierceDefPercent);
             }
 
             boolean isUseGX = false;

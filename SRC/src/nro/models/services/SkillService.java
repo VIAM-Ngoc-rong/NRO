@@ -894,10 +894,11 @@ public class SkillService {
     }
 
     private void hutHPMP(Player player, long dame, Player pl, Mob mob) {
-        int tiLeHutHp = player.nPoint.getTileHutHp(mob != null);
+        boolean isMobOrBoss = (mob != null) || (pl != null && pl.isBoss);
+        int tiLeHutHp = player.nPoint.getTileHutHp(isMobOrBoss);
         int tiLeHutMp = player.nPoint.getTiLeHutMp();
-        int hpHoi = (int) ((long) dame * tiLeHutHp / 100);
-        int mpHoi = (int) ((long) dame * tiLeHutMp / 100);
+        int hpHoi = (int) Math.min(2_147_483_647L, Math.max(0L, (long) dame * tiLeHutHp / 100L));
+        int mpHoi = (int) Math.min(2_147_483_647L, Math.max(0L, (long) dame * tiLeHutMp / 100L));
         if (hpHoi > 0 || mpHoi > 0) {
             int x = -1;
             int y = -1;

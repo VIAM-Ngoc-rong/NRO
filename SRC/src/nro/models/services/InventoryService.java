@@ -1122,6 +1122,9 @@ public class InventoryService {
                     sendItemBags(player);
                     sendItemBody(player);
                     if (!itemSwap.equals(item)) {
+                        if (player.pet.nPoint != null) {
+                            player.pet.nPoint.calPoint();
+                        }
                         Service.gI().point(player);
                         Service.gI().showInfoPet(player);
                     }
@@ -1142,6 +1145,9 @@ public class InventoryService {
         Item item = player.pet.inventory.itemsBody.get(index);
         if (item.isNotNullItem()) {
             player.pet.inventory.itemsBody.set(index, putItemBag(player, item));
+            if (player.pet.nPoint != null) {
+                player.pet.nPoint.calPoint();
+            }
             sendItemBags(player);
             sendItemBody(player);
             Service.gI().point(player);
