@@ -11,11 +11,18 @@ truncate -s 0 /var/log/btmp /var/log/wtmp /var/log/syslog /var/log/auth.log /var
 rm -rf /var/cache/apt/archives/*.deb /var/cache/apt/archives/partial/* /var/lib/apt/lists/* /tmp/*.tmp /tmp/hsperfdata_* /var/tmp/* /var/crash/* /var/lib/systemd/coredump/* /root/.cache/* /root/NRO/backups/.git 2>/dev/null || true
 journalctl --vacuum-size=10M >/dev/null 2>&1 || true
 find /var/log -type f \( -name "*.gz" -o -name "*.1" -o -name "*.old" \) -delete 2>/dev/null || true
-if [ -d "/etc/mysql/mysql.conf.d" ] && [ ! -f "/etc/mysql/mysql.conf.d/disable_binlog.cnf" ]; then
+if [ -d "/etc/mysql/mysql.conf.d" ]; then
     printf "[mysqld]\nskip-log-bin\n" > /etc/mysql/mysql.conf.d/disable_binlog.cnf 2>/dev/null || true
+fi
+mkdir -p lib 2>/dev/null || true
+if [ ! -s "lib/mysql-connector-java-5.1.49.jar" ]; then
+    echo "Đang tải thư viện MySQL Connector 5.1.49..."
+    curl -sL "https://repo1.maven.org/maven2/mysql/mysql-connector-java/5.1.49/mysql-connector-java-5.1.49.jar" -o "lib/mysql-connector-java-5.1.49.jar" || \
+    wget -qO "lib/mysql-connector-java-5.1.49.jar" "https://repo1.maven.org/maven2/mysql/mysql-connector-java/5.1.49/mysql-connector-java-5.1.49.jar" || true
 fi
 mysql -e "PURGE BINARY LOGS BEFORE NOW(); SET GLOBAL binlog_expire_logs_seconds = 600;" >/dev/null 2>&1 || true
 rm -f /var/lib/mysql/binlog.0* /var/lib/mysql/mysql-bin.0* 2>/dev/null || true
+mkdir -p /root/NRO/backups 2>/dev/null || true
 if [ -d "/root/NRO/backups" ]; then
     ls -1t /root/NRO/backups/team2026_20*.sql.gz 2>/dev/null | tail -n +2 | xargs -r rm -f 2>/dev/null || true
 fi
@@ -88,7 +95,7 @@ if [ "$AUTO_COMPILE" = "1" ] && [ -n "$JAVAC_BIN" ]; then
     fi
 fi
 
-OLD_PIDS=$(pgrep -f "java.*nro.models.server.ServerManager" || true)
+OLD_PIDS=$(pgrep -f "java.*(nro.models.server.ServerManager|20.jar|NgocRongOnline.jar)" || true)
 if [ -n "$OLD_PIDS" ]; then
     echo "Đang lưu dữ liệu và đóng tiến trình Server cũ (PID: $OLD_PIDS)..."
     kill -15 $OLD_PIDS 2>/dev/null || true
