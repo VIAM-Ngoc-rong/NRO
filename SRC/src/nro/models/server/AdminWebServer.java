@@ -2259,9 +2259,9 @@ public class AdminWebServer {
                             evLabel = "Sự kiện Ngũ Hành Sơn (x5 TNSM & Rơi Quả Hồng Đào / Chữ Giải Phong Ấn)";
                             if (!state) {
                                 for (Player pl : new ArrayList<>(Client.gI().getPlayers())) {
-                                    if (pl != null && !pl.isAdmin() && pl.zone != null && MapService.gI().isMapNguHanhSon(pl.zone.map.mapId)) {
+                                    if (pl != null && !pl.isAdmin() && pl.zone != null && nro.models.map.service.MapService.gI().isMapNguHanhSon(pl.zone.map.mapId)) {
                                         Service.gI().sendThongBao(pl, "Sự kiện Ngũ Hành Sơn đã đóng, bạn được đưa về nhà!");
-                                        ChangeMapService.gI().changeMapBySpaceShip(pl, 21 + pl.gender, -1, -1);
+                                        nro.models.map.service.ChangeMapService.gI().changeMapBySpaceShip(pl, 21 + pl.gender, -1, -1);
                                     }
                                 }
                             }
