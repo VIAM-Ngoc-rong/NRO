@@ -241,6 +241,10 @@ public class NpcFactory {
                                     this.createOtherMenu(player, ConstNpc.BASE_MENU,
                                             "A di đà phật! Nơi đây linh khí hội tụ (x5 TNSM).\nThí chủ có muốn quay về nhà không?",
                                             "Về nhà", "Ở lại");
+                                } else if (!nro.models.event.EventManager.NGU_HANH_SON) {
+                                    this.createOtherMenu(player, ConstNpc.BASE_MENU,
+                                            "A di đà phật! Sự kiện Ngũ Hành Sơn hiện đang tạm đóng.\nKhi nào sự kiện khai mở, bần tăng sẽ dẫn thí chủ đi tu luyện!",
+                                            "Đóng");
                                 } else {
                                     this.createOtherMenu(player, ConstNpc.BASE_MENU,
                                             "A di đà phật! Thí chủ có muốn cùng bần tăng đến Ngũ Hành Sơn tu luyện (x5 TNSM) không?",
@@ -254,8 +258,10 @@ public class NpcFactory {
                             if (canOpenNpc(player) && player.idMark.isBaseMenu() && select == 0) {
                                 if (this.mapId >= 122 && this.mapId <= 124) {
                                     ChangeMapService.gI().changeMapBySpaceShip(player, 21 + player.gender, -1, -1);
-                                } else {
+                                } else if (nro.models.event.EventManager.NGU_HANH_SON) {
                                     ChangeMapService.gI().changeMapBySpaceShip(player, 122, -1, -1);
+                                } else {
+                                    Service.gI().sendThongBao(player, "Sự kiện Ngũ Hành Sơn hiện đang đóng!");
                                 }
                             }
                         }

@@ -28,6 +28,7 @@ javac -proc:none -encoding UTF-8 -d build/classes -cp "build/classes;lib/*" `
     src/nro/models/mob_bigboss/MayDoSucManh.java `
     src/nro/models/map/Zone.java `
     src/nro/models/map/service/ChangeMapService.java `
+    src/nro/models/map/service/MapService.java `
     src/nro/models/services/EffectSkillService.java `
     src/nro/models/services/InventoryService.java `
     src/nro/models/services/ItemService.java `

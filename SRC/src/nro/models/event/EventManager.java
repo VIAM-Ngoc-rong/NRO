@@ -43,6 +43,8 @@ public class EventManager {
 
     public static boolean NEW_YEAR_FIREWORK = false;
 
+    public static boolean NGU_HANH_SON = false;
+
     public static int EVENT_DROP_RATE = 5;
 
     public static EventManager gI() {
@@ -89,6 +91,7 @@ public class EventManager {
                         case "firework" -> NEW_YEAR_FIREWORK = b;
                         case "top_up" -> TOP_UP = b;
                         case "double_gold" -> DOUBLE_GOLD = b;
+                        case "ngu_hanh_son" -> NGU_HANH_SON = b;
                         case "event_drop_rate" -> {
                             try {
                                 EVENT_DROP_RATE = Math.max(0, Math.min(100, Integer.parseInt(v.trim())));
@@ -137,6 +140,7 @@ public class EventManager {
                 putCfg(ps, "firework", NEW_YEAR_FIREWORK ? "1" : "0");
                 putCfg(ps, "top_up", TOP_UP ? "1" : "0");
                 putCfg(ps, "double_gold", DOUBLE_GOLD ? "1" : "0");
+                putCfg(ps, "ngu_hanh_son", NGU_HANH_SON ? "1" : "0");
                 putCfg(ps, "event_drop_rate", String.valueOf(EVENT_DROP_RATE));
                 putCfg(ps, "exp_rate", String.valueOf(Manager.RATE_EXP_SERVER));
                 ps.executeBatch();

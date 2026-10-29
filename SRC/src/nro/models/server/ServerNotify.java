@@ -109,6 +109,9 @@ public class ServerNotify extends Thread {
         if (EventManager.TOP_UP) {
             names.add("Khuyến Mãi Nạp (Top Up)");
         }
+        if (EventManager.NGU_HANH_SON) {
+            names.add("Ngũ Hành Sơn (x5 TNSM)");
+        }
         if (names.isEmpty()) {
             return "";
         }
@@ -378,6 +381,15 @@ public class ServerNotify extends Thread {
                 "[ĐANG MỞ] Khuyến Mãi Nạp (Top Up)",
                 "★ SỰ KIỆN ĐANG DIỄN RA: KHUYẾN MÃI NẠP (TOP UP) ★\n"
                 + "• Khi quy đổi và nạp tại Server trong thời gian sự kiện sẽ nhận thêm ưu đãi và quà mốc nạp tại NPC Santa (Đảo Kame)."
+            });
+        }
+
+        if (EventManager.NGU_HANH_SON) {
+            entries.add(new String[]{
+                "[ĐANG MỞ] Sự Kiện Ngũ Hành Sơn (x5 TNSM)",
+                "★ SỰ KIỆN ĐANG DIỄN RA: NGŨ HÀNH SƠN (X5 TNSM) ★\n"
+                + "• Gặp NPC Đường Tăng (hoặc dùng Capsule Vũ Trụ) để đến Ngũ Hành Sơn (Map 122 - 124).\n"
+                + "• Đặc quyền trong map: Nhân 5 lần Tiềm Năng Sức Mạnh (x5 TNSM), đánh quái nhặt Quả Hồng Đào và Bộ Chữ Giải Phong Ấn!"
             });
         }
 

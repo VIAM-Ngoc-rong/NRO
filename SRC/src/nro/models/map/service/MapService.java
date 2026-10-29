@@ -395,7 +395,8 @@ public class MapService {
                 && !isMapPhoBan(pl.mapBeforeCapsule.map.mapId)
                 && !isMapMaBu(pl.mapBeforeCapsule.map.mapId)
                 && !isMapBlackBallWar(pl.mapBeforeCapsule.map.mapId)
-                && !isMapOffline(pl.mapBeforeCapsule.map.mapId)) {
+                && !isMapOffline(pl.mapBeforeCapsule.map.mapId)
+                && (!isMapNguHanhSon(pl.mapBeforeCapsule.map.mapId) || nro.models.event.EventManager.NGU_HANH_SON)) {
             addListMapCapsule(pl, list, pl.mapBeforeCapsule);
         }
         addListMapCapsule(pl, list, getMapCanJoin(pl, 21 + pl.gender, 0));
@@ -415,7 +416,9 @@ public class MapService {
         addListMapCapsule(pl, list, getMapCanJoin(pl, 102, 0));
         addListMapCapsule(pl, list, getMapCanJoin(pl, 154, 0));
         addListMapCapsule(pl, list, getMapCanJoin(pl, 52, 0));
-        addListMapCapsule(pl, list, getMapCanJoin(pl, 122, 0));
+        if (nro.models.event.EventManager.NGU_HANH_SON) {
+            addListMapCapsule(pl, list, getMapCanJoin(pl, 122, 0));
+        }
         // Tự động thêm các map đang có Boss xuất hiện vào danh sách Capsule (đưa tới Khu 0)
         for (int bossMapId : nro.models.boss.Boss_Manager.BossManager.gI().getMapIdsWithAliveWorldBosses()) {
             Zone z0 = getZoneByMapIDAndZoneID(bossMapId, 0);

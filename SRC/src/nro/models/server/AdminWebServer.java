@@ -670,6 +670,8 @@ public class AdminWebServer {
                 + ",\"top_up\":" + EventManager.TOP_UP
                 + ",\"doubleGold\":" + EventManager.DOUBLE_GOLD
                 + ",\"double_gold\":" + EventManager.DOUBLE_GOLD
+                + ",\"nguHanhSon\":" + EventManager.NGU_HANH_SON
+                + ",\"ngu_hanh_son\":" + EventManager.NGU_HANH_SON
                 + ",\"dropRate\":" + EventManager.EVENT_DROP_RATE
                 + ",\"drop_rate\":" + EventManager.EVENT_DROP_RATE
                 + "}";
@@ -2238,6 +2240,18 @@ public class AdminWebServer {
                         case "doubleGold", "double_gold" -> {
                             EventManager.DOUBLE_GOLD = state;
                             evLabel = "Sự kiện X2 Vàng Rơi Từ Quái Toàn Server";
+                        }
+                        case "nguHanhSon", "ngu_hanh_son" -> {
+                            EventManager.NGU_HANH_SON = state;
+                            evLabel = "Sự kiện Ngũ Hành Sơn (x5 TNSM & Rơi Quả Hồng Đào / Chữ Giải Phong Ấn)";
+                            if (!state) {
+                                for (Player pl : new ArrayList<>(Client.gI().getPlayers())) {
+                                    if (pl != null && !pl.isAdmin() && pl.zone != null && MapService.gI().isMapNguHanhSon(pl.zone.map.mapId)) {
+                                        Service.gI().sendThongBao(pl, "Sự kiện Ngũ Hành Sơn đã đóng, bạn được đưa về nhà!");
+                                        ChangeMapService.gI().changeMapBySpaceShip(pl, 21 + pl.gender, -1, -1);
+                                    }
+                                }
+                            }
                         }
                         default -> {
                             sendJson(exchange, 400, "{\"ok\":false,\"message\":\"Sự kiện không hợp lệ!\"}");

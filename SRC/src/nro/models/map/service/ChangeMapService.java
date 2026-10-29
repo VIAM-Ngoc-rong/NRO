@@ -1081,6 +1081,15 @@ public class ChangeMapService {
                     if (TaskService.gI().getIdTask(player) < ConstTask.TASK_27_0) {
                         return null;
                     }
+                    break;
+                case 122:
+                case 123:
+                case 124:
+                    if (!nro.models.event.EventManager.NGU_HANH_SON) {
+                        Service.gI().sendThongBao(player, "Sự kiện Ngũ Hành Sơn hiện đang đóng, hãy quay lại khi sự kiện được mở!");
+                        return null;
+                    }
+                    break;
             }
         }
         if (zoneJoin != null) {
