@@ -1017,13 +1017,38 @@
       <div class="grid-2">
         <div class="card">
           <div class="card-header">
-            <h3>Điều Khiển Server, Tỷ Lệ EXP & Hệ Thống Bot</h3>
+            <h3>Điều Khiển Server, Lịch Bảo Trì, Tỷ Lệ EXP & Hệ Thống Bot</h3>
           </div>
           <div class="form-group">
             <label>Cập nhật mã nguồn từ GitHub & Lưu dữ liệu:</label>
             <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;">
               <button class="btn-success" onclick="updateAndRestartServer()">Cập Nhật Code (Git Pull) & Khởi Động Lại</button>
               <button class="btn-muted" onclick="saveAllData()">Lưu Toàn Bộ Dữ Liệu</button>
+              <button class="btn-danger btn-sm" onclick="triggerMaintenanceNow()">Bảo Trì Đếm Ngược (60s)</button>
+            </div>
+          </div>
+          <hr style="border:none;border-top:1px solid var(--border);margin:14px 0;" />
+          <div class="form-group">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;">
+              <label style="margin:0;">Lịch Bảo Trì Tự Động Hằng Ngày (Giờ Việt Nam):</label>
+              <span id="maintStatusBadge" class="badge badge-alive">ĐANG BẬT (08:00)</span>
+            </div>
+            <p id="maintSkipTodayNote" style="font-size:12px;color:var(--muted);margin:5px 0 8px;">
+              Nếu trong ngày bạn đã bấm <b>Cập Nhật Code</b> hoặc mới khởi động lại Server, hệ thống sẽ <b>tự động bỏ qua</b> bảo trì ngày hôm đó để không làm gián đoạn người chơi.
+            </p>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">
+              <span style="font-size:12.5px;color:var(--text-secondary);font-weight:600;">Giờ:</span>
+              <input type="number" id="maintHourInput" value="8" min="0" max="23" style="width:65px;font-weight:700;" title="Giờ bảo trì (0 - 23)" />
+              <span style="font-size:12.5px;color:var(--text-secondary);font-weight:600;">Phút:</span>
+              <input type="number" id="maintMinInput" value="0" min="0" max="59" style="width:65px;font-weight:700;" title="Phút bảo trì (0 - 59)" />
+              <button class="btn-success btn-sm" onclick="saveMaintenanceTime()">Lưu Giờ Bảo Trì</button>
+              <button class="btn-muted btn-sm" onclick="quickSetMaintTime(8, 0)">08:00</button>
+              <button class="btn-muted btn-sm" onclick="quickSetMaintTime(5, 0)">05:00</button>
+              <button class="btn-muted btn-sm" onclick="quickSetMaintTime(12, 0)">12:00</button>
+            </div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:8px;">
+              <button id="btnToggleAutoMaint" class="btn-muted btn-sm" onclick="toggleAutoMaintenance()">Tắt Bảo Trì Tự Động</button>
+              <button id="btnToggleSkipToday" class="btn-muted btn-sm" onclick="toggleSkipMaintToday()">Bỏ Qua Bảo Trì Hôm Nay</button>
             </div>
           </div>
           <hr style="border:none;border-top:1px solid var(--border);margin:14px 0;" />
@@ -1807,6 +1832,7 @@
         if (uptimeSubEl) {
           uptimeSubEl.innerHTML = `<span style="color:#10b981;font-weight:500;">🟢 Phiên này: ${formatDurationShort(sessionUptimeSec)}</span> • Cộng dồn qua bảo trì`;
         }
+        updateMaintenanceUi(data);
 
         cachedPlayers = data.players || [];
         cachedBosses = data.bosses || [];
@@ -1821,6 +1847,7 @@
         if (data.events) {
           renderEventsAdmin(data.events);
         }
+        updateMaintenanceUi(data);
         document.getElementById('countPlayersTab').textContent = cachedPlayers.length;
         document.getElementById('countBossesTab').textContent = `${data.aliveBossCount}/${cachedBosses.length}`;
         const histBadge = document.getElementById('countBossKillHistoryBadge');
@@ -2723,6 +2750,7 @@
         if (data.events) {
           renderEventsAdmin(data.events);
         }
+        updateMaintenanceUi(data);
 
         const backups = data.backups || [];
         const bDiv = document.getElementById('backupFilesList');
@@ -2886,6 +2914,107 @@
       } catch (err) {
         return { ok: false, message: 'Không thể kết nối tới Server!' };
       }
+    }
+
+    let currentAutoMaintEnabled = true;
+    let currentMaintSkippedToday = false;
+
+    function updateMaintenanceUi(data) {
+      if (!data) return;
+      if (typeof data.autoMaintenance === 'boolean') {
+        currentAutoMaintEnabled = data.autoMaintenance;
+      }
+      if (typeof data.maintSkippedToday === 'boolean') {
+        currentMaintSkippedToday = data.maintSkippedToday;
+      }
+      const h = typeof data.maintHour === 'number' ? data.maintHour : 8;
+      const m = typeof data.maintMin === 'number' ? data.maintMin : 0;
+      const timeStr = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+
+      const hInp = document.getElementById('maintHourInput');
+      const mInp = document.getElementById('maintMinInput');
+      if (hInp && document.activeElement !== hInp) hInp.value = h;
+      if (mInp && document.activeElement !== mInp) mInp.value = m;
+
+      const badge = document.getElementById('maintStatusBadge');
+      if (badge) {
+        if (!currentAutoMaintEnabled) {
+          badge.className = 'badge badge-dead';
+          badge.textContent = 'ĐANG TẮT';
+        } else if (currentMaintSkippedToday) {
+          badge.className = 'badge badge-alive';
+          badge.textContent = `LỊCH ${timeStr} (ĐÃ BỎ QUA HÔM NAY)`;
+        } else {
+          badge.className = 'badge badge-alive';
+          badge.textContent = `ĐANG BẬT (${timeStr} HẰNG NGÀY)`;
+        }
+      }
+
+      const noteEl = document.getElementById('maintSkipTodayNote');
+      if (noteEl) {
+        if (currentMaintSkippedToday) {
+          noteEl.innerHTML = `<span style="color:#10b981;font-weight:600;">✔ Hôm nay đã cập nhật code / bảo trì rồi — Hệ thống tự động bỏ qua lịch bảo trì ${timeStr} hôm nay và sẽ bảo trì vào ${timeStr} ngày mai.</span>`;
+        } else {
+          noteEl.innerHTML = `Lịch bảo trì tự động tiếp theo: <b>${timeStr}</b>. Nếu bạn bấm <b>Cập Nhật Code</b> trong ngày, hệ thống sẽ tự động bỏ qua bảo trì lặp lại trong ngày đó.`;
+        }
+      }
+
+      const btnToggle = document.getElementById('btnToggleAutoMaint');
+      if (btnToggle) {
+        btnToggle.className = currentAutoMaintEnabled ? 'btn-danger btn-sm' : 'btn-success btn-sm';
+        btnToggle.textContent = currentAutoMaintEnabled ? 'Tắt Bảo Trì Tự Động' : 'Bật Bảo Trì Tự Động';
+      }
+
+      const btnSkip = document.getElementById('btnToggleSkipToday');
+      if (btnSkip) {
+        btnSkip.textContent = currentMaintSkippedToday ? 'Bật Lại Bảo Trì Hôm Nay' : 'Bỏ Qua Bảo Trì Hôm Nay';
+      }
+    }
+
+    async function saveMaintenanceTime() {
+      const hour = Math.max(0, Math.min(23, parseInt(document.getElementById('maintHourInput').value, 10) || 0));
+      const min = Math.max(0, Math.min(59, parseInt(document.getElementById('maintMinInput').value, 10) || 0));
+      const res = await postAction({ action: 'set_maintenance_config', enabled: 1, hour, min });
+      showToast(res.message, !res.ok);
+      if (res.ok) {
+        updateMaintenanceUi(res);
+        fetchStatus();
+      }
+    }
+
+    async function quickSetMaintTime(hour, min) {
+      document.getElementById('maintHourInput').value = hour;
+      document.getElementById('maintMinInput').value = min;
+      await saveMaintenanceTime();
+    }
+
+    async function toggleAutoMaintenance() {
+      const nextState = currentAutoMaintEnabled ? 0 : 1;
+      const res = await postAction({ action: 'set_maintenance_config', enabled: nextState });
+      showToast(res.message, !res.ok);
+      if (res.ok) {
+        updateMaintenanceUi(res);
+        fetchStatus();
+      }
+    }
+
+    async function toggleSkipMaintToday() {
+      const nextSkip = currentMaintSkippedToday ? 0 : 1;
+      const res = await postAction({ action: 'set_maintenance_config', skipToday: nextSkip });
+      showToast(res.message, !res.ok);
+      if (res.ok) {
+        updateMaintenanceUi(res);
+        fetchStatus();
+      }
+    }
+
+    async function triggerMaintenanceNow() {
+      const secStr = prompt('Nhập số giây đếm ngược thông báo toàn Server trước khi bảo trì & khởi động lại:', '60');
+      if (secStr === null || secStr.trim() === '') return;
+      const seconds = Math.max(5, Math.min(600, parseInt(secStr.trim(), 10) || 60));
+      const res = await postAction({ action: 'trigger_maintenance_now', seconds });
+      showToast(res.message, !res.ok);
+      if (res.ok) fetchStatus();
     }
 
     async function updateAndRestartServer() {

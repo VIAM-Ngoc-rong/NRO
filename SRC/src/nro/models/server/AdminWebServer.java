@@ -416,6 +416,10 @@ public class AdminWebServer {
         sb.append(",\"expRate\":").append(Manager.RATE_EXP_SERVER);
         sb.append(",\"botCount\":").append(botCount);
         sb.append(",\"autoMaintenance\":").append(AutoMaintenance.AutoMaintenance);
+        sb.append(",\"maintHour\":").append(AutoMaintenance.hours);
+        sb.append(",\"maintMin\":").append(AutoMaintenance.mins);
+        sb.append(",\"maintSkippedToday\":").append(AutoMaintenance.isSkippedToday());
+        sb.append(",\"lastMaintDate\":").append(jsonStr(AutoMaintenance.lastMaintOrUpdateDate != null ? AutoMaintenance.lastMaintOrUpdateDate : ""));
 
         // Online players array
         sb.append(",\"players\":[");
@@ -972,6 +976,11 @@ public class AdminWebServer {
         sb.append("{\"ok\":true");
         sb.append(",\"expRate\":").append(Manager.RATE_EXP_SERVER);
         sb.append(",\"botCount\":").append(BotManager.gI().bot != null ? BotManager.gI().bot.size() : 0);
+        sb.append(",\"autoMaintenance\":").append(AutoMaintenance.AutoMaintenance);
+        sb.append(",\"maintHour\":").append(AutoMaintenance.hours);
+        sb.append(",\"maintMin\":").append(AutoMaintenance.mins);
+        sb.append(",\"maintSkippedToday\":").append(AutoMaintenance.isSkippedToday());
+        sb.append(",\"lastMaintDate\":").append(jsonStr(AutoMaintenance.lastMaintOrUpdateDate != null ? AutoMaintenance.lastMaintOrUpdateDate : ""));
 
         // Top players by power
         List<Map<String, Object>> rankList = new ArrayList<>();
@@ -2388,6 +2397,51 @@ public class AdminWebServer {
                         sendJson(exchange, 200, "{\"ok\":false,\"message\":\"Chức năng chạy backup_db.sh chỉ hoạt động trên VPS Linux!\"}");
                     }
                 }
+                case "set_maintenance_config" -> {
+                    if (params.containsKey("enabled")) {
+                        String enRaw = params.get("enabled");
+                        AutoMaintenance.AutoMaintenance = "1".equals(enRaw) || "true".equalsIgnoreCase(enRaw);
+                    }
+                    if (params.containsKey("hour")) {
+                        AutoMaintenance.hours = (int) Math.max(0, Math.min(23, parseLongSafe(params.get("hour"), AutoMaintenance.hours)));
+                    }
+                    if (params.containsKey("min")) {
+                        AutoMaintenance.mins = (int) Math.max(0, Math.min(59, parseLongSafe(params.get("min"), AutoMaintenance.mins)));
+                    }
+                    if (params.containsKey("skipToday")) {
+                        String skRaw = params.get("skipToday");
+                        boolean skip = "1".equals(skRaw) || "true".equalsIgnoreCase(skRaw);
+                        if (skip) {
+                            AutoMaintenance.markUpdatedToday();
+                        } else {
+                            AutoMaintenance.clearSkipToday();
+                        }
+                    }
+                    AutoMaintenance.gI().resetCountdownState();
+                    EventManager.saveRuntimeConfig();
+                    String timeStr = String.format("%02d:%02d", AutoMaintenance.hours, AutoMaintenance.mins);
+                    String statusStr = AutoMaintenance.AutoMaintenance ? ("ĐANG BẬT (Lịch: " + timeStr + " hằng ngày)") : "ĐANG TẮT";
+                    if (AutoMaintenance.AutoMaintenance && AutoMaintenance.isSkippedToday()) {
+                        statusStr += " — Đã bỏ qua hôm nay (" + AutoMaintenance.getTodayVN() + ")";
+                    }
+                    sendJson(exchange, 200, "{\"ok\":true,\"message\":" + jsonStr("Đã lưu cấu hình Bảo trì tự động: " + statusStr + "!")
+                            + ",\"autoMaintenance\":" + AutoMaintenance.AutoMaintenance
+                            + ",\"maintHour\":" + AutoMaintenance.hours
+                            + ",\"maintMin\":" + AutoMaintenance.mins
+                            + ",\"maintSkippedToday\":" + AutoMaintenance.isSkippedToday()
+                            + ",\"lastMaintDate\":" + jsonStr(AutoMaintenance.lastMaintOrUpdateDate) + "}");
+                }
+                case "trigger_maintenance_now" -> {
+                    int sec = (int) Math.max(5, Math.min(600, parseLongSafe(params.get("seconds"), 60)));
+                    if (Maintenance.isRunning) {
+                        sendJson(exchange, 200, "{\"ok\":false,\"message\":\"Server hiện đang trong quá trình đếm ngược bảo trì rồi!\"}");
+                        return;
+                    }
+                    AutoMaintenance.markUpdatedToday();
+                    EventManager.saveRuntimeConfig();
+                    Maintenance.gI().startSeconds(sec);
+                    sendJson(exchange, 200, "{\"ok\":true,\"message\":" + jsonStr("Đã kích hoạt đếm ngược Bảo trì Server (" + sec + " giây) và tự động đánh dấu hoàn tất bảo trì hôm nay!") + "}");
+                }
                 case "update_and_restart" -> {
                     String os = System.getProperty("os.name").toLowerCase();
                     if (os.contains("win")) {
@@ -2407,9 +2461,10 @@ public class AdminWebServer {
                         ConsignShopManager.gI().save();
                     } catch (Exception ignored) {
                     }
+                    AutoMaintenance.markUpdatedToday();
                     EventManager.saveRuntimeConfig();
                     Service.gI().sendThongBaoAllPlayer("[THÔNG BÁO] Server đang cập nhật phiên bản mới và khởi động lại, vui lòng đăng nhập lại sau 10 giây!");
-                    sendJson(exchange, 200, "{\"ok\":true,\"message\":\"Đang tự động kéo code mới từ GitHub (git pull) và khởi động lại Server! Vui lòng đợi khoảng 8-12 giây để Server bật lại...\"}");
+                    sendJson(exchange, 200, "{\"ok\":true,\"message\":\"Đang tự động kéo code mới từ GitHub (git pull), khởi động lại Server và tự động bỏ qua lịch bảo trì lặp lại trong hôm nay! Vui lòng đợi khoảng 8-12 giây...\"}");
 
                     new Thread(() -> {
                         try {

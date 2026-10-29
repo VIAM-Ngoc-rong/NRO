@@ -2023,12 +2023,14 @@ public class NPoint {
             if (this.intrinsic != null && this.intrinsic.id == 24) {
                 tiemNang += ((long) tiemNang * this.intrinsic.param1 / 100);
             }
-            if (this.power >= 80_000_000_000L) {
-                tiemNang -= ((long) tiemNang * 90 / 100);
-            } else if (this.power >= 60_000_000_000L) {
-                tiemNang -= ((long) tiemNang * 75 / 100);
-            } else if (this.power >= 40_000_000_000L) {
-                tiemNang -= ((long) tiemNang * 50 / 100);
+            if (!this.player.isPet) {
+                if (this.power >= 80_000_000_000L) {
+                    tiemNang -= ((long) tiemNang * 90 / 100);
+                } else if (this.power >= 60_000_000_000L) {
+                    tiemNang -= ((long) tiemNang * 75 / 100);
+                } else if (this.power >= 40_000_000_000L) {
+                    tiemNang -= ((long) tiemNang * 50 / 100);
+                }
             }
             if (this.player.isPet) {
                 if (((Pet) this.player).master.charms != null && ((Pet) this.player).master.charms.tdDeTu > System.currentTimeMillis()) {
@@ -2076,6 +2078,9 @@ public class NPoint {
     }
 
     public long calSubTNSM(long tiemNang) {
+        if (this.player != null && this.player.isPet) {
+            return tiemNang;
+        }
         if (power >= 90_000_000_000L) {
             tiemNang /= 100;
         } else if (power >= 80_000_000_000L) {

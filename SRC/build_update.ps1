@@ -14,6 +14,8 @@ javac -proc:none -encoding UTF-8 -d build/classes -cp "build/classes;lib/*" `
     src/nro/models/event/EventManager.java `
     src/nro/models/event/VuaHung.java `
     src/nro/models/server/ServerManager.java `
+    src/nro/models/server/AutoMaintenance.java `
+    src/nro/models/server/Maintenance.java `
     src/nro/models/server/AdminWebServer.java `
     src/nro/models/server/ServerNotify.java `
     src/nro/models/server/Manager.java `
@@ -189,4 +191,13 @@ if (Test-Path "E:\NRO\Server_Local\20.jar") {
 }
 
 Write-Host "HOAN TAT! Da cap nhat dist/NgocRongOnline.jar va 20.jar thanh cong!" -ForegroundColor Green
+
+Write-Host "3. Dang day code len GitHub..." -ForegroundColor Cyan
+Set-Location "E:\NRO"
+git add -A
+git commit -m "Update"
+git push origin main
+Set-Location $PSScriptRoot
+Write-Host "DA DAY LEN GITHUB THANH CONG!" -ForegroundColor Green
+
 

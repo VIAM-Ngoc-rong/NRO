@@ -105,6 +105,20 @@ public class EventManager {
                             } catch (Exception ignored) {
                             }
                         }
+                        case "auto_maint_enabled" -> nro.models.server.AutoMaintenance.AutoMaintenance = b;
+                        case "auto_maint_hour" -> {
+                            try {
+                                nro.models.server.AutoMaintenance.hours = Math.max(0, Math.min(23, Integer.parseInt(v.trim())));
+                            } catch (Exception ignored) {
+                            }
+                        }
+                        case "auto_maint_min" -> {
+                            try {
+                                nro.models.server.AutoMaintenance.mins = Math.max(0, Math.min(59, Integer.parseInt(v.trim())));
+                            } catch (Exception ignored) {
+                            }
+                        }
+                        case "last_maint_date" -> nro.models.server.AutoMaintenance.lastMaintOrUpdateDate = v.trim();
                     }
                 }
             }
@@ -143,6 +157,11 @@ public class EventManager {
                 putCfg(ps, "ngu_hanh_son", NGU_HANH_SON ? "1" : "0");
                 putCfg(ps, "event_drop_rate", String.valueOf(EVENT_DROP_RATE));
                 putCfg(ps, "exp_rate", String.valueOf(Manager.RATE_EXP_SERVER));
+                putCfg(ps, "auto_maint_enabled", nro.models.server.AutoMaintenance.AutoMaintenance ? "1" : "0");
+                putCfg(ps, "auto_maint_hour", String.valueOf(nro.models.server.AutoMaintenance.hours));
+                putCfg(ps, "auto_maint_min", String.valueOf(nro.models.server.AutoMaintenance.mins));
+                putCfg(ps, "last_maint_date", nro.models.server.AutoMaintenance.lastMaintOrUpdateDate != null
+                        ? nro.models.server.AutoMaintenance.lastMaintOrUpdateDate : "");
                 ps.executeBatch();
             }
         } catch (Exception e) {

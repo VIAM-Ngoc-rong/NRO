@@ -265,7 +265,7 @@ public class ServerManager {
             new Thread(The23rdMartialArtCongressManager.gI(), "Update DHVT23").start();
             new Thread(DeathOrAliveArenaManager.gI(), "Update Võ Đài Sinh Tử").start();
             new Thread(WorldMartialArtsTournamentManager.gI(), "Update WMAT").start();
-            AutoMaintenance.AutoMaintenance = true;
+            EventManager.loadRuntimeConfig();
             AutoMaintenance.gI().start();
             new Thread(ShenronEventManager.gI(), "Update Shenron").start();
 
