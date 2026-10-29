@@ -1330,6 +1330,7 @@
         </div>
       </div>
       <div class="modal-actions">
+        <button class="btn-danger" style="margin-right:auto;" onclick="deleteAccountFromModal()">Xóa Vĩnh Viễn TK</button>
         <button class="btn-muted" onclick="document.getElementById('accModal').classList.remove('show')">Hủy</button>
         <button class="btn-success" onclick="submitAccountUpdate()">Lưu Thay Đổi</button>
       </div>
@@ -1879,6 +1880,7 @@
             <button class="btn-muted btn-sm" onclick="inspectPlayer(${p.id})"><img src="admin_icons/ao_tl.png" class="nro-ico-sm" alt="" /> Xem Đồ</button>
             <button class="btn-muted btn-sm" onclick="healPlayer(${p.id})"><img src="admin_icons/senzu.png" class="nro-ico-sm" alt="" /> Hồi HP/KI</button>
             <button class="btn-danger btn-sm" onclick="kickPlayer(${p.id}, '${escapeJs(p.name)}')">Kick</button>
+            <button class="btn-danger btn-sm" onclick="deleteOnlinePlayerAccount(${p.id}, '${escapeJs(p.name)}')" title="Xóa vĩnh viễn tài khoản và nhân vật này">Xóa TK</button>
           </td>
         </tr>
       `).join('');
@@ -1942,6 +1944,7 @@
               ${!a.active ? `<button class="btn-muted btn-sm" onclick="quickToggleAccount(${a.accId}, 'active', 1)">Mở TV</button>` : ''}
               ${a.online && a.playerId > 0 ? `<button class="btn-muted btn-sm" onclick="openGiftModal(${a.playerId}, '${escapeJs(a.playerName)}')"><img src="admin_icons/thoi_vang.png" class="nro-ico-sm" alt="" /> Trao Quà</button>` : ''}
               <button class="${a.ban ? 'btn-muted' : 'btn-danger'} btn-sm" onclick="quickToggleAccount(${a.accId}, 'ban', ${a.ban ? 0 : 1})">${a.ban ? 'Mở Khóa' : 'Khóa'}</button>
+              <button class="btn-danger btn-sm" onclick="deleteAccount(${a.accId}, '${escapeJs(a.username)}', '${escapeJs(a.playerName)}')" title="Xóa vĩnh viễn tài khoản và nhân vật này khỏi MySQL">Xóa TK</button>
             </td>
           </tr>
         `).join('');
@@ -1993,6 +1996,39 @@
       showToast(res.message, !res.ok);
       loadAccountsDb();
       fetchStatus();
+    }
+
+    async function deleteAccount(accId, username, playerName) {
+      const label = `${username || ('#' + accId)}${playerName ? ' (' + playerName + ')' : ''}`;
+      if (!confirm(`CẢNH BÁO: Bạn có chắc chắn muốn XÓA VĨNH VIỄN tài khoản [${label}] và toàn bộ nhân vật của tài khoản này khỏi Database không?\n\nHành động này không thể hoàn tác!`)) {
+        return;
+      }
+      const res = await postAction({ action: 'account_delete', accId });
+      showToast(res.message || (res.ok ? 'Đã xóa tài khoản!' : 'Lỗi khi xóa tài khoản!'), !res.ok);
+      if (res.ok) {
+        document.getElementById('accModal').classList.remove('show');
+        loadAccountsDb();
+        fetchStatus();
+      }
+    }
+
+    async function deleteOnlinePlayerAccount(playerId, playerName) {
+      if (!confirm(`CẢNH BÁO: Bạn có chắc chắn muốn KICK và XÓA VĨNH VIỄN tài khoản của người chơi [${playerName} - ID #${playerId}] khỏi Database không?\n\nHành động này không thể hoàn tác!`)) {
+        return;
+      }
+      const res = await postAction({ action: 'account_delete', playerId });
+      showToast(res.message || (res.ok ? 'Đã xóa tài khoản!' : 'Lỗi khi xóa tài khoản!'), !res.ok);
+      if (res.ok) {
+        fetchStatus();
+        if (currentTab === 'accounts') loadAccountsDb();
+      }
+    }
+
+    function deleteAccountFromModal() {
+      const accId = Number(document.getElementById('editAccId').value);
+      if (!accId) return;
+      const a = cachedAccounts.find(x => x.accId === accId);
+      deleteAccount(accId, a ? a.username : ('#' + accId), a ? a.playerName : '');
     }
 
     function openCreateAccModal() {

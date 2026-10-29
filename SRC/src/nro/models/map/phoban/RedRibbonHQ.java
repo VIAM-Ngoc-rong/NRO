@@ -264,7 +264,8 @@ public class RedRibbonHQ implements Runnable {
     public ItemMap NR(Zone zone) {
         int x = Util.nextInt(100, zone.map.mapWidth - 100);
         int y = zone.map.yPhysicInTop(x, 100);
-        int nr = Util.isTrue(1, 500) ? Util.nextInt(14, 18) : Util.nextInt(18, 20);
+        // Rơi Ngọc Rồng Tím (1827: 1 sao tím -> 1833: 7 sao tím) thay vì Ngọc Rồng thường
+        int nr = Util.isTrue(1, 500) ? Util.nextInt(1827, 1831) : Util.nextInt(1831, 1833);
         ItemMap it = new ItemMap(zone, nr, 1, x, y, -1);
         return it;
     }

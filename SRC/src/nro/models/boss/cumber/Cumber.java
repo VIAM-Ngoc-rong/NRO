@@ -34,7 +34,7 @@ public class Cumber extends Boss {
         int y = this.zone.map.yPhysicInTop(x, this.location.y - 24);
         int drop = 190;
         int quantity = Util.nextInt(20000, 30000);
-        if (Util.isTrue(5 , 100)) {
+        if (this.nPoint != null && this.nPoint.hpMax > 400_000_000L && Util.isTrue(5 , 100)) {
         ItemMap it = ItemService.gI().randDoTLBoss(this.zone, 1, x, y, plKill.id);
         if (it != null) {
         Service.gI().dropItemMap(zone, it);

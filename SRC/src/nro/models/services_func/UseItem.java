@@ -1253,9 +1253,9 @@ public class UseItem {
                 player.itemsWoodChest.add(itemGold);
                 if (level >= 9) {
                     int quantity = 100 + (level - 9) * 20;
-                    Item item77 = ItemService.gI().createNewItem((short) 77);
-                    item77.quantity = quantity;
-                    player.itemsWoodChest.add(item77);
+                    Item item861 = ItemService.gI().createNewItem((short) 861);
+                    item861.quantity = quantity;
+                    player.itemsWoodChest.add(item861);
                 }
 
                 // Phần thưởng đồ tại rương
@@ -1623,9 +1623,9 @@ public class UseItem {
     private void PhaoBongVip(Player pl, Item item) {
         BadgesTaskService.updateCountBagesTask(pl, ConstTaskBadges.XSMAX, 1);
         int goldGain = Util.nextInt(2_000_000, 5_000_000);
-        int gemGain = Util.nextInt(10, 30);
+        int rubyGain = Util.nextInt(10, 30);
         pl.inventory.addGold(goldGain);
-        pl.inventory.gem += gemGain;
+        pl.inventory.ruby += rubyGain;
         Service.gI().LogicEffect(pl, 62, 1, -1, 1, 1, 15000);
         Service.gI().LogicEffect(pl, 63, 1, -1, 1, 1, 5000);
         Service.gI().LogicEffect(pl, 64, 1, -1, 1, 1, 5000);
@@ -1645,7 +1645,7 @@ public class UseItem {
 
         PlayerService.gI().sendInfoHpMpMoney(pl);
         InventoryService.gI().sendItemBags(pl);
-        Service.gI().sendThongBao(pl, "Bắn Pháo Bông VIP nhận được " + Util.formatNumber(goldGain) + " Vàng & " + gemGain + " Ngọc Xanh (+1 điểm sự kiện)!");
+        Service.gI().sendThongBao(pl, "Bắn Pháo Bông VIP nhận được " + Util.formatNumber(goldGain) + " Vàng & " + rubyGain + " Hồng Ngọc (+1 điểm sự kiện)!");
     }
 
     private void KemTraiCay(Player player, Item item) {
@@ -2845,10 +2845,10 @@ public class UseItem {
             PlayerService.gI().sendInfoHpMpMoney(pl);
             Service.gI().sendThongBao(pl, "Dùng " + item.template.name + " nhận được " + Util.formatNumber(gold) + " Vàng (+1 điểm sự kiện)!");
         } else if (roll <= 60) {
-            int gem = Util.nextInt(10, 30);
-            pl.inventory.gem += gem;
+            int ruby = Util.nextInt(10, 30);
+            pl.inventory.ruby += ruby;
             PlayerService.gI().sendInfoHpMpMoney(pl);
-            Service.gI().sendThongBao(pl, "Dùng " + item.template.name + " nhận được " + gem + " Ngọc Xanh (+1 điểm sự kiện)!");
+            Service.gI().sendThongBao(pl, "Dùng " + item.template.name + " nhận được " + ruby + " Hồng Ngọc (+1 điểm sự kiện)!");
         } else if (roll <= 80) {
             int ruby = Util.nextInt(5, 20);
             pl.inventory.ruby += ruby;
@@ -2884,10 +2884,10 @@ public class UseItem {
             PlayerService.gI().sendInfoHpMpMoney(pl);
             Service.gI().sendThongBao(pl, "Thưởng thức Kẹo Giáng Sinh nhận được " + Util.formatNumber(gold) + " Vàng (+1 điểm sự kiện)!");
         } else if (roll <= 80) {
-            int gem = Util.nextInt(5, 15);
-            pl.inventory.gem += gem;
+            int ruby = Util.nextInt(5, 15);
+            pl.inventory.ruby += ruby;
             PlayerService.gI().sendInfoHpMpMoney(pl);
-            Service.gI().sendThongBao(pl, "Thưởng thức Kẹo Giáng Sinh nhận được " + gem + " Ngọc Xanh (+1 điểm sự kiện)!");
+            Service.gI().sendThongBao(pl, "Thưởng thức Kẹo Giáng Sinh nhận được " + ruby + " Hồng Ngọc (+1 điểm sự kiện)!");
         } else {
             int ruby = Util.nextInt(5, 15);
             pl.inventory.ruby += ruby;
@@ -2937,10 +2937,10 @@ public class UseItem {
             PlayerService.gI().sendInfoHpMpMoney(pl);
             Service.gI().sendThongBao(pl, "Mở Bao Lì Xì nhận được " + Util.formatNumber(gold) + " Vàng!");
         } else if (roll <= 65) {
-            int gem = Util.nextInt(10, 50);
-            pl.inventory.gem += gem;
+            int ruby = Util.nextInt(10, 50);
+            pl.inventory.ruby += ruby;
             PlayerService.gI().sendInfoHpMpMoney(pl);
-            Service.gI().sendThongBao(pl, "Mở Bao Lì Xì nhận được " + gem + " Ngọc Xanh!");
+            Service.gI().sendThongBao(pl, "Mở Bao Lì Xì nhận được " + ruby + " Hồng Ngọc!");
         } else if (roll <= 85) {
             int ruby = Util.nextInt(5, 25);
             pl.inventory.ruby += ruby;
@@ -2968,10 +2968,10 @@ public class UseItem {
             InventoryService.gI().subQuantityItemsBag(pl, item, 10);
             int roll = Util.nextInt(1, 100);
             if (roll <= 30) {
-                int gem = Util.nextInt(20, 60);
-                pl.inventory.gem += gem;
+                int ruby = Util.nextInt(20, 60);
+                pl.inventory.ruby += ruby;
                 PlayerService.gI().sendInfoHpMpMoney(pl);
-                Service.gI().sendThongBao(pl, "Kết bó 10 Bông hoa nhận được " + gem + " Ngọc Xanh!");
+                Service.gI().sendThongBao(pl, "Kết bó 10 Bông hoa nhận được " + ruby + " Hồng Ngọc!");
             } else if (roll <= 55) {
                 int ruby = Util.nextInt(10, 30);
                 pl.inventory.ruby += ruby;
@@ -3122,16 +3122,16 @@ public class UseItem {
         if (duaHau != null && duaHau.quantity >= 1 && tem != null && tem.quantity >= 1) {
             InventoryService.gI().subQuantityItemsBag(pl, duaHau, 1);
             InventoryService.gI().subQuantityItemsBag(pl, tem, 1);
-            int gem = Util.nextInt(10, 25);
-            pl.inventory.gem += gem;
+            int ruby = Util.nextInt(10, 25);
+            pl.inventory.ruby += ruby;
             pl.point_sukien += 1;
             pl.event.addEventPoint(1);
             Manager.isTopSukienChanged = true;
             PlayerService.gI().sendInfoHpMpMoney(pl);
             InventoryService.gI().sendItemBags(pl);
-            Service.gI().sendThongBao(pl, "Đổi 1 Dưa Hấu + 1 Tem nhận được " + gem + " Ngọc Xanh!");
+            Service.gI().sendThongBao(pl, "Đổi 1 Dưa Hấu + 1 Tem nhận được " + ruby + " Hồng Ngọc!");
         } else {
-            Service.gI().sendThongBao(pl, "Cần 1 Dưa Hấu + 1 Tem để đổi Ngọc Xanh (hoặc gặp Vua Hùng tại Làng Aru)!");
+            Service.gI().sendThongBao(pl, "Cần 1 Dưa Hấu + 1 Tem để đổi Hồng Ngọc (hoặc gặp Vua Hùng tại Làng Aru)!");
         }
     }
 
@@ -3179,12 +3179,12 @@ public class UseItem {
             Manager.isTopSukienChanged = true;
 
             if (Util.isTrue(15, 100)) {
-                int gem = Util.nextInt(10, 25);
-                pl.inventory.gem += gem;
+                int ruby = Util.nextInt(10, 25);
+                pl.inventory.ruby += ruby;
                 PlayerService.gI().sendInfoHpMpMoney(pl);
                 InventoryService.gI().subQuantityItemsBag(pl, item, 1);
                 InventoryService.gI().sendItemBags(pl);
-                Service.gI().sendThongBao(pl, "Mở Hộp quà Giáng Sinh nhận được " + gem + " Ngọc Xanh (+1 điểm sự kiện)!");
+                Service.gI().sendThongBao(pl, "Mở Hộp quà Giáng Sinh nhận được " + ruby + " Hồng Ngọc (+1 điểm sự kiện)!");
             } else {
                 int[] temp = {spl, dnc, nr, nrBang, mts, 533, 380, ctNoel, 936, 822, 746};
                 byte index = (byte) Util.nextInt(0, temp.length - 1);

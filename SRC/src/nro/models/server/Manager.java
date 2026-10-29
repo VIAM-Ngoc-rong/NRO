@@ -906,6 +906,8 @@ public final class Manager {
                     case 39 -> optionTemp.name = "$[ĐÃ KHÓA BẢO VỆ - Chống vứt/bán/phân rã]";
                     case 66 -> optionTemp.name = "+#% sát thương chiêu Laze";
                     case 73 -> optionTemp.name = "$Đang mở Trang # ở đầu Bể Chung";
+                    case 138 -> optionTemp.name = "$+100% HP (đủ 5 món)";
+                    case 142 -> optionTemp.name = "$+100% KI, +50% SĐ Laze (đủ 5 món)";
                     case 153 -> optionTemp.name = "+#% sát thương chiêu phát nổ";
                     case 159 -> optionTemp.name = "+#% sát thương đòn chưởng";
                     case 209 -> optionTemp.name = "$[Set Đồ Nhanh #]";

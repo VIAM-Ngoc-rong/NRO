@@ -186,8 +186,10 @@ public class Mob {
                     plAtt.satellite.isDefend = false;
                 }
                 long tiemNang = getTiemNangForPlayer(plAtt, damage);
-                Service.gI().addSMTN(plAtt, (byte) 2, tiemNang, true);
-                TrainingService.gI().tangTnsmLuyenTap(plAtt, tiemNang);
+                if (tiemNang > 0) {
+                    Service.gI().addSMTN(plAtt, (byte) 2, tiemNang, true);
+                    TrainingService.gI().tangTnsmLuyenTap(plAtt, tiemNang);
+                }
                 damage = this.point.hp / 100 > 0 ? this.point.hp / 100 : 1;
             }
         }
@@ -220,6 +222,21 @@ public class Mob {
     }
 
     public long getTiemNangForPlayer(Player pl, long dame) {
+        if (pl == null || pl.nPoint == null) {
+            return 0;
+        }
+        // Máy đấm luyện tập và Mộc nhân: chỉ cộng tiềm năng cho Đệ tử dưới 15 triệu sức mạnh
+        if (this.tempId == ConstMob.MAY_DO_SUC_MANH || this.tempId == ConstMob.MOC_NHAN) {
+            if (pl.isPet && pl.nPoint.power >= 15_000_000L) {
+                return 0;
+            }
+            if (!pl.isPet && pl.nPoint.power >= 15_000_000L) {
+                return 1;
+            }
+        }
+        if (pl.nPoint.power >= pl.nPoint.getPowerLimit()) {
+            return 0;
+        }
         int levelPlayer = Service.gI().getCurrLevel(pl);
         int levelMob = this.level;
         int checkLevel = Math.abs(levelPlayer - this.level);
@@ -947,7 +964,7 @@ public class Mob {
         //========================Thức Ăn, Mảnh Thiên Sứ & Bí Kíp Tuyệt Kỹ========================
         boolean hasSetGod = (plOwner != null && plOwner.setClothes != null && plOwner.setClothes.checkSetGod())
                 || (player.setClothes != null && player.setClothes.checkSetGod());
-        if (hasSetGod && Util.isTrue(5, 100)) {
+        if (hasSetGod && Util.isTrue(15, 1000)) { // 1.5% cơ hội rơi Thức ăn Hủy Diệt
             ItemMap it = new ItemMap(zone, Util.nextInt(663, 667), 1, x, yEnd, plOwner.id);
             candidateItems.add(0, it);
         }
@@ -958,17 +975,17 @@ public class Mob {
         boolean hasCoBonLa = plOwner != null && plOwner.itemTime != null && plOwner.itemTime.isUseCoBonLa;
 
         if (isMapBillOrNgucTu) {
-            int biKipRate = hasSetDes ? 75 : 50;
+            int biKipRate = hasSetDes ? 12 : 8; // 8% - 12% rơi Bí kíp Tuyệt Kỹ
             if (hasCoBonLa) {
-                biKipRate = Math.min(90, biKipRate + 15);
+                biKipRate += 3;
             }
             if (Util.isTrue(biKipRate, 100)) {
-                int biKipQty = hasSetDes ? Util.nextInt(2, 5) : Util.nextInt(1, 3);
+                int biKipQty = hasSetDes ? Util.nextInt(1, 2) : 1;
                 candidateItems.add(0, new ItemMap(zone, 1229, biKipQty, x, yEnd, plOwner.id));
-            } else if (hasSetDes && Util.isTrue(25, 100)) {
+            } else if (hasSetDes && Util.isTrue(50, 1000)) { // 5% rơi Mảnh Thiên Sứ khi mặc đủ 5 món Hủy Diệt
                 candidateItems.add(0, new ItemMap(zone, Util.nextInt(1066, 1070), 1, x, yEnd, plOwner.id));
-            } else if (Util.isTrue(35, 100)) {
-                candidateItems.add(0, new ItemMap(zone, 1281, Util.nextInt(2, 5), x, yEnd, plOwner.id));
+            } else if (Util.isTrue(8, 100)) { // 8% rơi nguyên liệu chế tạo Thiên Sứ
+                candidateItems.add(0, new ItemMap(zone, 1281, Util.nextInt(1, 2), x, yEnd, plOwner.id));
             }
         }
 
@@ -985,11 +1002,17 @@ public class Mob {
 
             if (Util.isTrue(dropRate, 1000)) {
                 int rollNro = Util.nextInt(1, 100);
-                int nroId = rollNro <= 20 ? 18 : (rollNro <= 55 ? 19 : 20); // 5 sao (20%), 6 sao (35%), 7 sao (45%)
+                int nroId;
+                if (MapService.gI().isMapDoanhTrai(mapid)) {
+                    nroId = rollNro <= 20 ? 1831 : (rollNro <= 55 ? 1832 : 1833); // Ngọc Rồng Tím 5-7 sao trong Doanh Trại
+                } else {
+                    nroId = rollNro <= 20 ? 18 : (rollNro <= 55 ? 19 : 20); // 5 sao (20%), 6 sao (35%), 7 sao (45%)
+                }
                 ItemMap it = new ItemMap(zone, nroId, 1, x, yEnd, plOwner.id);
                 candidateItems.add(0, it);
             } else if (Util.isTrue(2, 1000)) { // 0.2% cơ hội rơi Ngọc Rồng 4 sao
-                candidateItems.add(0, new ItemMap(zone, 17, 1, x, yEnd, plOwner.id));
+                int nro4sId = MapService.gI().isMapDoanhTrai(mapid) ? 1830 : 17;
+                candidateItems.add(0, new ItemMap(zone, nro4sId, 1, x, yEnd, plOwner.id));
             }
         }
 

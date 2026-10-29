@@ -99,12 +99,12 @@ public class VuaHung extends Npc {
                 case 0 -> {
                     switch (select) {
                         case 0 ->
-                            createOtherMenu(pl, 10, "Muốn đổi ngọc thì mang Dưa Hấu và Tem đến đây?",
-                                    "5 Ngọc\n1 Quả\n1 Tem",
-                                    "40 Ngọc\n10 Quả\n2 Tem",
-                                    "120 Ngọc\n20 Quả\n3 Tem",
-                                    "185 Ngọc\n25 Quả\n4 Tem",
-                                    "250 Ngọc\n30 Quả\n5 Tem");
+                            createOtherMenu(pl, 10, "Muốn đổi Hồng Ngọc thì mang Dưa Hấu và Tem đến đây?",
+                                     "5 Hồng Ngọc\n1 Quả\n1 Tem",
+                                     "40 Hồng Ngọc\n10 Quả\n2 Tem",
+                                     "120 Hồng Ngọc\n20 Quả\n3 Tem",
+                                     "185 Hồng Ngọc\n25 Quả\n4 Tem",
+                                     "250 Hồng Ngọc\n30 Quả\n5 Tem");
                         case 1 -> {
                             int q1 = getItemQuantity(pl, NGA_VOI);
                             int q2 = getItemQuantity(pl, CUA_GA);
@@ -351,14 +351,14 @@ public class VuaHung extends Npc {
             InventoryService.gI().subQuantityItemsBag(player, tem, temNeeded[select]);
             InventoryService.gI().sendItemBags(player);
 
-            player.inventory.gem += gems[select];
+            player.inventory.ruby += gems[select];
             player.point_sukien += temNeeded[select];
             player.event.addEventPoint(temNeeded[select]);
             Service.gI().sendMoney(player);
 
-            Service.gI().sendThongBao(player, "Bạn đã nhận được " + gems[select] + " Ngọc Xanh (+" + temNeeded[select] + " điểm sự kiện)!");
+            Service.gI().sendThongBao(player, "Bạn đã nhận được " + gems[select] + " Hồng Ngọc (+" + temNeeded[select] + " điểm sự kiện)!");
         } else {
-            Service.gI().sendThongBao(player, "Bạn không đủ nguyên liệu để đổi Ngọc!");
+            Service.gI().sendThongBao(player, "Bạn không đủ nguyên liệu để đổi Hồng Ngọc!");
         }
     }
 

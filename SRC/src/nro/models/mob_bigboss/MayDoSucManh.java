@@ -55,7 +55,7 @@ public class MayDoSucManh extends BigBoss {
     }
 
     public void updateMilestone(Player pl, long realDamage) {
-        if (pl == null) {
+        if (pl == null || !pl.isPl()) {
             return;
         }
 

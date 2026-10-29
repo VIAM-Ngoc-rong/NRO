@@ -1263,23 +1263,19 @@ public class Boss extends Player implements IBoss {
         // Các Boss hằng ngày như TDST Namek, Bojack không rơi đồ, chỉ rơi Ngọc Rồng.
         boolean droppedEquip = false;
         boolean isHighHpBoss = bossHp > 250_000_000L;
+        boolean canDropGodEquip = bossHp > 400_000_000L;
         boolean canDropEquip = isBossFromNappaOnwards()
                 || (isHighHpBoss && !isDailyEarlyBoss() && !isMiniBoss() && !isBrolyBoss());
 
-        if (canDropEquip && (isHighHpBoss || isBossFromFutureOnwards())) {
-            long hpBoss = Math.max(1L, (long) this.nPoint.hpMax);
-            // Boss > 250tr HP có tỷ lệ rớt Đồ Thần Linh (15-17 tỷ SM) cao vượt trội (25% - 45%)
-            int ratePer1000 = isHighHpBoss
-                    ? (int) Math.min(450L, 220L + (hpBoss / 8_000_000L))
-                    : (int) Math.min(250L, 20L + (hpBoss / 10_000_000L));
+        if (canDropEquip && canDropGodEquip) {
+            // Chỉ Boss > 400tr HP mới rớt Đồ Thần Linh (tỉ lệ 7%)
+            int ratePer1000 = 70;
             if (Util.isTrue(ratePer1000, 1000)) {
                 ItemMap godItem = ItemService.gI().randDoTLBoss(this.zone, 1, x, y, plOwner.id);
                 if (godItem != null) {
-                    if (isHighHpBoss) {
-                        int randTlStar = Util.nextInt(1, 100);
-                        int tlStars = randTlStar <= 65 ? Util.nextInt(3, 4) : (randTlStar <= 90 ? 5 : Util.nextInt(6, 7));
-                        godItem.options.add(new Item.ItemOption(107, tlStars));
-                    }
+                    int randTlStar = Util.nextInt(1, 100);
+                    int tlStars = randTlStar <= 65 ? Util.nextInt(3, 4) : (randTlStar <= 90 ? 5 : Util.nextInt(6, 7));
+                    godItem.options.add(new Item.ItemOption(107, tlStars));
                     Service.gI().dropItemMap(this.zone, godItem);
                     droppedEquip = true;
                 }

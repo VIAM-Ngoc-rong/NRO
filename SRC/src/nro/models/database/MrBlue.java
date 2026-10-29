@@ -17,6 +17,7 @@ import nro.models.npc.MagicTree;
 import nro.models.player.Enemy;
 import nro.models.player.Friend;
 import nro.models.player.Fusion;
+import nro.models.player.NPoint;
 import nro.models.player.Pet;
 import nro.models.player.Player;
 import nro.models.skill.Skill;
@@ -832,7 +833,16 @@ public class MrBlue {
                 // data chỉ số
                 dataArray = (JSONArray) JSONValue.parse(String.valueOf(petData.get(1)));
                 pet.nPoint.limitPower = Byte.parseByte(String.valueOf(dataArray.get(0)));
+                if (pet.nPoint.limitPower < 0) {
+                    pet.nPoint.limitPower = 0;
+                } else if (pet.nPoint.limitPower > NPoint.MAX_LIMIT) {
+                    pet.nPoint.limitPower = NPoint.MAX_LIMIT;
+                }
                 pet.nPoint.power = Long.parseLong(String.valueOf(dataArray.get(1)));
+                long maxPetPowerLimit = pet.nPoint.getPowerLimit();
+                if (maxPetPowerLimit > 0 && pet.nPoint.power > maxPetPowerLimit) {
+                    pet.nPoint.power = maxPetPowerLimit;
+                }
                 pet.nPoint.tiemNang = Long.parseLong(String.valueOf(dataArray.get(2)));
                 pet.nPoint.stamina = Short.parseShort(String.valueOf(dataArray.get(3)));
                 pet.nPoint.maxStamina = Short.parseShort(String.valueOf(dataArray.get(4)));

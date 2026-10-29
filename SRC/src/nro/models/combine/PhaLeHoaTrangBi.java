@@ -73,15 +73,15 @@ public class PhaLeHoaTrangBi {
             case 3:
                 return 5f;
             case 4:
-                return 1f;
+                return 0.8f;
             case 5:
-                return 0.7f;
+                return 0.3f;
             case 6:
-                return 0.5f;
+                return 0.1f;
             case 7:
-                return 0.1f;
+                return 0.03f;
             case 8:
-                return 0.1f;
+                return 0.01f;
         }
 
         return 0;

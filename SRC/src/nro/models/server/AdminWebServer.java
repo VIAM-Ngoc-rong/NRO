@@ -2061,6 +2061,91 @@ public class AdminWebServer {
                     }
                     sendJson(exchange, 200, "{\"ok\":true,\"message\":" + jsonStr("Đã tạo tài khoản mới [" + u + "] thành công (Mặc định +5 Rương SKH)!") + "}");
                 }
+                case "account_delete" -> {
+                    int accId = (int) parseLongSafe(params.get("accId"), -1);
+                    long playerId = parseLongSafe(params.get("playerId"), -1);
+
+                    if (accId <= 0 && playerId > 0) {
+                        Player onlineByPid = Client.gI().getPlayer(playerId);
+                        if (onlineByPid != null && onlineByPid.getSession() != null) {
+                            accId = onlineByPid.getSession().userId;
+                        }
+                    }
+
+                    String deletedUsername = "";
+                    String deletedPlayerName = "";
+
+                    try (Connection con = LocalManager.getConnection()) {
+                        if (accId <= 0 && playerId > 0) {
+                            try (PreparedStatement psFind = con.prepareStatement("SELECT account_id FROM player WHERE id = ? LIMIT 1")) {
+                                psFind.setLong(1, playerId);
+                                try (ResultSet rs = psFind.executeQuery()) {
+                                    if (rs.next()) {
+                                        accId = rs.getInt("account_id");
+                                    }
+                                }
+                            }
+                        }
+
+                        if (accId <= 0) {
+                            sendJson(exchange, 400, "{\"ok\":false,\"message\":\"Không tìm thấy ID tài khoản cần xóa!\"}");
+                            return;
+                        }
+
+                        try (PreparedStatement psInfo = con.prepareStatement(
+                                "SELECT a.username, p.id AS pid, p.name AS pname FROM account a LEFT JOIN player p ON p.account_id = a.id WHERE a.id = ? LIMIT 1")) {
+                            psInfo.setInt(1, accId);
+                            try (ResultSet rs = psInfo.executeQuery()) {
+                                if (rs.next()) {
+                                    deletedUsername = rs.getString("username");
+                                    deletedPlayerName = rs.getString("pname");
+                                    if (playerId <= 0) {
+                                        playerId = rs.getLong("pid");
+                                    }
+                                } else {
+                                    sendJson(exchange, 404, "{\"ok\":false,\"message\":\"Tài khoản #" + accId + " không tồn tại trong Database!\"}");
+                                    return;
+                                }
+                            }
+                        }
+                    }
+
+                    // Nếu người chơi đang Online, kick khỏi Server trước khi xóa dữ liệu
+                    Player livePl = Client.gI().getPlayerByUser(accId);
+                    if (livePl == null && playerId > 0) {
+                        livePl = Client.gI().getPlayer(playerId);
+                    }
+                    if (livePl != null) {
+                        if (deletedPlayerName == null || deletedPlayerName.isEmpty()) {
+                            deletedPlayerName = livePl.name;
+                        }
+                        if (livePl.getSession() != null) {
+                            Client.gI().kickSession(livePl.getSession());
+                        }
+                    }
+
+                    // Xóa nhân vật và tài khoản trong MySQL
+                    try (Connection con = LocalManager.getConnection()) {
+                        try (PreparedStatement delPl = con.prepareStatement("DELETE FROM player WHERE account_id = ?")) {
+                            delPl.setInt(1, accId);
+                            delPl.executeUpdate();
+                        }
+                        if (playerId > 0) {
+                            try (PreparedStatement delPlById = con.prepareStatement("DELETE FROM player WHERE id = ?")) {
+                                delPlById.setLong(1, playerId);
+                                delPlById.executeUpdate();
+                            }
+                        }
+                        try (PreparedStatement delAcc = con.prepareStatement("DELETE FROM account WHERE id = ?")) {
+                            delAcc.setInt(1, accId);
+                            delAcc.executeUpdate();
+                        }
+                    }
+
+                    String label = (deletedUsername != null && !deletedUsername.isEmpty() ? deletedUsername : ("#" + accId))
+                            + (deletedPlayerName != null && !deletedPlayerName.isEmpty() ? (" - NV: " + deletedPlayerName) : "");
+                    sendJson(exchange, 200, "{\"ok\":true,\"message\":" + jsonStr("Đã xóa vĩnh viễn tài khoản [" + label + "] khỏi Server!") + "}");
+                }
                 case "event_toggle" -> {
                     String evKey = params.getOrDefault("event", "").trim();
                     String stateRaw = params.containsKey("state") ? params.get("state") : params.get("enabled");

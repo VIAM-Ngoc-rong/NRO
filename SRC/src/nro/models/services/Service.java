@@ -953,22 +953,51 @@ public class Service {
     }
 
     public void addSMTN(Player player, byte type, long param, boolean isOri) {
-        if (player.nPoint == null) {
+        if (player == null || player.nPoint == null || param <= 0) {
             return;
         }
 
         if (player.isPet) {
-            player.nPoint.powerUp(param);
-            player.nPoint.tiemNangUp(param);
-            while (player.nPoint.limitPower < nro.models.player.NPoint.MAX_LIMIT
-                    && player.nPoint.power >= player.nPoint.getPowerLimit()) {
-                player.nPoint.limitPower++;
+            if (player.nPoint.limitPower < 0) {
+                player.nPoint.limitPower = 0;
+            } else if (player.nPoint.limitPower > nro.models.player.NPoint.MAX_LIMIT) {
+                player.nPoint.limitPower = nro.models.player.NPoint.MAX_LIMIT;
+            }
+            long maxPetPower = player.nPoint.getPowerLimit();
+            if (player.nPoint.power > maxPetPower) {
+                player.nPoint.power = maxPetPower;
+            }
+            if (player.nPoint.power < maxPetPower) {
+                long petParam = param;
+                if (player.nPoint.power + petParam > maxPetPower) {
+                    petParam = maxPetPower - player.nPoint.power;
+                }
+                if (petParam > 0) {
+                    switch (type) {
+                        case 1:
+                            player.nPoint.tiemNangUp(petParam);
+                            break;
+                        case 2:
+                            player.nPoint.powerUp(petParam);
+                            player.nPoint.tiemNangUp(petParam);
+                            break;
+                        default:
+                            player.nPoint.powerUp(petParam);
+                            break;
+                    }
+                }
             }
 
             Player master = ((Pet) player).master;
+            if (master == null || master.nPoint == null) {
+                return;
+            }
 
             long masterParam = (long) (param * 0.5);
             masterParam = master.nPoint.calSubTNSM(masterParam);
+            if (masterParam <= 0) {
+                return;
+            }
 
             long maxPower = master.nPoint.getPowerLimit();
             if (master.nPoint.power >= maxPower) {
@@ -977,11 +1006,9 @@ public class Service {
             if (master.nPoint.power + masterParam > maxPower) {
                 masterParam = maxPower - master.nPoint.power;
             }
-
-            master.nPoint.powerUp(masterParam);
-            master.nPoint.tiemNangUp(masterParam);
-
-            addSMTN(master, type, masterParam, true);
+            if (masterParam > 0) {
+                addSMTN(master, type, masterParam, true);
+            }
 
         } else if (player.isBot) {
             player.nPoint.power += param;

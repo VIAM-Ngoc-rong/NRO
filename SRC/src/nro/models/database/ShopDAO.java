@@ -264,23 +264,23 @@ public class ShopDAO {
             {1553, 50, 32, 77, 28, 103, 27, 210, 3},                          // Goku SSJ4 (32% SĐ + 3 dòng bí ẩn)
             {1590, 50, 33, 77, 28, 103, 28, 99, 15, 210, 3},                  // Goku SSJ Blue (33% SĐ, XGCC 15% + 3 dòng bí ẩn)
 
-            // --- NAMEK: Nhánh Đánh Tay / Liên Hoàn (Tăng nhẹ %SĐ + 3 dòng chỉ số bí ẩn hệ Cận Chiến) ---
-            {898,  50, 32, 77, 28, 103, 27, 210, 3},                          // Zamasu (32% SĐ + 3 dòng bí ẩn)
-            {1396, 50, 33, 77, 28, 103, 28, 99, 15, 210, 3},                  // Super Píc (33% SĐ, XGCC 15% + 3 dòng bí ẩn)
+            // --- NAMEK: Nhánh Đánh Tay / Liên Hoàn (Tăng %SĐ & %KI + 3 dòng chỉ số bí ẩn hệ Cận Chiến) ---
+            {898,  50, 32, 77, 28, 103, 45, 210, 3},                          // Zamasu (32% SĐ, 45% KI + 3 dòng bí ẩn)
+            {1396, 50, 33, 77, 28, 103, 50, 99, 15, 210, 3},                  // Super Píc (33% SĐ, 50% KI, XGCC 15% + 3 dòng bí ẩn)
 
-            // --- NAMEK: Nhánh Chuyên KI / Laze (%KI cao + Ngẫu nhiên 25-75% ST Laze + 2 dòng chỉ số bí ẩn hệ KI/Chưởng) ---
-            {738,  50, 26, 77, 26, 103, 34, 66, 75, 210, 2},                  // Dr. Lychee (34% KI, 25-75% ST Laze + 2 dòng bí ẩn)
-            {1567, 50, 27, 77, 26, 103, 36, 66, 75, 210, 2},                  // Frieren (36% KI, 25-75% ST Laze + 2 dòng bí ẩn)
+            // --- NAMEK: Nhánh Chuyên KI / Laze (%KI cực cao 80-100% + Ngẫu nhiên 25-75% ST Laze + 2 dòng chỉ số bí ẩn hệ KI/Chưởng) ---
+            {738,  50, 26, 77, 26, 103, 80, 66, 75, 210, 2},                  // Dr. Lychee (80% KI, 25-75% ST Laze + 2 dòng bí ẩn)
+            {1567, 50, 27, 77, 26, 103, 100, 66, 75, 210, 2},                 // Frieren (100% KI, 25-75% ST Laze + 2 dòng bí ẩn)
 
-            // --- XAYDA: Nhánh Đánh Tay / Biến Khỉ (Tăng nhẹ %SĐ + 3 dòng chỉ số bí ẩn hệ Cận Chiến) ---
-            {1783, 50, 32, 77, 28, 103, 27, 210, 3},                          // Broly (32% SĐ + 3 dòng bí ẩn)
-            {1275, 50, 33, 77, 28, 103, 28, 99, 15, 210, 3},                  // Cumber SSJ (33% SĐ, XGCC 15% + 3 dòng bí ẩn)
-            {1454, 50, 32, 77, 28, 103, 28, 5, 15, 210, 3},                   // Super Black Goku Rose (32% SĐ, SĐCM 15% + 3 dòng bí ẩn)
-            {1697, 50, 33, 77, 28, 103, 28, 5, 15, 14, 10, 210, 2},           // Gogeta (33% SĐ, SĐCM 15%, CM 10% + 2 dòng bí ẩn)
+            // --- XAYDA: Nhánh Đánh Tay / Biến Khỉ (Tăng %SĐ & %HP + 3 dòng chỉ số bí ẩn hệ Cận Chiến) ---
+            {1783, 50, 32, 77, 50, 103, 27, 210, 3},                          // Broly (32% SĐ, 50% HP + 3 dòng bí ẩn)
+            {1275, 50, 33, 77, 55, 103, 28, 99, 15, 210, 3},                  // Cumber SSJ (33% SĐ, 55% HP, XGCC 15% + 3 dòng bí ẩn)
+            {1454, 50, 32, 77, 45, 103, 28, 5, 15, 210, 3},                   // Super Black Goku Rose (32% SĐ, 45% HP, SĐCM 15% + 3 dòng bí ẩn)
+            {1697, 50, 33, 77, 45, 103, 28, 5, 15, 14, 10, 210, 2},           // Gogeta (33% SĐ, 45% HP, SĐCM 15%, CM 10% + 2 dòng bí ẩn)
 
-            // --- XAYDA: Nhánh Đánh Bom (%HP cao + Ngẫu nhiên 25-75% ST Nổ + 2 dòng chỉ số bí ẩn hệ Nổ/HP) ---
-            {1744, 50, 26, 77, 34, 103, 25, 153, 75, 210, 2},                 // Cađíc SSJ2 M (34% HP, 25-75% ST Nổ + 2 dòng bí ẩn)
-            {1693, 50, 27, 77, 36, 103, 26, 153, 75, 210, 2}                  // Cađíc SSJ4 (36% HP, 25-75% ST Nổ + 2 dòng bí ẩn)
+            // --- XAYDA: Nhánh Chuyên HP / Đánh Bom (%HP cực cao 80-100% + Ngẫu nhiên 25-75% ST Nổ + 2 dòng chỉ số bí ẩn hệ Nổ/HP) ---
+            {1744, 50, 26, 77, 80, 103, 25, 153, 75, 210, 2},                 // Cađíc SSJ2 M (80% HP, 25-75% ST Nổ + 2 dòng bí ẩn)
+            {1693, 50, 27, 77, 100, 103, 26, 153, 75, 210, 2}                 // Cađíc SSJ4 (100% HP, 25-75% ST Nổ + 2 dòng bí ẩn)
         };
 
         ItemTemplate rubyTemp = ItemService.gI().getTemplate((short) 861);
@@ -694,7 +694,7 @@ public class ShopDAO {
             // Hatchiyack, Dr. Lychee, 3 Sói Tam Giác
             case 729 -> addOpts(is, 50, 27, 77, 27, 103, 25, 5, 15, 97, 10);          // Hatchiyack
             case 730, 731, 732 -> addOpts(is, 50, 24, 77, 24, 103, 24, 79, 10, 114, 25, 169, 0); // Sói Basil, Lavender, Bergamo
-            case 738 -> addOpts(is, 50, 25, 77, 25, 103, 28, 5, 15, 98, 15);          // Dr. Lychee
+            case 738 -> addOpts(is, 50, 26, 77, 26, 103, 80, 66, 75, 98, 15);         // Dr. Lychee (Chuyên KI Namek)
 
             // Nón Chuột, Trâu, Hổ, Mèo, Đầu Trâu, Mặt Ngựa, Lân, Rồng
             case 754, 755, 756 -> addOpts(is, 50, 20, 77, 20, 103, 20, 100, 50, 14, 8);
@@ -781,9 +781,9 @@ public class ShopDAO {
 
             // SSJ4, Gogeta, Frieren, Himmel, Pikkon
             case 1553 -> addOpts(is, 50, 33, 77, 32, 103, 32, 5, 20, 14, 12);         // Goku SSJ4
-            case 1693 -> addOpts(is, 50, 33, 77, 32, 103, 32, 5, 20, 94, 12);         // Cađíc SSJ4
-            case 1697 -> addOpts(is, 50, 35, 77, 35, 103, 35, 5, 25, 38, 0);          // Gogeta
-            case 1567 -> addOpts(is, 50, 30, 77, 26, 103, 35, 98, 20, 5, 18);         // Frieren
+            case 1693 -> addOpts(is, 50, 27, 77, 100, 103, 26, 153, 75, 94, 12);      // Cađíc SSJ4 (Chuyên HP Xayda)
+            case 1697 -> addOpts(is, 50, 35, 77, 45, 103, 35, 5, 25, 38, 0);          // Gogeta
+            case 1567 -> addOpts(is, 50, 27, 77, 26, 103, 100, 66, 75, 98, 20);       // Frieren (Chuyên KI Namek)
             case 1632 -> addOpts(is, 50, 32, 77, 30, 103, 28, 99, 20, 114, 35);       // Himmel
             case 1674 -> addOpts(is, 50, 28, 77, 28, 103, 28, 5, 15, 108, 15);        // Pikkon
 
@@ -791,7 +791,7 @@ public class ShopDAO {
             case 1588, 1741 -> addOpts(is, 50, 24, 77, 24, 103, 24, 5, 10, 101, 20);  // Base
             case 1589, 1742 -> addOpts(is, 50, 26, 77, 25, 103, 25, 5, 12, 14, 8);    // SSJ1
             case 1595, 1743 -> addOpts(is, 50, 27, 77, 26, 103, 26, 5, 14, 14, 10);   // SSJ2
-            case 1744 -> addOpts(is, 50, 28, 77, 27, 103, 26, 5, 16, 153, 50);        // Cađíc SSJ2 M
+            case 1744 -> addOpts(is, 50, 26, 77, 80, 103, 25, 5, 16, 153, 75);        // Cađíc SSJ2 M (Chuyên HP Xayda)
             case 1587, 1745 -> addOpts(is, 50, 29, 77, 27, 103, 27, 5, 18, 98, 10);   // SSJ3
             case 1593 -> addOpts(is, 50, 30, 77, 29, 103, 29, 5, 18, 80, 15);         // SSJ God
             case 1590, 1746 -> addOpts(is, 50, 32, 77, 30, 103, 30, 5, 20, 14, 12);   // SSJ Blue

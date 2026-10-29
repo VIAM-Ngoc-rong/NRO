@@ -18,8 +18,24 @@ import nro.models.utils.Util;
  */
 public class DapDoKichHoat {
 
-    private static final int GOLD_DAP_DO = 100_000_000;
-    private static final int RATIO_DAP_DO = 100;
+    private static final int GOLD_DAP_DO = 200_000_000;
+    private static final int RATIO_DAP_DO = 40;
+
+    private static long getGoldCostForPhoi(Item phoiItem) {
+        if (phoiItem == null || phoiItem.template == null) {
+            return GOLD_DAP_DO;
+        }
+        if (phoiItem.isDTS() || phoiItem.template.level >= 15) {
+            return 2_000_000_000L;
+        }
+        if (phoiItem.isDHD() || phoiItem.template.level == 14) {
+            return 1_000_000_000L;
+        }
+        if (phoiItem.isDTL() || phoiItem.template.level == 13) {
+            return 500_000_000L;
+        }
+        return GOLD_DAP_DO;
+    }
 
     private static final int[] VALID_SKH_OPTION_IDS = {
         127, 128, 129, 130, 131, 132, 133, 134, 135,
@@ -177,7 +193,8 @@ public class DapDoKichHoat {
             fodderList.append("|0|- ").append(item.template.name).append(" (Nguyên liệu tiêu hao)\n");
         }
 
-        player.combineNew.goldCombine = GOLD_DAP_DO;
+        long goldCost = getGoldCostForPhoi(phoiItem);
+        player.combineNew.goldCombine = (int) Math.min(Integer.MAX_VALUE, goldCost);
         player.combineNew.ratioCombine = RATIO_DAP_DO;
 
         int targetGender = (phoiItem.template.gender >= 0 && phoiItem.template.gender <= 2)
@@ -185,18 +202,18 @@ public class DapDoKichHoat {
         String planetName = targetGender == 0 ? "Trái Đất" : (targetGender == 1 ? "Namek" : "Xayda");
 
         String npcSay = "|2|Đập 3 món đồ Kích Hoạt + 1 Đồ Phôi thành Đồ SKH\n"
-                + "|6|Đồ Phôi giữ lại (Lên SKH): " + phoiItem.template.name + "\n"
+                + "|6|Đồ Phôi giữ lại (Bảo toàn 100%): " + phoiItem.template.name + "\n"
                 + "|2|3 Món KH phụ sẽ tiêu hao:\n" + fodderList
                 + "|2|Kết quả: Giữ nguyên " + phoiItem.template.name + " + Nhận Set Kích Hoạt (" + planetName + " bất kỳ)\n"
-                + "|2|Tỉ lệ thành công: " + RATIO_DAP_DO + "%\n"
-                + "|2|Chi phí: " + Util.numberToMoney(GOLD_DAP_DO) + " vàng\n";
+                + "|2|Tỉ lệ thành công: " + RATIO_DAP_DO + "% (Thất bại chỉ mất 3 món phụ & vàng)\n"
+                + "|2|Chi phí: " + Util.numberToMoney(goldCost) + " vàng\n";
 
-        if (player.inventory.gold < GOLD_DAP_DO) {
-            npcSay += "|7|Còn thiếu " + Util.powerToString(GOLD_DAP_DO - player.inventory.gold) + " vàng\n";
+        if (player.inventory.gold < goldCost) {
+            npcSay += "|7|Còn thiếu " + Util.powerToString(goldCost - player.inventory.gold) + " vàng\n";
             CombineService.gI().baHatMit.createOtherMenu(player, ConstNpc.IGNORE_MENU, npcSay, "Đóng");
         } else {
             CombineService.gI().baHatMit.createOtherMenu(player, ConstNpc.MENU_START_COMBINE, npcSay,
-                    "Đập đồ\n" + Util.numberToMoney(GOLD_DAP_DO) + " vàng",
+                    "Đập đồ\n" + Util.numberToMoney(goldCost) + " vàng",
                     "Chọn nhanh\n3 Đồ KH",
                     "Đổi sang\nTrang kế",
                     "Từ chối");
@@ -235,43 +252,13 @@ public class DapDoKichHoat {
             return;
         }
 
-        if (player.inventory.gold < GOLD_DAP_DO) {
-            Service.gI().sendThongBao(player, "Không đủ 100 triệu vàng để thực hiện!");
+        long goldCost = getGoldCostForPhoi(phoiItem);
+        if (player.inventory.gold < goldCost) {
+            Service.gI().sendThongBao(player, "Không đủ " + Util.numberToMoney(goldCost) + " vàng để thực hiện!");
             return;
         }
 
-        List<ItemOption> preservedOptions = new java.util.ArrayList<>();
-        if (phoiItem.itemOptions != null) {
-            for (ItemOption io : phoiItem.itemOptions) {
-                if (io != null && io.optionTemplate != null && !isSkhOptionId(io.optionTemplate.id)
-                        && io.optionTemplate.id != 30 && io.optionTemplate.id != 73) {
-                    preservedOptions.add(new ItemOption(io.optionTemplate.id, io.param));
-                }
-            }
-        }
-        if (preservedOptions.isEmpty()) {
-            RewardService.gI().initBaseOptionClothes(phoiItem, phoiItem.template.id, phoiItem.template.type, preservedOptions);
-        }
-
-        int gender = (phoiItem.template.gender >= 0 && phoiItem.template.gender <= 2)
-                ? phoiItem.template.gender : player.gender;
-        if (gender < 0 || gender > 2) {
-            gender = 0;
-        }
-
-        int[] possibleSets = PLANET_SKH_SETS[gender];
-        int skhId = possibleSets[Util.nextInt(possibleSets.length)];
-
-        // Cập nhật trực tiếp trên chính món Đồ Phôi trong túi đồ để KHÔNG BAO GIỜ bị mất Đồ Phôi
-        phoiItem.itemOptions.clear();
-        phoiItem.itemOptions.addAll(preservedOptions);
-        phoiItem.itemOptions.add(new ItemOption(skhId, 1));
-        for (int subOpId : ItemService.gI().getOptionIdsBySKH(skhId)) {
-            phoiItem.itemOptions.add(new ItemOption(subOpId, 1));
-        }
-        phoiItem.itemOptions.add(new ItemOption(30, 0)); // Không thể giao dịch
-
-        player.inventory.gold -= GOLD_DAP_DO;
+        player.inventory.gold -= goldCost;
         // Chỉ trừ 3 món nguyên liệu phụ, giữ nguyên món Đồ Phôi trong túi
         for (Item item : player.combineNew.itemsCombine) {
             if (item != phoiItem) {
@@ -279,8 +266,44 @@ public class DapDoKichHoat {
             }
         }
 
-        CombineService.gI().sendEffectSuccessCombine(player);
-        Service.gI().sendThongBao(player, "Chúc mừng! Bạn đã đập thành công " + phoiItem.template.name + " Kích Hoạt!");
+        if (Util.isTrue(RATIO_DAP_DO, 100)) {
+            List<ItemOption> preservedOptions = new java.util.ArrayList<>();
+            if (phoiItem.itemOptions != null) {
+                for (ItemOption io : phoiItem.itemOptions) {
+                    if (io != null && io.optionTemplate != null && !isSkhOptionId(io.optionTemplate.id)
+                            && io.optionTemplate.id != 30 && io.optionTemplate.id != 73) {
+                        preservedOptions.add(new ItemOption(io.optionTemplate.id, io.param));
+                    }
+                }
+            }
+            if (preservedOptions.isEmpty()) {
+                RewardService.gI().initBaseOptionClothes(phoiItem, phoiItem.template.id, phoiItem.template.type, preservedOptions);
+            }
+
+            int gender = (phoiItem.template.gender >= 0 && phoiItem.template.gender <= 2)
+                    ? phoiItem.template.gender : player.gender;
+            if (gender < 0 || gender > 2) {
+                gender = 0;
+            }
+
+            int[] possibleSets = PLANET_SKH_SETS[gender];
+            int skhId = possibleSets[Util.nextInt(possibleSets.length)];
+
+            // Cập nhật trực tiếp trên chính món Đồ Phôi trong túi đồ để KHÔNG BAO GIỜ bị mất Đồ Phôi
+            phoiItem.itemOptions.clear();
+            phoiItem.itemOptions.addAll(preservedOptions);
+            phoiItem.itemOptions.add(new ItemOption(skhId, 1));
+            for (int subOpId : ItemService.gI().getOptionIdsBySKH(skhId)) {
+                phoiItem.itemOptions.add(new ItemOption(subOpId, 1));
+            }
+            phoiItem.itemOptions.add(new ItemOption(30, 0)); // Không thể giao dịch
+
+            CombineService.gI().sendEffectSuccessCombine(player);
+            Service.gI().sendThongBao(player, "Chúc mừng! Bạn đã đập thành công " + phoiItem.template.name + " Kích Hoạt!");
+        } else {
+            CombineService.gI().sendEffectFailCombine(player);
+            Service.gI().sendThongBao(player, "Đập đồ Kích Hoạt thất bại! Đồ Phôi [" + phoiItem.template.name + "] của bạn vẫn được bảo toàn nguyên vẹn.");
+        }
 
         InventoryService.gI().sendItemBags(player);
         Service.gI().sendMoney(player);

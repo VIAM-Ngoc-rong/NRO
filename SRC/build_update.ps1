@@ -4,11 +4,14 @@ Set-Location $PSScriptRoot
 Write-Host "1. Dang bien dich cac file Java..." -ForegroundColor Cyan
 javac -proc:none -encoding UTF-8 -d build/classes -cp "build/classes;lib/*" `
     src/nro/models/data/LocalManager.java `
+    src/nro/models/consts/ConstTask.java `
     src/nro/models/data/DataGame.java `
     src/nro/models/data/ItemData.java `
     src/nro/models/network/Network.java `
     src/nro/models/database/ShopDAO.java `
+    src/nro/models/database/MrBlue.java `
     src/nro/models/event/EventManager.java `
+    src/nro/models/event/VuaHung.java `
     src/nro/models/server/ServerManager.java `
     src/nro/models/server/AdminWebServer.java `
     src/nro/models/server/ServerNotify.java `
@@ -21,6 +24,8 @@ javac -proc:none -encoding UTF-8 -d build/classes -cp "build/classes;lib/*" `
     src/nro/models/player/Player.java `
     src/nro/models/player/Pet.java `
     src/nro/models/mob/Mob.java `
+    src/nro/models/mob/MobMe.java `
+    src/nro/models/mob_bigboss/MayDoSucManh.java `
     src/nro/models/map/Zone.java `
     src/nro/models/map/service/ChangeMapService.java `
     src/nro/models/services/EffectSkillService.java `
@@ -30,19 +35,25 @@ javac -proc:none -encoding UTF-8 -d build/classes -cp "build/classes;lib/*" `
     src/nro/models/services/SkillService.java `
     src/nro/models/services_func/UseItem.java `
     src/nro/models/combine/Combine.java `
+    src/nro/models/combine/CombineSystem.java `
     src/nro/models/combine/CombineService.java `
+    src/nro/models/combine/PhaLeHoaTrangBi.java `
+    src/nro/models/combine/NangCapVatPham.java `
     src/nro/models/combine/ChuyenHoaTrangBi_Vang.java `
     src/nro/models/combine/ChuyenHoaTrangBi_Ngoc.java `
     src/nro/models/combine/TaiCheDoThan.java `
     src/nro/models/combine/PhanRaTrangBiKichHoat.java `
     src/nro/models/combine/PhanRaDoSao.java `
     src/nro/models/combine/DapDoKichHoat.java `
+    src/nro/models/combine/CheTaoTrangBiThienSu.java `
+    src/nro/models/combine/TinhLuyenDaNguSac.java `
     src/nro/models/npc/NpcFactory.java `
     src/nro/models/npc_list/BaHatMit.java `
     src/nro/models/npc_list/Bill.java `
     src/nro/models/npc_list/BoMong.java `
     src/nro/models/npc_list/KyGui.java `
     src/nro/models/npc_list/QuyLaoKame.java `
+    src/nro/models/npc_list/ToSuKaio.java `
     src/nro/models/utils/SkillUtil.java `
     src/nro/models/shop/ShopService.java `
     src/nro/models/matches/dai_hoi_vo_thuat/ClanMartialArtsService.java `
@@ -73,6 +84,23 @@ javac -proc:none -encoding UTF-8 -d build/classes -cp "build/classes;lib/*" `
     src/nro/models/boss/event/Halloween/Doi.java `
     src/nro/models/boss/event/Halloween/MaTroi.java `
     src/nro/models/boss/Boss_mini/Odo.java `
+    src/nro/models/boss/cumber/Cumber.java `
+    src/nro/models/boss/MajinBuu_12h/BuiBui.java `
+    src/nro/models/boss/MajinBuu_12h/BuiBui2.java `
+    src/nro/models/boss/MajinBuu_12h/Cadic.java `
+    src/nro/models/boss/MajinBuu_12h/Drabura.java `
+    src/nro/models/boss/MajinBuu_12h/Drabura2.java `
+    src/nro/models/boss/MajinBuu_12h/Drabura3.java `
+    src/nro/models/boss/MajinBuu_12h/Goku.java `
+    src/nro/models/boss/MajinBuu_12h/Mabu.java `
+    src/nro/models/boss/MajinBuu_12h/Yacon.java `
+    src/nro/models/map/phoban/RedRibbonHQ.java `
+    src/nro/models/boss/doanh_trai/TrungUyTrang.java `
+    src/nro/models/boss/doanh_trai/TrungUyXanhLo.java `
+    src/nro/models/boss/doanh_trai/TrungUyThep.java `
+    src/nro/models/boss/doanh_trai/NinjaAoTim.java `
+    src/nro/models/boss/doanh_trai/NinjaClone.java `
+    src/nro/models/boss/doanh_trai/RobotVeSi.java `
     src/nro/models/boss/Boss_Manager/BossManager.java
 
 if ($LASTEXITCODE -ne 0) {
@@ -87,6 +115,7 @@ $jarPath = Join-Path $PSScriptRoot "dist\NgocRongOnline.jar"
 $classRoot = Join-Path $PSScriptRoot "build\classes"
 
 $pkgs = @(
+    "nro\models\consts",
     "nro\models\data",
     "nro\models\network",
     "nro\models\database",
@@ -94,8 +123,10 @@ $pkgs = @(
     "nro\models\server",
     "nro\models\player",
     "nro\models\mob",
+    "nro\models\mob_bigboss",
     "nro\models\map",
     "nro\models\map\service",
+    "nro\models\map\phoban",
     "nro\models\services",
     "nro\models\services_func",
     "nro\models\combine",
@@ -113,6 +144,9 @@ $pkgs = @(
     "nro\models\boss\trai_dat",
     "nro\models\boss\event\Halloween",
     "nro\models\boss\Boss_mini",
+    "nro\models\boss\cumber",
+    "nro\models\boss\MajinBuu_12h",
+    "nro\models\boss\doanh_trai",
     "nro\models\boss\Boss_Manager"
 )
 

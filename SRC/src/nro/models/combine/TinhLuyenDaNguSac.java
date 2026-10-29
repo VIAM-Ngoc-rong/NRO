@@ -214,9 +214,9 @@ public class TinhLuyenDaNguSac {
 
             if (Util.isTrue(50, 100)) {
                 int bonus = Util.nextInt(1, 2);
-                addOrUpdateOption(caiTrang, 50, Math.min(MAX_STAT_PERCENT, sd + bonus));
-                addOrUpdateOption(caiTrang, 77, Math.min(MAX_STAT_PERCENT, hp + bonus));
-                addOrUpdateOption(caiTrang, 103, Math.min(MAX_STAT_PERCENT, ki + bonus));
+                addOrUpdateOption(caiTrang, 50, Math.max(sd, Math.min(MAX_STAT_PERCENT, sd + bonus)));
+                addOrUpdateOption(caiTrang, 77, Math.max(hp, Math.min(MAX_STAT_PERCENT, hp + bonus)));
+                addOrUpdateOption(caiTrang, 103, Math.max(ki, Math.min(MAX_STAT_PERCENT, ki + bonus)));
                 CombineService.gI().sendEffectSuccessCombine(player);
                 Service.gI().sendThongBao(player, "Tinh luyện thành công! Cải trang được tăng thêm +" + bonus + "% SĐ/HP/KI!");
             } else {

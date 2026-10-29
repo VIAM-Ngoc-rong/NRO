@@ -64,13 +64,13 @@ public class TaiCheDoThan {
         npcSay.append("|2|Tái chế ").append(countDTL).append(" món Đồ Thần Linh:\n");
         npcSay.append(listInfo);
         npcSay.append("|2|Phần thưởng nhận được (mỗi món Đồ Thần):\n");
-        npcSay.append("|0|+ 300 - 500 Triệu Vàng\n");
-        npcSay.append("|0|+ 80 - 150 Hồng Ngọc\n");
-        npcSay.append("|0|+ 5 - 8 Đá Ngũ Sắc\n");
-        npcSay.append("|0|+ 2 - 3 Khoáng Tái Chế\n");
-        npcSay.append("|0|+ 15 - 30 Thức Ăn Hủy Diệt\n");
+        npcSay.append("|0|+ 100 - 200 Triệu Vàng\n");
+        npcSay.append("|0|+ 30 - 60 Hồng Ngọc\n");
+        npcSay.append("|0|+ 2 - 4 Đá Ngũ Sắc\n");
+        npcSay.append("|0|+ 1 - 2 Khoáng Tái Chế\n");
+        npcSay.append("|0|+ 3 - 7 Thức Ăn Hủy Diệt\n");
         if (countSKH > 0) {
-            npcSay.append("|6|+ Cộng thêm có SKH (x").append(countSKH).append("): +100-200Tr Vàng, +30-60 Hồng Ngọc, +2-4 ĐNS, +1-2 Khoáng TC, +5-10 Thức Ăn/món\n");
+            npcSay.append("|6|+ Cộng thêm có SKH (x").append(countSKH).append("): +50-100Tr Vàng, +15-30 Hồng Ngọc, +1-2 ĐNS, +1 Khoáng TC, +2-4 Thức Ăn/món\n");
         }
         if (countSPL > 0) {
             npcSay.append("|7|+ Cộng thêm có Sao Pha Lê (x").append(countSPL).append("): Nhận thêm Vàng, Hồng Ngọc, ĐNS, SPL Cấp 1/2 & Hematite theo số sao!\n");
@@ -119,18 +119,18 @@ public class TaiCheDoThan {
             int star = PhanRaDoSao.getStar(item);
             InventoryService.gI().subQuantityItemsBag(player, item, 1);
 
-            totalGold += Util.nextInt(300, 500) * 1_000_000L;
-            totalRuby += Util.nextInt(80, 150);
-            totalDaNguSac += Util.nextInt(5, 8);
-            totalKhoang += Util.nextInt(2, 3);
-            totalThucAn += Util.nextInt(15, 30);
+            totalGold += Util.nextInt(100, 200) * 1_000_000L;
+            totalRuby += Util.nextInt(30, 60);
+            totalDaNguSac += Util.nextInt(2, 4);
+            totalKhoang += Util.nextInt(1, 2);
+            totalThucAn += Util.nextInt(3, 7);
 
             if (hasSkh) {
-                totalGold += Util.nextInt(100, 200) * 1_000_000L;
-                totalRuby += Util.nextInt(30, 60);
-                totalDaNguSac += Util.nextInt(2, 4);
-                totalKhoang += Util.nextInt(1, 2);
-                totalThucAn += Util.nextInt(5, 10);
+                totalGold += Util.nextInt(50, 100) * 1_000_000L;
+                totalRuby += Util.nextInt(15, 30);
+                totalDaNguSac += Util.nextInt(1, 2);
+                totalKhoang += 1;
+                totalThucAn += Util.nextInt(2, 4);
             }
 
             if (star >= 1) {

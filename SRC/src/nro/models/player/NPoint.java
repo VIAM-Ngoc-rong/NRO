@@ -861,6 +861,17 @@ public class NPoint {
     }
 
     public void setBasePoint() {
+        if (this.player != null && (this.player.isPl() || this.player.isPet)) {
+            if (this.limitPower < 0) {
+                this.limitPower = 0;
+            } else if (this.limitPower > MAX_LIMIT) {
+                this.limitPower = MAX_LIMIT;
+            }
+            long maxPower = getPowerLimit();
+            if (maxPower > 0 && this.power > maxPower) {
+                this.power = maxPower;
+            }
+        }
         if (this.player.setClothes != null) {
             this.player.setClothes.setup();
             if (this.player.setClothes.gohan >= 5) {
@@ -952,9 +963,9 @@ public class NPoint {
             }
         }
 
-        // Xử lý set nappa
+        // Xử lý set nappa (5 món +100% HP)
         if (this.player.setClothes.nappa == 5) {
-            hpMax += (hpMax * 80L / 100L);
+            hpMax += (hpMax * 100L / 100L);
         }
 
         // Set Chiến Binh Nail (Namếc: +12% HP/Giáp mỗi món, 5 món +80% HP/Giáp)
@@ -1134,6 +1145,18 @@ public class NPoint {
             mpMax += (mpMax * 15L / 100L);
         }
 
+        // Xử lý set picolo (5 món +100% KI)
+        if (this.player.setClothes.picolo == 5) {
+            mpMax += (mpMax * 100L / 100L);
+        }
+
+        // Set Chiến Binh Nail (Namếc: +12% KI mỗi món, 5 món +80% KI)
+        if (this.player.setClothes.nail >= 5) {
+            mpMax += (mpMax * 80L / 100L);
+        } else if (this.player.setClothes.nail >= 1) {
+            mpMax += (mpMax * (this.player.setClothes.nail * 12L) / 100L);
+        }
+
         // Xử lý ngọc rồng đen 6 sao
         if (this.player.rewardBlackBall.timeOutOfDateReward[5] > System.currentTimeMillis()) {
             mpMax += (mpMax * RewardBlackBall.R6S_1 / 100L);
@@ -1201,6 +1224,18 @@ public class NPoint {
         // Xử lý bổ khí
         if (this.player.itemTime != null && this.player.itemTime.isUseBoKhi && !this.player.itemTime.isUseBoKhi2) {
             mpMax *= 2;
+        }
+
+        if (this.player.itemTime != null && this.player.itemTime.isUseNuocMia3) {
+            mpMax += mpMax / 10;  // Tăng 10%
+        }
+
+        if (this.player.itemTime != null && this.player.itemTime.isUseNuocMia2) {
+            mpMax += mpMax / 10;  // Tăng 10%
+        }
+
+        if (this.player.itemTime != null && this.player.itemTime.isUseNuocMia1) {
+            mpMax += mpMax / 10;  // Tăng 10%
         }
 
         // Xử lý item sieu cap
@@ -1889,12 +1924,7 @@ public class NPoint {
     }
 
     public long calSucManhTiemNang(long tiemNang) {
-        if (this.player != null && this.player.isPet) {
-            while (this.limitPower < MAX_LIMIT && this.power >= getPowerLimit()) {
-                this.limitPower++;
-            }
-        }
-        if ((this.player != null && this.player.isPet) || power < getPowerLimit()) {
+        if (power < getPowerLimit()) {
             if (this.tlTNSM != null) {
                 for (Integer tl : this.tlTNSM) {
                     if (tl != null) {
@@ -1915,15 +1945,14 @@ public class NPoint {
                     tiemNang += tn * 4;
                 }
             }
-            if (owner != null && owner.timevip > System.currentTimeMillis()) {
-                tiemNang += tn * 3;
+            boolean hasVipBonus = (owner != null && owner.timevip > System.currentTimeMillis())
+                    || (this.player.getSession() != null && this.player.getSession().vip > 0)
+                    || (this.player.isPet && ((Pet) this.player).master.getSession() != null && ((Pet) this.player).master.getSession().vip > 0);
+            if (hasVipBonus) {
+                tiemNang += tn * 2;
             }
             if (this.player.effectSkill.isChibi && this.player.typeChibi == 2) {
                 tiemNang += tn * 2;
-            }
-            if (this.player.getSession() != null && this.player.getSession().vip > 0 || this.player.isPet
-                    && ((Pet) this.player).master.getSession() != null && ((Pet) this.player).master.getSession().vip > 0) {
-                tiemNang += tn * 3;
             }
             if (owner != null && owner.itemTime != null && owner.itemTime.isUseDK) {
                 tiemNang += tn * 2;
@@ -1939,8 +1968,12 @@ public class NPoint {
             if (this.intrinsic != null && this.intrinsic.id == 24) {
                 tiemNang += ((long) tiemNang * this.intrinsic.param1 / 100);
             }
-            if (!this.player.isPet && this.power >= 60_000_000_000L) {
-                tiemNang -= ((long) tiemNang * 80 / 100);
+            if (this.power >= 80_000_000_000L) {
+                tiemNang -= ((long) tiemNang * 90 / 100);
+            } else if (this.power >= 60_000_000_000L) {
+                tiemNang -= ((long) tiemNang * 75 / 100);
+            } else if (this.power >= 40_000_000_000L) {
+                tiemNang -= ((long) tiemNang * 50 / 100);
             }
             if (this.player.isPet) {
                 if (((Pet) this.player).master.itemTime.isUseBuaSanta) {
@@ -1975,15 +2008,12 @@ public class NPoint {
                 tiemNang = 1;
             }
         } else {
-            tiemNang = 10;
+            tiemNang = 0;
         }
         return tiemNang;
     }
 
     public long calSubTNSM(long tiemNang) {
-        if (this.player != null && this.player.isPet) {
-            return tiemNang;
-        }
         if (power >= 90_000_000_000L) {
             tiemNang /= 100;
         } else if (power >= 80_000_000_000L) {
@@ -2220,6 +2250,12 @@ public class NPoint {
 
     public void powerUp(long power) {
         this.power += power;
+        if (this.player != null && (this.player.isPl() || this.player.isPet)) {
+            long maxPower = getPowerLimit();
+            if (maxPower > 0 && this.power > maxPower) {
+                this.power = maxPower;
+            }
+        }
         TaskService.gI().checkDoneTaskPower(player, this.power);
     }
 

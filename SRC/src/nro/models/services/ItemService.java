@@ -242,43 +242,44 @@ public class ItemService {
             // 3) Hệ Phát Nổ / Bom / Phản Đòn (có opt 153 ST nổ hoặc 97 Phản ST)
             boolean isExplosionCostume = existingOptIds.contains(153) || existingOptIds.contains(97);
 
+            int subCap = Math.min(36, maxMainCap);
             int[][] costumeBonusPool;
             if (isTrainOrPetCostume) {
                 costumeBonusPool = new int[][]{
-                    {101, 15, Math.max(25, maxMainCap + 10)},     // +#% TNSM
-                    {160, 15, Math.max(25, maxMainCap + 5)},      // +#% TNSM đệ tử
-                    {95, 8, Math.max(12, maxMainCap / 2 + 2)},    // Hút HP +#%
-                    {96, 8, Math.max(12, maxMainCap / 2 + 2)},    // Hút KI +#%
-                    {94, 6, Math.max(10, maxMainCap / 2)},        // Giáp +#%
-                    {108, 6, Math.max(10, maxMainCap / 2)}        // Né đòn +#%
+                    {101, 15, Math.max(25, subCap + 10)},     // +#% TNSM
+                    {160, 15, Math.max(25, subCap + 5)},      // +#% TNSM đệ tử
+                    {95, 8, Math.max(12, subCap / 2 + 2)},    // Hút HP +#%
+                    {96, 8, Math.max(12, subCap / 2 + 2)},    // Hút KI +#%
+                    {94, 6, Math.max(10, subCap / 2)},        // Giáp +#%
+                    {108, 6, Math.max(10, subCap / 2)}        // Né đòn +#%
                 };
             } else if (isKiBlastCostume) {
                 // Cải trang sát thương Chưởng / Laze: chỉ ra XG chưởng, Chí mạng, SĐCM, Hút KI/HP (KHÔNG ra TNSM hay XGCC)
                 costumeBonusPool = new int[][]{
-                    {98, 8, Math.max(15, maxMainCap / 2 + 1)},    // Xuyên giáp #% chưởng
-                    {14, 5, Math.max(10, maxMainCap / 3 + 1)},    // Chí mạng +#%
-                    {5, 8, Math.max(15, maxMainCap / 2 + 2)},     // +#% sức đánh chí mạng
-                    {96, 8, Math.max(14, maxMainCap / 2 + 2)},    // Hút KI +#%
-                    {95, 8, Math.max(14, maxMainCap / 2 + 2)}     // Hút HP +#%
+                    {98, 8, Math.max(15, subCap / 2 + 1)},    // Xuyên giáp #% chưởng
+                    {14, 5, Math.max(10, subCap / 3 + 1)},    // Chí mạng +#%
+                    {5, 8, Math.max(15, subCap / 2 + 2)},     // +#% sức đánh chí mạng
+                    {96, 8, Math.max(14, subCap / 2 + 2)},    // Hút KI +#%
+                    {95, 8, Math.max(14, subCap / 2 + 2)}     // Hút HP +#%
                 };
             } else if (isExplosionCostume) {
                 // Cải trang Phát Nổ / Bom HP: chỉ ra Phản ST, Giáp, Hút HP, SĐCM, Né đòn (KHÔNG ra TNSM)
                 costumeBonusPool = new int[][]{
-                    {97, 6, Math.max(12, maxMainCap / 2)},        // Phản #% sát thương
-                    {94, 8, Math.max(15, maxMainCap / 2 + 2)},    // Giáp +#%
-                    {95, 8, Math.max(15, maxMainCap / 2 + 2)},    // Hút HP +#%
-                    {5, 8, Math.max(14, maxMainCap / 2)},         // +#% sức đánh chí mạng
-                    {108, 6, Math.max(12, maxMainCap / 2)}        // Né đòn +#%
+                    {97, 6, Math.max(12, subCap / 2)},        // Phản #% sát thương
+                    {94, 8, Math.max(15, subCap / 2 + 2)},    // Giáp +#%
+                    {95, 8, Math.max(15, subCap / 2 + 2)},    // Hút HP +#%
+                    {5, 8, Math.max(14, subCap / 2)},         // +#% sức đánh chí mạng
+                    {108, 6, Math.max(12, subCap / 2)}        // Né đòn +#%
                 };
             } else {
                 // Cải trang Cận Chiến / Sát Thương / PK: chỉ ra SĐCM, Chí mạng, XG cận chiến, Hút HP/KI, Giáp (KHÔNG ra TNSM)
                 costumeBonusPool = new int[][]{
-                    {5, 8, Math.max(15, maxMainCap / 2 + 2)},     // +#% sức đánh chí mạng
-                    {14, 5, Math.max(10, maxMainCap / 3 + 1)},    // Chí mạng +#%
-                    {99, 8, Math.max(15, maxMainCap / 2 + 1)},    // Xuyên giáp #% cận chiến
-                    {95, 8, Math.max(14, maxMainCap / 2 + 2)},    // Hút HP +#%
-                    {96, 8, Math.max(14, maxMainCap / 2 + 2)},    // Hút KI +#%
-                    {94, 6, Math.max(12, maxMainCap / 2)}         // Giáp +#%
+                    {5, 8, Math.max(15, subCap / 2 + 2)},     // +#% sức đánh chí mạng
+                    {14, 5, Math.max(10, subCap / 3 + 1)},    // Chí mạng +#%
+                    {99, 8, Math.max(15, subCap / 2 + 1)},    // Xuyên giáp #% cận chiến
+                    {95, 8, Math.max(14, subCap / 2 + 2)},    // Hút HP +#%
+                    {96, 8, Math.max(14, subCap / 2 + 2)},    // Hút KI +#%
+                    {94, 6, Math.max(12, subCap / 2)}         // Giáp +#%
                 };
             }
 
@@ -786,7 +787,7 @@ public class ItemService {
             if (rd <= rac) {
                 item = randomRac();
             } else if (rd <= rac + ruby) {
-                item = createItemSetKichHoat(77, 1);
+                item = createItemSetKichHoat(861, 1);
             } else if (rd <= rac + ruby + dbv) {
                 item = daBaoVe();
             } else if (rd <= rac + ruby + dbv + vb) {
@@ -796,8 +797,8 @@ public class ItemService {
             } else if (rd <= rac + ruby + dbv + vb + bh + ct) {
                 item = caitrang2011(true);
             }
-            if (item.template.id == 77) {
-                item.quantity = Util.nextInt(1, 2);
+            if (item.template.id == 861) {
+                item.quantity = Util.nextInt(10, 30);
             }
             icon[0] = itemUse.template.iconID;
             icon[1] = item.template.iconID;
@@ -832,7 +833,7 @@ public class ItemService {
             if (rd <= rac) {
                 item = randomRac2();
             } else if (rd <= rac + ruby) {
-                item = createItemSetKichHoat(77, 1);
+                item = createItemSetKichHoat(861, 1);
             } else if (rd <= rac + ruby + dbv) {
                 item = vatphamsk(true);
             } else if (rd <= rac + ruby + dbv + vb) {
@@ -842,8 +843,8 @@ public class ItemService {
             } else if (rd <= rac + ruby + dbv + vb + bh + ct) {
                 item = caitrangChristmas(true);
             }
-            if (item.template.id == 77) {
-                item.quantity = Util.nextInt(1, 2);
+            if (item.template.id == 861) {
+                item.quantity = Util.nextInt(10, 30);
             }
             icon[0] = itemUse.template.iconID;
             icon[1] = item.template.iconID;

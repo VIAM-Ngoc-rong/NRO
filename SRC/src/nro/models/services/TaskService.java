@@ -1302,24 +1302,23 @@ public class TaskService {
                 int ngocBi = 708;
                 switch (player.playerTask.sideTask.level) {
                     case ConstTask.EASY:
-                        goldReward = ConstTask.GOLD_EASY; // 100tr Vàng
+                        goldReward = ConstTask.GOLD_EASY; // 200tr Vàng
                         ngocBi = 708;
                         break;
                     case ConstTask.NORMAL:
-                        goldReward = ConstTask.GOLD_NORMAL; // 250tr Vàng
+                        thoiVangReward = 1; // 1 Thỏi vàng (500tr)
                         ngocBi = 707;
                         break;
                     case ConstTask.HARD:
-                        thoiVangReward = 1; // 1 Thỏi vàng (500tr)
+                        thoiVangReward = 2; // 2 Thỏi vàng (1 Tỷ)
                         ngocBi = 706;
                         break;
                     case ConstTask.VERY_HARD:
-                        thoiVangReward = 1; // 1 Thỏi vàng + 250tr Vàng
-                        goldReward = 250_000_000L;
+                        thoiVangReward = 3; // 3 Thỏi vàng (1.5 Tỷ)
                         ngocBi = 705;
                         break;
                     case ConstTask.HELL:
-                        thoiVangReward = 2; // 2 Thỏi vàng (1 Tỷ)
+                        thoiVangReward = 4; // 4 Thỏi vàng (2 Tỷ)
                         ngocBi = 704;
                         break;
                 }

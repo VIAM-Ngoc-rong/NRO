@@ -9,11 +9,11 @@ public class ConstTask {
     public static final byte HELL = 4;
 
     //const gold reward side task
-    public static final int GOLD_EASY = 100_000_000;
-    public static final int GOLD_NORMAL = 250_000_000;
-    public static final int GOLD_HARD = 500_000_000;
-    public static final int GOLD_VERY_HARD = 750_000_000;
-    public static final int GOLD_HELL = 1_000_000_000;
+    public static final int GOLD_EASY = 200_000_000;
+    public static final int GOLD_NORMAL = 500_000_000;
+    public static final int GOLD_HARD = 1_000_000_000;
+    public static final int GOLD_VERY_HARD = 1_500_000_000;
+    public static final int GOLD_HELL = 2_000_000_000;
 
     //const max side task of date
     public static final byte MAX_SIDE_TASK = 20;

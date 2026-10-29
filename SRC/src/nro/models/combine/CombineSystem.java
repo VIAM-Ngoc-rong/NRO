@@ -162,23 +162,23 @@ public class CombineSystem {
     public static int getGoldPhaLeHoa(int star) {
         switch (star) {
             case 0:
-                return 5000000;
+                return 5_000_000;
             case 1:
-                return 10000000;
+                return 10_000_000;
             case 2:
-                return 20000000;
+                return 20_000_000;
             case 3:
-                return 40000000;
+                return 40_000_000;
             case 4:
-                return 60000000;
+                return 80_000_000;
             case 5:
-                return 90000000;
+                return 180_000_000;
             case 6:
-                return 120000000;
+                return 300_000_000;
             case 7:
-                return 200000000;
+                return 500_000_000;
             case 8:
-                return 300000000;
+                return 800_000_000;
 
         }
         return 0;
@@ -195,15 +195,15 @@ public class CombineSystem {
             case 3:
                 return 5f;
             case 4:
-                return 2f;
+                return 0.8f;
             case 5:
-                return 1f;
-            case 6:
-                return 1f;
-            case 7:
-                return 0.5f;
-            case 8:
                 return 0.3f;
+            case 6:
+                return 0.1f;
+            case 7:
+                return 0.03f;
+            case 8:
+                return 0.01f;
             case 9:
                 return 0.5f;
             case 10:
@@ -304,13 +304,13 @@ public class CombineSystem {
             case 3:
                 return 1500000;
             case 4:
-                return 7000000;
+                return 15_000_000;
             case 5:
-                return 23000000;
+                return 50_000_000;
             case 6:
-                return 100000000;
+                return 200_000_000;
             case 7:
-                return 250000000;
+                return 500_000_000;
         }
         return 0;
     }

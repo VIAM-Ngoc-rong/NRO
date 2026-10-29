@@ -53,16 +53,16 @@ public class CheTaoTrangBiThienSu {
                     }
                 }
                 if (InventoryService.gI().getCountEmptyBag(player) > 0) {//check chỗ trống hành trang
-                    if (player.inventory.gold < 10000000) {
-                        Service.gI().sendThongBao(player, "Không đủ vàng để thực hiện");
+                    if (player.inventory.gold < 500_000_000) {
+                        Service.gI().sendThongBao(player, "Không đủ 500 triệu vàng để thực hiện");
                         return;
                     }
-                    player.inventory.gold -= 10000000;
+                    player.inventory.gold -= 500_000_000;
 
-                    int tilemacdinh = 90;
+                    int tilemacdinh = 35;
                     int tileLucky = 5;
                     if (daNC != null) {
-                        tilemacdinh += (daNC.template.id - 1073);
+                        tilemacdinh += Math.max(0, (daNC.template.id - 1073) * 3);
                     }
                     if (daMM != null) {
                         tileLucky += tileLucky * (daMM.template.id - 1078);
@@ -73,15 +73,15 @@ public class CheTaoTrangBiThienSu {
 
                         Item itemManh = player.combineNew.itemsCombine.stream().filter(item -> item.isNotNullItem() && item.isManhTS() && item.quantity >= 999).findFirst().get();
 
-                        tilemacdinh = 100;
+                        int bonusStatPercent = Util.nextInt(15, 35) + (daNC != null ? Math.max(0, (daNC.template.id - 1073) * 3) : 0);
                         short[][] itemIds = {{1048, 1051, 1054, 1057, 1060}, {1049, 1052, 1055, 1058, 1061}, {1050, 1053, 1056, 1059, 1062}}; // thứ tự td - 0,nm - 1, xd - 2
 
                         Item itemTS = ItemService.gI().DoThienSu(itemIds[itemCtVip.template.gender > 2 ? player.gender : itemCtVip.template.gender][itemManh.typeIdManh()], itemCtVip.template.gender);
 
-                        if (tilemacdinh > 0) {
+                        if (bonusStatPercent > 0) {
                             for (byte w = 0; w < itemTS.itemOptions.size(); w++) {
                                 if (itemTS.itemOptions.get(w).optionTemplate.id != 0 && itemTS.itemOptions.get(w).optionTemplate.id != 20) {
-                                    itemTS.itemOptions.get(w).param += (itemTS.itemOptions.get(w).param * tilemacdinh / 100);
+                                    itemTS.itemOptions.get(w).param += (itemTS.itemOptions.get(w).param * bonusStatPercent / 100);
                                 }
                             }
                         }

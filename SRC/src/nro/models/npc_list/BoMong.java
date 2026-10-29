@@ -61,7 +61,7 @@ public class BoMong extends Npc {
                                         "Tôi có các nhiệm vụ hàng ngày (" + player.playerTask.sideTask.leftTask + "/" + ConstTask.MAX_SIDE_TASK + " lượt/ngày).\n"
                                         + "Hoàn thành sẽ nhận Vàng, Thỏi Vàng (500Tr) và Ngọc Bí Ngô!\n"
                                         + "Sức cậu có thể làm được cấp độ nào?",
-                                        "Dễ\n(100Tr Vàng)", "Bình thường\n(250Tr Vàng)", "Khó\n(1 Thỏi vàng)", "Rất khó\n(1 Thỏi+250Tr)", "Địa ngục\n(2 Thỏi vàng)", "Từ chối");
+                                        "Dễ\n(200Tr Vàng)", "Bình thường\n(1 Thỏi vàng)", "Khó\n(2 Thỏi vàng)", "Rất khó\n(3 Thỏi vàng)", "Địa ngục\n(4 Thỏi vàng)", "Từ chối");
                             }
                         }
                         case 1 -> {
