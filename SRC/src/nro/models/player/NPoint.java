@@ -1949,32 +1949,31 @@ public class NPoint {
                 }
             }
             long tn = tiemNang;
-            Player owner = this.player.isPet ? ((Pet) this.player).master : this.player;
-            if (owner != null && owner.charms != null) {
-                if (owner.charms.tdTriTue > System.currentTimeMillis()) {
+            if (!this.player.isPet && this.player.charms != null) {
+                if (this.player.charms.tdTriTue > System.currentTimeMillis()) {
                     tiemNang += tn;
                 }
-                if (owner.charms.tdTriTue3 > System.currentTimeMillis()) {
+                if (this.player.charms.tdTriTue3 > System.currentTimeMillis()) {
                     tiemNang += tn * 3;
                 }
-                if (owner.charms.tdTriTue4 > System.currentTimeMillis()) {
+                if (this.player.charms.tdTriTue4 > System.currentTimeMillis()) {
                     tiemNang += tn * 4;
                 }
             }
-            boolean hasVipBonus = (owner != null && owner.timevip > System.currentTimeMillis())
-                    || (this.player.getSession() != null && this.player.getSession().vip > 0)
-                    || (this.player.isPet && ((Pet) this.player).master.getSession() != null && ((Pet) this.player).master.getSession().vip > 0);
+            boolean hasVipBonus = !this.player.isPet && (
+                    this.player.timevip > System.currentTimeMillis()
+                    || (this.player.getSession() != null && this.player.getSession().vip > 0));
             if (hasVipBonus) {
                 tiemNang += tn * 2;
             }
             if (this.player.effectSkill.isChibi && this.player.typeChibi == 2) {
                 tiemNang += tn * 2;
             }
-            if (owner != null && owner.itemTime != null && owner.itemTime.isUseDK) {
+            if (!this.player.isPet && this.player.itemTime != null && this.player.itemTime.isUseDK) {
                 tiemNang += tn * 2;
             }
             if (player.zone.map.mapId >= 135 && player.zone.map.mapId <= 138) {
-                if (owner != null && owner.itemTime != null && owner.itemTime.isUseKhoBauX2) {
+                if (!this.player.isPet && this.player.itemTime != null && this.player.itemTime.isUseKhoBauX2) {
                     tiemNang += tn * 2;
                 }
             }
@@ -1992,6 +1991,9 @@ public class NPoint {
                 tiemNang -= ((long) tiemNang * 50 / 100);
             }
             if (this.player.isPet) {
+                if (((Pet) this.player).master.charms != null && ((Pet) this.player).master.charms.tdDeTu > System.currentTimeMillis()) {
+                    tiemNang += tn;
+                }
                 if (((Pet) this.player).master.itemTime.isUseBuaSanta) {
                     tiemNang += tn * 2;
                 }
