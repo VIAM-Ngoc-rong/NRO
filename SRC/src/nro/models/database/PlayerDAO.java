@@ -1056,6 +1056,12 @@ public class PlayerDAO {
                     } catch (Exception ignored) {
                     }
                 }
+                if (player.max_dame_hit > 0) {
+                    try {
+                        LocalManager.executeUpdate("update player set max_dame_hit = GREATEST(COALESCE(max_dame_hit, 0), ?) where id = ?", player.max_dame_hit, player.id);
+                    } catch (Exception ignored) {
+                    }
+                }
                 SuperRankDAO.updateData(player);
                 if (player.isOffline) {
                     Logger.log(Logger.PURPLE, TimeUtil.getCurrHour() + "h" + TimeUtil.getCurrMin() + "m: Player " + player.name + " updated successfully! " + (System.currentTimeMillis() - st) + "ms\n");

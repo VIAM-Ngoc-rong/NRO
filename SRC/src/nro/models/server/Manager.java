@@ -649,6 +649,11 @@ public final class Manager {
                 psAlterEmail.executeUpdate();
             } catch (Exception ignored) {
             }
+            try (PreparedStatement psAlterMaxDame = ConnectionDatabase.prepareStatement(
+                    "ALTER TABLE player ADD COLUMN max_dame_hit BIGINT NOT NULL DEFAULT 0")) {
+                psAlterMaxDame.executeUpdate();
+            } catch (Exception ignored) {
+            }
             try (PreparedStatement psAlterBag = ConnectionDatabase.prepareStatement(
                     "ALTER TABLE player MODIFY COLUMN items_bag LONGTEXT NOT NULL")) {
                 psAlterBag.executeUpdate();

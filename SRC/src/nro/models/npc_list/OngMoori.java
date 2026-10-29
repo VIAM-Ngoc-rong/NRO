@@ -20,7 +20,7 @@ public class OngMoori extends OngGohan {
                         "Nhận Đậu\n10 x99",
                         "Nhận Quà\nTân Thủ",
                         "Rương SKH\nTân Thủ",
-                        "Đi Ngũ\nHành Sơn",
+                        "Bảng\nXếp Hạng",
                         "Tiện ích\nTự động",
                         "Nhập\nGiftcode");
             }

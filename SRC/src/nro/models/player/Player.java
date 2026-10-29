@@ -136,6 +136,7 @@ public class Player implements Runnable {
     public int point_vuahung;
     public int point_maydam;
     public long total_damage_maydam;
+    public long max_dame_hit;
     public boolean powerReduced = false;
     public String originalName;
     public boolean beforeDispose;

@@ -10,6 +10,7 @@ javac -proc:none -encoding UTF-8 -d build/classes -cp "build/classes;lib/*" `
     src/nro/models/network/Network.java `
     src/nro/models/database/ShopDAO.java `
     src/nro/models/database/MrBlue.java `
+    src/nro/models/database/PlayerDAO.java `
     src/nro/models/event/EventManager.java `
     src/nro/models/event/VuaHung.java `
     src/nro/models/server/ServerManager.java `
@@ -55,6 +56,9 @@ javac -proc:none -encoding UTF-8 -d build/classes -cp "build/classes;lib/*" `
     src/nro/models/npc_list/KyGui.java `
     src/nro/models/npc_list/QuyLaoKame.java `
     src/nro/models/npc_list/ToSuKaio.java `
+    src/nro/models/npc_list/OngGohan.java `
+    src/nro/models/npc_list/OngMoori.java `
+    src/nro/models/npc_list/OngParagus.java `
     src/nro/models/utils/SkillUtil.java `
     src/nro/models/shop/ShopService.java `
     src/nro/models/matches/dai_hoi_vo_thuat/ClanMartialArtsService.java `

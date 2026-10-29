@@ -1783,7 +1783,7 @@ public class NPoint {
                 if (this.tlDameLaze > 0) {
                     dameSkill += dameSkill * this.tlDameLaze / 100L;
                 }
-                return (int) Math.min(2_147_483_647L, dameSkill);
+                return recordAndClampDame(dameSkill);
             case Skill.QUA_CAU_KENH_KHI:
                 long hpmob = 0;
                 long hppl = 0;
@@ -1811,7 +1811,7 @@ public class NPoint {
                 if (dameqckk > 2_147_483_647) {
                     dameqckk = 2_147_483_647;
                 }
-                return (int) dameqckk;
+                return recordAndClampDame(dameqckk);
             case Skill.DE_TRUNG:
                 if (player.setClothes.pikkoroDaimao == 5) {
                     dameAttack *= 4;
@@ -1819,7 +1819,7 @@ public class NPoint {
                 if (dameAttack > 2_147_483_647) {
                     dameAttack = 2_147_483_647;
                 }
-                return (int) dameAttack;
+                return recordAndClampDame(dameAttack);
             case Skill.SUPER_KAME:
             case Skill.LIEN_HOAN_CHUONG:
                 percentDameSkill = skillSelect.damage;
@@ -1878,7 +1878,15 @@ public class NPoint {
                 > 2_147_483_647) {
             dameAttack = 2_147_483_647;
         }
-        return (int) dameAttack;
+        return recordAndClampDame(dameAttack);
+    }
+
+    private int recordAndClampDame(long dame) {
+        long clamped = Math.min(2_147_483_647L, Math.max(0L, dame));
+        if (this.player != null && this.player.isPl() && !this.player.isBot && clamped > this.player.max_dame_hit) {
+            this.player.max_dame_hit = clamped;
+        }
+        return (int) clamped;
     }
 
     public int getCurrPercentHP() {

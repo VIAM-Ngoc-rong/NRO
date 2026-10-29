@@ -120,6 +120,10 @@ public class MrBlue {
                             player.thachdauwhis = rs.getInt("thachdauwhis");
                             player.point_maydam = rs.getInt("point_maydam");
                             player.total_damage_maydam = rs.getLong("total_damage_maydam");
+                            try {
+                                player.max_dame_hit = rs.getLong("max_dame_hit");
+                            } catch (Exception ignored) {
+                            }
                             player.isNewMember = !Util.isTimeDifferenceGreaterThanNDays(createTime, 35);
                             LocalManager.executeUpdate("update account set last_time_login = '" + new Timestamp(System.currentTimeMillis()) + "', ip_address = '" + session.ipAddress + "' where id = " + session.userId);
                         }
