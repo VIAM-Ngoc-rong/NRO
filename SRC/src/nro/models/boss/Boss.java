@@ -1265,16 +1265,16 @@ public class Boss extends Player implements IBoss {
             Service.gI().dropItemMap(this.zone, goldMap);
         }
 
-        // 1. Chỉ các Boss từ Nappa trở đi (hoặc Boss > 250tr HP) mới rơi Đồ (Trang bị).
+        // 1. Chỉ các Boss từ Nappa trở đi (hoặc Boss >= 400tr HP) mới rơi Đồ (Trang bị).
         // Các Boss hằng ngày như TDST Namek, Bojack không rơi đồ, chỉ rơi Ngọc Rồng.
         boolean droppedEquip = false;
-        boolean isHighHpBoss = bossHp > 250_000_000L;
-        boolean canDropGodEquip = bossHp > 400_000_000L;
+        boolean isHighHpBoss = bossHp >= 400_000_000L;
+        boolean canDropGodEquip = bossHp >= 400_000_000L;
         boolean canDropEquip = isBossFromNappaOnwards()
                 || (isHighHpBoss && !isDailyEarlyBoss() && !isMiniBoss() && !isBrolyBoss());
 
         if (canDropEquip && canDropGodEquip) {
-            // Chỉ Boss > 400tr HP mới rớt Đồ Thần Linh (tỉ lệ 7%)
+            // Chỉ Boss >= 400tr HP mới rớt Đồ Thần Linh (tỉ lệ 7%)
             int ratePer1000 = 70;
             if (Util.isTrue(ratePer1000, 1000)) {
                 ItemMap godItem = ItemService.gI().randDoTLBoss(this.zone, 1, x, y, plOwner.id);
@@ -1288,22 +1288,37 @@ public class Boss extends Player implements IBoss {
             }
         }
 
-        int equipDropChance = isHighHpBoss ? 75 : 50;
+        int equipDropChance = isHighHpBoss ? 75 : 25;
         if (canDropEquip && !droppedEquip && Util.isTrue(equipDropChance, 100)) {
-            int group = Util.nextInt(1, 100) <= 70 ? 0 : 1;
+            int group = isHighHpBoss
+                    ? (Util.nextInt(1, 100) <= 70 ? 0 : 1)
+                    : (Util.nextInt(1, 100) <= 85 ? 0 : 1);
             int[][] dropPool;
             if (isHighHpBoss) {
-                // Boss > 250tr HP: Tối thiểu chỉ rớt đồ cấp 12 (từ 1 tỷ 500tr SM trở lên: Kaio, Lưỡng Long, Jean, Rada cấp 12)
-                // Tuyệt đối không rớt đồ 20tr - 170tr SM!
+                // Boss >= 400tr HP: Rớt đồ cao cấp cấp 12 (Kaio, Lưỡng Long, Jean, Rada cấp 12)
                 dropPool = new int[][]{
                     {233, 237, 241, 245, 249, 253, 269, 273, 277}, // Áo, Quần, Giày cấp 12 (>= 1 tỷ 500tr SM)
                     {257, 261, 265, 281}                           // Găng & Rada cấp 12 (>= 1 tỷ 500tr SM)
                 };
             } else {
-                dropPool = new int[][]{
-                    {231, 232, 233, 235, 236, 237, 239, 240, 241, 243, 244, 245, 247, 248, 249, 251, 252, 253, 267, 268, 269, 271, 272, 273, 275, 276, 277},
-                    {255, 256, 257, 259, 260, 261, 263, 264, 265, 279, 280, 281}
-                };
+                // Boss cấp thấp < 400tr HP: Giảm mạnh tỷ lệ rớt đồ cao cấp (75% cấp 10, 20% cấp 11, chỉ 5% cấp 12)
+                int tierRoll = Util.nextInt(1, 100);
+                if (tierRoll <= 75) {
+                    dropPool = new int[][]{
+                        {231, 235, 239, 243, 247, 251, 267, 271, 275}, // Áo, Quần, Giày cấp 10
+                        {255, 259, 263, 279}                           // Găng & Rada cấp 10
+                    };
+                } else if (tierRoll <= 95) {
+                    dropPool = new int[][]{
+                        {232, 236, 240, 244, 248, 252, 268, 272, 276}, // Áo, Quần, Giày cấp 11
+                        {256, 260, 264, 280}                           // Găng & Rada cấp 11
+                    };
+                } else {
+                    dropPool = new int[][]{
+                        {233, 237, 241, 245, 249, 253, 269, 273, 277}, // Áo, Quần, Giày cấp 12 (chỉ 5%)
+                        {257, 261, 265, 281}                           // Găng & Rada cấp 12 (chỉ 5%)
+                    };
+                }
             }
             int dropItemId = dropPool[group][Util.nextInt(0, dropPool[group].length - 1)];
             ItemMap shopItemMap = new ItemMap(this.zone, dropItemId, 1, x, y, plOwner.id);
@@ -1317,10 +1332,11 @@ public class Boss extends Player implements IBoss {
             int randStar = Util.nextInt(1, 100);
             int stars;
             if (isHighHpBoss) {
-                // Boss > 250tr HP: Tỷ lệ có Sao Pha Lê luôn từ 3 sao trở lên (3s - 7s)
+                // Boss >= 400tr HP: Tỷ lệ có Sao Pha Lê luôn từ 3 sao trở lên (3s - 7s)
                 stars = randStar <= 55 ? Util.nextInt(3, 4) : (randStar <= 85 ? 5 : Util.nextInt(6, 7));
             } else {
-                stars = randStar <= 75 ? Util.nextInt(1, 3) : (randStar <= 95 ? Util.nextInt(4, 5) : 6);
+                // Boss < 400tr HP: Chủ yếu 1-2 sao (85%), 3-4 sao (13%), 5 sao (2%)
+                stars = randStar <= 85 ? Util.nextInt(1, 2) : (randStar <= 98 ? Util.nextInt(3, 4) : 5);
             }
             shopItemMap.options.add(new Item.ItemOption(107, stars));
             Service.gI().dropItemMap(this.zone, shopItemMap);
