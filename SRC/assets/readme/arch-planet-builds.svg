@@ -41,25 +41,25 @@
     <rect x="14" y="168" width="338" height="122" rx="10" fill="url(#kaioGrad)" stroke="#f59e0b" stroke-width="1.8"/>
     <text x="26" y="190" font-family="Segoe UI, sans-serif" font-size="14" font-weight="800" fill="#fbbf24">2. Nhánh Đánh Tay Kaioken (Set Cộng Dồn 1–5 Món)</text>
     <text x="26" y="210" font-family="Segoe UI, sans-serif" font-size="12.5" font-weight="700" fill="#fde047">• Set KH: Set Thần Vũ Trụ Kaio (+100% ST Kaioken)</text>
-    <text x="26" y="229" font-family="Segoe UI, sans-serif" font-size="11.5" fill="#fed7aa">• Cộng dồn (1–4 món): +10% HP, +10% SĐ, +10% Giáp, +5% CM / món</text>
-    <text x="26" y="247" font-family="Segoe UI, sans-serif" font-size="11.5" fill="#fef08a">• Đủ 5 món: +60% HP/SĐ/Giáp, +25% CM, Giảm 20% ST, KOK tốn 3% HP</text>
-    <text x="26" y="265" font-family="Segoe UI, sans-serif" font-size="12" fill="#e2e8f0">• Cải trang: Goku SSJ4 / SSJ Blue (+SĐ, Hút 15~20% HP/KI)</text>
+    <text x="26" y="229" font-family="Segoe UI, sans-serif" font-size="11.5" fill="#fed7aa">• Cộng dồn (1–4 món): +10% HP, +10% SĐ, +10% Giáp, +4% CM / món</text>
+    <text x="26" y="247" font-family="Segoe UI, sans-serif" font-size="11.5" fill="#fef08a">• Đủ 5 món: +60% HP/SĐ/Giáp, +20% CM, +25% SĐCM, -20% ST, KOK 3% HP</text>
+    <text x="26" y="265" font-family="Segoe UI, sans-serif" font-size="12" fill="#e2e8f0">• Cải trang: Goku SSJ4 / SSJ Blue (+32~33% SĐ, Hút 15~20% HP/KI)</text>
     <text x="26" y="282" font-family="Segoe UI, sans-serif" font-size="11.5" fill="#86efac">• Lợi ích: Solo Boss &amp; cận chiến toàn diện mạnh nhất Trái Đất</text>
 
     <!-- Build 3: Krillin -->
     <rect x="14" y="300" width="338" height="104" rx="10" fill="#1e293b" stroke="#38bdf8"/>
     <text x="26" y="322" font-family="Segoe UI, sans-serif" font-size="14" font-weight="800" fill="#38bdf8">3. Nhánh Sát Thương Diện Rộng (Quả Cầu Kênh Khi)</text>
     <text x="26" y="342" font-family="Segoe UI, sans-serif" font-size="12.5" font-weight="700" fill="#fde047">• Set KH: Set Krillin / Kirin (5 món: +100% ST Kênh Khi)</text>
-    <text x="26" y="361" font-family="Segoe UI, sans-serif" font-size="12" fill="#e2e8f0">• Cơ chế: Sát thương = 10x SĐ + 10% tổng HP quái/người xung quanh</text>
+    <text x="26" y="361" font-family="Segoe UI, sans-serif" font-size="12" fill="#e2e8f0">• Cơ chế: 10x SĐ + 10% tổng HP quái/người (Xuyên Giáp 100%)</text>
     <text x="26" y="380" font-family="Segoe UI, sans-serif" font-size="12" fill="#93c5fd">• Cải trang &amp; Nội tại: Goku SSJ4/Blue + Nội tại Kênh Khi</text>
-    <text x="26" y="397" font-family="Segoe UI, sans-serif" font-size="11.5" fill="#86efac">• Lợi ích: Ném cầu x2 sát thương diện rộng, khắc chế mục tiêu máu trâu</text>
+    <text x="26" y="397" font-family="Segoe UI, sans-serif" font-size="11.5" fill="#86efac">• Lợi ích: Ném cầu x2 sát thương diện rộng, xuyên giáp 100%</text>
 
     <!-- Build 4: Thien Xin Hang -->
     <rect x="14" y="414" width="338" height="98" rx="10" fill="#1e293b" stroke="#38bdf8"/>
     <text x="26" y="436" font-family="Segoe UI, sans-serif" font-size="14" font-weight="800" fill="#38bdf8">4. Nhánh Khống Chế PK (Thái Dương Hạ San)</text>
     <text x="26" y="456" font-family="Segoe UI, sans-serif" font-size="12.5" font-weight="700" fill="#fde047">• Set KH: Set Thiên Xin Hăng (5 món: x2 Thời gian choáng)</text>
     <text x="26" y="476" font-family="Segoe UI, sans-serif" font-size="12" fill="#e2e8f0">• Cải trang: Jacky Chun / Thỏ Đại Ca (Kháng TDHS) / Xinbatô</text>
-    <text x="26" y="496" font-family="Segoe UI, sans-serif" font-size="11.5" fill="#86efac">• Lợi ích: Làm mù diện rộng gấp đôi thời gian + Thôi miên khóa cứng</text>
+    <text x="26" y="496" font-family="Segoe UI, sans-serif" font-size="11.5" fill="#86efac">• Lợi ích: Làm mù diện rộng gấp đôi thời gian (6s–18s) + Thôi miên</text>
   </g>
 
   <!-- COLUMN 2: NAMEK -->
@@ -72,26 +72,26 @@
     <rect x="14" y="52" width="338" height="106" rx="10" fill="#1e293b" stroke="#22c55e"/>
     <text x="26" y="74" font-family="Segoe UI, sans-serif" font-size="14" font-weight="800" fill="#4ade80">1. Nhánh Sức Đánh Liên Hoàn (DPS Chủ Lực)</text>
     <text x="26" y="95" font-family="Segoe UI, sans-serif" font-size="12.5" font-weight="700" fill="#fde047">• Set KH: Set Ốc Tiêu (5 món: +100% ST Liên Hoàn)</text>
-    <text x="26" y="115" font-family="Segoe UI, sans-serif" font-size="12" fill="#e2e8f0">• Cải trang: Zamasu / Super Píc (+SĐ, Hút 15~20% HP/KI)</text>
+    <text x="26" y="115" font-family="Segoe UI, sans-serif" font-size="12" fill="#e2e8f0">• Cải trang: Zamasu / Super Píc (+32~33% SĐ, +45~50% KI, Hút HP/KI)</text>
     <text x="26" y="134" font-family="Segoe UI, sans-serif" font-size="12" fill="#bbf7d0">• SPL &amp; Nội tại: Full SPL %SĐ + Nội tại Liên Hoàn</text>
     <text x="26" y="151" font-family="Segoe UI, sans-serif" font-size="11.5" fill="#86efac">• Lợi ích: Tốc độ ra đòn nhanh nhất game, săn Boss cực kỳ bền bỉ</text>
 
     <!-- Build 2: Chien Binh Nail -->
     <rect x="14" y="168" width="338" height="122" rx="10" fill="url(#nailGrad)" stroke="#f59e0b" stroke-width="1.8"/>
     <text x="26" y="190" font-family="Segoe UI, sans-serif" font-size="14" font-weight="800" fill="#fbbf24">2. Nhánh Pháo Đài Masenko (Set Cộng Dồn 1–5 Món)</text>
-    <text x="26" y="210" font-family="Segoe UI, sans-serif" font-size="12.5" font-weight="700" fill="#fde047">• Set KH: Set Chiến Binh Nail (+100% ST Masenko)</text>
-    <text x="26" y="229" font-family="Segoe UI, sans-serif" font-size="11.5" fill="#fed7aa">• Cộng dồn (1–4 món): +15% HP, +5% SĐ, +15% Giáp/món (+10% SĐCM từ 2 món)</text>
-    <text x="26" y="247" font-family="Segoe UI, sans-serif" font-size="11.5" fill="#fef08a">• Đủ 5 món: +100% HP, +30% SĐ, +100% Giáp, +10% SĐCM, Giảm 30% ST nhận</text>
+    <text x="26" y="210" font-family="Segoe UI, sans-serif" font-size="12.5" font-weight="700" fill="#fde047">• Set KH: Set Chiến Binh Nail (+100% ST &amp; -50% hồi Masenko)</text>
+    <text x="26" y="229" font-family="Segoe UI, sans-serif" font-size="11.5" fill="#fed7aa">• Cộng dồn (1–4 món): +12% HP/KI/Giáp, +8% SĐ/món (+15~20% SĐCM)</text>
+    <text x="26" y="247" font-family="Segoe UI, sans-serif" font-size="11.5" fill="#fef08a">• Đủ 5 món: +80% HP/KI/Giáp, +50% SĐ, +30% SĐCM, Giảm 30% ST nhận</text>
     <text x="26" y="265" font-family="Segoe UI, sans-serif" font-size="12" fill="#e2e8f0">• Cải trang: Super Píc / Zamasu + Nội tại Masenko</text>
-    <text x="26" y="282" font-family="Segoe UI, sans-serif" font-size="11.5" fill="#86efac">• Lợi ích: Chống chịu cứng nhất server (x2 HP/Giáp, -30% ST) + Chưởng đau</text>
+    <text x="26" y="282" font-family="Segoe UI, sans-serif" font-size="11.5" fill="#86efac">• Lợi ích: Chống chịu cứng nhất server (+80% HP/KI/Giáp, -30% ST) + Masenko</text>
 
     <!-- Build 3: Picolo -->
     <rect x="14" y="300" width="338" height="104" rx="10" fill="#1e293b" stroke="#22c55e"/>
     <text x="26" y="322" font-family="Segoe UI, sans-serif" font-size="14" font-weight="800" fill="#4ade80">3. Nhánh Chuyên KI — Bắn Laze (Makankosappo)</text>
-    <text x="26" y="342" font-family="Segoe UI, sans-serif" font-size="12.5" font-weight="700" fill="#fde047">• Set KH: Set Picolo (5 món: +50% ST Laze Makankosappo)</text>
-    <text x="26" y="361" font-family="Segoe UI, sans-serif" font-size="12" fill="#e2e8f0">• Cải trang: Dr. Lychee / Frieren (+36% KI, +25~75% ST Laze)</text>
+    <text x="26" y="342" font-family="Segoe UI, sans-serif" font-size="12.5" font-weight="700" fill="#fde047">• Set KH: Set Picolo (5 món: +100% KI &amp; +50% ST Laze = x3 Laze)</text>
+    <text x="26" y="361" font-family="Segoe UI, sans-serif" font-size="12" fill="#e2e8f0">• Cải trang: Dr. Lychee / Frieren (+45~75% KI, +25~75% ST Laze)</text>
     <text x="26" y="380" font-family="Segoe UI, sans-serif" font-size="12" fill="#bbf7d0">• SPL &amp; Nội tại: Ép full 9 lỗ SPL %KI + Nội tại Laze</text>
-    <text x="26" y="397" font-family="Segoe UI, sans-serif" font-size="11.5" fill="#86efac">• Lợi ích: Chuyển hóa tổng KI thành tia Laze xuyên giáp 1 hit cực mạnh</text>
+    <text x="26" y="397" font-family="Segoe UI, sans-serif" font-size="11.5" fill="#86efac">• Lợi ích: Chuyển hóa tổng KI thành tia Laze xuyên giáp 100% cực mạnh</text>
 
     <!-- Build 4: Pikkoro Daimao -->
     <rect x="14" y="414" width="338" height="98" rx="10" fill="#1e293b" stroke="#22c55e"/>
@@ -111,26 +111,26 @@
     <rect x="14" y="52" width="338" height="106" rx="10" fill="#1e293b" stroke="#f43f5e"/>
     <text x="26" y="74" font-family="Segoe UI, sans-serif" font-size="14" font-weight="800" fill="#fb7185">1. Nhánh Sức Đánh Cận Chiến (Đấm Galick)</text>
     <text x="26" y="95" font-family="Segoe UI, sans-serif" font-size="12.5" font-weight="700" fill="#fde047">• Set KH: Set Kakarot (5 món: +100% ST Đấm Galick)</text>
-    <text x="26" y="115" font-family="Segoe UI, sans-serif" font-size="12" fill="#e2e8f0">• Cải trang: Broly / Cumber / Black Rose / Gogeta (+SĐ, Hút HP/KI)</text>
+    <text x="26" y="115" font-family="Segoe UI, sans-serif" font-size="12" fill="#e2e8f0">• Cải trang: Broly / Cumber / Black Rose / Gogeta (+SĐ, +45~55% HP)</text>
     <text x="26" y="134" font-family="Segoe UI, sans-serif" font-size="12" fill="#fecdd3">• SPL &amp; Nội tại: Full SPL %SĐ + Nội tại Đấm Galick / Biến Khỉ</text>
     <text x="26" y="151" font-family="Segoe UI, sans-serif" font-size="11.5" fill="#86efac">• Lợi ích: Chí mạng 100% khi hóa Khỉ + Đấm Galick x2 sát thương</text>
 
     <!-- Build 2: Cadic M -->
     <rect x="14" y="168" width="338" height="122" rx="10" fill="url(#cadicMGrad)" stroke="#f59e0b" stroke-width="1.8"/>
     <text x="26" y="190" font-family="Segoe UI, sans-serif" font-size="14" font-weight="800" fill="#fbbf24">2. Nhánh Sát Thủ Bom &amp; Chí Mạng (Set Cộng Dồn 1–5 Món)</text>
-    <text x="26" y="210" font-family="Segoe UI, sans-serif" font-size="12.5" font-weight="700" fill="#fde047">• Set KH: Set Cadic M (+100% ST Tự Phát Nổ &amp; +50% HP Nổ)</text>
-    <text x="26" y="229" font-family="Segoe UI, sans-serif" font-size="11.5" fill="#fed7aa">• Cộng dồn (1–4 món): +10% HP, +15% SĐ, +10% Giáp/món (2 món: +200 tầm nổ)</text>
-    <text x="26" y="247" font-family="Segoe UI, sans-serif" font-size="11.5" fill="#fef08a">• Đủ 5 món: +100% SĐ, +50% HP, +50% Giáp, +50% SĐ Chí Mạng, +50% HP Nổ</text>
-    <text x="26" y="265" font-family="Segoe UI, sans-serif" font-size="12" fill="#e2e8f0">• Cải trang: Cađíc SSJ2 M / SSJ4 (+36% HP, +25~75% ST Nổ)</text>
-    <text x="26" y="282" font-family="Segoe UI, sans-serif" font-size="11.5" fill="#86efac">• Lợi ích: Vừa đánh chí mạng cực rát (+100% SĐ, +50% SĐCM) vừa nổ Bom hủy diệt</text>
+    <text x="26" y="210" font-family="Segoe UI, sans-serif" font-size="12.5" font-weight="700" fill="#fde047">• Set KH: Set Cadic M (+30% ST Tự Phát Nổ &amp; +30% HP Nổ)</text>
+    <text x="26" y="229" font-family="Segoe UI, sans-serif" font-size="11.5" fill="#fed7aa">• Cộng dồn (1–4 món): +8% HP, +10% SĐ, +8% Giáp/món (2 món: +100 tầm nổ)</text>
+    <text x="26" y="247" font-family="Segoe UI, sans-serif" font-size="11.5" fill="#fef08a">• Đủ 5 món: +60% SĐ, +50% HP, +50% Giáp, +25% SĐ Chí Mạng, +30% HP Nổ</text>
+    <text x="26" y="265" font-family="Segoe UI, sans-serif" font-size="12" fill="#e2e8f0">• Cải trang: Cađíc SSJ2 M / SSJ4 (+45~75% HP, +25~75% ST Nổ)</text>
+    <text x="26" y="282" font-family="Segoe UI, sans-serif" font-size="11.5" fill="#86efac">• Lợi ích: Vừa đánh chí mạng cực rát (+60% SĐ, +25% SĐCM) vừa nổ Bom xuyên giáp</text>
 
     <!-- Build 3: Nappa -->
     <rect x="14" y="300" width="338" height="104" rx="10" fill="#1e293b" stroke="#f43f5e"/>
     <text x="26" y="322" font-family="Segoe UI, sans-serif" font-size="14" font-weight="800" fill="#fb7185">3. Nhánh Siêu Máu (Tanker &amp; Ôm Bom Thuần HP)</text>
-    <text x="26" y="342" font-family="Segoe UI, sans-serif" font-size="12.5" font-weight="700" fill="#fde047">• Set KH: Set Nappa (5 món: +80% HP tối đa)</text>
-    <text x="26" y="361" font-family="Segoe UI, sans-serif" font-size="12" fill="#e2e8f0">• Cải trang &amp; SPL: Cađíc SSJ2 M / SSJ4 + Full 9 lỗ SPL %HP</text>
-    <text x="26" y="380" font-family="Segoe UI, sans-serif" font-size="12" fill="#fecdd3">• Phối hợp: Huýt Sáo + Biến Khỉ + Bổ Huyết Siêu Cấp</text>
-    <text x="26" y="397" font-family="Segoe UI, sans-serif" font-size="11.5" fill="#86efac">• Lợi ích: Đẩy giới hạn HP tối đa lên ngưỡng cao nhất dễ kiếm từ đầu game</text>
+    <text x="26" y="342" font-family="Segoe UI, sans-serif" font-size="12.5" font-weight="700" fill="#fde047">• Set KH: Set Nappa (5 món: +100% HP tối đa)</text>
+    <text x="26" y="361" font-family="Segoe UI, sans-serif" font-size="12" fill="#e2e8f0">• Cải trang &amp; SPL: Cađíc SSJ2 M / SSJ4 (+45~75% HP) + Full 9 lỗ SPL %HP</text>
+    <text x="26" y="380" font-family="Segoe UI, sans-serif" font-size="12" fill="#fecdd3">• Phối hợp: Huýt Sáo (+100% HP) + Biến Khỉ (+100% HP) + Bổ Huyết</text>
+    <text x="26" y="397" font-family="Segoe UI, sans-serif" font-size="11.5" fill="#86efac">• Lợi ích: Nhân đôi lượng HP tối đa (+100% HP) dễ kiếm ngay từ đầu game</text>
 
     <!-- Build 4: Cadic -->
     <rect x="14" y="414" width="338" height="98" rx="10" fill="#1e293b" stroke="#f43f5e"/>
