@@ -1501,6 +1501,9 @@ public class Player implements Runnable {
         return this.session != null && this.session.isAdmin;
     }
 
+    public int freeReviveUsed = 0;
+    public static final int MAX_FREE_REVIVE = 5;
+
     public void setJustRevivaled() {
         this.justRevived = true;
         this.lastTimeRevived = System.currentTimeMillis();

@@ -276,9 +276,9 @@ public class PlayerService {
         playerBaned.idMark.setBan(true);
     }
 
-    private static final int COST_GOLD_HOI_SINH = 20_000;
+    private static final int COST_GOLD_HOI_SINH = 1_000_000;
     private static final int COST_GEM_HOI_SINH = 1;
-    private static final int COST_GOLD_HOI_SINH_NRSD = 50_000;
+    private static final int COST_GOLD_HOI_SINH_NRSD = 1_000_000;
 
     public void hoiSinh(Player player) {
         if (player.zone != null && player.zone.map != null && player.zone.map.mapId == 134) {
@@ -288,22 +288,22 @@ public class PlayerService {
         if (player.isDie() && player.zone != null && player.zone.map.mapId != 51) {
             if (Util.canDoWithTime(player.lastTimeRevived, 1500)) {
                 boolean canHs = false;
-                if (MapService.gI().isMapBlackBallWar(player.zone.map.mapId)) {
-                    if (player.inventory.gold >= COST_GOLD_HOI_SINH_NRSD) {
-                        player.inventory.gold -= COST_GOLD_HOI_SINH_NRSD;
-                        canHs = true;
-                    } else {
-                        Service.gI().sendThongBao(player, "Không đủ vàng để thực hiện, còn thiếu "
-                                + Util.numberToMoney(COST_GOLD_HOI_SINH_NRSD - player.inventory.gold) + " vàng");
-                        return;
-                    }
+                if (player.freeReviveUsed < Player.MAX_FREE_REVIVE) {
+                    player.freeReviveUsed++;
+                    canHs = true;
+                    Service.gI().sendThongBao(player, "Hồi sinh miễn phí (" + player.freeReviveUsed + "/"
+                            + Player.MAX_FREE_REVIVE + "). Về nhà sẽ được làm mới lượt miễn phí!");
                 } else {
-                    if (player.inventory.gold >= COST_GOLD_HOI_SINH) {
-                        player.inventory.gold -= COST_GOLD_HOI_SINH;
+                    int costGold = MapService.gI().isMapBlackBallWar(player.zone.map.mapId)
+                            ? COST_GOLD_HOI_SINH_NRSD : COST_GOLD_HOI_SINH;
+                    if (player.inventory.gold >= costGold) {
+                        player.inventory.gold -= costGold;
                         canHs = true;
+                        Service.gI().sendThongBao(player, "Hồi sinh tại chỗ (-" + Util.numberToMoney(costGold) + " vàng)");
                     } else {
-                        Service.gI().sendThongBao(player, "Không đủ vàng để thực hiện, còn thiếu "
-                                + Util.numberToMoney(COST_GOLD_HOI_SINH - player.inventory.gold) + " vàng");
+                        Service.gI().sendThongBao(player, "Đã hết 5 lượt hồi sinh miễn phí. Không đủ "
+                                + Util.numberToMoney(costGold) + " vàng để hồi sinh (còn thiếu "
+                                + Util.numberToMoney(costGold - player.inventory.gold) + " vàng)");
                         return;
                     }
                 }
@@ -319,22 +319,22 @@ public class PlayerService {
     public void hoiSinhMaBu(Player player) {
         if (player.isDie()) {
             boolean canHs = false;
-            if (MapService.gI().isMapMaBu(player.zone.map.mapId)) {
-                if (player.inventory.gold >= COST_GOLD_HOI_SINH_NRSD) {
-                    player.inventory.gold -= COST_GOLD_HOI_SINH_NRSD;
-                    canHs = true;
-                } else {
-                    Service.gI().sendThongBao(player, "Không đủ vàng để thực hiện, còn thiếu " + Util.numberToMoney(COST_GOLD_HOI_SINH_NRSD
-                            - player.inventory.gold) + " vàng");
-                    return;
-                }
+            if (player.freeReviveUsed < Player.MAX_FREE_REVIVE) {
+                player.freeReviveUsed++;
+                canHs = true;
+                Service.gI().sendThongBao(player, "Hồi sinh miễn phí (" + player.freeReviveUsed + "/"
+                        + Player.MAX_FREE_REVIVE + "). Về nhà sẽ được làm mới lượt miễn phí!");
             } else {
-                if (player.inventory.gold >= COST_GOLD_HOI_SINH) {
-                    player.inventory.gold -= COST_GOLD_HOI_SINH;
+                int costGold = MapService.gI().isMapMaBu(player.zone.map.mapId)
+                        ? COST_GOLD_HOI_SINH_NRSD : COST_GOLD_HOI_SINH;
+                if (player.inventory.gold >= costGold) {
+                    player.inventory.gold -= costGold;
                     canHs = true;
+                    Service.gI().sendThongBao(player, "Hồi sinh tại chỗ (-" + Util.numberToMoney(costGold) + " vàng)");
                 } else {
-                    Service.gI().sendThongBao(player, "Không đủ vàng để thực hiện, còn thiếu " + Util.numberToMoney(COST_GOLD_HOI_SINH
-                            - player.inventory.gold) + " vàng");
+                    Service.gI().sendThongBao(player, "Đã hết 5 lượt hồi sinh miễn phí. Không đủ "
+                            + Util.numberToMoney(costGold) + " vàng để hồi sinh (còn thiếu "
+                            + Util.numberToMoney(costGold - player.inventory.gold) + " vàng)");
                     return;
                 }
             }

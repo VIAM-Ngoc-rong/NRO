@@ -18,6 +18,7 @@ import nro.models.utils.Util;
 
 public class Broly extends Boss {
     private long lastTimeAttack;
+    private boolean killedByPlayer = false;
 
     public Broly() throws Exception {
 
@@ -48,13 +49,11 @@ public class Broly extends Boss {
     @Override
     public void active() {
         super.active();
-        if (this.nPoint.hpMax == 1_500_000) {
-            this.leaveMap();
-        }
     }
 
     @Override
     public void joinMap() {
+        this.killedByPlayer = false;
         this.name = "Broly " + Util.nextInt(10, 100);
         this.nPoint.hpMax = Util.nextInt(500, 100_000);
         this.nPoint.hpg = this.nPoint.hpMax;
@@ -189,6 +188,7 @@ public class Broly extends Boss {
 
     @Override
     public void die(Player plKill) {
+        this.killedByPlayer = true;
         this.changeStatus(BossStatus.DIE);
     }
 
@@ -206,7 +206,14 @@ public class Broly extends Boss {
         Zone zone = this.zone;
         int x = this.location.x;
         int y = this.location.y;
-        boolean canSpawnSuper = zone != null && zone.zoneId >= 2 && this.nPoint != null && this.nPoint.hpMax >= 1_000_000;
+        boolean canSpawnSuper = false;
+        if (this.killedByPlayer && zone != null && zone.zoneId >= 2) {
+            int deathCount = Broly18h.NORMAL_BROLY_DEATH_COUNT.incrementAndGet();
+            boolean enoughHp = this.nPoint != null && this.nPoint.hpMax > 1_000_000;
+            boolean every50Kills = (deathCount % 50 == 0);
+            canSpawnSuper = enoughHp || every50Kills;
+        }
+        this.killedByPlayer = false;
         this.firstEncounterPlayerTimeMs = 0L;
         ChangeMapService.gI().exitMap(this);
         if (canSpawnSuper) {

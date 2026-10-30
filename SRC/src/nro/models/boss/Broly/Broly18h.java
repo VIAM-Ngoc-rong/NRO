@@ -17,6 +17,9 @@ import nro.models.utils.Util;
 
 public class Broly18h extends Boss {
 
+    public static final java.util.concurrent.atomic.AtomicInteger NORMAL_BROLY_DEATH_COUNT = new java.util.concurrent.atomic.AtomicInteger(0);
+    private boolean killedByPlayer = false;
+
     public Broly18h() throws Exception {
         super(BossID.BROLY_18H - Util.nextInt(1, 100000), false, true, new BossData(
                 "Broly",
@@ -67,16 +70,13 @@ public class Broly18h extends Boss {
     @Override
     public void active() {
         super.active();
-        if (this.nPoint.hpMax == 15_000_000) {
-            this.leaveMap();
-        }
     }
 
     @Override
     public void initBase() {
         super.initBase();
+        this.killedByPlayer = false;
         this.name = "Broly " + Util.nextInt(10, 100);
-        // Máu khởi điểm x10 so với Broly thường: 5.000 - 1.000.000 HP
         this.nPoint.hpMax = Util.nextInt(5_000, 1_000_000);
         this.nPoint.hpg = this.nPoint.hpMax;
         this.nPoint.hp = this.nPoint.hpMax;
@@ -177,6 +177,7 @@ public class Broly18h extends Boss {
 
     @Override
     public void die(Player plKill) {
+        this.killedByPlayer = true;
         this.changeStatus(BossStatus.DIE);
     }
 
@@ -185,8 +186,14 @@ public class Broly18h extends Boss {
         Zone zone = this.zone;
         int x = this.location.x;
         int y = this.location.y;
-        // Ngưỡng biến hình x10 so với Broly thường: >= 10.000.000 HP
-        boolean canSpawnSuper = zone != null && zone.zoneId >= 1 && this.nPoint != null && this.nPoint.hpMax >= 10_000_000;
+        boolean canSpawnSuper = false;
+        if (this.killedByPlayer && zone != null && zone.zoneId >= 1) {
+            int deathCount = NORMAL_BROLY_DEATH_COUNT.incrementAndGet();
+            boolean enoughHp = this.nPoint != null && this.nPoint.hpMax > 1_000_000;
+            boolean every50Kills = (deathCount % 50 == 0);
+            canSpawnSuper = enoughHp || every50Kills;
+        }
+        this.killedByPlayer = false;
         this.firstEncounterPlayerTimeMs = 0L;
         ChangeMapService.gI().exitMap(this);
         if (canSpawnSuper) {

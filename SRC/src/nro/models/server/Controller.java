@@ -640,6 +640,7 @@ public class Controller implements IMessageHandler {
                     break;
                 case -15: // về nhà
                     if (player != null) {
+                        player.freeReviveUsed = 0;
                         if (player.zone != null && !MapService.gI().isHome(player.zone.map.mapId)
                                 && !MapService.gI().isMapPhoBan(player.zone.map.mapId)
                                 && !MapService.gI().isMapMaBu(player.zone.map.mapId)

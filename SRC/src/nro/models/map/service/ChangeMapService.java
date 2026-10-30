@@ -407,6 +407,9 @@ public class ChangeMapService {
             }
             pl.location.y = y;
             this.goToMap(pl, zoneJoin);
+            if (pl.isPl() && zoneJoin.map != null && MapService.gI().isHome(zoneJoin.map.mapId)) {
+                pl.freeReviveUsed = 0;
+            }
             if (pl.pet != null) {
                 pl.pet.joinMapMaster();
             }
