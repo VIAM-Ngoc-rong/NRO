@@ -1299,6 +1299,8 @@ public class Player implements Runnable {
 
             if (piercing) {
                 tlGiap = 0;
+                tlNeDon = 0;
+                tlNeDonXinbato = 0;
             }
 
             if (tlNeDon > 90) {

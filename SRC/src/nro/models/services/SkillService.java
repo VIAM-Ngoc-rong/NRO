@@ -983,8 +983,13 @@ public class SkillService {
                 dameAttack /= 3;
             }
         }
-        boolean isSpecialSkill = SkillUtil.isUseSkillSpecial(plAtt);
-        int dameHit = plInjure.injured(plAtt, miss ? 0 : dameAttack, isSpecialSkill, false);
+        boolean isPiercingSkill = SkillUtil.isUseSkillSpecial(plAtt)
+                || (plAtt.playerSkill != null && plAtt.playerSkill.skillSelect != null
+                && plAtt.playerSkill.skillSelect.template != null
+                && (plAtt.playerSkill.skillSelect.template.id == Skill.QUA_CAU_KENH_KHI
+                || plAtt.playerSkill.skillSelect.template.id == Skill.MAKANKOSAPPO
+                || plAtt.playerSkill.skillSelect.template.id == Skill.TU_SAT));
+        int dameHit = plInjure.injured(plAtt, miss ? 0 : dameAttack, isPiercingSkill, false);
         if (plAtt.playerSkill == null) {
             return;
         }
