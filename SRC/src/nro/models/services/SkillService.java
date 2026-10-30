@@ -74,9 +74,6 @@ public class SkillService {
             } catch (IOException e) {
             }
         }
-        if (player.effectSkill != null && player.effectSkill.isHaveEffectSkill()) {
-            return false;
-        }
         if (player.playerSkill == null) {
             return false;
         }
@@ -86,16 +83,33 @@ public class SkillService {
         if (player.playerSkill.skillSelect == null) {
             return false;
         }
+        if (player.playerSkill.prepareQCKK && Util.canDoWithTime(player.playerSkill.lastTimePrepareQCKK, 6500)) {
+            player.playerSkill.prepareQCKK = false;
+        }
+        if (player.playerSkill.prepareLaze && Util.canDoWithTime(player.playerSkill.lastTimePrepareLaze, 5500)) {
+            player.playerSkill.prepareLaze = false;
+        }
+        if (player.playerSkill.prepareTuSat && Util.canDoWithTime(player.playerSkill.lastTimePrepareTuSat, 4500)) {
+            player.playerSkill.prepareTuSat = false;
+        }
+        byte selectedSkillTemplateId = player.playerSkill.skillSelect.template.id;
+        boolean isFinishingPreparedSkill = (selectedSkillTemplateId == Skill.QUA_CAU_KENH_KHI && player.playerSkill.prepareQCKK)
+                || (selectedSkillTemplateId == Skill.MAKANKOSAPPO && player.playerSkill.prepareLaze)
+                || (selectedSkillTemplateId == Skill.TU_SAT && player.playerSkill.prepareTuSat);
+
         if (player.playerSkill.skillSelect.template.type == 2 && canUseSkillWithMana(player) && canUseSkillWithCooldown(player)) {
+            if (player.effectSkill != null && player.effectSkill.isHaveEffectSkill()) {
+                return false;
+            }
             useSkillBuffToPlayer(player, plTarget);
             return true;
         }
         if ((player.effectSkill != null && player.effectSkill.isHaveEffectSkill()
-                && (player.playerSkill.skillSelect.template.id != Skill.TU_SAT
-                && player.playerSkill.skillSelect.template.id != Skill.QUA_CAU_KENH_KHI
-                && player.playerSkill.skillSelect.template.id != Skill.MAKANKOSAPPO))
-                || (plTarget != null && !canAttackPlayer(player, plTarget))
-                || (mobTarget != null && mobTarget.isDie())
+                && (selectedSkillTemplateId != Skill.TU_SAT
+                && selectedSkillTemplateId != Skill.QUA_CAU_KENH_KHI
+                && selectedSkillTemplateId != Skill.MAKANKOSAPPO))
+                || (!isFinishingPreparedSkill && plTarget != null && !canAttackPlayer(player, plTarget))
+                || (!isFinishingPreparedSkill && mobTarget != null && mobTarget.isDie())
                 || !canUseSkillWithMana(player) || !canUseSkillWithCooldown(player)) {
             return false;
         }
@@ -457,15 +471,27 @@ public class SkillService {
                     player.playerSkill.lastTimePrepareQCKK = System.currentTimeMillis();
                     sendPlayerPrepareSkill(player, 4000);
                 } else {
+                    if (!player.isBoss && !player.isPet && !Util.canDoWithTime(player.playerSkill.lastTimePrepareQCKK, 1500)) {
+                        return;
+                    }
                     //ném cầu
                     player.playerSkill.prepareQCKK = false;
+                    int rangeQCKK = SkillUtil.getRangeQCKK(player.playerSkill.skillSelect.point);
                     mobs = new ArrayList<>();
                     if (plTarget != null) {
-                        playerAttackPlayer(player, plTarget, false);
+                        if (canAttackPlayer(player, plTarget)) {
+                            playerAttackPlayer(player, plTarget, false);
+                        }
+                        for (Player pl : new ArrayList<>(player.zone.getHumanoids())) {
+                            if (pl != null && !pl.equals(player) && !pl.equals(plTarget)
+                                    && canAttackPlayer(player, pl)
+                                    && Util.getDistance(plTarget, pl) <= rangeQCKK) {
+                                playerAttackPlayer(player, pl, false);
+                            }
+                        }
                         if (!player.isBoss) {
                             for (Mob mob : player.zone.mobs) {
-                                if (!mob.isDie()
-                                        && Util.getDistance(plTarget, mob) <= SkillUtil.getRangeQCKK(player.playerSkill.skillSelect.point)) {
+                                if (!mob.isDie() && Util.getDistance(plTarget, mob) <= rangeQCKK) {
                                     mobs.add(mob);
                                 }
                             }
@@ -473,17 +499,28 @@ public class SkillService {
                     }
                     if (mobTarget != null) {
                         if (!player.isBoss) {
-                            playerAttackMob(player, mobTarget, false, true);
+                            if (!mobTarget.isDie()) {
+                                playerAttackMob(player, mobTarget, false, true);
+                            }
                             for (Mob mob : player.zone.mobs) {
                                 if (!mob.equals(mobTarget) && !mob.isDie()
-                                        && Util.getDistance(mob, mobTarget) <= SkillUtil.getRangeQCKK(player.playerSkill.skillSelect.point)) {
+                                        && Util.getDistance(mob, mobTarget) <= rangeQCKK) {
                                     mobs.add(mob);
                                 }
                             }
                         }
+                        for (Player pl : new ArrayList<>(player.zone.getHumanoids())) {
+                            if (pl != null && !pl.equals(player)
+                                    && canAttackPlayer(player, pl)
+                                    && Util.getDistance(pl.location.x, pl.location.y, mobTarget.location.x, mobTarget.location.y) <= rangeQCKK) {
+                                playerAttackPlayer(player, pl, false);
+                            }
+                        }
                     }
                     for (Mob mob : mobs) {
-                        mob.injured(player, player.nPoint.getDameAttack(true), true);
+                        if (!mob.isDie()) {
+                            playerAttackMob(player, mob, false, true);
+                        }
                     }
                     PlayerService.gI().sendInfoHpMpMoney(player);
                     affterUseSkill(player, player.playerSkill.skillSelect.template.id);
@@ -496,15 +533,34 @@ public class SkillService {
                     player.playerSkill.lastTimePrepareLaze = System.currentTimeMillis();
                     sendPlayerPrepareSkill(player, 3000);
                 } else {
+                    if (!player.isBoss && !player.isPet && !Util.canDoWithTime(player.playerSkill.lastTimePrepareLaze, 1200)) {
+                        return;
+                    }
                     //bắn laze
                     player.playerSkill.prepareLaze = false;
-                    if (plTarget != null) {
+                    boolean hitAnyTarget = false;
+                    if (plTarget != null && canAttackPlayer(player, plTarget)) {
                         playerAttackPlayer(player, plTarget, false);
+                        hitAnyTarget = true;
                     }
                     if (mobTarget != null) {
-                        playerAttackMob(player, mobTarget, false, true);
+                        Mob targetToHit = mobTarget;
+                        if (targetToHit.isDie() && player.zone != null) {
+                            for (Mob m : player.zone.mobs) {
+                                if (!m.isDie() && Util.getDistance(m, mobTarget) <= 300) {
+                                    targetToHit = m;
+                                    break;
+                                }
+                            }
+                        }
+                        if (!targetToHit.isDie()) {
+                            playerAttackMob(player, targetToHit, false, true);
+                            hitAnyTarget = true;
+                        }
                     }
-                    affterUseSkill(player, player.playerSkill.skillSelect.template.id);
+                    if (hitAnyTarget) {
+                        affterUseSkill(player, player.playerSkill.skillSelect.template.id);
+                    }
                 }
                 PlayerService.gI().sendInfoHpMpMoney(player);
                 break;
@@ -737,9 +793,7 @@ public class SkillService {
                     player.playerSkill.lastTimePrepareTuSat = System.currentTimeMillis();
                     sendPlayerPrepareBom(player, 2000);
                 } else {
-                    if (!player.isBoss && !player.isPet && !Util.canDoWithTime(player.playerSkill.lastTimePrepareTuSat, 1500)) {
-                        player.playerSkill.skillSelect.lastTimeUseThisSkill = System.currentTimeMillis();
-                        player.playerSkill.prepareTuSat = false;
+                    if (!player.isBoss && !player.isPet && !Util.canDoWithTime(player.playerSkill.lastTimePrepareTuSat, 1000)) {
                         return;
                     }
                     if (player.isBoss || player.isPet) {
@@ -749,7 +803,7 @@ public class SkillService {
                         }
                     }
                     //nổ
-                    player.playerSkill.prepareTuSat = !player.playerSkill.prepareTuSat;
+                    player.playerSkill.prepareTuSat = false;
                     int rangeBom = SkillUtil.getRangeBom(player.playerSkill.skillSelect.point);
                     if (player.setClothes.cadicM >= 2) {
                         rangeBom = SkillUtil.getRangeBom(player.playerSkill.skillSelect.point) + 100;
@@ -763,26 +817,28 @@ public class SkillService {
                     if (player.nPoint.tlBom > 0) {
                         dame += dame * player.nPoint.tlBom / 100L;
                     }
-                    if (!player.isBoss) {
+                    if (!player.isBoss && player.zone != null) {
                         for (Mob mob : player.zone.mobs) {
-                            if (Util.getDistance(player, mob) <= rangeBom) { //khoảng cách có tác dụng bom
+                            if (!mob.isDie() && Util.getDistance(player, mob) <= rangeBom) { //khoảng cách có tác dụng bom
                                 mob.injured(player, dame, true);
                             }
                         }
                     }
-                    List<Player> playersMap;
-                    if (player.isBoss) {
-                        playersMap = player.zone.getNotBosses();
-                    } else {
-                        playersMap = player.zone.getHumanoids();
-                    }
-                    if (!MapService.gI().isMapOffline(player.zone.map.mapId)) {
-                        for (Player pl : playersMap) {
-                            if (!player.equals(pl) && canAttackPlayer(player, pl) && Util.getDistance(player, pl) <= rangeBom) {
+                    if (player.zone != null) {
+                        List<Player> playersMap;
+                        if (player.isBoss) {
+                            playersMap = player.zone.getNotBosses();
+                        } else {
+                            playersMap = player.zone.getHumanoids();
+                        }
+                        for (Player pl : new ArrayList<>(playersMap)) {
+                            if (pl != null && !player.equals(pl) && canAttackPlayer(player, pl) && Util.getDistance(player, pl) <= rangeBom) {
                                 long dameTarget = pl.isBoss ? (player.effectSkill.isMonkey ? dame / 3 : dame / 2) : dame;
-                                pl.injured(player, dameTarget, MapService.gI().isMapYardart(player.zone.map.mapId), false);
+                                pl.injured(player, dameTarget, true, false);
                                 PlayerService.gI().sendInfoHpMpMoney(pl);
                                 Service.gI().Send_Info_NV(pl);
+                                Service.gI().Send_Info_NV_do_Injure(pl);
+                                Service.gI().reload_HP_NV(pl);
                             }
                         }
                     }
@@ -856,10 +912,10 @@ public class SkillService {
     }
 
     private void phanSatThuong(Player plAtt, Player plTarget, long dame) {
-        if (plAtt != null) {
+        if (plAtt != null && dame > 0) {
             int percentPST = plTarget.nPoint.tlPST;
-            if (percentPST != 0) {
-                int damePST = (int) (long) (dame * percentPST / 100L);
+            if (percentPST > 0) {
+                int damePST = (int) Math.max(1L, dame * percentPST / 100L);
                 Message msg = null;
                 try {
                     msg = new Message(56);
@@ -876,12 +932,14 @@ public class SkillService {
                             damePST = plAtt.nPoint.hpMax / 100 - giamdame;
                         }
                     }
-                    damePST = plAtt.injured(plAtt, damePST, true, false);
-                    msg.writer().writeInt(plAtt.nPoint.hp);
-                    msg.writer().writeInt(damePST);
-                    msg.writer().writeBoolean(false);
-                    msg.writer().writeByte(36);
-                    Service.gI().sendMessAllPlayerInMap(plAtt, msg);
+                    if (damePST > 0) {
+                        damePST = plAtt.injured(plAtt, damePST, true, false);
+                        msg.writer().writeInt(plAtt.nPoint.hp);
+                        msg.writer().writeInt(damePST);
+                        msg.writer().writeBoolean(false);
+                        msg.writer().writeByte(36);
+                        Service.gI().sendMessAllPlayerInMap(plAtt, msg);
+                    }
                 } catch (Exception e) {
                     Logger.logException(SkillService.class, e);
                 } finally {
@@ -931,8 +989,8 @@ public class SkillService {
             return;
         }
         Skill skillSelect = plAtt.playerSkill.skillSelect;
-        int damePST = plInjure.effectSkill != null && plInjure.effectSkill.isShielding && plInjure.idMark != null ? plInjure.idMark.getDamePST() : dameHit;
-        phanSatThuong(plAtt, plInjure, miss ? 0 : damePST);
+        int damePST = (plInjure.idMark != null && plInjure.idMark.getDamePST() > 0)
+                ? plInjure.idMark.getDamePST() : dameHit;
         hutHPMP(plAtt, dameHit, plInjure, null);
         if (plInjure instanceof Yardart) {
             if (plInjure.nPoint.hp < dameHit) {
@@ -948,7 +1006,7 @@ public class SkillService {
         try {
             msg = new Message(-60);
             msg.writer().writeInt((int) plAtt.id); //id pem
-            msg.writer().writeByte(plAtt.playerSkill.skillSelect.skillId); //skill pem
+            msg.writer().writeByte(skillSelect != null ? skillSelect.skillId : plAtt.playerSkill.skillSelect.skillId); //skill pem
             msg.writer().writeByte(1); //số người pem
             msg.writer().writeInt((int) plInjure.id); //id ăn pem
             msg.writer().writeByte(1); //read continue
@@ -958,6 +1016,7 @@ public class SkillService {
             msg.writer().writeBoolean(plAtt.nPoint.isCrit); //crit
             Service.gI().sendMessAllPlayerInMap(plAtt, msg);
             Service.gI().reload_HP_NV(plInjure);
+            phanSatThuong(plAtt, plInjure, miss ? 0 : damePST);
             if (plAtt.isPl() && plInjure.isPl() && plAtt.typePk == ConstPlayer.PK_PVP_2 && plInjure.typePk == ConstPlayer.PK_PVP_2) {
                 long tnsm = plAtt.nPoint.calSucManhTiemNang(dameHit / 10) / (Math.abs(Service.gI().getCurrLevel(plAtt) - Service.gI().getCurrLevel(plInjure)) + 1);
                 Service.gI().addSMTN(plInjure, (byte) 2, tnsm, false);
@@ -1286,6 +1345,17 @@ public class SkillService {
     }
 
     public void selectSkill(Player player, int skillId) {
+        if (player.playerSkill != null) {
+            if (skillId != Skill.QUA_CAU_KENH_KHI) {
+                player.playerSkill.prepareQCKK = false;
+            }
+            if (skillId != Skill.MAKANKOSAPPO) {
+                player.playerSkill.prepareLaze = false;
+            }
+            if (skillId != Skill.TU_SAT) {
+                player.playerSkill.prepareTuSat = false;
+            }
+        }
         for (Skill skill : player.playerSkill.skills) {
             if (skill.skillId != -1 && skill.template.id == skillId) {
                 player.playerSkill.skillSelect = skill;

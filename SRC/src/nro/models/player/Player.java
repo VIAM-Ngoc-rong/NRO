@@ -1198,6 +1198,9 @@ public class Player implements Runnable {
     }
 
     public synchronized int injured(Player plAtt, long damage, boolean piercing, boolean isMobAttack) {
+        if (this.idMark != null) {
+            this.idMark.setDamePST(0);
+        }
         if (!this.isDie()) {
             if (plAtt != null && !plAtt.equals(this)) {
                 setTemporaryEnemies(plAtt);
@@ -1237,6 +1240,9 @@ public class Player implements Runnable {
                 switch (plAtt.playerSkill.skillSelect.template.id) {
                     case Skill.KAMEJOKO, Skill.MASENKO, Skill.ANTOMIC, Skill.SUPER_KAME, Skill.LIEN_HOAN_CHUONG, Skill.MAKANKOSAPPO, Skill.QUA_CAU_KENH_KHI -> {
                         if (this.nPoint.voHieuChuong > 0) {
+                            if (this.idMark != null) {
+                                this.idMark.setDamePST((int) Math.min(damage, 2_147_483_647L));
+                            }
                             PlayerService.gI().hoiPhuc(this, 0, damage * this.nPoint.voHieuChuong / 100L);
                             Service.gI().chat(this, "Hấp thụ chưởng!");
                             return 0;

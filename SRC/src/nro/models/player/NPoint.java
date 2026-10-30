@@ -541,6 +541,15 @@ public class NPoint {
                     case 904:
                         player.setClothes.worldcup++;
                         break;
+                    case 524: // CT Android 19
+                    case 525: // CT Android 20
+                        if (this.voHieuChuong < 100) {
+                            this.voHieuChuong = 100;
+                        }
+                        if (this.tlPST < 15) {
+                            this.tlPST += 15;
+                        }
+                        break;
                     case 526: // CT Xên Bọ Hung 1
                         if (this.tlHutHpMpXQ < 1) {
                             this.tlHutHpMpXQ = 1;
@@ -1818,7 +1827,8 @@ public class NPoint {
                 break;
             case Skill.MAKANKOSAPPO:
                 percentDameSkill = skillSelect.damage;
-                long dameSkill = (long) this.mpMax * percentDameSkill / 100L;
+                long mpForLaze = Math.max(this.mp, this.mpMax);
+                long dameSkill = mpForLaze * percentDameSkill / 100L;
                 if (this.player.setClothes.picolo == 5) {
                     dameSkill += dameSkill * 50L / 100L;
                 }
@@ -1828,28 +1838,49 @@ public class NPoint {
                 if (this.tlxgc > 0) {
                     dameSkill += dameSkill * this.tlxgc / 100L;
                 }
+                if (dameAfter > 0) {
+                    dameSkill += dameSkill * dameAfter / 100L;
+                    dameAfter = 0;
+                }
+                if (isAttackMob) {
+                    for (Integer tl : this.tlDameAttMob) {
+                        dameSkill += dameSkill * tl / 100L;
+                    }
+                }
                 return recordAndClampDame(dameSkill);
             case Skill.QUA_CAU_KENH_KHI:
                 long hpmob = 0;
                 long hppl = 0;
-                for (Mob mob : this.player.zone.mobs) {
-                    if (!mob.isDie()
-                            && Util.getDistance(this.player, mob) <= SkillUtil.getRangeQCKK(this.player.playerSkill.skillSelect.point)) {
-                        hpmob += mob.point.hp;
+                int scanRangeQCKK = Math.max(450, SkillUtil.getRangeQCKK(this.player.playerSkill.skillSelect.point) * 2);
+                if (this.player.zone != null) {
+                    for (Mob mob : this.player.zone.mobs) {
+                        if (!mob.isDie()
+                                && Util.getDistance(this.player, mob) <= scanRangeQCKK) {
+                            hpmob += mob.point.hp;
+                        }
+                    }
+
+                    for (Player pl : this.player.zone.getHumanoids()) {
+                        if (!pl.isDie() && this.player.id != pl.id
+                                && Util.getDistance(this.player, pl) <= scanRangeQCKK) {
+                            hppl += pl.nPoint.hp;
+                        }
                     }
                 }
 
-                for (Player pl : this.player.zone.getHumanoids()) {
-                    if (!pl.isDie() && this.player.id != pl.id
-                            && Util.getDistance(this.player, pl) <= SkillUtil.getRangeQCKK(this.player.playerSkill.skillSelect.point)) {
-                        hppl += pl.nPoint.hp;
-                    }
-                }
-
-                long dameqckk = (hpmob * 10 / 100) + (hppl * 10 / 100) + this.dame * 10;
+                long dameqckk = (hpmob * 10 / 100) + (hppl * 10 / 100) + (long) this.dame * 10L;
 
                 if (this.player.setClothes.kirin == 5) {
                     dameqckk *= 2;
+                }
+                if (dameAfter > 0) {
+                    dameqckk += dameqckk * dameAfter / 100L;
+                    dameAfter = 0;
+                }
+                if (isAttackMob) {
+                    for (Integer tl : this.tlDameAttMob) {
+                        dameqckk += dameqckk * tl / 100L;
+                    }
                 }
 
                 dameqckk = dameqckk + (Util.nextInt(-5, 5) * dameqckk / 100);
