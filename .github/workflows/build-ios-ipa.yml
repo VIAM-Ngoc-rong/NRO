@@ -1,0 +1,83 @@
+name: Build iOS IPA (Ngoc Rong VIAM)
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'Build_ios.part*'
+      - 'Build_ios.zip'
+      - 'Build_ios/**'
+      - '.github/workflows/build-ios-ipa.yml'
+
+jobs:
+  build-ipa:
+    name: Compile Xcode Project to NgocRongVIAM.ipa
+    runs-on: macos-14
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Prepare Xcode Project
+        run: |
+          if ls Build_ios.part* >/dev/null 2>&1; then
+            echo "Joining Build_ios.part* into Build_ios.zip..."
+            cat Build_ios.part* > Build_ios.zip
+          fi
+          if [ -f "Build_ios.zip" ]; then
+            echo "Extracting Build_ios.zip..."
+            mkdir -p ios_build_work
+            unzip -q -o Build_ios.zip -d ios_build_work
+            if [ -d "ios_build_work/Build_ios/Unity-iPhone.xcodeproj" ]; then
+              mv ios_build_work/Build_ios ios_project
+            else
+              mv ios_build_work ios_project
+            fi
+          elif [ -d "Build_ios/Unity-iPhone.xcodeproj" ]; then
+            cp -R Build_ios ios_project
+          else
+            echo "Khong tim thay Build_ios.zip hoac thu muc Build_ios!"
+            exit 1
+          fi
+          cd ios_project
+          find . -name "*.sh" -exec sed -i '' 's/\r$//' {} + 2>/dev/null || true
+          find . -name "*.sh" -exec chmod +x {} + 2>/dev/null || true
+          chmod -R +x . 2>/dev/null || true
+
+      - name: Build Unsigned Release App with Xcode
+        run: |
+          cd ios_project
+          xcodebuild -project Unity-iPhone.xcodeproj \
+            -scheme Unity-iPhone \
+            -configuration Release \
+            -sdk iphoneos \
+            -derivedDataPath "$RUNNER_TEMP/DerivedData" \
+            -UseModernBuildSystem=YES \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            AD_HOC_CODE_SIGNING_ALLOWED=YES \
+            COMPILER_INDEX_store_ENABLE=NO \
+            build
+
+      - name: Package Payload into NgocRongVIAM.ipa
+        run: |
+          APP_PATH=$(find "$RUNNER_TEMP/DerivedData/Build/Products/Release-iphoneos" -maxdepth 1 -name "*.app" | head -n 1)
+          if [ -z "$APP_PATH" ]; then
+            echo "Khong tim thay file .app sau khi build!"
+            exit 1
+          fi
+          echo "Found built app: $APP_PATH"
+          codesign --force --deep --sign - "$APP_PATH" || true
+          mkdir -p "$RUNNER_TEMP/ipa_out/Payload"
+          cp -R "$APP_PATH" "$RUNNER_TEMP/ipa_out/Payload/"
+          cd "$RUNNER_TEMP/ipa_out"
+          zip -r -9 "$GITHUB_WORKSPACE/NgocRongVIAM.ipa" Payload
+
+      - name: Upload NgocRongVIAM.ipa Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: NgocRongVIAM-iOS-IPA
+          path: NgocRongVIAM.ipa
+          if-no-files-found: error
+          retention-days: 30
+
