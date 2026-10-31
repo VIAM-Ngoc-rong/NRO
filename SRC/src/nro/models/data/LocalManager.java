@@ -35,12 +35,20 @@ public class LocalManager {
         try {
             config = createConfig("User Management", DB_NAME);
             ds = new HikariDataSource(config);
-        } catch (Exception e) {
-            Logger.log(Logger.YELLOW, "Fallback ket noi MySQL Local voi user 'root' (mat khau rong)...\n");
-            DB_USER = "root";
-            DB_PASSWORD = "";
-            config = createConfig("User Management", DB_NAME);
-            ds = new HikariDataSource(config);
+        } catch (Exception e1) {
+            try {
+                Logger.log(Logger.YELLOW, "Fallback ket noi MySQL VPS voi user 'nro_user'...\n");
+                DB_USER = "nro_user";
+                DB_PASSWORD = "NroGame@2026";
+                config = createConfig("User Management", DB_NAME);
+                ds = new HikariDataSource(config);
+            } catch (Exception e2) {
+                Logger.log(Logger.YELLOW, "Fallback ket noi MySQL Local voi user 'root' (mat khau rong)...\n");
+                DB_USER = "root";
+                DB_PASSWORD = "";
+                config = createConfig("User Management", DB_NAME);
+                ds = new HikariDataSource(config);
+            }
         }
     }
     

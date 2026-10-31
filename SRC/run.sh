@@ -25,6 +25,14 @@ if [ ! -s "lib/mysql-connector-java-5.1.49.jar" ]; then
 fi
 mysql -e "PURGE BINARY LOGS BEFORE NOW(); SET GLOBAL binlog_expire_logs_seconds = 600;" >/dev/null 2>&1 || true
 rm -f /var/lib/mysql/binlog.0* /var/lib/mysql/mysql-bin.0* 2>/dev/null || true
+
+# Đảm bảo dịch vụ MySQL đang chạy và tài khoản nro_user sẵn sàng trên VPS
+systemctl start mysql >/dev/null 2>&1 || service mysql start >/dev/null 2>&1 || true
+mysql -e "CREATE USER IF NOT EXISTS 'nro_user'@'127.0.0.1' IDENTIFIED BY 'NroGame@2026'; CREATE USER IF NOT EXISTS 'nro_user'@'localhost' IDENTIFIED BY 'NroGame@2026'; ALTER USER 'nro_user'@'127.0.0.1' IDENTIFIED BY 'NroGame@2026'; ALTER USER 'nro_user'@'localhost' IDENTIFIED BY 'NroGame@2026'; GRANT ALL PRIVILEGES ON *.* TO 'nro_user'@'127.0.0.1' WITH GRANT OPTION; GRANT ALL PRIVILEGES ON *.* TO 'nro_user'@'localhost' WITH GRANT OPTION; FLUSH PRIVILEGES;" >/dev/null 2>&1 || true
+if [ -f "Config.properties" ]; then
+    sed -i 's/^database\.user=.*/database.user=nro_user/' Config.properties 2>/dev/null || true
+    sed -i 's/^database\.pass=.*/database.pass=NroGame@2026/' Config.properties 2>/dev/null || true
+fi
 mkdir -p /root/NRO/backups 2>/dev/null || true
 if [ -d "/root/NRO/backups" ]; then
     ls -1t /root/NRO/backups/team2026_20*.sql.gz 2>/dev/null | tail -n +2 | xargs -r rm -f 2>/dev/null || true
@@ -100,9 +108,16 @@ if [ -n "$JAVAC_BIN" ]; then
         src/nro/models/server/ServerNotify.java \
         src/nro/models/server/AdminWebServer.java
     $JAVAC_BIN -encoding UTF-8 -proc:none -cp "build/classes:lib/*:20.jar" -d build/classes \
+        src/nro/models/data/LocalManager.java \
         src/nro/models/database/ShopDAO.java \
         src/nro/models/services/ItemService.java \
         src/nro/models/boss/Boss.java \
+        src/nro/models/boss/Broly/Broly.java \
+        src/nro/models/boss/Broly/Broly18h.java \
+        src/nro/models/boss/Broly/SieuBroly18h.java \
+        src/nro/models/boss/Broly/SuperBroly.java \
+        src/nro/models/boss/Broly/KidBuWorld.java \
+        src/nro/models/boss/Broly/MabuMapWorld.java \
         src/nro/models/combine/TaiCheDoThan.java \
         src/nro/models/combine/DapDoKichHoat.java \
         src/nro/models/combine/CheTaoTrangBiThienSu.java \
