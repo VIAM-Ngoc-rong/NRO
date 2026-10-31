@@ -622,6 +622,7 @@ public class PlayerDAO {
                 dataArray.add((player.itemTime.isUseNuocMia2 ? Math.max(0, ItemTime.TIME_NUOC_MIA2 - (System.currentTimeMillis() - player.itemTime.lastTimeUseNuocMia2)) : 0));
                 dataArray.add((player.itemTime.isUseNuocMia3 ? Math.max(0, ItemTime.TIME_NUOC_MIA3 - (System.currentTimeMillis() - player.itemTime.lastTimeUseNuocMia3)) : 0));
                 dataArray.add((player.itemTime.isUseKilis ? Math.max(0, ItemTime.TIME_KILIS - (System.currentTimeMillis() - player.itemTime.lastTimeUseKilis)) : 0));
+                player.itemTime.syncAutoSanBossTimer();
                 dataArray.add((player.itemTime.isUseAutoSanBoss ? Math.max(0, ItemTime.TIME_AUTO_SAN_BOSS - (System.currentTimeMillis() - player.itemTime.lastTimeAutoSanBoss)) : 0));
                 dataArray.add(0);
                 String itemTime = dataArray.toJSONString();

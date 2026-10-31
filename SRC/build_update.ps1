@@ -4,6 +4,8 @@ Set-Location $PSScriptRoot
 Write-Host "1. Dang bien dich cac file Java..." -ForegroundColor Cyan
 javac -proc:none -encoding UTF-8 -d build/classes -cp "build/classes;lib/*" `
     src/nro/models/data/LocalManager.java `
+    src/nro/models/item/ItemTime.java `
+    src/nro/models/services/ItemTimeService.java `
     src/nro/models/consts/ConstTask.java `
     src/nro/models/data/DataGame.java `
     src/nro/models/data/ItemData.java `
@@ -132,6 +134,7 @@ $classRoot = Join-Path $PSScriptRoot "build\classes"
 $pkgs = @(
     "nro\models\consts",
     "nro\models\data",
+    "nro\models\item",
     "nro\models\network",
     "nro\models\database",
     "nro\models\event",

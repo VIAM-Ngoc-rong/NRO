@@ -134,9 +134,14 @@ public class ItemTimeService {
             }
         }
         if (player.itemTime.isUseAutoSanBoss) {
-            int timeLeft = (int) ((TIME_AUTO_SAN_BOSS - (System.currentTimeMillis() - player.itemTime.lastTimeAutoSanBoss)) / 1000);
-            if (timeLeft > 0) {
-                sendItemTime(player, ICON_AUTO_SAN_BOSS, timeLeft);
+            player.itemTime.syncAutoSanBossTimer();
+            if (player.isAutoHuntBoss) {
+                int timeLeft = (int) ((TIME_AUTO_SAN_BOSS - (System.currentTimeMillis() - player.itemTime.lastTimeAutoSanBoss)) / 1000);
+                if (timeLeft > 0) {
+                    sendItemTime(player, ICON_AUTO_SAN_BOSS, timeLeft);
+                }
+            } else {
+                removeItemTime(player, ICON_AUTO_SAN_BOSS);
             }
         }
     }

@@ -796,8 +796,9 @@ public class NpcFactory {
                                 openMenuCongNhanh(player);
                             }
                             case 6 -> {
-                                if (player.isAutoHuntBoss) {
-                                    player.stopAutoHuntBoss();
+                                if (player.isAutoHuntBoss || (player.hasActiveAutoHuntBossTime()
+                                        && (player.isAutoHuntAllBoss || !player.autoHuntBossGroupKeys.isEmpty()))) {
+                                    player.togglePauseResumeAutoHuntBoss();
                                     openMenuTienIch(player);
                                 } else {
                                     Service.gI().openFlagUI(player);
@@ -831,14 +832,18 @@ public class NpcFactory {
                                 openMenuAutoTreoMay(player);
                             }
                             case 3 -> {
-                                player.buyAndActivateAutoHuntBossTime();
+                                player.togglePauseResumeAutoHuntBoss();
                                 openMenuAutoTreoMay(player);
                             }
                             case 4 -> {
+                                player.buyAndActivateAutoHuntBossTime();
+                                openMenuAutoTreoMay(player);
+                            }
+                            case 5 -> {
                                 nro.models.server.ServerNotify.gI().sendActiveBossesToPlayer(player);
                                 BossManager.gI().showListBoss(player);
                             }
-                            case 5 -> {
+                            case 6 -> {
                                 openMenuSelectAutoHuntSkills(player);
                             }
                             default -> {
@@ -992,30 +997,32 @@ public class NpcFactory {
                         if (bossIdx == -999) {
                             switch (select) {
                                 case 0 -> {
-                                    player.buyAndActivateAutoHuntBossTime();
+                                    player.togglePauseResumeAutoHuntBoss();
                                     openMenuSelectBossAction(player, -999);
                                 }
                                 case 1 -> {
-                                    player.buyMayDoSanBossItemToBag();
+                                    player.buyAndActivateAutoHuntBossTime();
                                     openMenuSelectBossAction(player, -999);
                                 }
                                 case 2 -> {
-                                    player.toggleAutoHuntAllBoss();
+                                    player.buyMayDoSanBossItemToBag();
                                     openMenuSelectBossAction(player, -999);
                                 }
                                 case 3 -> {
-                                    openMenuSelectAutoHuntSkills(player);
+                                    player.toggleAutoHuntAllBoss();
+                                    openMenuSelectBossAction(player, -999);
                                 }
                                 case 4 -> {
-                                    if (player.isAutoHuntBoss) {
-                                        player.stopAutoHuntBoss();
-                                        openMenuSelectBossAction(player, -999);
-                                    } else {
-                                        BossManager.gI().showListBoss(player);
-                                    }
+                                    openMenuSelectAutoHuntSkills(player);
                                 }
                                 case 5 -> {
                                     BossManager.gI().showListBoss(player);
+                                }
+                                case 6 -> {
+                                    if (player.isAutoHuntBoss || player.isAutoHuntAllBoss || !player.autoHuntBossGroupKeys.isEmpty()) {
+                                        player.stopAutoHuntBoss();
+                                        openMenuSelectBossAction(player, -999);
+                                    }
                                 }
                             }
                             return;
@@ -1033,19 +1040,23 @@ public class NpcFactory {
                                 }
                             }
                             case 1 -> {
+                                player.togglePauseResumeAutoHuntBoss();
+                                openMenuSelectBossAction(player, bossIdx);
+                            }
+                            case 2 -> {
                                 player.toggleAutoHuntAllBoss();
                                 if (!player.hasActiveAutoHuntBossTime()) {
                                     openMenuSelectBossAction(player, bossIdx);
                                 }
                             }
-                            case 2 -> {
+                            case 3 -> {
                                 player.buyAndActivateAutoHuntBossTime();
                                 openMenuSelectBossAction(player, bossIdx);
                             }
-                            case 3 -> {
+                            case 4 -> {
                                 openMenuSelectAutoHuntSkills(player);
                             }
-                            case 4 -> {
+                            case 5 -> {
                                 if (boss != null && boss.zone != null && !boss.isDie()) {
                                     int targetMapId = boss.zone.map.mapId;
                                     if (!ChangeMapService.gI().canPlayerJoinMap(player, targetMapId)) {
@@ -1071,15 +1082,14 @@ public class NpcFactory {
                                     Service.gI().sendThongBao(player, "Boss này hiện chưa xuất hiện! Bạn có thể bấm 'Thêm Vào DS Tự Săn' để tự đến khi Boss hồi sinh.");
                                 }
                             }
-                            case 5 -> {
-                                if (player.isAutoHuntBoss) {
-                                    player.stopAutoHuntBoss();
-                                } else {
-                                    BossManager.gI().showListBoss(player);
-                                }
-                            }
                             case 6 -> {
                                 BossManager.gI().showListBoss(player);
+                            }
+                            case 7 -> {
+                                if (player.isAutoHuntBoss || player.isAutoHuntAllBoss || !player.autoHuntBossGroupKeys.isEmpty()) {
+                                    player.stopAutoHuntBoss();
+                                    openMenuSelectBossAction(player, bossIdx);
+                                }
                             }
                         }
                     }
@@ -1257,30 +1267,22 @@ public class NpcFactory {
             sb.append("|2|Thời gian Tự Săn Boss còn lại: ").append(player.hasActiveAutoHuntBossTime()
                     ? ("|1|" + player.getAutoHuntBossTimeRemainingText() + "\n")
                     : "|7|[Chưa kích hoạt - Cần 200Tr Vàng / 1 giờ]\n");
-            sb.append("|2|Chế độ Tự Săn Boss: ").append(player.isAutoHuntBoss
+            sb.append("|2|Trạng thái Tự Săn Boss: ").append(player.isAutoHuntBoss
                     ? ("|1|[" + player.getAutoHuntBossSummary() + "]\n")
-                    : "|7|[Đang Tắt]\n");
+                    : ("|7|[" + player.getAutoHuntBossSummary() + "]\n"));
             sb.append("|2|Chiêu Săn Boss: |1|").append(player.getAutoHuntSkillSummary()).append("\n");
-            sb.append("|0|(Bạn có thể bấm 'Kích Hoạt Ngay 1 Giờ' để cộng thẳng 60 phút, hoặc 'Mua Máy Dò Vào Túi' để cất vật phẩm vào Hành trang dùng dần!)");
+            sb.append("|0|(Lưu ý: Thời gian Máy Dò CHỈ tính từ lúc Bật Tự Săn và tự động DỪNG LẠI bảo lưu khi bạn Tạm Dừng / Tắt!)");
+            String optToggle = player.isAutoHuntBoss ? "Tạm Dừng\nTự Săn (Giữ Giờ)" : "Bật Tự Động\nSăn Boss";
             String optAll = player.isAutoHuntAllBoss ? "Tắt Săn\nTất Cả Boss" : "Bật Săn\nTất Cả Boss";
-            if (player.isAutoHuntBoss) {
-                NpcService.gI().createMenuConMeo(player, 9905, -1, sb.toString(),
-                        "Kích Hoạt Ngay\n1 Giờ (200Tr)",
-                        "Mua Máy Dò\nVào Túi (200Tr)",
-                        optAll,
-                        "Chọn Chiêu\nSăn Boss",
-                        "Tắt Toàn Bộ\nTự Săn",
-                        "Danh sách\nBoss",
-                        "Đóng");
-            } else {
-                NpcService.gI().createMenuConMeo(player, 9905, -1, sb.toString(),
-                        "Kích Hoạt Ngay\n1 Giờ (200Tr)",
-                        "Mua Máy Dò\nVào Túi (200Tr)",
-                        optAll,
-                        "Chọn Chiêu\nSăn Boss",
-                        "Danh sách\nBoss",
-                        "Đóng");
-            }
+            boolean hasSavedList = player.isAutoHuntBoss || player.isAutoHuntAllBoss || !player.autoHuntBossGroupKeys.isEmpty();
+            NpcService.gI().createMenuConMeo(player, 9905, -1, sb.toString(),
+                    optToggle,
+                    "Kích Hoạt Ngay\n1 Giờ (200Tr)",
+                    "Mua Máy Dò\nVào Túi (200Tr)",
+                    optAll,
+                    "Chọn Chiêu\nSăn Boss",
+                    "Danh sách\nBoss",
+                    hasSavedList ? "Xóa DS &\nTắt Hẳn" : "Đóng");
             return;
         }
         nro.models.boss.Boss boss = BossManager.gI().getBoss(bossIndex);
@@ -1292,7 +1294,23 @@ public class NpcFactory {
         int lv = (boss.currentLevel >= 0 && boss.currentLevel < boss.data.length) ? boss.currentLevel : 0;
         String bossName = boss.data[lv].getName();
         boolean isAlive = boss.zone != null && !boss.isDie();
-        boolean isHuntingThis = player.isAutoHuntBoss && player.isMatchingAutoBoss(boss);
+        long groupKey = switch ((int) boss.id) {
+            case nro.models.boss.BossID.SO_4, nro.models.boss.BossID.SO_3, nro.models.boss.BossID.SO_2,
+                 nro.models.boss.BossID.SO_1, nro.models.boss.BossID.TIEU_DOI_TRUONG -> 1001;
+            case nro.models.boss.BossID.SO_4_NM, nro.models.boss.BossID.SO_3_NM, nro.models.boss.BossID.SO_2_NM,
+                 nro.models.boss.BossID.SO_1_NM, nro.models.boss.BossID.TIEU_DOI_TRUONG_NM -> 1002;
+            case nro.models.boss.BossID.ANDROID_19, nro.models.boss.BossID.DR_KORE -> 1003;
+            case nro.models.boss.BossID.ANDROID_13, nro.models.boss.BossID.ANDROID_14, nro.models.boss.BossID.ANDROID_15 -> 1004;
+            case nro.models.boss.BossID.PIC, nro.models.boss.BossID.POC, nro.models.boss.BossID.KING_KONG -> 1005;
+            case nro.models.boss.BossID.BUJIN, nro.models.boss.BossID.KOGU, nro.models.boss.BossID.ZANGYA,
+                 nro.models.boss.BossID.BIDO, nro.models.boss.BossID.BOJACK, nro.models.boss.BossID.SUPER_BOJACK -> 1006;
+            case nro.models.boss.BossID.BASIL, nro.models.boss.BossID.LAVENDER, nro.models.boss.BossID.BERGAMO -> 1007;
+            case nro.models.boss.BossID.SIEU_BO_HUNG, nro.models.boss.BossID.XEN_CON_1, nro.models.boss.BossID.XEN_CON_2,
+                 nro.models.boss.BossID.XEN_CON_3, nro.models.boss.BossID.XEN_CON_4, nro.models.boss.BossID.XEN_CON_5,
+                 nro.models.boss.BossID.XEN_CON_6, nro.models.boss.BossID.XEN_CON_7 -> 1008;
+            default -> boss.id;
+        };
+        boolean isInSavedList = player.autoHuntBossGroupKeys.contains(groupKey);
 
         StringBuilder sb = new StringBuilder();
         sb.append("|7|=== TÙY CHỌN TỰ ĐỘNG SĂN NHIỀU BOSS ===\n");
@@ -1303,26 +1321,23 @@ public class NpcFactory {
         sb.append("|2|Thời gian Máy Dò Săn Boss: ").append(player.hasActiveAutoHuntBossTime()
                 ? ("|1|" + player.getAutoHuntBossTimeRemainingText() + "\n")
                 : "|7|[Chưa kích hoạt - Cần 200Tr Vàng / 1 giờ]\n");
-        sb.append("|2|DS Đang Tự Săn: ").append(player.isAutoHuntBoss
+        sb.append("|2|Trạng thái Tự Săn: ").append(player.isAutoHuntBoss
                 ? ("|1|[" + player.getAutoHuntBossSummary() + "]\n")
-                : "|7|[Đang Tắt]\n");
+                : ("|7|[" + player.getAutoHuntBossSummary() + "]\n"));
         sb.append("|2|Chiêu Săn Boss: |1|").append(player.getAutoHuntSkillSummary()).append("\n");
-        sb.append("|0|(Mua Máy Dò Săn Boss tại Shop Santa hoặc bấm 'Mua Thời Gian' bên dưới - 200Tr Vàng/1h, cộng dồn khi mua nhiều lần!)");
+        sb.append("|0|(Thời gian Máy Dò CHỈ trừ khi đang Bật Tự Săn và tự động dừng lại khi Tạm Dừng / Tắt!)");
 
-        String opt0 = (isHuntingThis && !player.isAutoHuntAllBoss)
+        String opt0 = isInSavedList
                 ? ("Bỏ Khỏi DS\n" + bossName)
                 : ("Thêm Vào DS\n" + bossName);
+        String optToggle = player.isAutoHuntBoss ? "Tạm Dừng\nTự Săn (Giữ Giờ)" : "Bật Tự Động\nSăn Boss";
         String opt1 = player.isAutoHuntAllBoss ? "Tắt Săn\nTất Cả Boss" : "Bật Săn\nTất Cả Boss";
         String optBuy = "Mua Thời Gian\n(200Tr Vàng/1h)";
         String opt2 = "Chọn Chiêu\nSăn Boss";
         String opt3 = isAlive ? ("Đến Khu 0\n" + boss.zone.map.mapName) : "Đến Khu 0\n(Chờ Boss ra)";
-        if (player.isAutoHuntBoss) {
-            NpcService.gI().createMenuConMeo(player, 9905, -1, sb.toString(),
-                    opt0, opt1, optBuy, opt2, opt3, "Tắt Toàn Bộ\nTự Săn", "Danh sách\nBoss", "Đóng");
-        } else {
-            NpcService.gI().createMenuConMeo(player, 9905, -1, sb.toString(),
-                    opt0, opt1, optBuy, opt2, opt3, "Danh sách\nBoss", "Đóng");
-        }
+        boolean hasSavedList = player.isAutoHuntBoss || player.isAutoHuntAllBoss || !player.autoHuntBossGroupKeys.isEmpty();
+        NpcService.gI().createMenuConMeo(player, 9905, -1, sb.toString(),
+                opt0, optToggle, opt1, optBuy, opt2, opt3, "Danh sách\nBoss", hasSavedList ? "Xóa DS &\nTắt Hẳn" : "Đóng");
     }
 
     public static void openMenuSelectAutoHuntSkills(Player player) {
@@ -1370,6 +1385,9 @@ public class NpcFactory {
                 + " |2|| Máy Dò Boss: " + (player.hasActiveAutoHuntBossTime() ? ("|1|" + player.getAutoHuntBossTimeRemainingText() + "\n") : "|7|[Chưa kích hoạt]\n")
                 + "|2|Hành trang: |1|" + player.inventory.getUsedSlotsInBag() + "/" + maxBag + " ô |2|| Điểm Săn Boss: |1|" + player.pointSanBoss + " điểm\n"
                 + "|0|(Mẹo: Chat 's1'..'s5' mặc nhanh Set 1..5 Sư phụ | Chat 'd1'..'d5' mặc nhanh Set 1..5 Đệ tử!)";
+        String btn7 = player.isAutoHuntBoss ? "Tạm Dừng\nSăn Boss"
+                : (player.hasActiveAutoHuntBossTime() && (player.isAutoHuntAllBoss || !player.autoHuntBossGroupKeys.isEmpty()))
+                ? "Bật Tiếp Tục\nSăn Boss" : "Đổi Cờ\nPK";
         NpcService.gI().createMenuConMeo(player, 9900, -1, npcSay,
                 "Trang Bị &\nSet Đồ",
                 "Khóa Bảo Vệ\nTrang Bị",
@@ -1377,7 +1395,7 @@ public class NpcFactory {
                 "Danh Sách &\nTự Săn Boss",
                 "Quản Lý\nĐệ Tử",
                 "Cộng Nhanh\nChỉ Số",
-                player.isAutoHuntBoss ? "Tắt Tự Săn\nBoss" : "Đổi Cờ\nPK");
+                btn7);
     }
 
     public static void openMenuAutoTreoMay(Player player) {
@@ -1388,14 +1406,15 @@ public class NpcFactory {
         String npcSay = "|7|=== CÀI ĐẶT AUTO TREO MÁY & DỌN TÚI ===\n"
                 + "|2|• Auto Buff Đậu (Sư phụ & Đệ tử): " + (player.isAutoBuffPea ? "|1|[ĐANG BẬT]\n" : "|7|[ĐANG TẮT]\n")
                 + "|2|• Auto Treo Quái (Chống đầy túi & tự bán đồ rác): " + (player.isAutoCleanBag ? "|1|[ĐANG BẬT]\n" : "|7|[ĐANG TẮT]\n")
-                + "|2|• Auto Săn Boss: " + (player.isAutoHuntBoss ? ("|1|[" + player.getAutoHuntBossSummary() + "]\n") : "|7|[ĐANG TẮT]\n")
+                + "|2|• Auto Săn Boss: " + (player.isAutoHuntBoss ? ("|1|[" + player.getAutoHuntBossSummary() + "]\n") : ("|7|[" + player.getAutoHuntBossSummary() + "]\n"))
                 + "|2|• Thời gian Máy Dò Săn Boss: " + (player.hasActiveAutoHuntBossTime() ? ("|1|" + player.getAutoHuntBossTimeRemainingText() + "\n") : "|7|[Chưa kích hoạt - 200Tr Vàng/1h]\n")
                 + "|2|• Chiêu Săn Boss: |1|" + player.getAutoHuntSkillSummary() + "\n"
-                + "|0|(Lưu ý: Các trang bị đã KHÓA bảo vệ hoặc nằm trong Set Đồ 1..5 sẽ không bao giờ bị tự động bán!)";
+                + "|0|(Lưu ý: Giờ Máy Dò Săn Boss chỉ trừ khi đang Bật Tự Săn và tự dừng lại khi Tạm Dừng / Tắt!)";
         NpcService.gI().createMenuConMeo(player, 9916, -1, npcSay,
                 "Auto Đậu\n" + (player.isAutoBuffPea ? "[Tắt]" : "[Bật]"),
                 "Treo Quái\n" + (player.isAutoCleanBag ? "[Tắt]" : "[Bật]"),
                 bothOn ? "Tắt Cả Hai\n(Đậu + Treo)" : "Bật Cả Hai\n(Đậu + Treo)",
+                "Tự Săn Boss\n" + (player.isAutoHuntBoss ? "[Tạm Dừng]" : "[Bật Ngay]"),
                 "Mua Giờ Săn\n(200Tr Vàng/1h)",
                 "Danh Sách &\nTự Săn Boss",
                 "Chọn Chiêu\nSăn Boss",

@@ -92,6 +92,8 @@ if [ -n "$JAVAC_BIN" ]; then
     mkdir -p build/classes
     echo "Đang đồng bộ biên dịch các file cập nhật mới nhất sang build/classes..."
     $JAVAC_BIN -encoding UTF-8 -proc:none -cp "build/classes:lib/*:20.jar" -d build/classes \
+        src/nro/models/item/ItemTime.java \
+        src/nro/models/services/ItemTimeService.java \
         src/nro/models/event/EventManager.java \
         src/nro/models/player/Player.java \
         src/nro/models/player/NPoint.java \

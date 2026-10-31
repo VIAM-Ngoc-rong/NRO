@@ -2124,15 +2124,18 @@ public class UseItem {
                     pl.itemTime.isUseBuaSanta = true;
                 }
                 break;
-            case 1115: // Máy Dò Săn Boss (60 phút, cộng dồn)
+            case 1115: // Máy Dò Săn Boss (60 phút, cộng dồn, chỉ trừ giờ khi Bật Tự Săn)
+                pl.itemTime.syncAutoSanBossTimer();
+                now = System.currentTimeMillis();
                 if (pl.itemTime.isUseAutoSanBoss && !Util.canDoWithTime(pl.itemTime.lastTimeAutoSanBoss, ItemTime.TIME_AUTO_SAN_BOSS)) {
                     pl.itemTime.lastTimeAutoSanBoss += ItemTime.TIME_AUTO_SAN_BOSS;
                 } else {
                     pl.itemTime.lastTimeAutoSanBoss = now;
                     pl.itemTime.isUseAutoSanBoss = true;
                 }
+                pl.itemTime.lastSyncAutoSanBossMs = now;
                 long remMin = Math.max(1L, (ItemTime.TIME_AUTO_SAN_BOSS - (now - pl.itemTime.lastTimeAutoSanBoss)) / 60000L);
-                Service.gI().sendThongBao(pl, "Đã sử dụng Máy Dò Săn Boss (+60 phút)! Thời gian Tự Động Săn Boss còn lại: " + remMin + " phút.");
+                Service.gI().sendThongBao(pl, "Đã sử dụng Máy Dò Săn Boss (+60 phút)! Tổng thời gian còn lại: " + remMin + " phút (Chỉ tính giờ khi Bật Tự Săn Boss).");
                 break;
 
         }

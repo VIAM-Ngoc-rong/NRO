@@ -686,6 +686,7 @@ public class MrBlue {
             player.itemTime.lastTimeUseKilis = System.currentTimeMillis() - (ItemTime.TIME_KILIS - timeKilis);
             player.itemTime.timeLengthKilis = ItemTime.TIME_KILIS;
             player.itemTime.lastTimeAutoSanBoss = System.currentTimeMillis() - (ItemTime.TIME_AUTO_SAN_BOSS - timeAutoSanBoss);
+            player.itemTime.lastSyncAutoSanBossMs = System.currentTimeMillis();
 
             player.itemTime.iconMeal = iconMeal;
             player.itemTime.isEatMeal = timeMeal > 0;

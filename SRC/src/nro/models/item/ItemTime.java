@@ -114,12 +114,30 @@ public class ItemTime {
     public boolean isUseKhauTrang;
     public boolean isUseAutoSanBoss;
     public long lastTimeAutoSanBoss;
+    public long lastSyncAutoSanBossMs;
     public long timeLengthKilis;
     public long totalCoBonLaTime;
     public long timeLengthCoBonLa;
 
     public ItemTime(Player player) {
         this.player = player;
+    }
+
+    public void syncAutoSanBossTimer() {
+        long now = System.currentTimeMillis();
+        if (!isUseAutoSanBoss) {
+            lastSyncAutoSanBossMs = now;
+            return;
+        }
+        if (lastSyncAutoSanBossMs <= 0) {
+            lastSyncAutoSanBossMs = now;
+            return;
+        }
+        long delta = now - lastSyncAutoSanBossMs;
+        if (delta > 0 && (player == null || !player.isAutoHuntBoss)) {
+            lastTimeAutoSanBoss += delta;
+        }
+        lastSyncAutoSanBossMs = now;
     }
 
     public void update() {
@@ -314,14 +332,13 @@ public class ItemTime {
             }
         }
         if (isUseAutoSanBoss) {
-            if (Util.canDoWithTime(lastTimeAutoSanBoss, TIME_AUTO_SAN_BOSS)) {
-                isUseAutoSanBoss = false;
-                ItemTimeService.gI().removeItemTime(player, ICON_AUTO_SAN_BOSS);
-                if (player != null && player.isAutoHuntBoss) {
-                    player.stopAutoHuntBoss();
+            syncAutoSanBossTimer();
+            if (player != null && player.isAutoHuntBoss && Util.canDoWithTime(lastTimeAutoSanBoss, TIME_AUTO_SAN_BOSS)) {
+                if (!player.tryAutoExtendHuntBossTime()) {
+                    isUseAutoSanBoss = false;
+                    ItemTimeService.gI().removeItemTime(player, ICON_AUTO_SAN_BOSS);
+                    player.pauseAutoHuntBoss(false);
                     Service.gI().sendThongBao(player, "Đã hết thời gian Máy Dò Săn Boss! Tự Động Săn Boss đã tạm dừng, vui lòng mua hoặc dùng thêm Máy Dò Săn Boss (200 Tr Vàng/1h) để tiếp tục.");
-                } else if (player != null) {
-                    Service.gI().sendThongBao(player, "Máy Dò Săn Boss đã hết thời gian hiệu lực!");
                 }
             }
         }
