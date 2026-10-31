@@ -364,7 +364,7 @@ public class ConsignShopService {
             its.add(it);
         });
         pl.inventory.itemsBag.stream().filter((it) -> (itemCanConsign(it))).forEachOrdered((it) -> {
-            byte idxBag = InventoryService.gI().getIndexBag(pl, it);
+            int idxBag = InventoryService.gI().getIndexBag(pl, it);
             if (idxBag != -1) {
                 its.add(new ConsignItem(idxBag, it.template.id, (int) pl.id, (byte) 4, -1, -1, it.quantity, (byte) -1, it.itemOptions, false));
             }

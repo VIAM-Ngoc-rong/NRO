@@ -122,7 +122,7 @@ public class TransactionService implements Runnable {
                     break;
                 case ADD_ITEM_TRADE:
                     if (trade != null) {
-                        byte index = msg.reader().readByte();
+                        short index = msg.reader().readShort();
                         int quantity = msg.reader().readInt();
                         if (quantity < 0) {
                             Service.gI().sendThongBao(pl, "Không thể thực hiện");

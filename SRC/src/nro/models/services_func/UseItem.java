@@ -117,6 +117,10 @@ public class UseItem {
     }
 
     private boolean handleVirtualBagSlotClick(Player player, int index, boolean openMenuOnBtn6) {
+        // Hanh trang 1 khoi lien tuc: khong con o "nut gia" doi trang (-101..-106) nen khong xu ly gi o day.
+        if (true) {
+            return false;
+        }
         if (player == null || player.inventory == null || player.inventory.itemsBag == null || index < 0) {
             return false;
         }
@@ -187,6 +191,10 @@ public class UseItem {
     }
 
     private void cycleBagQuickTab(Player player) {
+        // Hanh trang 1 khoi lien tuc: khong con chuyen trang.
+        if (true) {
+            return;
+        }
         if (player == null || player.inventory == null) {
             return;
         }
@@ -210,7 +218,7 @@ public class UseItem {
         TransactionService.gI().cancelTrade(player);
         try {
             int type = msg.reader().readByte();
-            int index = msg.reader().readByte();
+            int index = msg.reader().readShort();
             if (index == -1) {
                 return;
             }
@@ -286,7 +294,7 @@ public class UseItem {
         try {
             type = _msg.reader().readByte();
             int where = _msg.reader().readByte();
-            int index = _msg.reader().readByte();
+            int index = _msg.reader().readShort();
             switch (type) {
                 case DO_USE_ITEM -> {
                     if (player != null && player.inventory != null) {
@@ -314,7 +322,7 @@ public class UseItem {
                                     msg = new Message(-43);
                                     msg.writer().writeByte(type);
                                     msg.writer().writeByte(where);
-                                    msg.writer().writeByte(index);
+                                    msg.writer().writeShort(index);
                                     msg.writer().writeUTF("Bạn chắc chắn học " + item.template.name + "?");
                                     player.sendMessage(msg);
                                 } else if (item.template.id == 570) {
@@ -325,7 +333,7 @@ public class UseItem {
                                     msg = new Message(-43);
                                     msg.writer().writeByte(type);
                                     msg.writer().writeByte(where);
-                                    msg.writer().writeByte(index);
+                                    msg.writer().writeShort(index);
                                     msg.writer().writeUTF("Bạn chắc muốn mở\n" + item.template.name + " ?");
                                     player.sendMessage(msg);
                                 } else if (item.template.type == 22) {
@@ -336,7 +344,7 @@ public class UseItem {
                                     msg = new Message(-43);
                                     msg.writer().writeByte(type);
                                     msg.writer().writeByte(where);
-                                    msg.writer().writeByte(index);
+                                    msg.writer().writeShort(index);
                                     msg.writer().writeUTF("Bạn chắc muốn dùng\n" + item.template.name + " ?");
                                     player.sendMessage(msg);
                                 } else {
@@ -423,7 +431,7 @@ public class UseItem {
                         msg = new Message(-43);
                         msg.writer().writeByte(type);
                         msg.writer().writeByte(where);
-                        msg.writer().writeByte(index);
+                        msg.writer().writeShort(index);
                         msg.writer().writeUTF("Bạn chắc chắn muốn vứt " + item.template.name + "?");
                         player.sendMessage(msg);
                     } else {
@@ -1003,6 +1011,7 @@ public class UseItem {
                             case 1233:
                             case 1532:
                             case 1628:
+                            case 1115:
 
                                 useItemTime(pl, item);
                                 break;
@@ -2114,6 +2123,16 @@ public class UseItem {
                     pl.itemTime.lastTimeBuaSanta = now + 1;
                     pl.itemTime.isUseBuaSanta = true;
                 }
+                break;
+            case 1115: // Máy Dò Săn Boss (60 phút, cộng dồn)
+                if (pl.itemTime.isUseAutoSanBoss && !Util.canDoWithTime(pl.itemTime.lastTimeAutoSanBoss, ItemTime.TIME_AUTO_SAN_BOSS)) {
+                    pl.itemTime.lastTimeAutoSanBoss += ItemTime.TIME_AUTO_SAN_BOSS;
+                } else {
+                    pl.itemTime.lastTimeAutoSanBoss = now;
+                    pl.itemTime.isUseAutoSanBoss = true;
+                }
+                long remMin = Math.max(1L, (ItemTime.TIME_AUTO_SAN_BOSS - (now - pl.itemTime.lastTimeAutoSanBoss)) / 60000L);
+                Service.gI().sendThongBao(pl, "Đã sử dụng Máy Dò Săn Boss (+60 phút)! Thời gian Tự Động Săn Boss còn lại: " + remMin + " phút.");
                 break;
 
         }

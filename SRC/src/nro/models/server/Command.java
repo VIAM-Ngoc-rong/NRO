@@ -384,24 +384,6 @@ public class Command {
         }
 
         String lowerText = text.toLowerCase().trim();
-        if (lowerText.matches("^(tab\\s*\\d+|t\\d+)$")) {
-            try {
-                int tabNum = Integer.parseInt(lowerText.replaceAll("[^0-9]", ""));
-                int totalTabs = player.inventory.getTotalBagTabs();
-                if (tabNum >= 1 && tabNum <= totalTabs) {
-                    int targetTab = tabNum - 1;
-                    player.inventory.switchBagTab(targetTab);
-                    InventoryService.gI().sendItemBags(player);
-                    Service.gI().sendThongBao(player, "Đã chuyển sang Hành trang Trang " + tabNum + "/" + totalTabs
-                            + " (Đang có " + player.inventory.getUsedSlotsInTab(targetTab) + "/120 món)!");
-                } else {
-                    Service.gI().sendThongBao(player, "Bạn hiện có " + totalTabs + " Trang Hành trang (Gõ 'tab 1' đến 'tab " + totalTabs + "')!");
-                }
-            } catch (Exception ignored) {
-            }
-            return true;
-        }
-
         if (lowerText.matches("^(s[1-5]|set\\s*[1-5])$")) {
             int setIdx = Integer.parseInt(lowerText.replaceAll("[^1-5]", ""));
             String msg = InventoryService.gI().equipSetForTarget(player, setIdx, false);
@@ -414,18 +396,62 @@ public class Command {
             Service.gI().sendThongBao(player, msg);
             return true;
         }
+        if (lowerText.startsWith("khoabody ")) {
+            try {
+                int idx = Integer.parseInt(lowerText.substring("khoabody ".length()).trim());
+                if (idx >= 0 && idx < player.inventory.itemsBody.size()) {
+                    Item target = player.inventory.itemsBody.get(idx);
+                    if (target != null && target.isNotNullItem()) {
+                        boolean locked = InventoryService.toggleItemLock(target);
+                        InventoryService.gI().sendItemBody(player);
+                        InventoryService.gI().sendItemBags(player);
+                        Service.gI().sendThongBao(player, (locked ? "Đã KHÓA bảo vệ: " : "Đã MỞ KHÓA: ") + target.template.name);
+                    }
+                }
+            } catch (Exception ignored) {
+            }
+            return true;
+        }
+        if (lowerText.startsWith("khoabag ")) {
+            try {
+                int idx = Integer.parseInt(lowerText.substring("khoabag ".length()).trim());
+                if (idx >= 0 && idx < player.inventory.itemsBag.size()) {
+                    Item target = player.inventory.itemsBag.get(idx);
+                    if (target != null && target.isNotNullItem()) {
+                        boolean locked = InventoryService.toggleItemLock(target);
+                        InventoryService.gI().sendItemBags(player);
+                        Service.gI().sendThongBao(player, (locked ? "Đã KHÓA bảo vệ: " : "Đã MỞ KHÓA: ") + target.template.name);
+                    }
+                }
+            } catch (Exception ignored) {
+            }
+            return true;
+        }
+        if (lowerText.startsWith("khoadetu ")) {
+            try {
+                int idx = Integer.parseInt(lowerText.substring("khoadetu ".length()).trim());
+                if (player.pet != null && player.pet.inventory != null && idx >= 0 && idx < player.pet.inventory.itemsBody.size()) {
+                    Item target = player.pet.inventory.itemsBody.get(idx);
+                    if (target != null && target.isNotNullItem()) {
+                        boolean locked = InventoryService.toggleItemLock(target);
+                        InventoryService.gI().sendItemBody(player);
+                        InventoryService.gI().sendItemBags(player);
+                        Service.gI().showInfoPet(player);
+                        Service.gI().sendThongBao(player, (locked ? "Đã KHÓA bảo vệ đồ Đệ tử: " : "Đã MỞ KHÓA đồ Đệ tử: ") + target.template.name);
+                    }
+                }
+            } catch (Exception ignored) {
+            }
+            return true;
+        }
 
         switch (lowerText) {
             case "set", "setdo", "doido" -> {
                 nro.models.npc.NpcFactory.openMenuDoiDoNhanh(player);
                 return true;
             }
-            case "khoa", "khoado", "khoatrangbi" -> {
+            case "khoa", "khoado", "khoatrangbi", "tab", "tui", "tuidong", "hanhtrang" -> {
                 nro.models.npc.NpcFactory.openMenuKhoaTrangBi(player);
-                return true;
-            }
-            case "tab", "tui", "tuidong", "hanhtrang" -> {
-                nro.models.npc.NpcFactory.openMenuBagTab(player);
                 return true;
             }
             case "autodau", "ad", "buffdau", "auto dau", "buff dau" -> {

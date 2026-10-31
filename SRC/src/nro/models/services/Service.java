@@ -872,28 +872,8 @@ public class Service {
                 }
 
             }
-            ArrayList<Item> itemsBag = (ArrayList<Item>) pl.inventory.itemsBag;
-            int bagSize = Math.min(itemsBag.size(), 100);
-            msg.writer().writeByte(bagSize);
-            for (int i = 0; i < bagSize; i++) {
-                Item item = itemsBag.get(i);
-                if (!item.isNotNullItem()) {
-                    msg.writer().writeShort(-1);
-                } else {
-                    InventoryService.sanitizeStarOptions(item);
-                    msg.writer().writeShort(item.template.id);
-                    msg.writer().writeInt(item.quantity);
-                    msg.writer().writeUTF(item.getInfo());
-                    msg.writer().writeUTF(item.getContent());
-                    List<ItemOption> itemOptions = item.itemOptions;
-                    msg.writer().writeByte(itemOptions.size());
-                    for (ItemOption itemOption : itemOptions) {
-                        msg.writer().writeByte(itemOption.optionTemplate.id);
-                        msg.writer().writeShort(itemOption.param);
-                    }
-                }
-
-            }
+            // Không gửi lặp 1000 ô túi trong gói -30 để tránh tràn 64KB, vì ngay dưới dòng 930 sendItemBags(pl) (-36) sẽ gửi toàn bộ túi đồ
+            msg.writer().writeShort(0);
             ArrayList<Item> itemsBox = (ArrayList<Item>) pl.inventory.itemsBox;
             int boxSize = Math.min(itemsBox.size(), 120);
             msg.writer().writeByte(boxSize);

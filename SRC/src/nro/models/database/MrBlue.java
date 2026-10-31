@@ -579,6 +579,7 @@ public class MrBlue {
             int iconMeal2 = 0;
             int timeUseNCD = 0;
             long timeKilis = 0;
+            long timeAutoSanBoss = 0;
             long timeNuocMia1 = 0;
             long timeNuocMia2 = 0;
             long timeNuocMia3 = 0;
@@ -649,6 +650,9 @@ public class MrBlue {
             if (dataArray.size() > 29) {
                 timeKilis = Long.parseLong(String.valueOf(dataArray.get(29)));
             }
+            if (dataArray.size() > 30) {
+                timeAutoSanBoss = Long.parseLong(String.valueOf(dataArray.get(30)));
+            }
 
             player.itemTime.lastTimeBoHuyet = System.currentTimeMillis() - (ItemTime.TIME_ITEM - timeBoHuyet);
             player.itemTime.lastTimeBoKhi = System.currentTimeMillis() - (ItemTime.TIME_ITEM - timeBoKhi);
@@ -681,6 +685,7 @@ public class MrBlue {
             player.itemTime.lastTimeUseNuocMia3 = System.currentTimeMillis() - (ItemTime.TIME_NUOC_MIA3 - timeNuocMia3);
             player.itemTime.lastTimeUseKilis = System.currentTimeMillis() - (ItemTime.TIME_KILIS - timeKilis);
             player.itemTime.timeLengthKilis = ItemTime.TIME_KILIS;
+            player.itemTime.lastTimeAutoSanBoss = System.currentTimeMillis() - (ItemTime.TIME_AUTO_SAN_BOSS - timeAutoSanBoss);
 
             player.itemTime.iconMeal = iconMeal;
             player.itemTime.isEatMeal = timeMeal > 0;
@@ -708,6 +713,7 @@ public class MrBlue {
             player.itemTime.isEatMeal2 = timeMeal2 > 0;
             player.itemTime.isUseNCD = timeUseNCD > 0;
             player.itemTime.isUseKilis = timeKilis > 0;
+            player.itemTime.isUseAutoSanBoss = timeAutoSanBoss > 0;
             player.itemTime.isUseNuocMia1 = timeNuocMia1 > 0;
             player.itemTime.isUseNuocMia2 = timeNuocMia2 > 0;
             player.itemTime.isUseNuocMia3 = timeNuocMia3 > 0;

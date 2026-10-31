@@ -178,8 +178,8 @@ public class CombineService {
                 Item first = player.combineNew.itemsCombine.get(0);
                 if (ChuyenHoaTrangBi_Vang.isEquipItem(first) && first.template != null) {
                     int activeTab = Math.max(0, Math.min(nro.models.player.Inventory.NUM_QUICK_TABS - 1, player.inventory.currentBagTab));
-                    int tabStart = activeTab * nro.models.player.Inventory.BAG_VIEW_SIZE;
-                    int tabEnd = Math.min(player.inventory.itemsBag.size(), tabStart + nro.models.player.Inventory.BAG_VIEW_SIZE);
+                    int tabStart = 0; // Hanh trang 1 khoi: xet toan bo tui
+                    int tabEnd = player.inventory.itemsBag.size();
                     for (int i = tabStart; i < tabEnd; i++) {
                         Item candidate = player.inventory.itemsBag.get(i);
                         if (candidate != null && candidate != first && candidate.isNotNullItem()
@@ -559,8 +559,8 @@ public class CombineService {
         }
         int type = player.combineNew.typeCombine;
         int activeTab = Math.max(0, Math.min(nro.models.player.Inventory.NUM_QUICK_TABS - 1, player.inventory.currentBagTab));
-        int tabStart = activeTab * nro.models.player.Inventory.BAG_VIEW_SIZE;
-        int tabEnd = Math.min(player.inventory.itemsBag.size(), tabStart + nro.models.player.Inventory.BAG_VIEW_SIZE);
+        int tabStart = 0; // Hanh trang 1 khoi: xet toan bo tui
+        int tabEnd = player.inventory.itemsBag.size();
 
         if (type == CHUYEN_HOA_TRANG_BI_VANG || type == CHUYEN_HOA_TRANG_BI_NGOC) {
             Item first = player.combineNew.itemsCombine.isEmpty() ? null : player.combineNew.itemsCombine.get(0);
@@ -712,11 +712,11 @@ public class CombineService {
             msg.writer().writeShort(npcId);
             player.sendMessage(msg);
             msg.cleanup();
-            java.util.List<Byte> validIndices = new java.util.ArrayList<>();
+            java.util.List<Integer> validIndices = new java.util.ArrayList<>();
             if (items != null) {
                 for (Item item : items) {
                     if (item != null && item.isNotNullItem() && item.quantity > 0) {
-                        byte clientIdx = InventoryService.gI().getIndexBag(player, item);
+                        int clientIdx = InventoryService.gI().getIndexBag(player, item);
                         if (clientIdx >= 0 && !validIndices.contains(clientIdx)) {
                             validIndices.add(clientIdx);
                         }
@@ -726,8 +726,8 @@ public class CombineService {
             msg = new Message(-81);
             msg.writer().writeByte(1);
             msg.writer().writeByte(validIndices.size());
-            for (byte idx : validIndices) {
-                msg.writer().writeByte(idx);
+            for (int idx : validIndices) {
+                msg.writer().writeShort(idx);
             }
             player.sendMessage(msg);
             msg.cleanup();
@@ -980,7 +980,7 @@ public class CombineService {
         Message msg = null;
         try {
             java.util.List<Item> validItems = new java.util.ArrayList<>();
-            java.util.List<Byte> validClientIndices = new java.util.ArrayList<>();
+            java.util.List<Integer> validClientIndices = new java.util.ArrayList<>();
             for (Item it : player.combineNew.itemsCombine) {
                 if (it == null || !it.isNotNullItem() || it.quantity <= 0
                         || (it.template != null && it.template.id == 1998)) {
@@ -996,7 +996,7 @@ public class CombineService {
                 if (alreadyAdded) {
                     continue;
                 }
-                byte clientIdx = InventoryService.gI().getIndexBag(player, it);
+                int clientIdx = InventoryService.gI().getIndexBag(player, it);
                 if (clientIdx >= 0 && !validClientIndices.contains(clientIdx)) {
                     validItems.add(it);
                     validClientIndices.add(clientIdx);
@@ -1008,8 +1008,8 @@ public class CombineService {
             msg = new Message(-81);
             msg.writer().writeByte(REOPEN_TAB_COMBINE);
             msg.writer().writeByte(validClientIndices.size());
-            for (byte idx : validClientIndices) {
-                msg.writer().writeByte(idx);
+            for (int idx : validClientIndices) {
+                msg.writer().writeShort(idx);
             }
             player.sendMessage(msg);
         } catch (Exception e) {

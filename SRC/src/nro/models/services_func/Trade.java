@@ -88,7 +88,7 @@ public class Trade {
         }
     }
 
-    public void addItemTrade(Player pl, byte index, int quantity) {
+    public void addItemTrade(Player pl, int index, int quantity) {
         if (pl.getSession().actived) {
             if (index == -1) { // Giao dịch vàng
                 if (quantity > MAX_GOLD_TRADE_PER_TIME || quantity < 0) {
@@ -199,12 +199,12 @@ public class Trade {
     }
     
     // Các phương thức khác giữ nguyên
-    private void removeItemTrade(Player pl, byte index) {
+    private void removeItemTrade(Player pl, int index) {
         Message msg = null;
         try {
             msg = new Message(-86);
             msg.writer().writeByte(2);
-            msg.writer().write(index);
+            msg.writer().writeShort(index);
             pl.sendMessage(msg);
             Service.gI().sendThongBao(pl, "Không thể giao dịch vật phẩm này");
         } catch (Exception e) {
@@ -215,12 +215,12 @@ public class Trade {
         }
     }
 
-    private void removeItemTrade2(Player pl, byte index) {
+    private void removeItemTrade2(Player pl, int index) {
         Message msg = null;
         try {
             msg = new Message(-86);
             msg.writer().writeByte(2);
-            msg.writer().write(index);
+            msg.writer().writeShort(index);
             pl.sendMessage(msg);
         } catch (Exception e) {
         } finally {

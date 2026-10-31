@@ -727,8 +727,16 @@ public final class Manager {
             } catch (Exception ignored) {
             }
 
+            try (PreparedStatement psUpdateAutoBossItem = ConnectionDatabase.prepareStatement(
+                    "UPDATE item_template SET TYPE = 29, gender = 3, NAME = 'Máy Dò Săn Boss', "
+                    + "description = 'Sử dụng để mở khóa Tự Động Săn Boss trong 60 phút (cộng dồn thời gian khi dùng nhiều lần)', "
+                    + "level = 1, icon_id = 12834, part = -1, is_up_to_up = 1 WHERE id = 1115")) {
+                psUpdateAutoBossItem.executeUpdate();
+            } catch (Exception ignored) {
+            }
+
             try (PreparedStatement psUpdateStackable = ConnectionDatabase.prepareStatement(
-                    "UPDATE item_template SET is_up_to_up = 1 WHERE id IN (933, 934, 935, 1655, 1664, 1665, 1666, 1671, 1672, 1775, 1820, 1823, 1999, 2006) "
+                    "UPDATE item_template SET is_up_to_up = 1 WHERE id IN (933, 934, 935, 1115, 1655, 1664, 1665, 1666, 1671, 1672, 1775, 1820, 1823, 1999, 2006) "
                     + "OR TYPE IN (6, 12, 14, 29, 31, 33)")) {
                 psUpdateStackable.executeUpdate();
             } catch (Exception ignored) {
@@ -775,9 +783,19 @@ public final class Manager {
                             itemTemp.part = 143;
                         }
                         itemTemp.isUpToUp = rs.getBoolean("is_up_to_up");
+                        if (itemTemp.id == 1115) {
+                            itemTemp.type = 29;
+                            itemTemp.gender = 3;
+                            itemTemp.name = "Máy Dò Săn Boss";
+                            itemTemp.description = "Sử dụng để mở khóa Tự Động Săn Boss trong 60 phút (cộng dồn thời gian khi dùng nhiều lần)";
+                            itemTemp.level = 1;
+                            itemTemp.iconID = 12834;
+                            itemTemp.part = -1;
+                            itemTemp.isUpToUp = true;
+                        }
                         if (itemTemp.id == 1655 || itemTemp.id == 1664 || itemTemp.id == 1665 || itemTemp.id == 1666
                                 || itemTemp.id == 1671 || itemTemp.id == 1672 || itemTemp.id == 1775 || itemTemp.id == 1823
-                                || itemTemp.id == 1045 || itemTemp.id == 1608 || itemTemp.id == 1609
+                                || itemTemp.id == 1045 || itemTemp.id == 1608 || itemTemp.id == 1609 || itemTemp.id == 1115
                                 || itemTemp.type == 6 || itemTemp.type == 12 || itemTemp.type == 14
                                 || itemTemp.type == 29 || itemTemp.type == 31 || itemTemp.type == 33) {
                             itemTemp.isUpToUp = true;

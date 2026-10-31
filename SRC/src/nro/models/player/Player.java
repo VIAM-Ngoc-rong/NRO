@@ -2317,6 +2317,81 @@ public class Player implements Runnable {
         return null;
     }
 
+    public boolean hasActiveAutoHuntBossTime() {
+        if (this.itemTime == null || !this.itemTime.isUseAutoSanBoss) {
+            return false;
+        }
+        return !Util.canDoWithTime(this.itemTime.lastTimeAutoSanBoss, ItemTime.TIME_AUTO_SAN_BOSS);
+    }
+
+    public String getAutoHuntBossTimeRemainingText() {
+        if (!hasActiveAutoHuntBossTime()) {
+            return "Chưa kích hoạt (200Tr Vàng / 1 giờ)";
+        }
+        long remMs = Math.max(0L, ItemTime.TIME_AUTO_SAN_BOSS - (System.currentTimeMillis() - this.itemTime.lastTimeAutoSanBoss));
+        long totalSec = remMs / 1000L;
+        long hours = totalSec / 3600L;
+        long mins = (totalSec % 3600L) / 60L;
+        long secs = totalSec % 60L;
+        if (hours > 0) {
+            return hours + " giờ " + mins + " phút";
+        }
+        if (mins > 0) {
+            return mins + " phút " + secs + " giây";
+        }
+        return secs + " giây";
+    }
+
+    private boolean tryAutoConsumeMayDoSanBossFromBag() {
+        if (this.inventory == null || this.itemTime == null) {
+            return false;
+        }
+        Item itemInBag = InventoryService.gI().findItemBag(this, ItemTime.ITEM_ID_AUTO_SAN_BOSS);
+        if (itemInBag != null && itemInBag.isNotNullItem() && itemInBag.quantity > 0) {
+            long now = System.currentTimeMillis();
+            if (this.itemTime.isUseAutoSanBoss && !Util.canDoWithTime(this.itemTime.lastTimeAutoSanBoss, ItemTime.TIME_AUTO_SAN_BOSS)) {
+                this.itemTime.lastTimeAutoSanBoss += ItemTime.TIME_AUTO_SAN_BOSS;
+            } else {
+                this.itemTime.lastTimeAutoSanBoss = now;
+                this.itemTime.isUseAutoSanBoss = true;
+            }
+            InventoryService.gI().subQuantityItemsBag(this, itemInBag, 1);
+            InventoryService.gI().sendItemBags(this);
+            nro.models.services.ItemTimeService.gI().sendAllItemTime(this);
+            Service.gI().sendThongBao(this, "Đã tự động dùng 1 Máy Dò Săn Boss trong hành trang (+60 phút)!");
+            return true;
+        }
+        return false;
+    }
+
+    public boolean buyAndActivateAutoHuntBossTime() {
+        if (this.inventory == null || this.itemTime == null) {
+            return false;
+        }
+        long cost = ItemTime.COST_GOLD_AUTO_SAN_BOSS;
+        if (this.inventory.gold < cost) {
+            if (tryAutoConsumeMayDoSanBossFromBag()) {
+                return true;
+            }
+            Service.gI().sendThongBao(this, "Không đủ 200.000.000 Vàng để mua Máy Dò Săn Boss (1 giờ)! (Hiện có: "
+                    + Util.numberToMoney(this.inventory.gold) + " Vàng)");
+            return false;
+        }
+        this.inventory.gold -= cost;
+        long now = System.currentTimeMillis();
+        if (this.itemTime.isUseAutoSanBoss && !Util.canDoWithTime(this.itemTime.lastTimeAutoSanBoss, ItemTime.TIME_AUTO_SAN_BOSS)) {
+            this.itemTime.lastTimeAutoSanBoss += ItemTime.TIME_AUTO_SAN_BOSS;
+        } else {
+            this.itemTime.lastTimeAutoSanBoss = now;
+            this.itemTime.isUseAutoSanBoss = true;
+        }
+        Service.gI().sendMoney(this);
+        nro.models.services.ItemTimeService.gI().sendAllItemTime(this);
+        Service.gI().sendThongBao(this, "Đã mua & kích hoạt Máy Dò Săn Boss (-200 Tr Vàng, +60 phút)! Còn lại: "
+                + getAutoHuntBossTimeRemainingText());
+        return true;
+    }
+
     public void startAutoHuntBoss(int bossIndex) {
         toggleAutoHuntBoss(bossIndex);
     }
@@ -2347,6 +2422,10 @@ public class Player implements Runnable {
                 Service.gI().sendThongBao(this, "Đã bỏ " + bossName + " khỏi DS Tự Săn! Đang săn: " + this.targetAutoBossName);
             }
         } else {
+            if (!hasActiveAutoHuntBossTime() && !tryAutoConsumeMayDoSanBossFromBag()) {
+                Service.gI().sendThongBao(this, "Bạn cần sử dụng [Máy Dò Săn Boss] (200 Tr Vàng / 1 giờ) để bật Tự Động Săn Boss! Hãy bấm 'Mua Thời Gian (200Tr Vàng)' hoặc mua tại Shop Santa.");
+                return;
+            }
             this.autoHuntBossGroupKeys.add(groupKey);
             this.autoHuntBossNames.add(bossName);
             this.isAutoHuntBoss = true;
@@ -2361,6 +2440,12 @@ public class Player implements Runnable {
     }
 
     public void toggleAutoHuntAllBoss() {
+        if (!this.isAutoHuntAllBoss) {
+            if (!hasActiveAutoHuntBossTime() && !tryAutoConsumeMayDoSanBossFromBag()) {
+                Service.gI().sendThongBao(this, "Bạn cần sử dụng [Máy Dò Săn Boss] (200 Tr Vàng / 1 giờ) để bật Tự Động Săn Boss! Hãy bấm 'Mua Thời Gian (200Tr Vàng)' hoặc mua tại Shop Santa.");
+                return;
+            }
+        }
         this.isAutoHuntAllBoss = !this.isAutoHuntAllBoss;
         if (this.isAutoHuntAllBoss) {
             this.isAutoHuntBoss = true;
@@ -2571,6 +2656,11 @@ public class Player implements Runnable {
         try {
             if (!this.isAutoHuntBoss || this.zone == null
                     || (!this.isAutoHuntAllBoss && this.autoHuntBossGroupKeys.isEmpty())) {
+                return;
+            }
+            if (!hasActiveAutoHuntBossTime()) {
+                stopAutoHuntBoss();
+                Service.gI().sendThongBao(this, "Đã hết thời gian Máy Dò Săn Boss! Tự Động Săn Boss đã tạm dừng, vui lòng mua hoặc dùng thêm Máy Dò Săn Boss (200 Tr Vàng/1h).");
                 return;
             }
             // Nếu nhân vật bị Boss đánh chết trong lúc treo săn -> tự động hồi sinh tại chỗ sau 3 giây

@@ -30,6 +30,10 @@ public class ItemTime {
     public static final int TIME_CMS = 3600000;
     public static final int TIME_DK = 1800000;
     public static final int TIME_NCD = 1800000;
+    public static final int TIME_AUTO_SAN_BOSS = 3_600_000;
+    public static final int ICON_AUTO_SAN_BOSS = 12834;
+    public static final short ITEM_ID_AUTO_SAN_BOSS = 1115;
+    public static final long COST_GOLD_AUTO_SAN_BOSS = 200_000_000L;
 
     private Player player;
 
@@ -108,6 +112,8 @@ public class ItemTime {
     public int iconMeal2;
     public long lastTimeKhauTrang;
     public boolean isUseKhauTrang;
+    public boolean isUseAutoSanBoss;
+    public long lastTimeAutoSanBoss;
     public long timeLengthKilis;
     public long totalCoBonLaTime;
     public long timeLengthCoBonLa;
@@ -305,6 +311,18 @@ public class ItemTime {
             if (Util.canDoWithTime(lastTimeKhauTrang, TIME_ITEM)) {
                 isUseKhauTrang = false;
                 Service.gI().point(player);
+            }
+        }
+        if (isUseAutoSanBoss) {
+            if (Util.canDoWithTime(lastTimeAutoSanBoss, TIME_AUTO_SAN_BOSS)) {
+                isUseAutoSanBoss = false;
+                ItemTimeService.gI().removeItemTime(player, ICON_AUTO_SAN_BOSS);
+                if (player != null && player.isAutoHuntBoss) {
+                    player.stopAutoHuntBoss();
+                    Service.gI().sendThongBao(player, "Đã hết thời gian Máy Dò Săn Boss! Tự Động Săn Boss đã tạm dừng, vui lòng mua hoặc dùng thêm Máy Dò Săn Boss (200 Tr Vàng/1h) để tiếp tục.");
+                } else if (player != null) {
+                    Service.gI().sendThongBao(player, "Máy Dò Săn Boss đã hết thời gian hiệu lực!");
+                }
             }
         }
     }

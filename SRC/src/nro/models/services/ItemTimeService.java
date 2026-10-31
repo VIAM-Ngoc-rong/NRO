@@ -133,6 +133,12 @@ public class ItemTimeService {
                 sendItemTime(player, 6581, timeLeft);
             }
         }
+        if (player.itemTime.isUseAutoSanBoss) {
+            int timeLeft = (int) ((TIME_AUTO_SAN_BOSS - (System.currentTimeMillis() - player.itemTime.lastTimeAutoSanBoss)) / 1000);
+            if (timeLeft > 0) {
+                sendItemTime(player, ICON_AUTO_SAN_BOSS, timeLeft);
+            }
+        }
     }
 
     public void turnOnTDLT(Player player, Item item) {

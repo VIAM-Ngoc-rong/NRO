@@ -386,7 +386,7 @@ public class ShopDAO {
                 if (!addedCskb) {
                     oldTab.itemShops.removeIf(item -> item != null && item.temp != null
                             && (item.temp.id == 1999 || item.temp.id == 2006 || item.temp.id == 454 || item.temp.id == 933
-                            || item.temp.id == 934 || item.temp.id == 935 || item.temp.id == 1820));
+                            || item.temp.id == 934 || item.temp.id == 935 || item.temp.id == 1820 || item.temp.id == 1115));
 
                     int[][] santaUpgradeItems = {
                         // {tempId, costGold, opt31Count}
@@ -395,7 +395,8 @@ public class ShopDAO {
                         {934,   50_000_000,  99}, // Mảnh hồn bông tai (x99)
                         {933,  100_000_000, 999}, // Mảnh vỡ bông tai (x999)
                         {454,  200_000_000,   0}, // Bông tai Porata cấp 1
-                        {1999, 200_000_000,   0}  // Thẻ đổi tên
+                        {1999, 200_000_000,   0}, // Thẻ đổi tên
+                        {1115, 200_000_000,   0}  // Máy Dò Săn Boss (1 giờ Tự Động Săn Boss)
                     };
                     for (int[] sItem : santaUpgradeItems) {
                         ItemTemplate sTemp = ItemService.gI().getTemplate((short) sItem[0]);

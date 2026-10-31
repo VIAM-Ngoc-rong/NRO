@@ -153,6 +153,39 @@ public class ServerNotify extends Thread {
                 + "• Mỗi lần sử dụng Vật Phẩm Sự Kiện hoặc tiêu diệt Boss Sự Kiện sẽ cộng Điểm Sự Kiện.\n"
                 + "• Đem Điểm Sự Kiện đến gặp NPC Quy Lão Kame tại Đảo Kame (Map 5) -> chọn 'Đổi điểm sự kiện' (200 điểm/lần) để đổi Phụ kiện Đeo Lưng & Vật phẩm Sự Kiện VIP!";
 
+        // 0. Bản tin Cập nhật mới nhất của Game (Update Log) - Luôn ghim đầu bảng Thông Báo
+        entries.add(new String[]{
+            "[CẬP NHẬT MỚI] Tính Năng & Tiện Ích",
+            "★ NHẬT KÝ CẬP NHẬT PHiên BẢN MỚI NHẤT ★\n\n"
+            + "[1] CƠ CHẾ TỰ ĐỘNG SĂN BOSS & MÁY DÒ SĂN BOSS (MỚI):\n"
+            + "• Để sử dụng chức năng Tự Động Săn Boss, người chơi cần kích hoạt thời gian từ vật phẩm 'Máy Dò Săn Boss' (ID 1115).\n"
+            + "• Giá bán & Cách mua:\n"
+            + "  - Giá: 200.000.000 Vàng / 1 giờ (60 phút).\n"
+            + "  - Cách 1: Mua trực tiếp 'Máy Dò Săn Boss' tại NPC Santa (Shop Santa - Đảo Kame) rồi bấm 'Sử dụng' trong Hành trang.\n"
+            + "  - Cách 2: Bấm nút 'Mua Thời Gian (200Tr Vàng/1h)' ngay trong Menu Săn Boss hoặc Menu Auto Treo Máy để trừ Vàng và kích hoạt lập tức.\n"
+            + "• Cơ chế cộng dồn & tự gia hạn:\n"
+            + "  - Sử dụng nhiều Máy Dò Săn Boss sẽ cộng dồn thời gian liên tục (có icon đếm ngược bên góc màn hình).\n"
+            + "  - Khi đang treo Auto Săn Boss mà hết giờ, nếu trong Hành trang còn sẵn Máy Dò Săn Boss thì hệ thống sẽ tự động sử dụng tiếp để không bị ngắt quãng; nếu hết thời gian sẽ tự động dừng Săn Boss.\n"
+            + "• Tính năng Auto Săn Boss thông minh:\n"
+            + "  - Mở Menu Tiện Ích (Phím X) -> mục 'BOSS' -> 'Danh Sách & Tự Săn Boss' để chọn săn 1 Boss chỉ định hoặc 'Săn Tất Cả Boss'.\n"
+            + "  - Tự động dịch chuyển đến bản đồ có Boss, tự động đổi khu dò tìm Boss, tự hồi sinh khi tử trận, tự nhặt vật phẩm Boss rơi và tùy chỉnh bộ chiêu thức Săn Boss.\n\n"
+            + "[2] MENU TIỆN ÍCH (PHÍM X) - 5 SET ĐỒ NHANH & KHÓA ĐỒ:\n"
+            + "• Bấm Phím X (hoặc mở Menu chức năng -> chọn 'Menu Tiện Ích') để mở trung tâm điều khiển.\n"
+            + "• Quản lý 5 Set Đồ Nhanh (Sư Phụ & Đệ Tử):\n"
+            + "  - Lưu và đổi nhanh 5 bộ trang bị cho cả Sư phụ lẫn Đệ tử chỉ với 1 chạm.\n"
+            + "  - Hỗ trợ lệnh chat đổi đồ siêu tốc: gõ 's1' -> 's5' (mặc Set 1-5 cho Sư phụ) và 'd1' -> 'd5' (mặc Set 1-5 cho Đệ tử).\n"
+            + "• Khóa Bảo Vệ Trang Bị [KHÓA]:\n"
+            + "  - Cho phép khóa từng món trang bị quan trọng ngay trong Menu Tiện Ích để chống bán nhầm, vứt nhầm, giao dịch hoặc pha lê hóa/ép đồ nhầm.\n"
+            + "• Auto Buff Đậu, Cộng Nhanh Chỉ Số & Quản Lý Đệ Tử:\n"
+            + "  - Tự động ăn Đậu thần hồi HP/KI cho Sư phụ và Đệ tử theo mức % cài đặt.\n"
+            + "  - Cộng nhanh điểm Tiềm năng (HP, KI, Sức Đánh) theo con số mong muốn mà không cần bấm từng lần.\n\n"
+            + "[3] GIAO DIỆN HÀNH TRANG Ô LƯỚI & TỐI ƯU CLIENT:\n"
+            + "• Hành Trang Ô Lưới (Grid 6 cột): Hiển thị trực quan cấp trang bị [+X], số Sao Pha Lê, nhãn Set đồ [S1..S5] và biểu tượng [KHÓA] ngay trên từng ô vật phẩm.\n"
+            + "• Tích hợp cụm chức năng BOSS: Gom toàn bộ Danh sách & Tự Săn Boss, Thông báo Boss, Kẻ đường tới Boss và Tự Focus Boss vào chung mục 'BOSS'.\n"
+            + "• Tốc Độ Game Mặc Định 1.5x: Tối ưu tốc độ di chuyển và chiến đấu mượt mà ngay khi vào game.\n"
+            + "• Auto Login Đa Tab Độc Lập: Mỗi cửa sổ (Tab) game tự lưu và tự đăng nhập lại đúng tài khoản riêng của Tab đó sau khi mất kết nối hoặc bảo trì, khắc phục triệt để lỗi trùng tài khoản khi mở nhiều Tab."
+        });
+
         // Chỉ hiển thị chi tiết các Sự Kiện ĐANG CHẠY HIỆN TẠI ngay đầu bảng Thông Báo
         if (EventManager.HALLOWEEN) {
             entries.add(new String[]{

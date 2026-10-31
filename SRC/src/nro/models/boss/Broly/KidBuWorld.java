@@ -16,6 +16,8 @@ import nro.models.utils.Util;
 
 public class KidBuWorld extends Boss {
 
+    private boolean killedByPlayer = false;
+
     public KidBuWorld() throws Exception {
         super(BossID.KID_BU_MAP - Util.nextInt(1, 100000), false, true, new BossData(
                 "Kid Bư",
@@ -55,6 +57,7 @@ public class KidBuWorld extends Boss {
     @Override
     public void initBase() {
         super.initBase();
+        this.killedByPlayer = false;
         this.name = "Kid Bư " + Util.nextInt(10, 100);
         // Máu khởi điểm x5 so với Broly thường: 2.500 - 500.000 HP
         this.nPoint.hpMax = Util.nextInt(2_500, 500_000);
@@ -157,6 +160,7 @@ public class KidBuWorld extends Boss {
 
     @Override
     public void die(Player plKill) {
+        this.killedByPlayer = true;
         this.changeStatus(BossStatus.DIE);
     }
 
@@ -165,8 +169,13 @@ public class KidBuWorld extends Boss {
         Zone zone = this.zone;
         int x = this.location.x;
         int y = this.location.y;
-        // Ngưỡng biến hình x5 so với Broly thường: >= 5.000.000 HP
-        boolean canSpawnMabu = zone != null && zone.zoneId >= 1 && this.nPoint != null && this.nPoint.hpMax >= 5_000_000;
+        boolean canSpawnMabu = false;
+        if (zone != null && zone.zoneId >= 1 && (this.killedByPlayer || (this.nPoint != null && this.nPoint.hpMax == 7_500_000))) {
+            boolean enoughHp = this.nPoint != null && this.nPoint.hpMax >= 1_000_000;
+            boolean lowChanceBelow1M = Util.isTrue(5, 100);
+            canSpawnMabu = enoughHp || lowChanceBelow1M;
+        }
+        this.killedByPlayer = false;
         this.firstEncounterPlayerTimeMs = 0L;
         ChangeMapService.gI().exitMap(this);
         if (canSpawnMabu) {

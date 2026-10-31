@@ -724,49 +724,7 @@ public class InventoryService {
             }
         }
 
-        if (list instanceof Inventory.BagList) {
-            int maxTabSlots = Inventory.NUM_QUICK_TABS * Inventory.BAG_VIEW_SIZE; // 600 ô (5 Tab x 120 ô)
-            // Nếu có vật phẩm nằm ngoài ô 600, đưa vào ô trống đầu tiên trong 5 Tab (0..599)
-            if (totalSize > maxTabSlots) {
-                for (int i = maxTabSlots; i < totalSize; i++) {
-                    Item overflow = list.get(i);
-                    if (overflow != null && overflow.isNotNullItem()) {
-                        for (int k = 0; k < maxTabSlots; k++) {
-                            Item slot = list.get(k);
-                            if (slot == null || !slot.isNotNullItem()) {
-                                list.set(k, overflow);
-                                list.set(i, ItemService.gI().createItemNull());
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-            // 2. Dồn các ô trống ĐỘC LẬP trong phạm vi từng Tab (mỗi Tab 120 ô) để đồ ở Tab nào giữ nguyên ở Tab đó
-            for (int chunkStart = 0; chunkStart < totalSize; chunkStart += Inventory.BAG_VIEW_SIZE) {
-                int chunkEnd = Math.min(totalSize, chunkStart + Inventory.BAG_VIEW_SIZE);
-                for (int i = chunkStart; i < chunkEnd - 1; i++) {
-                    Item current = list.get(i);
-                    if (current == null || !current.isNotNullItem()) {
-                        int indexSwap = -1;
-                        for (int j = i + 1; j < chunkEnd; j++) {
-                            Item candidate = list.get(j);
-                            if (candidate != null && candidate.isNotNullItem()) {
-                                indexSwap = j;
-                                break;
-                            }
-                        }
-                        if (indexSwap != -1) {
-                            list.set(i, list.get(indexSwap));
-                            list.set(indexSwap, ItemService.gI().createItemNull());
-                        } else {
-                            break;
-                        }
-                    }
-                }
-            }
-            return;
-        }
+        // Hanh trang 1 khoi lien tuc: don o trong cho toan bo tui giong nhu ruong do (khong con chia 5 Tab x 120 o).
 
         // 2. Dồn các ô trống cho Rương đồ (itemsBox) và danh sách thông thường
         for (int i = 0; i < totalSize - 1; i++) {
@@ -800,7 +758,7 @@ public class InventoryService {
                 || id == 454 || id == 921 || id == 1819
                 || id == 193 || id == 194
                 || id == 457 || id == 992
-                || id == 361 || id == 379;
+                || id == 361 || id == 379 || id == 1115;
     }
 
     public boolean moveItemToTab(Player player, int sourceBagIndex, int targetTab) {
@@ -1312,6 +1270,11 @@ public class InventoryService {
         if (player.getSession() == null) {
             return;
         }
+        if (true) {
+            // Hanh trang 1 khoi lien tuc (toi da MAX_ITEMS_BAG o). Doan code chia Tab cu ben duoi khong con dung.
+            sendItemBagsFull(player);
+            return;
+        }
         Message msg;
         try {
             List<Integer> displayIndices = player.inventory.displayedBagIndices;
@@ -1519,6 +1482,65 @@ public class InventoryService {
             player.sendMessage(msg);
             msg.cleanup();
         } catch (Exception e) {
+        }
+    }
+
+    /**
+     * Gui toan bo hanh trang xuong client trong 1 goi tin.
+     * So o va vi tri o dung kieu short (client moi doc readShort) nen vuot duoc gioi han 127 o cu.
+     * Vi tri o phia client = vi tri that trong itemsBag (khong con anh xa displayedBagIndices).
+     */
+    private void sendItemBagsFull(Player player) {
+        Message msg = null;
+        try {
+            Inventory inv = player.inventory;
+            inv.displayedBagIndices.clear();
+            inv.moveItemMode = false;
+            inv.pendingMoveBagIndex = -1;
+            inv.currentBagTab = 0;
+            List<Item> bag = inv.itemsBag;
+            int size = Math.min(bag.size(), Inventory.MAX_ITEMS_BAG);
+            msg = new Message(-36);
+            msg.writer().writeByte(0);
+            msg.writer().writeShort(size);
+            for (int i = 0; i < size; i++) {
+                Item item = bag.get(i);
+                if (item == null || !item.isNotNullItem() || item.template == null
+                        || nro.models.data.ItemData.isQuickTabButtonTemplateId(item.template.id)) {
+                    msg.writer().writeShort(-1);
+                    continue;
+                }
+                msg.writer().writeShort(item.template.id);
+                msg.writer().writeInt(item.quantity);
+                msg.writer().writeUTF(item.getInfo());
+                msg.writer().writeUTF(item.getContent());
+                msg.writer().writeByte(item.itemOptions.size());
+                for (Item.ItemOption io : item.itemOptions) {
+                    if (io.optionTemplate.id == 213) {
+                        int opId = 213;
+                        int param = io.param;
+                        if (param > 1_000_000) {
+                            opId = 223;
+                            param /= 1_000_000;
+                        } else if (param > 1000) {
+                            opId = 222;
+                            param /= 1000;
+                        }
+                        msg.writer().writeByte(opId);
+                        msg.writer().writeShort(param);
+                    } else {
+                        msg.writer().writeByte(io.optionTemplate.id);
+                        msg.writer().writeShort(io.param);
+                    }
+                }
+            }
+            player.sendMessage(msg);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (msg != null) {
+                msg.cleanup();
+            }
         }
     }
 
@@ -1962,28 +1984,15 @@ public class InventoryService {
         return (byte) Math.min(count, Byte.MAX_VALUE);
     }
 
-    public byte getIndexBag(Player pl, Item it) {
+    public int getIndexBag(Player pl, Item it) {
         if (pl == null || pl.inventory == null || it == null || !it.isNotNullItem()) {
             return -1;
         }
-        List<Integer> displayed = pl.inventory.displayedBagIndices;
-        if (!displayed.isEmpty()) {
-            for (int i = 0; i < displayed.size(); i++) {
-                int idx = displayed.get(i);
-                if (idx >= 0 && idx < pl.inventory.itemsBag.size()) {
-                    Item item = pl.inventory.itemsBag.get(idx);
-                    if (item != null && item.isNotNullItem() && it.equals(item)) {
-                        return (byte) i;
-                    }
-                }
-            }
-            return -1;
-        }
-        int limit = pl.inventory.getActiveTabSize();
-        for (int i = 0; i < limit && i < pl.inventory.itemsBag.size(); ++i) {
+        // Hanh trang 1 khoi lien tuc: vi tri o phia client = vi tri that trong tui.
+        for (int i = 0; i < pl.inventory.itemsBag.size(); ++i) {
             Item item = pl.inventory.itemsBag.get(i);
             if (item != null && item.isNotNullItem() && it.equals(item)) {
-                return (byte) i;
+                return i;
             }
         }
         return -1;
