@@ -2062,6 +2062,15 @@ public class NPoint {
                 } else if (this.power >= 40_000_000_000L) {
                     tiemNang -= ((long) tiemNang * 50 / 100);
                 }
+            } else {
+                // Đệ tử sau 40 tỷ cũng giảm TNSM nhưng nhẹ hơn Sư phụ
+                if (this.power >= 80_000_000_000L) {
+                    tiemNang -= ((long) tiemNang * 70 / 100);
+                } else if (this.power >= 60_000_000_000L) {
+                    tiemNang -= ((long) tiemNang * 50 / 100);
+                } else if (this.power >= 40_000_000_000L) {
+                    tiemNang -= ((long) tiemNang * 30 / 100);
+                }
             }
             if (this.player.isPet) {
                 if (((Pet) this.player).master.charms != null && ((Pet) this.player).master.charms.tdDeTu > System.currentTimeMillis()) {
@@ -2108,20 +2117,39 @@ public class NPoint {
         return tiemNang;
     }
 
-    public long calSubTNSM(long tiemNang) {
+    public int getSubTNSMDivisor() {
         if (this.player != null && this.player.isPet) {
-            return tiemNang;
+            if (power >= 90_000_000_000L) {
+                return 50;
+            } else if (power >= 80_000_000_000L) {
+                return 35;
+            } else if (power >= 60_000_000_000L) {
+                return 20;
+            } else if (power >= 50_000_000_000L) {
+                return 15;
+            } else if (power >= 40_000_000_000L) {
+                return 10;
+            }
+            return 1;
         }
         if (power >= 90_000_000_000L) {
-            tiemNang /= 100;
+            return 100;
         } else if (power >= 80_000_000_000L) {
-            tiemNang /= 90;
+            return 90;
         } else if (power >= 60_000_000_000L) {
-            tiemNang /= 50;
+            return 50;
         } else if (power >= 50_000_000_000L) {
-            tiemNang /= 40;
+            return 40;
         } else if (power >= 40_000_000_000L) {
-            tiemNang /= 30;
+            return 30;
+        }
+        return 1;
+    }
+
+    public long calSubTNSM(long tiemNang) {
+        int divisor = getSubTNSMDivisor();
+        if (divisor > 1) {
+            tiemNang /= divisor;
         }
         return tiemNang;
     }

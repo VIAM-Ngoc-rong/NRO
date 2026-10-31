@@ -460,8 +460,24 @@ public class BossManager implements Runnable {
             msg = new Message(-96);
             msg.writer().writeByte(0);
             msg.writer().writeUTF("Danh Sách Boss");
-            msg.writer().writeByte(Math.min(validIndices.size(), 120));
-            int count = 0;
+            int maxBossRows = Math.min(validIndices.size(), 119);
+            msg.writer().writeByte(maxBossRows + 1);
+            int count = 1;
+            // Dòng 1 cố định: Mua / Kích hoạt Máy Dò Săn Boss (200Tr Vàng / 1 giờ)
+            msg.writer().writeInt(count);
+            msg.writer().writeInt(-999);
+            msg.writer().writeShort((short) 282);
+            if (player.getSession().version >= 214) {
+                msg.writer().writeShort(-1);
+            }
+            msg.writer().writeShort((short) 283);
+            msg.writer().writeShort((short) 284);
+            msg.writer().writeUTF("Máy Dò Săn Boss (200Tr/1h)");
+            msg.writer().writeUTF(player.hasActiveAutoHuntBossTime()
+                    ? ("Đang có: " + player.getAutoHuntBossTimeRemainingText())
+                    : "Chưa kích hoạt [Bấm Chọn để Mua]");
+            msg.writer().writeUTF("Giá: 200.000.000 Vàng / 1 Giờ (Cộng dồn khi mua nhiều lần)\nBấm Chọn vào đây để Mua Vật Phẩm vào Túi hoặc Kích Hoạt Ngay!");
+
             for (int i : validIndices) {
                 if (count++ >= 120) {
                     break;

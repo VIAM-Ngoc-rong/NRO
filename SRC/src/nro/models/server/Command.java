@@ -472,6 +472,10 @@ public class Command {
                 nro.models.boss.Boss_Manager.BossManager.gI().showListBoss(player);
                 return true;
             }
+            case "maydo", "muasanboss", "maydosanboss" -> {
+                nro.models.npc.NpcFactory.openMenuSelectBossAction(player, -999);
+                return true;
+            }
             case "x", "auto", "menu", "tienich", "caidat", "hotro" -> {
                 nro.models.npc.NpcFactory.openMenuTienIch(player);
                 return true;

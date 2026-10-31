@@ -395,8 +395,7 @@ public class ShopDAO {
                         {934,   50_000_000,  99}, // Mảnh hồn bông tai (x99)
                         {933,  100_000_000, 999}, // Mảnh vỡ bông tai (x999)
                         {454,  200_000_000,   0}, // Bông tai Porata cấp 1
-                        {1999, 200_000_000,   0}, // Thẻ đổi tên
-                        {1115, 200_000_000,   0}  // Máy Dò Săn Boss (1 giờ Tự Động Săn Boss)
+                        {1999, 200_000_000,   0}  // Thẻ đổi tên
                     };
                     for (int[] sItem : santaUpgradeItems) {
                         ItemTemplate sTemp = ItemService.gI().getTemplate((short) sItem[0]);
@@ -446,6 +445,21 @@ public class ShopDAO {
                         tvShop.options.add(new Item.ItemOption(73, 0));
                         oldTab.itemShops.add(0, tvShop);
                     }
+                    // Đặt Máy Dò Săn Boss (1115) ở ngay Ô ĐẦU TIÊN (vị trí số 1) của Cửa hàng Santa
+                    ItemTemplate mayDoBossTemp = ItemService.gI().getTemplate((short) 1115);
+                    if (mayDoBossTemp != null) {
+                        ItemShop mayDoShop = new ItemShop();
+                        mayDoShop.id = autoId++;
+                        mayDoShop.tabShop = oldTab;
+                        mayDoShop.temp = mayDoBossTemp;
+                        mayDoShop.isNew = true;
+                        mayDoShop.typeSell = 0; // Bán bằng Vàng
+                        mayDoShop.cost = 250_000_000; // 250tr Vàng / 1 giờ
+                        mayDoShop.iconSpec = 0;
+                        mayDoShop.options.add(new Item.ItemOption(64, 1)); // Thời hạn 1 giờ
+                        mayDoShop.options.add(new Item.ItemOption(30, 0));
+                        oldTab.itemShops.add(0, mayDoShop);
+                    }
                     addedCskb = true;
                 }
                 newSantaTabs.add(oldTab);
@@ -475,6 +489,30 @@ public class ShopDAO {
         }
 
         santaShop.tabShops = newSantaTabs;
+
+        // Thêm Máy Dò Săn Boss (1115) vào đầu Cửa hàng Hạn sử dụng (SANTA_HAN_SU_DUNG) và các Shop Làng (BUNMA, DENDE, APPULE)
+        ItemTemplate mayDoTempAll = ItemService.gI().getTemplate((short) 1115);
+        if (mayDoTempAll != null) {
+            for (Shop s : shops) {
+                if (s != null && s.tagName != null && (s.tagName.equals("SANTA_HAN_SU_DUNG")
+                        || s.tagName.equals("BUNMA") || s.tagName.equals("DENDE") || s.tagName.equals("APPULE"))
+                        && s.tabShops != null && !s.tabShops.isEmpty()) {
+                    TabShop firstTab = s.tabShops.get(0);
+                    firstTab.itemShops.removeIf(it -> it != null && it.temp != null && it.temp.id == 1115);
+                    ItemShop mayDoShop = new ItemShop();
+                    mayDoShop.id = autoId++;
+                    mayDoShop.tabShop = firstTab;
+                    mayDoShop.temp = mayDoTempAll;
+                    mayDoShop.isNew = true;
+                    mayDoShop.typeSell = 0; // Bán bằng Vàng
+                    mayDoShop.cost = 250_000_000; // 250tr Vàng
+                    mayDoShop.iconSpec = 0;
+                    mayDoShop.options.add(new Item.ItemOption(64, 1)); // 1 giờ
+                    mayDoShop.options.add(new Item.ItemOption(30, 0));
+                    firstTab.itemShops.add(0, mayDoShop);
+                }
+            }
+        }
 
         // Tạo thêm shop SPEC_SHOP ("SANTA_CAITRANG") để hiển thị chuẩn icon Hồng Ngọc / Ngọc Xanh trên client
         Shop santaCostumeShop = new Shop();

@@ -973,7 +973,8 @@ public class Service {
                 return;
             }
 
-            long masterParam = (long) (param * 0.5);
+            long unscaledPetParam = param * Math.max(1, player.nPoint.getSubTNSMDivisor());
+            long masterParam = (long) (unscaledPetParam * 0.5);
             masterParam = master.nPoint.calSubTNSM(masterParam);
             if (masterParam <= 0) {
                 return;

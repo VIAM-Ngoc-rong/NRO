@@ -156,7 +156,7 @@ public class ServerNotify extends Thread {
         // 0. Bản tin Cập nhật mới nhất của Game (Update Log) - Luôn ghim đầu bảng Thông Báo
         entries.add(new String[]{
             "[CẬP NHẬT MỚI] Tính Năng & Tiện Ích",
-            "★ NHẬT KÝ CẬP NHẬT PHiên BẢN MỚI NHẤT ★\n\n"
+            "★ NHẬT KÝ CẬP NHẬT PHIÊN BẢN MỚI NHẤT ★\n\n"
             + "[1] CƠ CHẾ TỰ ĐỘNG SĂN BOSS & MÁY DÒ SĂN BOSS (MỚI):\n"
             + "• Để sử dụng chức năng Tự Động Săn Boss, người chơi cần kích hoạt thời gian từ vật phẩm 'Máy Dò Săn Boss' (ID 1115).\n"
             + "• Giá bán & Cách mua:\n"
@@ -179,10 +179,18 @@ public class ServerNotify extends Thread {
             + "• Auto Buff Đậu, Cộng Nhanh Chỉ Số & Quản Lý Đệ Tử:\n"
             + "  - Tự động ăn Đậu thần hồi HP/KI cho Sư phụ và Đệ tử theo mức % cài đặt.\n"
             + "  - Cộng nhanh điểm Tiềm năng (HP, KI, Sức Đánh) theo con số mong muốn mà không cần bấm từng lần.\n\n"
-            + "[3] GIAO DIỆN HÀNH TRANG Ô LƯỚI & TỐI ƯU CLIENT:\n"
+            + "[3] CÂN BẰNG MÁU BOSS, TỶ LỆ RỚT ĐỒ COLD, TNSM ĐỆ TỬ & TỐI ƯU CLIENT:\n"
+            + "• Cân bằng Lượng Máu (HP) Hệ Thống Boss:\n"
+            + "  - Nhóm Boss Cấp Thấp (<= 400Tr HP trước đây): Tăng x4 lần lượng máu hiện tại.\n"
+            + "  - Nhóm Boss Cao Cấp (> 400Tr HP trước đây): Tăng x1.5 lần lượng máu và giới hạn tối đa ở mức 2 Tỷ HP (2.000.000.000 HP).\n"
+            + "• Cân bằng Tỷ Lệ Rơi Đồ Tại Map Cold:\n"
+            + "  - Giảm tỷ lệ rơi trang bị cấp cao (cấp 9-11) từ 6% xuống 1.5%, giảm tỷ lệ ra Đồ Kích Hoạt Cold xuống 2.5%, Đồ Thần Linh từ quái Cold 1/120.000, Thức ăn Hủy Diệt 0.6% và Đá nâng cấp xuống 10% để giữ giá trị vật phẩm.\n"
+            + "• Cân bằng TNSM Đệ Tử từ mốc 40 Tỷ Sức Mạnh:\n"
+            + "  - Khi Đệ tử đạt từ 40 Tỷ Sức mạnh trở lên (40 Tỷ / 50 Tỷ / 60 Tỷ / 80 Tỷ / 90 Tỷ), lượng TNSM nhận được sẽ giảm dần theo mốc tương tự Sư phụ nhưng mức giảm nhẹ hơn Sư phụ (ưu đãi x2 - x3 tốc độ up so với Sư phụ cùng mốc).\n"
             + "• Hành Trang Ô Lưới (Grid 6 cột): Hiển thị trực quan cấp trang bị [+X], số Sao Pha Lê, nhãn Set đồ [S1..S5] và biểu tượng [KHÓA] ngay trên từng ô vật phẩm.\n"
             + "• Tích hợp cụm chức năng BOSS: Gom toàn bộ Danh sách & Tự Săn Boss, Thông báo Boss, Kẻ đường tới Boss và Tự Focus Boss vào chung mục 'BOSS'.\n"
             + "• Tốc Độ Game Mặc Định 1.5x: Tối ưu tốc độ di chuyển và chiến đấu mượt mà ngay khi vào game.\n"
+            + "• Đăng Ký Tài Khoản Trực Tiếp Tại Màn Hình Đăng Nhập: Hỗ trợ tạo tài khoản mới ngay tại màn hình ngoài hoặc mục Đổi Tài Khoản -> Đăng Ký (tự động lưu vào Quản Lý Tài Khoản sau khi tạo).\n"
             + "• Auto Login Đa Tab Độc Lập: Mỗi cửa sổ (Tab) game tự lưu và tự đăng nhập lại đúng tài khoản riêng của Tab đó sau khi mất kết nối hoặc bảo trì, khắc phục triệt để lỗi trùng tài khoản khi mở nhiều Tab."
         });
 
@@ -507,14 +515,19 @@ public class ServerNotify extends Thread {
             + "  - Đổi Sách Tuyệt Kỹ 1: 10 Cuốn sách cũ + 1 Kìm bấm giấy (dùng Con dấu đạt 100%)."
         });
 
-        // 4. Hướng dẫn Hành trang 5 Tab & Auto Treo Quái
+        // 4. Hướng dẫn Hành trang, Set Đồ, Khóa Đồ & Auto Treo Máy / Săn Boss
         entries.add(new String[]{
-            "Hành Trang 500 Ô & Auto Treo Quái",
-            "• Hành Trang Đa Tab (Mặc định 200 ô, tối đa 500 ô / 5 Tab):\n"
-            + "  - Gõ chat 't1', 't2', 't3', 't4', 't5' hoặc bấm Nút Lá Cờ (auto) -> Tab Túi Đồ để chuyển Tab ngay cả khi túi đang đầy.\n"
-            + "  - Khi Tab hiện tại đầy 100/100 ô, vật phẩm nhặt mới tự động tràn sang Tab còn trống tiếp theo.\n"
-            + "• Auto Treo Quái & Lọc Đồ Rác:\n"
-            + "  - Gõ chat 'treoquai' hoặc 'tq' để bật tự động bán đồ rác khi đầy túi (khóa bảo vệ tuyệt đối 100% Đồ SKH, Đồ Thần Linh, Hủy Diệt, Thiên Sứ và Đồ có lỗ Sao Pha Lê)."
+            "Hành Trang, Set Đồ & Auto Săn Boss",
+            "• Hành Trang Ô Lưới & Khóa Bảo Vệ Trang Bị:\n"
+            + "  - Hành trang hiển thị dạng ô lưới trực quan, hiển thị cấp [+X], Sao Pha Lê, nhãn Set đồ [S1..S5] và biểu tượng [KHÓA] ngay trên ô vật phẩm.\n"
+            + "  - Bấm Phím X (Menu Tiện Ích) -> 'Trang Bị & Set Đồ' -> 'Khóa / Mở Khóa Trang Bị' để bảo vệ tuyệt đối món đồ khỏi bán, vứt, giao dịch hoặc ép đồ nhầm.\n"
+            + "• Quản Lý 5 Set Đồ Nhanh (Sư Phụ & Đệ Tử):\n"
+            + "  - Mở Menu Tiện Ích (Phím X) -> 'Trang Bị & Set Đồ' để lưu trang bị đang mặc vào 5 Set đồ.\n"
+            + "  - Gõ chat 's1', 's2', 's3', 's4', 's5' để mặc nhanh Set đồ Sư phụ; gõ 'd1', 'd2', 'd3', 'd4', 'd5' để mặc nhanh Set đồ Đệ tử.\n"
+            + "• Auto Treo Quái & Tự Động Lọc Đồ Rác:\n"
+            + "  - Mở Menu Tiện Ích (Phím X) -> 'Auto Treo Máy' hoặc gõ chat 'treoquai' / 'tq' để bật tự động bán đồ rác khi đầy túi (tự động giữ lại 100% Đồ SKH, Đồ Thần Linh, Hủy Diệt, Thiên Sứ, Đồ có Sao Pha Lê và Đồ đã Khóa).\n"
+            + "• Tự Động Săn Boss (Yêu cầu Máy Dò Săn Boss):\n"
+            + "  - Mua 'Máy Dò Săn Boss' (200.000.000 Vàng / 1 giờ) tại Shop Santa (Đảo Kame) hoặc bấm mua nhanh trong Menu Săn Boss để kích hoạt thời gian và treo săn Boss tự động xuyên bản đồ."
         });
 
         // 5. Thêm các thông báo cấu hình trong bảng notify của MySQL (nếu có)
@@ -532,6 +545,15 @@ public class ServerNotify extends Thread {
         return entries;
     }
 
+    private short computeNotifyId(int index, String title, String content) {
+        String safeTitle = title != null ? title : "";
+        String safeContent = content != null ? content : "";
+        // Loại bỏ dòng thời gian uptime biến đổi liên tục để tránh nháy NEW mỗi phút ở mục Tỷ Lệ Server
+        String normalizedContent = safeContent.replaceAll("• Thời gian Server đã hoạt động: [^\\n]*\\n?", "");
+        int hash = (safeTitle + "\n" + normalizedContent).hashCode();
+        return (short) (1000 + ((index * 31 + Math.abs(hash)) % 30000));
+    }
+
     public void sendNotifyTab(Player player) {
         if (player == null || player.getSession() == null) {
             return;
@@ -544,7 +566,7 @@ public class ServerNotify extends Thread {
             msg.writer().writeByte(count);
             for (int i = 0; i < count; i++) {
                 String[] arr = entries.get(i);
-                msg.writer().writeShort(i);
+                msg.writer().writeShort(computeNotifyId(i, arr[0], arr[1]));
                 msg.writer().writeUTF(arr[0]);
                 msg.writer().writeUTF(arr[1]);
             }

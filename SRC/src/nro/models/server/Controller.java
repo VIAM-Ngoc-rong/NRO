@@ -725,6 +725,9 @@ public class Controller implements IMessageHandler {
                     case 0:
                         session.login(msg.reader().readUTF(), msg.reader().readUTF());
                         break;
+                    case 1:
+                        registerAccount(session, msg);
+                        break;
                     case 2:
                         Service.gI().setClientType(session, msg);
                         break;
@@ -734,6 +737,53 @@ public class Controller implements IMessageHandler {
             } catch (IOException e) {
                 session.disconnect();
 //                Logger.logException(Controller.class, e);
+            }
+        }
+    }
+
+    public void registerAccount(MySession session, Message msg) {
+        if (Maintenance.isRunning) {
+            Service.gI().sendThongBaoOK(session, "Máy chủ đang trong thời gian bảo trì, vui lòng thử lại sau!");
+            return;
+        }
+        LocalResultSet rs = null;
+        try {
+            String username = msg.reader().readUTF().trim().toLowerCase();
+            String password = msg.reader().readUTF().trim();
+            if (username.isEmpty() || password.isEmpty()) {
+                Service.gI().sendThongBaoOK(session, "Vui lòng nhập đầy đủ Tài khoản và Mật khẩu!");
+                return;
+            }
+            if (username.length() < 4 || username.length() > 20 || password.length() < 4 || password.length() > 20) {
+                Service.gI().sendThongBaoOK(session, "Tài khoản và Mật khẩu phải từ 4 đến 20 ký tự!");
+                return;
+            }
+            if (!username.matches("^[a-zA-Z0-9_]+$")) {
+                Service.gI().sendThongBaoOK(session, "Tài khoản chỉ được chứa chữ cái (a-z), số (0-9) và gạch dưới (_)!");
+                return;
+            }
+            if (password.contains(" ") || password.contains("'") || password.contains("\"")) {
+                Service.gI().sendThongBaoOK(session, "Mật khẩu không được chứa khoảng trắng hoặc dấu nháy!");
+                return;
+            }
+            rs = LocalManager.executeQuery("SELECT id FROM account WHERE username = ? LIMIT 1", username);
+            if (rs != null && rs.first()) {
+                Service.gI().sendThongBaoOK(session, "Tài khoản [" + username + "] đã tồn tại!\nVui lòng chọn tên tài khoản khác.");
+                return;
+            }
+            try {
+                LocalManager.executeUpdate("INSERT INTO account (username, password, active, vnd, tongnap, ruong_skh) VALUES (?, ?, 1, 0, 0, 5)", username, password);
+            } catch (Exception exCol) {
+                LocalManager.executeUpdate("INSERT INTO account (username, password, active, vnd, tongnap) VALUES (?, ?, 1, 0, 0)", username, password);
+            }
+            Logger.success("Đăng ký tài khoản trực tiếp trong game: " + username + " (IP: " + session.ipAddress + ")\n");
+            Service.gI().sendThongBaoOK(session, "Đăng ký tài khoản [" + username + "] thành công!\nBạn có thể bấm Chơi ngay để vào game.");
+        } catch (Exception e) {
+            Logger.logException(Controller.class, e);
+            Service.gI().sendThongBaoOK(session, "Có lỗi xảy ra khi đăng ký tài khoản, vui lòng thử lại!");
+        } finally {
+            if (rs != null) {
+                rs.dispose();
             }
         }
     }
@@ -906,7 +956,7 @@ public class Controller implements IMessageHandler {
     }
 
     public void login2(MySession session, Message msg) {
-        Service.gI().sendThongBaoOK(session, "Truy Cập: " + ServerManager.DOMAIN + "\n Đề Đăng Ký & Tải Game");
+        Service.gI().sendThongBaoOK(session, "Bạn có thể Đăng Ký Tài Khoản trực tiếp tại mục Đổi Tài Khoản -> Đăng Ký ngay trong game!");
     }
 
     public void sendInfo(MySession session) {

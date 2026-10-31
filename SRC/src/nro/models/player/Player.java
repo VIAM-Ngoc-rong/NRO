@@ -2392,6 +2392,35 @@ public class Player implements Runnable {
         return true;
     }
 
+    public boolean buyMayDoSanBossItemToBag() {
+        if (this.inventory == null) {
+            return false;
+        }
+        if (InventoryService.gI().getCountEmptyBag(this) <= 0) {
+            Service.gI().sendThongBao(this, "Hành trang không còn ô trống!");
+            return false;
+        }
+        long cost = ItemTime.COST_GOLD_AUTO_SAN_BOSS;
+        if (this.inventory.gold < cost) {
+            Service.gI().sendThongBao(this, "Không đủ 200.000.000 Vàng để mua Máy Dò Săn Boss! (Hiện có: "
+                    + Util.numberToMoney(this.inventory.gold) + " Vàng)");
+            return false;
+        }
+        Item mayDo = nro.models.services.ItemService.gI().createNewItem(ItemTime.ITEM_ID_AUTO_SAN_BOSS, 1);
+        if (mayDo == null || !mayDo.isNotNullItem()) {
+            Service.gI().sendThongBao(this, "Không tìm thấy vật phẩm Máy Dò Săn Boss!");
+            return false;
+        }
+        mayDo.itemOptions.add(new Item.ItemOption(64, 1));
+        mayDo.itemOptions.add(new Item.ItemOption(30, 0));
+        this.inventory.gold -= cost;
+        InventoryService.gI().addItemBag(this, mayDo);
+        InventoryService.gI().sendItemBags(this);
+        Service.gI().sendMoney(this);
+        Service.gI().sendThongBao(this, "Đã mua 1 Máy Dò Săn Boss vào Hành trang (-200 Tr Vàng)!");
+        return true;
+    }
+
     public void startAutoHuntBoss(int bossIndex) {
         toggleAutoHuntBoss(bossIndex);
     }

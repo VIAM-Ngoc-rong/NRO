@@ -14,7 +14,6 @@ if errorlevel 1 timeout /t 3 /nobreak >nul
 for /f "tokens=5" %%a in ('netstat -aon ^| findstr ":14445" ^| findstr "LISTENING"') do taskkill /F /PID %%a >nul 2>&1
 
 if exist "Config.properties" copy /Y "Config.properties" "..\SRC\Config.properties" >nul 2>&1
-if exist "C:\Users\Gigabyte\.gemini\antigravity\brain\aedbcf3d-0e19-4529-80f5-97b8f5824fbd\scratch\NgocRongOnline_new.jar" copy /Y "C:\Users\Gigabyte\.gemini\antigravity\brain\aedbcf3d-0e19-4529-80f5-97b8f5824fbd\scratch\NgocRongOnline_new.jar" "..\SRC\dist\NgocRongOnline.jar" >nul 2>&1
 if exist "..\SRC\dist\NgocRongOnline.jar" copy /Y "..\SRC\dist\NgocRongOnline.jar" "..\SRC\20.jar" >nul 2>&1
 if exist "..\SRC\20.jar" copy /Y "..\SRC\20.jar" "20.jar" >nul 2>&1
 

@@ -250,6 +250,25 @@ public class Boss extends Player implements IBoss {
         }
     }
 
+    public long getPreRebalanceBossHp(long rawHp) {
+        if (isWorldBossForHpBoost() && rawHp >= 500_000L) {
+            return Math.min(2_000_000_000L, rawHp * 3L);
+        }
+        return Math.min(2_000_000_000L, rawHp);
+    }
+
+    public boolean isHighTierBossPreRebalance() {
+        if (this.data == null || this.data.length == 0) {
+            return false;
+        }
+        int lvl = getSafeLevelIndex();
+        int[] hpArr = this.data[lvl].getHp();
+        if (hpArr == null || hpArr.length == 0) {
+            return false;
+        }
+        return getPreRebalanceBossHp(hpArr[0]) > 400_000_000L;
+    }
+
     @Override
     public void initBase() {
         BossData data = this.data[this.currentLevel];
@@ -258,14 +277,15 @@ public class Boss extends Player implements IBoss {
         this.nPoint.mpg = 31_07_2002;
         this.nPoint.dameg = data.getDame();
         long rawHp = data.getHp()[Util.nextInt(0, data.getHp().length - 1)];
-        if (isWorldBossForHpBoost() && rawHp >= 500_000L) {
-            long boostedHp = rawHp * 3L;
-            this.nPoint.hpg = (int) Math.min(2_100_000_000L, boostedHp);
-            this.bossDamageReductionFactor = 1;
+        long prevHp = getPreRebalanceBossHp(rawHp);
+        long finalHp;
+        if (prevHp > 400_000_000L) {
+            finalHp = Math.min(2_000_000_000L, (prevHp * 3L) / 2L);
         } else {
-            this.nPoint.hpg = (int) Math.min(2_100_000_000L, rawHp);
-            this.bossDamageReductionFactor = 1;
+            finalHp = Math.min(2_000_000_000L, prevHp * 4L);
         }
+        this.nPoint.hpg = (int) finalHp;
+        this.bossDamageReductionFactor = 1;
         this.nPoint.hp = nPoint.hpg;
         this.nPoint.calPoint();
         this.initSkill();
@@ -1265,11 +1285,11 @@ public class Boss extends Player implements IBoss {
             Service.gI().dropItemMap(this.zone, goldMap);
         }
 
-        // 1. Chỉ các Boss từ Nappa trở đi (hoặc Boss >= 400tr HP) mới rơi Đồ (Trang bị).
+        // 1. Chỉ các Boss từ Nappa trở đi (hoặc Boss cao cấp) mới rơi Đồ (Trang bị).
         // Các Boss hằng ngày như TDST Namek, Bojack không rơi đồ, chỉ rơi Ngọc Rồng.
         boolean droppedEquip = false;
-        boolean isHighHpBoss = bossHp >= 400_000_000L;
-        boolean canDropGodEquip = bossHp >= 400_000_000L;
+        boolean isHighHpBoss = isHighTierBossPreRebalance();
+        boolean canDropGodEquip = isHighHpBoss;
         boolean canDropEquip = isBossFromNappaOnwards()
                 || (isHighHpBoss && !isDailyEarlyBoss() && !isMiniBoss() && !isBrolyBoss());
 

@@ -989,6 +989,37 @@ public class NpcFactory {
                     }
                     case 9905 -> {
                         int bossIdx = player.pendingAutoBossIndex;
+                        if (bossIdx == -999) {
+                            switch (select) {
+                                case 0 -> {
+                                    player.buyAndActivateAutoHuntBossTime();
+                                    openMenuSelectBossAction(player, -999);
+                                }
+                                case 1 -> {
+                                    player.buyMayDoSanBossItemToBag();
+                                    openMenuSelectBossAction(player, -999);
+                                }
+                                case 2 -> {
+                                    player.toggleAutoHuntAllBoss();
+                                    openMenuSelectBossAction(player, -999);
+                                }
+                                case 3 -> {
+                                    openMenuSelectAutoHuntSkills(player);
+                                }
+                                case 4 -> {
+                                    if (player.isAutoHuntBoss) {
+                                        player.stopAutoHuntBoss();
+                                        openMenuSelectBossAction(player, -999);
+                                    } else {
+                                        BossManager.gI().showListBoss(player);
+                                    }
+                                }
+                                case 5 -> {
+                                    BossManager.gI().showListBoss(player);
+                                }
+                            }
+                            return;
+                        }
                         nro.models.boss.Boss boss = BossManager.gI().getBoss(bossIdx);
                         switch (select) {
                             case 0 -> {
@@ -1217,6 +1248,39 @@ public class NpcFactory {
 
     public static void openMenuSelectBossAction(Player player, int bossIndex) {
         if (player == null) {
+            return;
+        }
+        if (bossIndex == -999) {
+            player.pendingAutoBossIndex = -999;
+            StringBuilder sb = new StringBuilder();
+            sb.append("|7|=== MÁY DÒ SĂN BOSS (200.000.000 VÀNG / 1 GIỜ) ===\n");
+            sb.append("|2|Thời gian Tự Săn Boss còn lại: ").append(player.hasActiveAutoHuntBossTime()
+                    ? ("|1|" + player.getAutoHuntBossTimeRemainingText() + "\n")
+                    : "|7|[Chưa kích hoạt - Cần 200Tr Vàng / 1 giờ]\n");
+            sb.append("|2|Chế độ Tự Săn Boss: ").append(player.isAutoHuntBoss
+                    ? ("|1|[" + player.getAutoHuntBossSummary() + "]\n")
+                    : "|7|[Đang Tắt]\n");
+            sb.append("|2|Chiêu Săn Boss: |1|").append(player.getAutoHuntSkillSummary()).append("\n");
+            sb.append("|0|(Bạn có thể bấm 'Kích Hoạt Ngay 1 Giờ' để cộng thẳng 60 phút, hoặc 'Mua Máy Dò Vào Túi' để cất vật phẩm vào Hành trang dùng dần!)");
+            String optAll = player.isAutoHuntAllBoss ? "Tắt Săn\nTất Cả Boss" : "Bật Săn\nTất Cả Boss";
+            if (player.isAutoHuntBoss) {
+                NpcService.gI().createMenuConMeo(player, 9905, -1, sb.toString(),
+                        "Kích Hoạt Ngay\n1 Giờ (200Tr)",
+                        "Mua Máy Dò\nVào Túi (200Tr)",
+                        optAll,
+                        "Chọn Chiêu\nSăn Boss",
+                        "Tắt Toàn Bộ\nTự Săn",
+                        "Danh sách\nBoss",
+                        "Đóng");
+            } else {
+                NpcService.gI().createMenuConMeo(player, 9905, -1, sb.toString(),
+                        "Kích Hoạt Ngay\n1 Giờ (200Tr)",
+                        "Mua Máy Dò\nVào Túi (200Tr)",
+                        optAll,
+                        "Chọn Chiêu\nSăn Boss",
+                        "Danh sách\nBoss",
+                        "Đóng");
+            }
             return;
         }
         nro.models.boss.Boss boss = BossManager.gI().getBoss(bossIndex);

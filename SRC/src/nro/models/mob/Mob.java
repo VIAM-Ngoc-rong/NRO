@@ -786,7 +786,7 @@ public class Mob {
 
         //========================Đồ Thần Linh (Map Cold)========================
         if (MapService.gI().isMapCold(mapid)) {
-            if (Util.isTrue(1, 50000)) {
+            if (Util.isTrue(1, 120000)) {
                 ItemMap it = ItemService.gI().randDoTL(this.zone, 1, x, yEnd, plOwner.id);
                 candidateItems.add(it);
             }
@@ -794,9 +794,10 @@ public class Mob {
 
         //========================Trang bị thường & Đồ Kích Hoạt (Map Up SKH / Map Riêng Tư)========================
         if (MapService.gI().isMapUpSKH(mapid) || MapService.gI().isMapRiengTu(mapid)) {
-            int equipDropRate = 600; // 600 / 10000 = 6% tỷ lệ quái rơi trang bị
+            boolean isCold = MapService.gI().isMapCold(mapid);
+            int equipDropRate = isCold ? 150 : 600; // Map Cold: 1.5% (150/10000), Map đầu game: 6% (600/10000)
             if (plOwner != null && Util.nextInt(10000) < equipDropRate) {
-                int baseSkhDrop = 500; // 500 / 10000 = 5% tỷ lệ trang bị rơi ra là Đồ Kích Hoạt
+                int baseSkhDrop = isCold ? 250 : 500; // Map Cold: 2.5% ra SKH cấp cao, Map đầu game: 5% ra SKH tân thủ
                 double skhTileDrop = baseSkhDrop;
 
                 int totalOption236Param = 0;
@@ -977,7 +978,7 @@ public class Mob {
         //========================Thức Ăn, Mảnh Thiên Sứ & Bí Kíp Tuyệt Kỹ========================
         boolean hasSetGod = (plOwner != null && plOwner.setClothes != null && plOwner.setClothes.checkSetGod())
                 || (player.setClothes != null && player.setClothes.checkSetGod());
-        if (hasSetGod && Util.isTrue(15, 1000)) { // 1.5% cơ hội rơi Thức ăn Hủy Diệt
+        if (hasSetGod && Util.isTrue(6, 1000)) { // 0.6% cơ hội rơi Thức ăn Hủy Diệt (đã giảm để cân bằng)
             ItemMap it = new ItemMap(zone, Util.nextInt(663, 667), 1, x, yEnd, plOwner.id);
             candidateItems.add(0, it);
         }
@@ -1051,18 +1052,18 @@ public class Mob {
         //========================Đá Nâng Cấp (220-224) & Đá Vụn (225)========================
         int daNangCapRate = 0;
         if (MapService.gI().isMapCold(mapid)) {
-            daNangCapRate = 30;
+            daNangCapRate = 10;
         } else if (MapService.gI().isMapTuongLai(mapid) || MapService.gI().isMapPhoBan(mapid)) {
-            daNangCapRate = 25;
+            daNangCapRate = 8;
         } else if (MapService.gI().isMapNappa(mapid)) {
-            daNangCapRate = 20;
+            daNangCapRate = 8;
         } else if (MapService.gI().isMap3Planets(mapid)) {
-            daNangCapRate = 15;
+            daNangCapRate = 6;
         } else if (this.zone.map.mapId >= 0) {
-            daNangCapRate = 15;
+            daNangCapRate = 6;
         }
         if (daNangCapRate > 0 && player.itemTime != null && player.itemTime.isUseCoBonLa) {
-            daNangCapRate += 5;
+            daNangCapRate += 2;
         }
         if (daNangCapRate > 0 && Util.isTrue(daNangCapRate, 100)) {
             int rand = Util.nextInt(0, 4);
