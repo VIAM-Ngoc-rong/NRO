@@ -188,9 +188,9 @@ public class Broly18h extends Boss {
         int y = this.location.y;
         boolean canSpawnSuper = false;
         if (this.killedByPlayer && zone != null && zone.zoneId >= 1) {
-            boolean enoughHp = this.nPoint != null && this.nPoint.hpMax >= 1_000_000;
-            boolean lowChanceBelow1M = Util.isTrue(5, 100);
-            canSpawnSuper = enoughHp || lowChanceBelow1M;
+            boolean enoughHp = this.nPoint != null && this.nPoint.hpMax > 10_000_000;
+            boolean lowChance = Util.isTrue(5, 100);
+            canSpawnSuper = enoughHp || lowChance;
         }
         this.killedByPlayer = false;
         this.firstEncounterPlayerTimeMs = 0L;
