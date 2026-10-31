@@ -8,6 +8,7 @@ javac -proc:none -encoding UTF-8 -d build/classes -cp "build/classes;lib/*" `
     src/nro/models/data/DataGame.java `
     src/nro/models/data/ItemData.java `
     src/nro/models/network/Network.java `
+    src/nro/models/network/MessageSendCollect.java `
     src/nro/models/database/ShopDAO.java `
     src/nro/models/database/MrBlue.java `
     src/nro/models/database/PlayerDAO.java `
@@ -43,6 +44,8 @@ javac -proc:none -encoding UTF-8 -d build/classes -cp "build/classes;lib/*" `
     src/nro/models/services/Service.java `
     src/nro/models/services/SkillService.java `
     src/nro/models/services_func/UseItem.java `
+    src/nro/models/services_func/Trade.java `
+    src/nro/models/services_func/TransactionService.java `
     src/nro/models/combine/Combine.java `
     src/nro/models/combine/CombineSystem.java `
     src/nro/models/combine/CombineService.java `

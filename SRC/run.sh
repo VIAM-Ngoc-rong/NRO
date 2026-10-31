@@ -111,8 +111,17 @@ if [ -n "$JAVAC_BIN" ]; then
         src/nro/models/data/LocalManager.java \
         src/nro/models/data/DataGame.java \
         src/nro/models/data/ItemData.java \
+        src/nro/models/network/MessageSendCollect.java \
+        src/nro/models/server/Controller.java \
+        src/nro/models/server/Command.java \
         src/nro/models/database/ShopDAO.java \
         src/nro/models/services/ItemService.java \
+        src/nro/models/services/Service.java \
+        src/nro/models/services/InventoryService.java \
+        src/nro/models/services_func/UseItem.java \
+        src/nro/models/services_func/Trade.java \
+        src/nro/models/services_func/TransactionService.java \
+        src/nro/models/combine/CombineService.java \
         src/nro/models/boss/Boss.java \
         src/nro/models/boss/Broly/Broly.java \
         src/nro/models/boss/Broly/Broly18h.java \
