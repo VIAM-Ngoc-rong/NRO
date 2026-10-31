@@ -898,6 +898,10 @@ public class ShopDAO {
                 itemShop.cost = rs.getInt("cost");
                 itemShop.iconSpec = rs.getInt("icon_spec");
                 itemShop.typeSell = rs.getByte("type_sell");
+                if (itemShop.temp != null && itemShop.temp.id == 379) {
+                    itemShop.cost = 50_000_000;
+                    itemShop.typeSell = 0;
+                }
                 loadItemShopOption(con, itemShop);
                 if (itemShop.temp != null && itemShop.temp.type == 5) {
                     boolean hasMainStat = false;

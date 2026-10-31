@@ -84,6 +84,10 @@ public class Player implements Runnable {
     public boolean isAutoBuffPea = true;
     public boolean isAutoCleanBag = false;
     public long lastTimeAutoCleanBag;
+    public boolean isAutoRevive = false;
+    public long lastTimeAutoRevive;
+    public final java.util.Set<Integer> autoUseItemIds = new java.util.concurrent.CopyOnWriteArraySet<>();
+    public long lastTimeAutoUseItem;
     public boolean isAutoHuntBoss = false;
     public boolean isAutoHuntAllBoss = false;
     public final List<Long> autoHuntBossGroupKeys = new java.util.concurrent.CopyOnWriteArrayList<>();
@@ -542,6 +546,50 @@ public class Player implements Runnable {
         }
     }
 
+    public boolean isItemTimeActiveForTemplate(int tempId) {
+        if (this.itemTime == null) {
+            return false;
+        }
+        return switch (tempId) {
+            case 381 -> this.itemTime.isUseCuongNo;
+            case 382 -> this.itemTime.isUseBoHuyet;
+            case 383 -> this.itemTime.isUseBoKhi;
+            case 384 -> this.itemTime.isUseGiapXen;
+            case 385 -> this.itemTime.isUseAnDanh;
+            case 1150 -> this.itemTime.isUseCuongNo2;
+            case 1152 -> this.itemTime.isUseBoHuyet2;
+            case 1151 -> this.itemTime.isUseBoKhi2;
+            case 1153 -> this.itemTime.isUseGiapXen2;
+            case 1154 -> this.itemTime.isUseAnDanh2;
+            case 379 -> this.itemTime.isUseMayDo;
+            case 764 -> this.itemTime.isUseKhauTrang;
+            case 663, 664, 665, 666, 667 -> this.itemTime.isEatMeal;
+            case 1628 -> this.itemTime.isUseNuocMia1;
+            case 1629 -> this.itemTime.isUseNuocMia2;
+            case 1630 -> this.itemTime.isUseNuocMia3;
+            case 521 -> this.itemTime.isUseTDLT;
+            default -> false;
+        };
+    }
+
+    public void updateAutoUseItems() {
+        if (this.inventory == null || this.inventory.itemsBag == null || this.autoUseItemIds.isEmpty()) {
+            return;
+        }
+        for (int tempId : this.autoUseItemIds) {
+            if (isItemTimeActiveForTemplate(tempId)) {
+                continue;
+            }
+            for (int i = 0; i < this.inventory.itemsBag.size(); i++) {
+                Item item = this.inventory.itemsBag.get(i);
+                if (item != null && item.isNotNullItem() && item.template != null && item.template.id == tempId) {
+                    nro.models.services_func.UseItem.gI().useItem(this, item, i);
+                    return;
+                }
+            }
+        }
+    }
+
     public void update() {
         if (!this.beforeDispose) {
             try {
@@ -616,6 +664,14 @@ public class Player implements Runnable {
                         if (this.isAutoCleanBag && Util.canDoWithTime(this.lastTimeAutoCleanBag, 5000)) {
                             this.lastTimeAutoCleanBag = System.currentTimeMillis();
                             this.autoCleanTrashAndSellItems();
+                        }
+                        if (this.isAutoRevive && this.isDie() && Util.canDoWithTime(this.lastTimeAutoRevive, 1500)) {
+                            this.lastTimeAutoRevive = System.currentTimeMillis();
+                            PlayerService.gI().hoiSinh(this);
+                        }
+                        if (!this.autoUseItemIds.isEmpty() && !this.isDie() && Util.canDoWithTime(this.lastTimeAutoUseItem, 2000)) {
+                            this.lastTimeAutoUseItem = System.currentTimeMillis();
+                            this.updateAutoUseItems();
                         }
                     }
                     if (this.isPl() && !this.isBot && this.isAutoHuntBoss) {

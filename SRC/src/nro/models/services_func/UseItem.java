@@ -470,7 +470,7 @@ public class UseItem {
         }
     }
 
-    private void useItem(Player pl, Item item, int indexBag) {
+    public void useItem(Player pl, Item item, int indexBag) {
         if (item != null && item.isNotNullItem()) {
 
             if (item.template.id == 570) {

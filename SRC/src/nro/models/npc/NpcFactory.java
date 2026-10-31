@@ -843,12 +843,42 @@ public class NpcFactory {
                                 nro.models.server.ServerNotify.gI().sendActiveBossesToPlayer(player);
                                 BossManager.gI().showListBoss(player);
                             }
-                            case 6 -> {
+                             case 6 -> {
                                 openMenuSelectAutoHuntSkills(player);
+                            }
+                            case 7 -> {
+                                player.isAutoRevive = !player.isAutoRevive;
+                                Service.gI().sendThongBao(player, "Auto Hồi Sinh (Phím E): " + (player.isAutoRevive ? "[Bật]" : "[Tắt]"));
+                                openMenuAutoTreoMay(player);
+                            }
+                            case 8 -> {
+                                openMenuAutoUseItem(player);
                             }
                             default -> {
                                 openMenuTienIch(player);
                             }
+                        }
+                    }
+                    case 9917 -> {
+                        List<Item> autoableItems = getAutoUseableBagItems(player);
+                        if (select >= 0 && select < autoableItems.size()) {
+                            Item chosen = autoableItems.get(select);
+                            int tid = chosen.template.id;
+                            if (player.autoUseItemIds.contains(tid)) {
+                                player.autoUseItemIds.remove(tid);
+                                Service.gI().sendThongBao(player, "Đã TẮT Auto sử dụng: " + chosen.template.name);
+                            } else {
+                                player.autoUseItemIds.add(tid);
+                                Service.gI().sendThongBao(player, "Đã BẬT Auto sử dụng: " + chosen.template.name);
+                                player.updateAutoUseItems();
+                            }
+                            openMenuAutoUseItem(player);
+                        } else if (select == autoableItems.size()) {
+                            player.autoUseItemIds.clear();
+                            Service.gI().sendThongBao(player, "Đã TẮT tất cả vật phẩm trong Auto Sử Dụng Item!");
+                            openMenuAutoUseItem(player);
+                        } else {
+                            openMenuAutoTreoMay(player);
                         }
                     }
                     case 9907 -> {
@@ -1403,12 +1433,13 @@ public class NpcFactory {
             return;
         }
         boolean bothOn = player.isAutoBuffPea && player.isAutoCleanBag;
-        String npcSay = "|7|=== CÀI ĐẶT AUTO TREO MÁY & DỌN TÚI ===\n"
+        String npcSay = "|7|=== CÀI ĐẶT AUTO TREO MÁY & TIỆN ÍCH ===\n"
                 + "|2|• Auto Buff Đậu (Sư phụ & Đệ tử): " + (player.isAutoBuffPea ? "|1|[ĐANG BẬT]\n" : "|7|[ĐANG TẮT]\n")
                 + "|2|• Auto Treo Quái (Chống đầy túi & tự bán đồ rác): " + (player.isAutoCleanBag ? "|1|[ĐANG BẬT]\n" : "|7|[ĐANG TẮT]\n")
+                + "|2|• Auto Hồi Sinh (Phím E): " + (player.isAutoRevive ? "|1|[ĐANG BẬT]\n" : "|7|[ĐANG TẮT]\n")
+                + "|2|• Auto Sử Dụng Item: " + (!player.autoUseItemIds.isEmpty() ? ("|1|[Đang bật " + player.autoUseItemIds.size() + " loại]\n") : "|7|[ĐANG TẮT]\n")
                 + "|2|• Auto Săn Boss: " + (player.isAutoHuntBoss ? ("|1|[" + player.getAutoHuntBossSummary() + "]\n") : ("|7|[" + player.getAutoHuntBossSummary() + "]\n"))
                 + "|2|• Thời gian Máy Dò Săn Boss: " + (player.hasActiveAutoHuntBossTime() ? ("|1|" + player.getAutoHuntBossTimeRemainingText() + "\n") : "|7|[Chưa kích hoạt - 200Tr Vàng/1h]\n")
-                + "|2|• Chiêu Săn Boss: |1|" + player.getAutoHuntSkillSummary() + "\n"
                 + "|0|(Lưu ý: Giờ Máy Dò Săn Boss chỉ trừ khi đang Bật Tự Săn và tự dừng lại khi Tạm Dừng / Tắt!)";
         NpcService.gI().createMenuConMeo(player, 9916, -1, npcSay,
                 "Auto Đậu\n" + (player.isAutoBuffPea ? "[Tắt]" : "[Bật]"),
@@ -1418,7 +1449,66 @@ public class NpcFactory {
                 "Mua Giờ Săn\n(200Tr Vàng/1h)",
                 "Danh Sách &\nTự Săn Boss",
                 "Chọn Chiêu\nSăn Boss",
+                "Auto Hồi Sinh\n" + (player.isAutoRevive ? "[Tắt]" : "[Bật]"),
+                "Auto Dùng\nItem (" + player.autoUseItemIds.size() + ")",
                 "Quay lại");
+    }
+
+    public static boolean isAutoUseSupportedTemplate(int tempId) {
+        return switch (tempId) {
+            case 381, 382, 383, 384, 385,
+                 1150, 1151, 1152, 1153, 1154,
+                 379, 764, 521,
+                 663, 664, 665, 666, 667,
+                 1628, 1629, 1630 -> true;
+            default -> false;
+        };
+    }
+
+    public static List<Item> getAutoUseableBagItems(Player player) {
+        List<Item> result = new ArrayList<>();
+        if (player == null || player.inventory == null || player.inventory.itemsBag == null) {
+            return result;
+        }
+        java.util.Set<Integer> seen = new java.util.HashSet<>();
+        for (Item item : player.inventory.itemsBag) {
+            if (item != null && item.isNotNullItem() && item.template != null) {
+                int tid = item.template.id;
+                if (isAutoUseSupportedTemplate(tid) && !seen.contains(tid)) {
+                    seen.add(tid);
+                    result.add(item);
+                }
+            }
+        }
+        return result;
+    }
+
+    public static void openMenuAutoUseItem(Player player) {
+        if (player == null) {
+            return;
+        }
+        List<Item> items = getAutoUseableBagItems(player);
+        StringBuilder sb = new StringBuilder();
+        sb.append("|7|=== CÀI ĐẶT AUTO SỬ DỤNG ITEM ===\n");
+        sb.append("|2|Số loại Item đang bật Auto: |1|").append(player.autoUseItemIds.size()).append("\n");
+        if (items.isEmpty()) {
+            sb.append("|7|Trong hành trang hiện chưa có vật phẩm bổ trợ nào (Cuồng Nộ, Bổ Huyết, Bổ Khí, Giáp Xên, Ẩn Danh, Item Siêu Cấp, Máy dò CSKB, Khẩu trang, Thức ăn, Nước mía, TĐLT...).\n");
+        } else {
+            for (Item it : items) {
+                boolean active = player.autoUseItemIds.contains(it.template.id);
+                sb.append(active ? "|1|[ĐANG BẬT] " : "|2|[Đang tắt] ")
+                        .append(it.template.name).append(" (x").append(it.quantity).append(")\n");
+            }
+        }
+        sb.append("|0|Khi bật, hệ thống sẽ tự động sử dụng lại vật phẩm ngay khi hết hiệu lực!");
+        List<String> opts = new ArrayList<>();
+        for (Item it : items) {
+            boolean active = player.autoUseItemIds.contains(it.template.id);
+            opts.add(it.template.name + "\n" + (active ? "[Tắt Auto]" : "[Bật Auto]"));
+        }
+        opts.add("Tắt Tất Cả\nAuto Item");
+        opts.add("Quay lại");
+        NpcService.gI().createMenuConMeo(player, 9917, -1, sb.toString(), opts.toArray(new String[0]));
     }
 
     private static int getPendingEquipSetIndex(Player player) {

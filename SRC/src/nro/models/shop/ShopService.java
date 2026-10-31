@@ -69,6 +69,12 @@ public class ShopService {
             for (TabShop tabShop : shop.tabShops) {
                 for (ItemShop item : tabShop.itemShops) {
                     switch (item.temp.id) {
+                        case 379:// máy dò capsule kỳ bí
+                            if ("BUNMA_FUTURE".equals(tagName)) {
+                                item.cost = 50_000_000;
+                                item.typeSell = COST_GOLD;
+                            }
+                            break;
                         case 1627:// hành trang
                             if (player.inventory.itemsBag.size() >= 35) {
                                 item.cost = ((player.inventory.itemsBag.size() - 35) + 1) * 2;

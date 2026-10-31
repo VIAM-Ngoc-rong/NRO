@@ -476,6 +476,15 @@ public class Command {
                 nro.models.npc.NpcFactory.openMenuSelectBossAction(player, -999);
                 return true;
             }
+            case "ahs", "autohoisinh", "hoisinh" -> {
+                player.isAutoRevive = !player.isAutoRevive;
+                Service.gI().sendThongBao(player, "Auto Hồi Sinh (Phím E): " + (player.isAutoRevive ? "[Bật]" : "[Tắt]"));
+                return true;
+            }
+            case "autoitem", "itemauto" -> {
+                nro.models.npc.NpcFactory.openMenuAutoUseItem(player);
+                return true;
+            }
             case "x", "auto", "menu", "tienich", "caidat", "hotro" -> {
                 nro.models.npc.NpcFactory.openMenuTienIch(player);
                 return true;
