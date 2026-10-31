@@ -892,6 +892,19 @@ public class NPoint {
             if (maxPower > 0 && this.power > maxPower) {
                 this.power = maxPower;
             }
+            int maxHpMp = getHpMpLimit();
+            if (maxHpMp > 0) {
+                if (this.hpg > maxHpMp) {
+                    this.hpg = maxHpMp;
+                }
+                if (this.mpg > maxHpMp) {
+                    this.mpg = maxHpMp;
+                }
+            }
+            int maxDame = getDameLimit();
+            if (maxDame > 0 && this.dameg > maxDame) {
+                this.dameg = maxDame;
+            }
         }
         if (this.player.setClothes != null) {
             this.player.setClothes.setup();
@@ -1036,27 +1049,6 @@ public class NPoint {
                 hpMax += (hpMax * percent / 100L);
             }
         }
-        // Xử lý pet mabư
-        if (this.player.isPet && ((Pet) this.player).typePet == 1 && ((Pet) this.player).master.fusion.typeFusion != ConstPlayer.NON_FUSION) {
-            hpMax += (hpMax * 20 / 100L);
-        }
-
-        // Xử lý pet Uub
-        if (this.player.isPet && ((Pet) this.player).typePet == 2 && ((Pet) this.player).master.fusion.typeFusion != ConstPlayer.NON_FUSION) {
-            hpMax += (hpMax * 20 / 100L);
-        }
-        // Xử lý pet vageta
-        if (this.player.isPet && ((Pet) this.player).typePet == 3 && ((Pet) this.player).master.fusion.typeFusion != ConstPlayer.NON_FUSION) {
-            hpMax += (hpMax * 20 / 100L);
-        }
-        // Xử lý pet jiren
-        if (this.player.isPet && ((Pet) this.player).typePet == 4 && ((Pet) this.player).master.fusion.typeFusion != ConstPlayer.NON_FUSION) {
-            hpMax += (hpMax * 20 / 100L);
-        }
-        // Xử lý pet broly (+30% chỉ số khi hợp thể)
-        if (this.player.isPet && ((Pet) this.player).typePet == 5 && ((Pet) this.player).master.fusion.typeFusion != ConstPlayer.NON_FUSION) {
-            hpMax += (hpMax * 30 / 100L);
-        }
 
         // Xử lý phù
         if (this.player.zone != null && MapService.gI().isMapBlackBallWar(this.player.zone.map.mapId)) {
@@ -1078,8 +1070,22 @@ public class NPoint {
             hpMax += 1_000_000;
         }
 
+        // Hệ số hợp thể trên tổng chỉ số đệ tử:
+        // - Đệ cấp 1 (typePet == 0): 100% (chỉ cộng chỉ số đệ, không thêm gì cả)
+        // - Đệ cấp 2 (typePet == 1..4): 115% chỉ số tổng của đệ tử
+        // - Đệ cấp 3 (typePet == 5): 130% chỉ số tổng của đệ tử
+        if (this.player.isPet && ((Pet) this.player).master != null
+                && ((Pet) this.player).master.fusion.typeFusion != ConstPlayer.NON_FUSION) {
+            byte typePet = ((Pet) this.player).typePet;
+            if (typePet >= 1 && typePet <= 4) {
+                hpMax = (hpMax * 115L / 100L);
+            } else if (typePet == 5) {
+                hpMax = (hpMax * 130L / 100L);
+            }
+        }
+
         // Xử lý +hp đệ
-        if (this.player.fusion.typeFusion != ConstPlayer.NON_FUSION) {
+        if (this.player.fusion.typeFusion != ConstPlayer.NON_FUSION && this.player.pet != null) {
             hpMax += this.player.pet.nPoint.hpMax;
         }
 
@@ -1188,32 +1194,6 @@ public class NPoint {
             mpMax += (mpMax * 10 / 100L);
         }
 
-        // Xử lý pet mabu
-        if (this.player.isPet && ((Pet) this.player).typePet == 1
-                && ((Pet) this.player).master.fusion.typeFusion != ConstPlayer.NON_FUSION) {
-            mpMax += (mpMax * 20 / 100L);
-        }
-        // Xử lý pet Uub
-        if (this.player.isPet && ((Pet) this.player).typePet == 2
-                && ((Pet) this.player).master.fusion.typeFusion != ConstPlayer.NON_FUSION) {
-            mpMax += (mpMax * 20 / 100L);
-        }
-        // Xử lý pet beer
-        if (this.player.isPet && ((Pet) this.player).typePet == 3
-                && ((Pet) this.player).master.fusion.typeFusion != ConstPlayer.NON_FUSION) {
-            mpMax += (mpMax * 20 / 100L);
-        }
-        // Xử lý pet jiren
-        if (this.player.isPet && ((Pet) this.player).typePet == 4
-                && ((Pet) this.player).master.fusion.typeFusion != ConstPlayer.NON_FUSION) {
-            mpMax += (mpMax * 20 / 100L);
-        }
-        // Xử lý pet broly (+30% chỉ số khi hợp thể)
-        if (this.player.isPet && ((Pet) this.player).typePet == 5
-                && ((Pet) this.player).master.fusion.typeFusion != ConstPlayer.NON_FUSION) {
-            mpMax += (mpMax * 30 / 100L);
-        }
-
         // Xử lý phù
         if (this.player.zone
                 != null && MapService.gI()
@@ -1236,9 +1216,22 @@ public class NPoint {
             mpMax += (mpMax * 10L / 100L);
         }
 
+        // Hệ số hợp thể trên tổng chỉ số đệ tử:
+        // - Đệ cấp 1 (typePet == 0): 100% (chỉ cộng chỉ số đệ, không thêm gì cả)
+        // - Đệ cấp 2 (typePet == 1..4): 115% chỉ số tổng của đệ tử
+        // - Đệ cấp 3 (typePet == 5): 130% chỉ số tổng của đệ tử
+        if (this.player.isPet && ((Pet) this.player).master != null
+                && ((Pet) this.player).master.fusion.typeFusion != ConstPlayer.NON_FUSION) {
+            byte typePet = ((Pet) this.player).typePet;
+            if (typePet >= 1 && typePet <= 4) {
+                mpMax = (mpMax * 115L / 100L);
+            } else if (typePet == 5) {
+                mpMax = (mpMax * 130L / 100L);
+            }
+        }
+
         // Xử lý hợp thể
-        if (this.player.fusion.typeFusion
-                != 0) {
+        if (this.player.fusion.typeFusion != 0 && this.player.pet != null) {
             mpMax += this.player.pet.nPoint.mpMax;
         }
 
@@ -1324,27 +1317,6 @@ public class NPoint {
                     dame += (dame * tl / 100L);
                 }
             }
-        }
-        // Xử lý pet mabư
-        if (this.player.isPet && ((Pet) this.player).typePet == 1 && ((Pet) this.player).master.fusion.typeFusion != ConstPlayer.NON_FUSION) {
-            dame += (dame * 20 / 100L);
-        }
-
-        // Xử lý pet Uub
-        if (this.player.isPet && ((Pet) this.player).typePet == 2 && ((Pet) this.player).master.fusion.typeFusion != ConstPlayer.NON_FUSION) {
-            dame += (dame * 20 / 100L);
-        }
-        // Xử lý pet beer
-        if (this.player.isPet && ((Pet) this.player).typePet == 3 && ((Pet) this.player).master.fusion.typeFusion != ConstPlayer.NON_FUSION) {
-            dame += (dame * 20 / 100L);
-        }
-        // Xử lý pet jiren
-        if (this.player.isPet && ((Pet) this.player).typePet == 4 && ((Pet) this.player).master.fusion.typeFusion != ConstPlayer.NON_FUSION) {
-            dame += (dame * 20 / 100L);
-        }
-        // Xử lý pet broly (+30% chỉ số khi hợp thể)
-        if (this.player.isPet && ((Pet) this.player).typePet == 5 && ((Pet) this.player).master.fusion.typeFusion != ConstPlayer.NON_FUSION) {
-            dame += (dame * 30 / 100L);
         }
 
         // Xử lý set tinh ấn
@@ -1469,8 +1441,22 @@ public class NPoint {
             dame *= this.player.effectSkin.xDame;
         }
 
+        // Hệ số hợp thể trên tổng chỉ số đệ tử:
+        // - Đệ cấp 1 (typePet == 0): 100% (chỉ cộng chỉ số đệ, không thêm gì cả)
+        // - Đệ cấp 2 (typePet == 1..4): 115% chỉ số tổng của đệ tử
+        // - Đệ cấp 3 (typePet == 5): 130% chỉ số tổng của đệ tử
+        if (this.player.isPet && ((Pet) this.player).master != null
+                && ((Pet) this.player).master.fusion.typeFusion != ConstPlayer.NON_FUSION) {
+            byte typePet = ((Pet) this.player).typePet;
+            if (typePet >= 1 && typePet <= 4) {
+                dame = (dame * 115L / 100L);
+            } else if (typePet == 5) {
+                dame = (dame * 130L / 100L);
+            }
+        }
+
         // Xử lý hợp thể
-        if (this.player.fusion.typeFusion != 0) {
+        if (this.player.fusion.typeFusion != 0 && this.player.pet != null) {
             dame += this.player.pet.nPoint.dame;
         }
 
@@ -2010,8 +1996,16 @@ public class NPoint {
         }
     }
 
+    public boolean hasUnmaxedBaseStats() {
+        return this.hpg < getHpMpLimit()
+                || this.mpg < getHpMpLimit()
+                || this.dameg < getDameLimit()
+                || this.defg < getDefLimit()
+                || this.critg < getCritLimit();
+    }
+
     public long calSucManhTiemNang(long tiemNang) {
-        if (power < getPowerLimit()) {
+        if (power < getPowerLimit() || hasUnmaxedBaseStats()) {
             if (this.tlTNSM != null) {
                 for (Integer tl : this.tlTNSM) {
                     if (tl != null) {
@@ -2278,11 +2272,9 @@ public class NPoint {
             case 8:
                 return 550000;
             case 9:
-                return 575000;
             case 10:
-                return 600000;
             case 11:
-                return 650000;
+                return 575000;
             default:
                 return 0;
         }
@@ -2309,11 +2301,9 @@ public class NPoint {
             case 8:
                 return 25000;
             case 9:
-                return 26000;
             case 10:
-                return 28000;
             case 11:
-                return 30000;
+                return 26000;
             default:
                 return 0;
         }

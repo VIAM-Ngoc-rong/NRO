@@ -1804,11 +1804,20 @@ public class NpcFactory {
                     "Quay lại");
             return;
         }
+        byte tp = player.pet.typePet;
+        String tierInfo = tp == 5 ? "Đệ Cấp 3 (Hợp thể: 130% tổng chỉ số đệ)"
+                : (tp >= 1 && tp <= 4) ? "Đệ Cấp 2 (Hợp thể: 115% tổng chỉ số đệ)"
+                : "Đệ Cấp 1 (Hợp thể: 100% chỉ số đệ)";
         String npcSay = "|7|=== QUẢN LÝ ĐỆ TỬ ===\n"
-                + "|2|Tên: " + player.pet.name + " | Sức mạnh: " + Util.numberToMoney(player.pet.nPoint.power) + "\n"
-                + "|1|HP: " + Util.numberToMoney(player.pet.nPoint.hpMax)
-                + " | KI: " + Util.numberToMoney(player.pet.nPoint.mpMax)
-                + " | SĐ: " + Util.numberToMoney(player.pet.nPoint.dame);
+                + "|2|Tên: " + player.pet.name + " | Bậc: |1|" + tierInfo + "\n"
+                + "|2|Sức mạnh: |1|" + Util.numberToMoney(player.pet.nPoint.power)
+                + " |2|| Tiềm năng: |1|" + Util.numberToMoney(player.pet.nPoint.tiemNang) + "\n"
+                + "|2|Chỉ số gốc: |1|HP " + Util.numberToMoney(player.pet.nPoint.hpg) + "/" + Util.numberToMoney(player.pet.nPoint.getHpMpLimit())
+                + " | KI " + Util.numberToMoney(player.pet.nPoint.mpg) + "/" + Util.numberToMoney(player.pet.nPoint.getHpMpLimit())
+                + " | SĐ " + Util.numberToMoney(player.pet.nPoint.dameg) + "/" + Util.numberToMoney(player.pet.nPoint.getDameLimit()) + "\n"
+                + "|1|Tổng HP: " + Util.numberToMoney(player.pet.nPoint.hpMax)
+                + " | Tổng KI: " + Util.numberToMoney(player.pet.nPoint.mpMax)
+                + " | Tổng SĐ: " + Util.numberToMoney(player.pet.nPoint.dame);
         NpcService.gI().createMenuConMeo(player, 9902, -1, npcSay,
                 "Đi theo",
                 "Bảo vệ",

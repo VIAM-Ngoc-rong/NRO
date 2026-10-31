@@ -955,17 +955,19 @@ public class Service {
                 if (petParam > 0) {
                     switch (type) {
                         case 1:
-                            player.nPoint.tiemNangUp(petParam);
+                            player.nPoint.tiemNangUp(param);
                             break;
                         case 2:
                             player.nPoint.powerUp(petParam);
-                            player.nPoint.tiemNangUp(petParam);
+                            player.nPoint.tiemNangUp(param);
                             break;
                         default:
                             player.nPoint.powerUp(petParam);
                             break;
                     }
                 }
+            } else if ((type == 1 || type == 2) && player.nPoint.hasUnmaxedBaseStats()) {
+                player.nPoint.tiemNangUp(param);
             }
 
             Player master = ((Pet) player).master;
@@ -982,6 +984,9 @@ public class Service {
 
             long maxPower = master.nPoint.getPowerLimit();
             if (master.nPoint.power >= maxPower) {
+                if ((type == 1 || type == 2) && master.nPoint.hasUnmaxedBaseStats()) {
+                    addSMTN(master, (byte) 1, masterParam, true);
+                }
                 return;
             }
             if (master.nPoint.power + masterParam > maxPower) {
@@ -999,13 +1004,15 @@ public class Service {
             long maxPower = player.nPoint.getPowerLimit();
 
             if (player.nPoint.power >= maxPower) {
+                if ((type == 1 || type == 2) && player.nPoint.hasUnmaxedBaseStats()) {
+                    player.nPoint.tiemNangUp(param);
+                    PlayerService.gI().sendTNSM(player, (byte) 1, param);
+                }
                 return;
             }
-            if (player.nPoint.power + param > maxPower) {
-                param = maxPower - player.nPoint.power;
-                if (param <= 0) {
-                    return;
-                }
+            long powerAdd = param;
+            if (player.nPoint.power + powerAdd > maxPower) {
+                powerAdd = maxPower - player.nPoint.power;
             }
 
             switch (type) {
@@ -1013,11 +1020,15 @@ public class Service {
                     player.nPoint.tiemNangUp(param);
                     break;
                 case 2:
-                    player.nPoint.powerUp(param);
+                    if (powerAdd > 0) {
+                        player.nPoint.powerUp(powerAdd);
+                    }
                     player.nPoint.tiemNangUp(param);
                     break;
                 default:
-                    player.nPoint.powerUp(param);
+                    if (powerAdd > 0) {
+                        player.nPoint.powerUp(powerAdd);
+                    }
                     break;
             }
 

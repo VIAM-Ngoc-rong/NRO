@@ -783,8 +783,35 @@ public class Pet extends Player {
 
     private void increasePoint() {
         if (this.nPoint != null && Util.canDoWithTime(lastTimeIncreasePoint, 0)) {
+            int maxHpMp = this.nPoint.getHpMpLimit();
+            int maxDame = this.nPoint.getDameLimit();
             for (int i = 0; i < 20; i++) {
-                this.nPoint.increasePoint((byte) Util.nextInt(0, 4), (short) 1);
+                if (this.nPoint.tiemNang <= 0) {
+                    break;
+                }
+                boolean needHp = this.nPoint.hpg < maxHpMp;
+                boolean needMp = this.nPoint.mpg < maxHpMp;
+                boolean needDame = this.nPoint.dameg < maxDame;
+                if (needHp || needMp || needDame) {
+                    byte type;
+                    int r = Util.nextInt(0, 2);
+                    if (r == 0 && needHp) {
+                        type = 0;
+                    } else if (r == 1 && needMp) {
+                        type = 1;
+                    } else if (needDame) {
+                        type = 2;
+                    } else if (needHp) {
+                        type = 0;
+                    } else {
+                        type = 1;
+                    }
+                    short step = (short) (this.nPoint.tiemNang > 500_000_000L ? 100
+                            : this.nPoint.tiemNang > 50_000_000L ? 10 : 1);
+                    this.nPoint.increasePoint(type, step);
+                } else {
+                    this.nPoint.increasePoint((byte) Util.nextInt(3, 4), (short) 1);
+                }
             }
             lastTimeIncreasePoint = System.currentTimeMillis();
         }
