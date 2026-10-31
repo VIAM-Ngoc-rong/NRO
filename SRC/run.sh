@@ -109,6 +109,8 @@ if [ -n "$JAVAC_BIN" ]; then
         src/nro/models/server/AdminWebServer.java
     $JAVAC_BIN -encoding UTF-8 -proc:none -cp "build/classes:lib/*:20.jar" -d build/classes \
         src/nro/models/data/LocalManager.java \
+        src/nro/models/data/DataGame.java \
+        src/nro/models/data/ItemData.java \
         src/nro/models/database/ShopDAO.java \
         src/nro/models/services/ItemService.java \
         src/nro/models/boss/Boss.java \
