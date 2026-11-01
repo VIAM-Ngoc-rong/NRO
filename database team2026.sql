@@ -11399,7 +11399,13 @@ INSERT INTO `task_main_template` (`id`, `NAME`, `detail`) VALUES
 (26, 'Chạm trán Xên bọ hung', 'Đến thị trấn Ginder\nTiêu diệt Xên Bọ Hung cấp 1\nTiêu diệt Xên Bọ Hung cấp 2\nTiêu diệt Xên Bọ Hung hoàn thiện\nCùng 2 đồng bang diệt 700 Xên con cấp 8\nBáo với Bunma tương lai\n- Thưởng 1.000.000 sức mạnh\n- Thưởng 1.000.000 tiềm năng'),
 (27, 'Cuộc dạo chơi của xên', 'Cẩn thận !!!\nNhững vị khách không mời mà tới\nthường tỏ ra nguy hiểm'),
 (28, 'Cuộc đối đầu không cân sức', 'Vào lúc 12h trưa các ngày, bạn đến gặp NPC Ô sin tại map Đại hội võ thuật.'),
-(29, '..', '...');
+(29, 'Cuộc chiến cuối cùng với Ma Bư', 'Ma Bư đã biến đổi thành các hình thái đáng sợ hơn!\nHãy kêu gọi đồng bang cùng tiêu diệt bè lũ Xên con, Mabư Mập và Kid Bư.\n- Đi cùng đồng bang trong khu: X2-X3 tiến độ quái & tính chung hạ Boss!\n- Thưởng: 10 Thỏi vàng + 500 Hồng ngọc + 50Tr SM/TN'),
+(30, 'Sự trả thù của Đế chế Băng Giá', 'Cooler cùng Fide Hoàng Kim đã kéo quân xâm lược!\nHãy cùng các thành viên trong Bang hội tiến vào Hành tinh Cold tiêu diệt chúng.\n- Đi cùng đồng bang trong khu: X2-X3 tiến độ quái & tính chung hạ Boss!\n- Thưởng: 20 Thỏi vàng + 1.000 Hồng ngọc + 100Tr SM/TN'),
+(31, 'Kế hoạch Không Người Trần', 'Thế giới Tương Lai đang lâm nguy trước Black Goku (Super Saiyan Rosé) và Zamasu!\nHãy lập tổ đội cùng đồng bang giải cứu Tương Lai.\n- Đi cùng đồng bang trong khu: X2-X3 tiến độ quái & tính chung hạ Boss!\n- Thưởng: 30 Thỏi vàng + 1.500 Hồng ngọc + 150Tr SM/TN'),
+(32, 'Giải Đấu Sức Mạnh - Bộ 3 Sói', 'Bước vào Giải Đấu Đa Vũ Trụ! Đối đầu Bộ 3 Sói nguy hiểm nhất Vũ Trụ 9: Basil, Lavender và Bergamo.\n- Đi cùng đồng bang trong khu: Tính chung tiến độ hạ Boss (3+ đồng bang nhận X2 điểm Boss)!\n- Thưởng: 40 Thỏi vàng + 2.000 Hồng ngọc + 200Tr SM/TN'),
+(33, 'Ký Sinh Trùng Báo Thù - Baby Vegeta', 'Ký sinh trùng Tuffle Baby đã chiếm xác Vegeta và hóa Khỉ Đột Vàng!\nHãy tập hợp lực lượng Bang hội đẩy lùi hiểm họa.\n- Đi cùng đồng bang trong khu: X2-X3 tiến độ quái & tính chung hạ Boss!\n- Thưởng: 50 Thỏi vàng + 2.500 Hồng ngọc + 250Tr SM/TN'),
+(34, 'Saiyan Tà Ác Cổ Đại - Cumber', 'Tại Hành Tinh Ngục Tù, Saiyan Tà Ác cổ đại Cumber đã phá vỡ phong ấn!\nHãy sát cánh cùng những chiến binh mạnh nhất tiêu diệt Cumber và Super Cumber.\n- Đi cùng đồng bang trong khu: X2-X3 tiến độ quái & tính chung hạ Boss!\n- Thưởng: 60 Thỏi vàng + 3.000 Hồng ngọc + 300Tr SM/TN'),
+(35, 'Huyền Thoại Ngọc Rồng', 'Xin chúc mừng! Bạn đã vượt qua mọi thử thách khắc nghiệt nhất và trở thành Huyền Thoại!');
 
 -- --------------------------------------------------------
 
@@ -11547,7 +11553,39 @@ INSERT INTO `task_sub_template` (`task_main_id`, `NAME`, `max_count`, `notify`, 
 (28, 'Hạ Drabura lần 2', 10, 'Tiếp tục tiêu diệt Drabura', -1, -1, 122),
 (28, 'Hạ Mabư', 10, 'Tiếp theo là Mabư', -1, -1, 123),
 (28, 'Báo cáo với Ôsin', 1, 'Chúc mừng bạn, giờ hãy quay về báo cáo với Ôsin', 44, -1, 124),
-(29, 'bạn đã xong nhiệm vụ rồi', -1, '.....', -1, -1, 125);
+(29, 'Nói chuyện với Ôsin tại Đại hội võ thuật', 1, 'Hãy đến Đại hội võ thuật gặp Ôsin nhận nhiệm vụ', 44, 52, 125),
+(29, 'Cùng đồng bang diệt 1200 Xên con cấp 8', 1200, 'Đi cùng đồng bang trong khu để X2-X3 tốc độ!', -1, 100, 126),
+(29, 'Phối hợp hạ 5 Kid Bư (hoặc Mabư 14h)', 5, 'Đi cùng đồng bang trong khu sẽ được tính chung hạ Boss!', -1, -1, 127),
+(29, 'Phối hợp hạ 3 Mabư Mập (hoặc Super Bư)', 3, 'Tiếp tục cùng đồng đội truy lùng Mabư Mập / Super Bư', -1, -1, 128),
+(29, 'Báo cáo chiến công với Ôsin', 1, 'Quay về Đại hội võ thuật báo cáo với Ôsin', 44, 52, 129),
+(30, 'Đến Cánh đồng tuyết (Hành tinh Cold)', 1, 'Di chuyển tới Cánh đồng tuyết tại Hành tinh Cold', -1, 105, 130),
+(30, 'Cùng đồng bang diệt 1500 Abo & Kado tại Cold', 1500, 'Đi cùng đồng bang trong khu để X2-X3 tốc độ!', -1, 106, 131),
+(30, 'Phối hợp tiêu diệt 3 Cooler cấp 1', 3, 'Cùng đồng bang săn Cooler cấp 1 tại Hành tinh Cold', -1, 107, 132),
+(30, 'Phối hợp tiêu diệt 3 Cooler cấp 2', 3, 'Tiếp tục tiêu diệt Cooler cấp 2 (Final Form)', -1, 108, 133),
+(30, 'Phối hợp tiêu diệt 3 Fide Hoàng Kim', 3, 'Hợp sức tiêu diệt Golden Frieza (Fide Hoàng Kim)', -1, -1, 134),
+(30, 'Báo cáo với %10', 1, 'Quay về %11 báo cáo với %10', -5, -9, 135),
+(31, 'Đến Tương Lai gặp Bunma Tương Lai', 1, 'Đến Tương Lai nói chuyện với Bunma', 37, 102, 136),
+(31, 'Cùng đồng bang diệt 2000 Tai Tím & Đá Xanh', 2000, 'Đi cùng đồng bang trong khu để X2-X3 tốc độ!', -1, 110, 137),
+(31, 'Phối hợp tiêu diệt 4 Black Goku', 4, 'Cùng đồng đội tiêu diệt Black Goku tại Tương Lai', -1, 92, 138),
+(31, 'Phối hợp tiêu diệt 4 Super Black Goku', 4, 'Tiếp tục tiêu diệt Super Black Goku (Rosé)', -1, 93, 139),
+(31, 'Phối hợp tiêu diệt 4 Thần Zamasu', 4, 'Hợp sức đánh bại Thần bất tử Zamasu', -1, 94, 140),
+(31, 'Báo cáo với Bunma Tương Lai', 1, 'Quay về gặp Bunma Tương Lai nhận thưởng', 37, 102, 141),
+(32, 'Gặp Ôsin nhận lệnh Giải Đấu Sức Mạnh', 1, 'Đến Đại hội võ thuật gặp Ôsin', 44, 52, 142),
+(32, 'Phối hợp hạ 4 Sói Basil', 4, 'Cùng đồng bang đánh bại Sói Basil', -1, -1, 143),
+(32, 'Phối hợp hạ 4 Sói Lavender', 4, 'Cùng đồng bang đánh bại Sói Lavender', -1, -1, 144),
+(32, 'Phối hợp hạ 4 Sói Bergamo', 4, 'Cùng đồng bang đánh bại Sói Khổng Lồ Bergamo', -1, -1, 145),
+(32, 'Báo cáo chiến thắng với Ôsin', 1, 'Quay về báo cáo với Ôsin tại Đại hội võ thuật', 44, 52, 146),
+(33, 'Cùng đồng bang diệt 2500 quái Thánh Địa', 2500, 'Đến Bắc/Nam Thánh Địa cùng đồng bang diệt quái (X2-X3)', -1, 158, 147),
+(33, 'Phối hợp tiêu diệt 4 Baby Vegeta', 4, 'Cùng đồng đội tiêu diệt Baby cấp 1', -1, -1, 148),
+(33, 'Phối hợp tiêu diệt 4 Super Baby 2', 4, 'Tiếp tục tiêu diệt Super Baby 2', -1, -1, 149),
+(33, 'Phối hợp tiêu diệt 4 Baby Khỉ Đột Vàng', 4, 'Hợp lực hạ gục Khỉ Đột Vàng Baby', -1, -1, 150),
+(33, 'Báo cáo với %10', 1, 'Quay về %11 báo cáo với %10', -5, -9, 151),
+(34, 'Tiến vào Hành Tinh Ngục Tù', 1, 'Tìm đường tiến vào Hành Tinh Ngục Tù', -1, 155, 152),
+(34, 'Cùng đồng bang diệt 3000 quái Ngục Tù', 3000, 'Diệt Khỉ Lông Xanh & Taburine Đỏ tại Ngục Tù (X2-X3 cùng bang)', -1, 155, 153),
+(34, 'Phối hợp tiêu diệt 5 Saiyan Tà Ác Cumber', 5, 'Cùng đồng đội hạ gục Cumber tại Hành Tinh Ngục Tù', -1, 155, 154),
+(34, 'Phối hợp tiêu diệt 5 Super Cumber', 5, 'Hợp sức đánh bại Super Cumber tối thượng!', -1, 155, 155),
+(34, 'Báo cáo với Bunma Tương Lai', 1, 'Quay về báo cáo với Bunma Tương Lai hoàn tất huyền thoại!', 37, 102, 156),
+(35, 'Bạn đã hoàn thành toàn bộ nhiệm vụ cốt truyện!', -1, 'Chúc mừng Huyền Thoại Ngọc Rồng!', -1, -1, 157);
 
 --
 -- Chỉ mục cho các bảng đã đổ

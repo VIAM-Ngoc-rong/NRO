@@ -161,6 +161,9 @@ public class KidBuWorld extends Boss {
     @Override
     public void die(Player plKill) {
         this.killedByPlayer = true;
+        if (plKill != null && !plKill.isBot) {
+            reward(plKill);
+        }
         this.changeStatus(BossStatus.DIE);
     }
 

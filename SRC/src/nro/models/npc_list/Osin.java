@@ -26,7 +26,9 @@ public class Osin extends Npc {
     @Override
     public void openBaseMenu(Player player) {
         if (canOpenNpc(player)) {
-            TaskService.gI().checkDoneTaskTalkNpc(player, this);
+            if (TaskService.gI().checkDoneTaskTalkNpc(player, this)) {
+                return;
+            }
             switch (this.mapId) {
                 case 50 ->
                     this.createOtherMenu(player, ConstNpc.BASE_MENU, "Ta có thể giúp gì cho ngươi ?",

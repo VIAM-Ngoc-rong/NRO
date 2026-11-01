@@ -175,7 +175,9 @@ public class TaskService {
                         || doneTask(player, ConstTask.TASK_18_5)
                         || doneTask(player, ConstTask.TASK_19_3)
                         || doneTask(player, ConstTask.TASK_20_6)
-                        || doneTask(player, ConstTask.TASK_21_4));
+                        || doneTask(player, ConstTask.TASK_21_4)
+                        || doneTask(player, ConstTask.TASK_30_5)
+                        || doneTask(player, ConstTask.TASK_33_4));
             }
             case ConstNpc.TRUONG_LAO_GURU -> {
                 return player.gender == ConstPlayer.NAMEC && (doneTask(player, ConstTask.TASK_9_1)
@@ -192,7 +194,9 @@ public class TaskService {
                         || doneTask(player, ConstTask.TASK_18_5)
                         || doneTask(player, ConstTask.TASK_19_3)
                         || doneTask(player, ConstTask.TASK_20_6)
-                        || doneTask(player, ConstTask.TASK_21_4));
+                        || doneTask(player, ConstTask.TASK_21_4)
+                        || doneTask(player, ConstTask.TASK_30_5)
+                        || doneTask(player, ConstTask.TASK_33_4));
             }
             case ConstNpc.VUA_VEGETA -> {
                 return player.gender == ConstPlayer.XAYDA && (doneTask(player, ConstTask.TASK_9_1)
@@ -209,7 +213,9 @@ public class TaskService {
                         || doneTask(player, ConstTask.TASK_18_5)
                         || doneTask(player, ConstTask.TASK_19_3)
                         || doneTask(player, ConstTask.TASK_20_6)
-                        || doneTask(player, ConstTask.TASK_21_4));
+                        || doneTask(player, ConstTask.TASK_21_4)
+                        || doneTask(player, ConstTask.TASK_30_5)
+                        || doneTask(player, ConstTask.TASK_33_4));
             }
             case ConstNpc.ONG_GOHAN, ConstNpc.ONG_MOORI, ConstNpc.ONG_PARAGUS -> {
                 return (doneTask(player, ConstTask.TASK_0_2)
@@ -240,7 +246,10 @@ public class TaskService {
                         || doneTask(player, ConstTask.TASK_25_5)
                         || doneTask(player, ConstTask.TASK_26_5)
                         || doneTask(player, ConstTask.TASK_27_5)
-                        || doneTask(player, ConstTask.TASK_28_5));
+                        || doneTask(player, ConstTask.TASK_28_5)
+                        || doneTask(player, ConstTask.TASK_31_0)
+                        || doneTask(player, ConstTask.TASK_31_5)
+                        || doneTask(player, ConstTask.TASK_34_4));
             }
             case ConstNpc.CALICK -> {
                 return doneTask(player, ConstTask.TASK_22_1);
@@ -250,7 +259,11 @@ public class TaskService {
             }
             case ConstNpc.OSIN -> {
                 return doneTask(player, ConstTask.TASK_28_0)
-                        || doneTask(player, ConstTask.TASK_28_7);
+                        || doneTask(player, ConstTask.TASK_28_7)
+                        || doneTask(player, ConstTask.TASK_29_0)
+                        || doneTask(player, ConstTask.TASK_29_4)
+                        || doneTask(player, ConstTask.TASK_32_0)
+                        || doneTask(player, ConstTask.TASK_32_4);
             }
         }
         return false;
@@ -345,6 +358,10 @@ public class TaskService {
                     doneTask(player, ConstTask.TASK_26_0);
                 case 103 ->
                     doneTask(player, ConstTask.TASK_27_2);
+                case 105 ->
+                    doneTask(player, ConstTask.TASK_30_0);
+                case 155 ->
+                    doneTask(player, ConstTask.TASK_34_0);
             }
         }
     }
@@ -399,9 +416,103 @@ public class TaskService {
         }
     }
 
+    /**
+     * Hỗ trợ liên kết người chơi / Bang hội khi tiêu diệt Boss (NV 29 -> 34):
+     * - Tất cả thành viên cùng Bang hội (hoặc đang làm cùng bước nhiệm vụ) trong cùng Khu vực (Zone)
+     *   đều được tính tiến độ khi Boss bị hạ.
+     * - Nếu có từ 3 thành viên cùng Bang hội trở lên trong khu vực, mỗi thành viên được tính X2 tiến độ (+2)!
+     */
+    private void completeCoopBossTask(Player killerOwner, Boss boss, int idTaskCustom) {
+        if (killerOwner == null) {
+            return;
+        }
+        List<Player> receivers = new ArrayList<>();
+        int clanCountInZone = 0;
+        if (boss != null && boss.zone != null) {
+            List<Player> playersInZone = boss.zone.getPlayers();
+            for (Player pl : playersInZone) {
+                if (pl == null || !pl.isPl() || pl.isBot || pl.isBoss || pl.isPet) {
+                    continue;
+                }
+                boolean sameClan = killerOwner.clan != null && pl.clan != null && killerOwner.clan.equals(pl.clan);
+                if (sameClan) {
+                    clanCountInZone++;
+                }
+                if (pl.id == killerOwner.id || sameClan || (isCurrentTask(pl, idTaskCustom) && !pl.isDie())) {
+                    if (!receivers.contains(pl)) {
+                        receivers.add(pl);
+                    }
+                }
+            }
+        }
+        if (!receivers.contains(killerOwner)) {
+            receivers.add(killerOwner);
+        }
+        int bonusStep = clanCountInZone >= 3 ? 2 : 1;
+        String bossName = (boss != null && boss.name != null) ? boss.name : "Boss";
+        for (Player member : receivers) {
+            if (isCurrentTask(member, idTaskCustom)) {
+                for (int i = 0; i < bonusStep; i++) {
+                    doneTask(member, idTaskCustom);
+                }
+                if (bonusStep >= 2) {
+                    Service.gI().sendThongBao(member, "Liên kết Bang Hội (" + clanCountInZone + " TV cùng khu): Nhận X2 tiến độ hạ " + bossName + "!");
+                } else if (member.id != killerOwner.id) {
+                    Service.gI().sendThongBao(member, "Phối hợp cùng đồng đội hạ " + bossName + ": +1 tiến độ nhiệm vụ!");
+                }
+            }
+        }
+    }
+
+    /**
+     * Hỗ trợ liên kết Bang hội khi đánh quái nhiệm vụ khó (NV 29 -> 34):
+     * - 1 mình: +1 tiến độ
+     * - 2 thành viên cùng Bang trong khu: +2 tiến độ (X2 tốc độ)
+     * - 3+ thành viên cùng Bang trong khu: +3 tiến độ (X3 tốc độ) và hỗ trợ +1 cho đồng bang đang cùng bước nhiệm vụ trong khu!
+     */
+    private void doneCoopMobTask(Player player, int idTaskCustom) {
+        if (player == null || !player.isPl() || player.isBot || player.isBoss || player.isPet) {
+            return;
+        }
+        List<Player> clanMatesInZone = new ArrayList<>();
+        if (player.clan != null && player.zone != null) {
+            for (Player pl : player.zone.getPlayers()) {
+                if (pl != null && pl.isPl() && !pl.isBot && pl.clan != null && pl.clan.equals(player.clan)) {
+                    clanMatesInZone.add(pl);
+                }
+            }
+        }
+        int clanSize = clanMatesInZone.size();
+        int selfPoints = clanSize >= 3 ? 3 : (clanSize >= 2 ? 2 : 1);
+        if (isCurrentTask(player, idTaskCustom)) {
+            for (int i = 0; i < selfPoints; i++) {
+                doneTask(player, idTaskCustom);
+            }
+        }
+        // Khi đi cùng nhau từ 2 thành viên Bang hội trở lên, đồng bang cùng khu đang làm chung bước nhiệm vụ cũng được cộng +1
+        if (clanSize >= 2) {
+            for (Player mate : clanMatesInZone) {
+                if (mate.id != player.id && isCurrentTask(mate, idTaskCustom)) {
+                    doneTask(mate, idTaskCustom);
+                }
+            }
+        }
+    }
+
     public void checkDoneTaskKillBoss(Player player, Boss boss) {
+        if (player != null && player.isPet && ((nro.models.player.Pet) player).master != null) {
+            player = ((nro.models.player.Pet) player).master;
+        }
         if (player != null && !player.isBot && !player.isBoss && !player.isPet) {
             AchievementService.gI().checkDoneTask(player, ConstAchievement.TRUM_KET_LIEU_BOSS);
+            if (boss instanceof nro.models.boss.Broly.KidBuWorld
+                    || (boss.name != null && boss.name.toLowerCase().contains("kid bư"))) {
+                completeCoopBossTask(player, boss, ConstTask.TASK_29_2);
+            }
+            if (boss instanceof nro.models.boss.Broly.MabuMapWorld
+                    || (boss.name != null && boss.name.toLowerCase().contains("mabư mập"))) {
+                completeCoopBossTask(player, boss, ConstTask.TASK_29_3);
+            }
             switch ((int) boss.id) {
                 case BossID.KUKU ->
                     doneTask(player, ConstTask.TASK_19_0);
@@ -469,12 +580,63 @@ public class TaskService {
                 }
                 case BossID.YA_CON ->
                     doneTask(player, ConstTask.TASK_28_4);
-                case BossID.MABU_12H ->
+                case BossID.MABU_12H -> {
                     doneTask(player, ConstTask.TASK_28_6);
+                    completeCoopBossTask(player, boss, ConstTask.TASK_29_3);
+                }
+                case BossID.MABU, BossID.SUPERBU -> {
+                    completeCoopBossTask(player, boss, ConstTask.TASK_29_2);
+                    completeCoopBossTask(player, boss, ConstTask.TASK_29_3);
+                }
+                case BossID.MABU_14H -> {
+                    completeCoopBossTask(player, boss, ConstTask.TASK_29_2);
+                    completeCoopBossTask(player, boss, ConstTask.TASK_29_3);
+                }
                 case BossID.SIEU_BO_HUNG -> {
                     switch (boss.currentLevel) {
                         case 1 ->
                             doneTask(player, ConstTask.TASK_27_4);
+                    }
+                }
+                case BossID.COOLER -> {
+                    if (boss.currentLevel == 0) {
+                        completeCoopBossTask(player, boss, ConstTask.TASK_30_2);
+                    } else {
+                        completeCoopBossTask(player, boss, ConstTask.TASK_30_3);
+                    }
+                }
+                case BossID.GOLDEN_FRIEZA ->
+                    completeCoopBossTask(player, boss, ConstTask.TASK_30_4);
+                case BossID.BLACK_GOKU -> {
+                    if (boss.currentLevel == 0) {
+                        completeCoopBossTask(player, boss, ConstTask.TASK_31_2);
+                    } else {
+                        completeCoopBossTask(player, boss, ConstTask.TASK_31_3);
+                    }
+                }
+                case BossID.ZAMASU ->
+                    completeCoopBossTask(player, boss, ConstTask.TASK_31_4);
+                case BossID.BASIL ->
+                    completeCoopBossTask(player, boss, ConstTask.TASK_32_1);
+                case BossID.LAVENDER ->
+                    completeCoopBossTask(player, boss, ConstTask.TASK_32_2);
+                case BossID.BERGAMO ->
+                    completeCoopBossTask(player, boss, ConstTask.TASK_32_3);
+                case BossID.BABY -> {
+                    switch (boss.currentLevel) {
+                        case 0 ->
+                            completeCoopBossTask(player, boss, ConstTask.TASK_33_1);
+                        case 1 ->
+                            completeCoopBossTask(player, boss, ConstTask.TASK_33_2);
+                        default ->
+                            completeCoopBossTask(player, boss, ConstTask.TASK_33_3);
+                    }
+                }
+                case BossID.CUMBER -> {
+                    if (boss.currentLevel == 0) {
+                        completeCoopBossTask(player, boss, ConstTask.TASK_34_2);
+                    } else {
+                        completeCoopBossTask(player, boss, ConstTask.TASK_34_3);
                     }
                 }
             }
@@ -482,7 +644,10 @@ public class TaskService {
     }
 
     public void checkDoneTaskKillMob(Player player, Mob mob) {
-        if (!player.isBoss && !player.isBot && !player.isPet) {
+        if (player != null && player.isPet && ((nro.models.player.Pet) player).master != null) {
+            player = ((nro.models.player.Pet) player).master;
+        }
+        if (player != null && !player.isBoss && !player.isBot && !player.isPet) {
             switch (mob.tempId) {
                 case ConstMob.MOC_NHAN ->
                     doneTask(player, ConstTask.TASK_1_0);
@@ -614,8 +779,20 @@ public class TaskService {
                     doneTask(player, ConstTask.TASK_23_3);
                 case ConstMob.XEN_CON_CAP_5 ->
                     doneTask(player, ConstTask.TASK_25_4);
-                case ConstMob.XEN_CON_CAP_8 ->
+                case ConstMob.XEN_CON_CAP_8 -> {
                     doneTask(player, ConstTask.TASK_26_4);
+                    doneCoopMobTask(player, ConstTask.TASK_29_1);
+                }
+                case ConstMob.ABO, ConstMob.KADO -> {
+                    doneCoopMobTask(player, ConstTask.TASK_30_1);
+                    doneCoopMobTask(player, ConstTask.TASK_33_0);
+                }
+                case ConstMob.TAI_TIM, ConstMob.DA_XANH -> {
+                    doneCoopMobTask(player, ConstTask.TASK_31_1);
+                    doneCoopMobTask(player, ConstTask.TASK_33_0);
+                }
+                case ConstMob.KHI_LONG_XANH, ConstMob.TABURINE_DO ->
+                    doneCoopMobTask(player, ConstTask.TASK_34_1);
             }
         }
     }
@@ -1074,6 +1251,51 @@ public class TaskService {
                 case ConstTask.TASK_28_6:
                     break;
                 case ConstTask.TASK_28_7:
+                    npcSay(player, ConstNpc.OSIN,
+                            "Mabư Béo đã bị đánh bại nhưng tà khí của Ma Bư đã biến đổi thành Kid Bư và Super Bư!\n"
+                            + "Hãy kêu gọi các đồng đội trong Bang hội cùng tiêu diệt chúng!");
+                    break;
+                case ConstTask.TASK_29_0:
+                    npcSay(player, ConstNpc.OSIN,
+                            "Hãy cùng đồng bang tiêu diệt 1200 Xên con cấp 8, sau đó hợp sức hạ 5 Kid Bư và 3 Mabư Mập / Super Bư!\n"
+                            + "(Mẹo: Đi cùng 2-3 thành viên Bang hội trong cùng khu sẽ được X2-X3 tiến độ và tính chung hạ Boss!)");
+                    break;
+                case ConstTask.TASK_29_4:
+                    npcSay(player, ConstNpc.OSIN,
+                            "Làm tốt lắm! Nhưng Đế chế Băng Giá của Cooler và Fide Hoàng Kim đang xâm lược Hành tinh Cold.\n"
+                            + "Hãy cùng Bang hội lên đường ngay!");
+                    break;
+                case ConstTask.TASK_30_5:
+                    npcSay(player, ConstTask.NPC_QUY_LAO,
+                            "Chiến công hiển hách! Thế giới Tương Lai đang gửi tín hiệu cầu cứu vì Black Goku và Zamasu.\n"
+                            + "Con hãy sang Tương Lai gặp Bunma ngay!");
+                    break;
+                case ConstTask.TASK_31_0:
+                    npcSay(player, ConstNpc.BUNMA_TL,
+                            "Cảm ơn các bạn đã tới! Black Goku và Zamasu quá mạnh, hãy lập tổ đội cùng Bang hội để tiêu diệt chúng!");
+                    break;
+                case ConstTask.TASK_31_5:
+                    npcSay(player, ConstNpc.BUNMA_TL,
+                            "Thế giới Tương Lai đã bình yên trở lại! Nghe nói Ôsin đang triệu tập các chiến binh tại Đại hội võ thuật cho Giải Đấu Sức Mạnh!");
+                    break;
+                case ConstTask.TASK_32_0:
+                    npcSay(player, ConstNpc.OSIN,
+                            "Giải Đấu Sức Mạnh Đa Vũ Trụ đã bắt đầu! Đối thủ đầu tiên là Bộ 3 Sói Vũ Trụ 9: Basil, Lavender và Bergamo!\n"
+                            + "Hãy cùng đồng bang xuất chiến!");
+                    break;
+                case ConstTask.TASK_32_4:
+                    npcSay(player, ConstNpc.OSIN,
+                            "Tuyệt vời! Nhưng tại Thánh Địa, ký sinh trùng Tuffle Baby đã chiếm xác Vegeta!\n"
+                            + "Hãy tập hợp toàn Bang hội giải cứu vũ trụ!");
+                    break;
+                case ConstTask.TASK_33_4:
+                    npcSay(player, ConstTask.NPC_QUY_LAO,
+                            "Không ngờ con đã vượt qua được cả Khỉ Đột Vàng Baby!\n"
+                            + "Thử thách cuối cùng đang chờ con tại Hành Tinh Ngục Tù: Saiyan Tà Ác Cổ Đại Cumber!");
+                    break;
+                case ConstTask.TASK_34_4:
+                    npcSay(player, ConstNpc.BUNMA_TL,
+                            "Xin chúc mừng! Bạn và những người đồng đội đã đánh bại cả Super Cumber và trở thành Huyền Thoại Ngọc Rồng!");
                     break;
             }
             InventoryService.gI().sendItemBags(player);
@@ -1134,6 +1356,27 @@ public class TaskService {
             Service.gI().addSMTN(player, (byte) 2, 500L * (player.playerTask.taskMain.id + 1), false);
             player.inventory.gold += (player.playerTask.taskMain.id < 5 && player.playerTask.taskMain.id >= 0) ? 100000 * (player.playerTask.taskMain.id + 1) : 500000;
             Service.gI().sendMoney(player);
+        } else if (player.playerTask.taskMain.id >= 29 && player.playerTask.taskMain.id <= 34) {
+            // Phần thưởng chuỗi nhiệm vụ cốt truyện mở rộng (NV 29 -> NV 34):
+            // Khởi điểm 10 Thỏi vàng + 500 Hồng ngọc, mỗi nhiệm vụ tăng dần thêm 10 TV & 500 Hồng ngọc
+            int tier = player.playerTask.taskMain.id - 28; // 1..6
+            int thoiVangReward = tier * 10;                // 10, 20, 30, 40, 50, 60 Thỏi vàng
+            int rubyReward = tier * 500;                   // 500, 1000, 1500, 2000, 2500, 3000 Hồng ngọc
+            long smtnReward = tier * 50_000_000L;          // 50Tr -> 300Tr SM & TN
+
+            Service.gI().addSMTN(player, (byte) 2, smtnReward, false);
+            player.inventory.ruby = (int) Math.min(2_000_000_000L, (long) player.inventory.ruby + rubyReward);
+            Service.gI().sendMoney(player);
+
+            Item tvItem = ItemService.gI().createNewItem((short) 457, thoiVangReward);
+            if (!InventoryService.gI().addItemBag(player, tvItem)) {
+                InventoryService.gI().addItemBox(player, tvItem);
+                InventoryService.gI().sendItemBox(player);
+                Service.gI().sendThongBao(player, "Hành trang đầy, " + thoiVangReward + " Thỏi vàng thưởng nhiệm vụ đã được chuyển vào Rương đồ!");
+            }
+            InventoryService.gI().sendItemBags(player);
+            Service.gI().sendThongBao(player, "Hoàn thành " + player.playerTask.taskMain.name
+                    + "! Nhận thưởng: " + thoiVangReward + " Thỏi vàng + " + Util.numberToMoney(rubyReward) + " Hồng ngọc!");
         }
     }
 
