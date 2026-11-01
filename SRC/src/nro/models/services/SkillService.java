@@ -106,6 +106,26 @@ public class SkillService {
                 || (selectedSkillTemplateId == Skill.MAKANKOSAPPO && player.playerSkill.prepareLaze)
                 || (selectedSkillTemplateId == Skill.TU_SAT && player.playerSkill.prepareTuSat);
 
+        // Chặn mọi Boss tự chọn Skill Đặc Biệt / Chiêu Tất Sát khi máu > 25% HP hoặc chưa hồi chiêu xong
+        if (!isFinishingPreparedSkill && player.isBoss && player instanceof nro.models.boss.Boss boss) {
+            boolean isSpecial = nro.models.boss.Boss.isBossSpecialSkillId(selectedSkillTemplateId);
+            boolean isLethal = nro.models.boss.Boss.isBossLethalSkillId(selectedSkillTemplateId);
+            if (isSpecial || isLethal) {
+                int pctHp = boss.nPoint != null ? boss.nPoint.getCurrPercentHP() : 100;
+                if (pctHp > 25 || !canUseSkillWithCooldown(player)) {
+                    Skill fallback = boss.selectNormalAttackSkill();
+                    if (fallback == null || fallback == player.playerSkill.skillSelect) {
+                        return false;
+                    }
+                    player.playerSkill.skillSelect = fallback;
+                    selectedSkillTemplateId = fallback.template.id;
+                } else {
+                    boss.usedSpecialSkillOnce = boss.usedSpecialSkillOnce || isSpecial;
+                    boss.usedLethalSkillOnce = boss.usedLethalSkillOnce || isLethal;
+                }
+            }
+        }
+
         if (player.playerSkill.skillSelect.template.type == 2 && canUseSkillWithMana(player) && canUseSkillWithCooldown(player)) {
             if (player.effectSkill != null && player.effectSkill.isHaveEffectSkill()) {
                 return false;
@@ -119,7 +139,7 @@ public class SkillService {
                 && selectedSkillTemplateId != Skill.MAKANKOSAPPO))
                 || (!isFinishingPreparedSkill && plTarget != null && !canAttackPlayer(player, plTarget))
                 || (!isFinishingPreparedSkill && mobTarget != null && mobTarget.isDie())
-                || !canUseSkillWithMana(player) || !canUseSkillWithCooldown(player)) {
+                || !canUseSkillWithMana(player) || (!isFinishingPreparedSkill && !canUseSkillWithCooldown(player))) {
             return false;
         }
         if (player.effectSkill != null && player.effectSkill.isHaveEffectSkill() && player.effectSkill.useTroi) {

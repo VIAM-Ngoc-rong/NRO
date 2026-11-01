@@ -23,11 +23,12 @@ public class Hit extends Boss {
     private long lastTimeNgungDong;
     private long lastTimeTatSat;
     private long lastTimeWipeAll;
+    private long lastTimeSignatureAction;
     private boolean isChargingWipeAll;
     private long lastTimeStartChargeWipe;
-    private boolean triggered75Wipe;
-    private boolean triggered50Wipe;
-    private boolean triggered25Wipe;
+    private boolean usedNgungDongOnce;
+    private boolean usedTatSatOnce;
+    private boolean usedWipeAllOnce;
 
     public Hit() throws Exception {
         super(BossID.HIT, BossesData.HIT);
@@ -36,15 +37,15 @@ public class Hit extends Boss {
     @Override
     protected void resetBase() {
         super.resetBase();
-        long now = System.currentTimeMillis();
-        this.lastTimeNgungDong = now;
-        this.lastTimeTatSat = now;
-        this.lastTimeWipeAll = now;
+        this.lastTimeNgungDong = 0L;
+        this.lastTimeTatSat = 0L;
+        this.lastTimeWipeAll = 0L;
+        this.lastTimeSignatureAction = 0L;
         this.isChargingWipeAll = false;
         this.lastTimeStartChargeWipe = 0L;
-        this.triggered75Wipe = false;
-        this.triggered50Wipe = false;
-        this.triggered25Wipe = false;
+        this.usedNgungDongOnce = false;
+        this.usedTatSatOnce = false;
+        this.usedWipeAllOnce = false;
     }
 
     @Override
@@ -212,37 +213,37 @@ public class Hit extends Boss {
             return;
         }
 
-        // Kiểm tra ngưỡng máu 75%, 50%, 25% hoặc chu kỳ 25 giây để tung chiêu Tiêu Diệt Toàn Bộ Người Chơi
+        // Chỉ mở khóa 3 tuyệt kỹ sát thủ của Hit khi máu dưới 25% HP (<= 25% HP)
+        // Lần đầu xuống <= 25% HP kích hoạt mỗi loại chiêu 1 lần, sau khoảng thời gian hồi chiêu chuẩn giống người chơi (30s / 120s / 300s) mới được dùng tiếp
         int pctHp = this.nPoint.getCurrPercentHP();
-        boolean thresholdWipe = false;
-        if (!this.triggered75Wipe && pctHp <= 75) {
-            this.triggered75Wipe = true;
-            thresholdWipe = true;
-        } else if (!this.triggered50Wipe && pctHp <= 50) {
-            this.triggered50Wipe = true;
-            thresholdWipe = true;
-        } else if (!this.triggered25Wipe && pctHp <= 25) {
-            this.triggered25Wipe = true;
-            thresholdWipe = true;
-        }
-        if ((thresholdWipe || Util.canDoWithTime(this.lastTimeWipeAll, 25000)) && this.hasRealPlayerInZone()) {
-            startChargeTieuDietToanBo();
-            return;
-        }
+        if (pctHp <= 25 && (this.lastTimeSignatureAction == 0L || Util.canDoWithTime(this.lastTimeSignatureAction, 4500))) {
+            // 1. Ngưng Đọng Thời Gian (Hồi chiêu 30s giống Thái Dương Hạ San)
+            if ((this.lastTimeNgungDong == 0L || Util.canDoWithTime(this.lastTimeNgungDong, 30000)) && this.hasRealPlayerInZone()) {
+                this.usedNgungDongOnce = true;
+                this.lastTimeNgungDong = System.currentTimeMillis();
+                this.lastTimeSignatureAction = System.currentTimeMillis();
+                castNgungDongThoiGian();
+                return;
+            }
 
-        // Chu kỳ 14 giây: Ngưng Đọng Thời Gian toàn khu vực
-        if (Util.canDoWithTime(this.lastTimeNgungDong, 14000) && this.hasRealPlayerInZone()) {
-            this.lastTimeNgungDong = System.currentTimeMillis();
-            castNgungDongThoiGian();
-            return;
-        }
+            // 2. Chiêu Tất Sát Xuyên Tim 1 mục tiêu (Hồi chiêu 120s giống Tự Phát Nổ)
+            if (this.lastTimeTatSat == 0L || Util.canDoWithTime(this.lastTimeTatSat, 120000)) {
+                Player plTarget = getPlayerAttack();
+                if (plTarget != null && !plTarget.isDie()) {
+                    this.usedTatSatOnce = true;
+                    this.lastTimeTatSat = System.currentTimeMillis();
+                    this.lastTimeSignatureAction = System.currentTimeMillis();
+                    castChieuTatSat(plTarget);
+                    return;
+                }
+            }
 
-        // Chu kỳ 11 giây: Chiêu Tất Sát Xuyên Tim 1 mục tiêu
-        if (Util.canDoWithTime(this.lastTimeTatSat, 11000)) {
-            Player plTarget = getPlayerAttack();
-            if (plTarget != null && !plTarget.isDie()) {
-                this.lastTimeTatSat = System.currentTimeMillis();
-                castChieuTatSat(plTarget);
+            // 3. Lĩnh Vực Thời Gian Tuyệt Diệt — Tiêu Diệt Toàn Bộ Người Chơi (Hồi chiêu 300s giống Quả Cầu Kênh Khí)
+            if ((this.lastTimeWipeAll == 0L || Util.canDoWithTime(this.lastTimeWipeAll, 300000)) && this.hasRealPlayerInZone()) {
+                this.usedWipeAllOnce = true;
+                this.lastTimeWipeAll = System.currentTimeMillis();
+                this.lastTimeSignatureAction = System.currentTimeMillis();
+                startChargeTieuDietToanBo();
                 return;
             }
         }

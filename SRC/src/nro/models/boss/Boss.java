@@ -43,6 +43,7 @@ import static nro.models.consts.BossType.TET_EVENT;
 import static nro.models.consts.BossType.TRUNGTHU_EVENT;
 import static nro.models.consts.BossType.YARDART;
 import nro.models.network.Message;
+import java.util.ArrayList;
 import java.util.List;
 import nro.models.map.Zone;
 import nro.models.mob.Mob;
@@ -131,6 +132,8 @@ public class Boss extends Player implements IBoss {
     public boolean pendingNotifyJoinMap;
     public long timeTriggerNotifyJoinMap;
     public long lastTimeUseHighHpUltimate;
+    public boolean usedSpecialSkillOnce;
+    public boolean usedLethalSkillOnce;
 
     public Boss(int id, boolean isNotifyDisabled, boolean isZone01SpawnDisabled, BossData... data) throws Exception {
         this(id, data);
@@ -322,24 +325,32 @@ public class Boss extends Player implements IBoss {
         boolean hasLethalSkill = false;
         for (int[] skillTemp : skillTemps) {
             Skill skill = SkillUtil.createSkill(skillTemp[0], skillTemp[1]);
-            if (skillTemp.length == 3) {
-                skill.coolDown = skillTemp[2];
+            int playerCooldown = skill.coolDown;
+            int skId = skillTemp[0];
+            boolean isSpecial = isBossSpecialSkillId(skId);
+            boolean isLethal = isBossLethalSkillId(skId);
+            if (skillTemp.length == 3 && !isSpecial && !isLethal) {
+                if (skId == Skill.THAI_DUONG_HA_SAN || skId == Skill.DICH_CHUYEN_TUC_THOI
+                        || skId == Skill.THOI_MIEN || skId == Skill.TROI
+                        || skId == Skill.SOCOLA || skId == Skill.KHIEN_NANG_LUONG) {
+                    skill.coolDown = Math.max(playerCooldown, skillTemp[2]);
+                } else {
+                    skill.coolDown = skillTemp[2];
+                }
             }
             this.playerSkill.skills.add(skill);
-            int skId = skillTemp[0];
-            if (skId == Skill.SUPER_KAME || skId == Skill.LIEN_HOAN_CHUONG || skId == Skill.MA_PHONG_BA) {
+            if (isSpecial) {
                 hasSpecialSkill = true;
             }
-            if (skId == Skill.QUA_CAU_KENH_KHI || skId == Skill.MAKANKOSAPPO || skId == Skill.TU_SAT) {
+            if (isLethal) {
                 hasLethalSkill = true;
             }
         }
-        // Tất cả Boss có HP từ 2 tỷ trở lên đều sở hữu Chiêu Tất Sát và Skill Đặc Biệt (Super Kamejoko / Liên Hoàn Chưởng)
+        // Tất cả Boss có HP từ 2 tỷ trở lên đều sở hữu Chiêu Tất Sát và Skill Đặc Biệt (chỉ kích hoạt khi dưới 25% HP, hồi chiêu giống người chơi)
         if (this.nPoint != null && this.nPoint.getHpMaxLong() >= 2_000_000_000L && !"$".equals(this.name)) {
             if (!hasSpecialSkill) {
                 Skill superKame = SkillUtil.createSkill(Skill.SUPER_KAME, 7);
                 if (superKame != null) {
-                    superKame.coolDown = 12000;
                     this.playerSkill.skills.add(superKame);
                 }
             }
@@ -348,11 +359,36 @@ public class Boss extends Player implements IBoss {
                         : (this.gender == ConstPlayer.XAYDA ? Skill.TU_SAT : Skill.QUA_CAU_KENH_KHI);
                 Skill lethalSkill = SkillUtil.createSkill(lethalId, 7);
                 if (lethalSkill != null) {
-                    lethalSkill.coolDown = 15000;
                     this.playerSkill.skills.add(lethalSkill);
                 }
             }
         }
+    }
+
+    public static boolean isBossSpecialSkillId(int skillId) {
+        return skillId == Skill.SUPER_KAME || skillId == Skill.LIEN_HOAN_CHUONG || skillId == Skill.MA_PHONG_BA;
+    }
+
+    public static boolean isBossLethalSkillId(int skillId) {
+        return skillId == Skill.QUA_CAU_KENH_KHI || skillId == Skill.MAKANKOSAPPO || skillId == Skill.TU_SAT;
+    }
+
+    public Skill selectNormalAttackSkill() {
+        if (this.playerSkill == null || this.playerSkill.skills == null || this.playerSkill.skills.isEmpty()) {
+            return null;
+        }
+        List<Skill> normalSkills = new ArrayList<>();
+        for (Skill sk : this.playerSkill.skills) {
+            if (sk != null && sk.template != null
+                    && !isBossSpecialSkillId(sk.template.id)
+                    && !isBossLethalSkillId(sk.template.id)) {
+                normalSkills.add(sk);
+            }
+        }
+        if (!normalSkills.isEmpty()) {
+            return normalSkills.get(Util.nextInt(0, normalSkills.size() - 1));
+        }
+        return this.playerSkill.skills.get(0);
     }
 
     protected void resetBase() {
@@ -376,7 +412,9 @@ public class Boss extends Player implements IBoss {
         this.isUsingTTNL = false;
         this.lastTimeStartTTNL = 0;
         this.ticksTTNL = 0;
-        this.lastTimeUseHighHpUltimate = now;
+        this.lastTimeUseHighHpUltimate = 0L;
+        this.usedSpecialSkillOnce = false;
+        this.usedLethalSkillOnce = false;
     }
 
     public boolean isTieuDoiBojack() {
@@ -756,7 +794,12 @@ public class Boss extends Player implements IBoss {
             return true;
         }
 
-        if (!Util.canDoWithTime(this.lastTimeUseHighHpUltimate, 12000)) {
+        // Chỉ sử dụng Chiêu Tất Sát và Skill Đặc Biệt khi máu của Boss dưới 25% HP (<= 25% HP)
+        // Lần đầu xuống <= 25% HP sẽ kích hoạt mỗi loại 1 lần, sau đó phải chờ đủ thời gian hồi chiêu giống người chơi mới dùng tiếp được
+        if (this.nPoint.getCurrPercentHP() > 25) {
+            return false;
+        }
+        if (this.lastTimeUseHighHpUltimate > 0L && !Util.canDoWithTime(this.lastTimeUseHighHpUltimate, 5000)) {
             return false;
         }
         Player pl = getPlayerAttack();
@@ -770,9 +813,13 @@ public class Boss extends Player implements IBoss {
                 continue;
             }
             int id = sk.template.id;
-            if (id == Skill.SUPER_KAME || id == Skill.LIEN_HOAN_CHUONG || id == Skill.MA_PHONG_BA) {
+            boolean readyCooldown = (sk.lastTimeUseThisSkill == 0 || Util.canDoWithTime(sk.lastTimeUseThisSkill, sk.coolDown));
+            if (!readyCooldown) {
+                continue;
+            }
+            if (isBossSpecialSkillId(id)) {
                 specialSkill = sk;
-            } else if (id == Skill.QUA_CAU_KENH_KHI || id == Skill.MAKANKOSAPPO || id == Skill.TU_SAT) {
+            } else if (isBossLethalSkillId(id)) {
                 lethalSkill = sk;
             }
         }
@@ -783,20 +830,25 @@ public class Boss extends Player implements IBoss {
         boolean useLethal = (lethalSkill != null) && (specialSkill == null || Util.isTrue(50, 100));
         Skill chosen = useLethal ? lethalSkill : specialSkill;
         this.playerSkill.skillSelect = chosen;
-        chosen.lastTimeUseThisSkill = 0;
         if (Util.getDistance(this, pl) > 350) {
             this.moveToPlayer(pl);
         }
         if (useLethal) {
             String skillName = chosen.template.id == Skill.QUA_CAU_KENH_KHI ? "QUẢ CẦU KÊNH KHÍ TẤT SÁT"
                     : (chosen.template.id == Skill.MAKANKOSAPPO ? "LAZE TỬ THẦN TẤT SÁT" : "VỤ NỔ HỦY DIỆT TẤT SÁT");
-            this.chat("⚡ Chuẩn bị đỡ CHIÊU TẤT SÁT: " + skillName + "!!!");
+            this.chat("⚡ [DƯỚI 25% HP] Chuẩn bị đỡ CHIÊU TẤT SÁT: " + skillName + "!!!");
         } else {
             String skillName = chosen.template.id == Skill.SUPER_KAME ? "SUPER KAMEJOKO"
                     : (chosen.template.id == Skill.LIEN_HOAN_CHUONG ? "LIÊN HOÀN CHƯỞNG" : "MA PHONG BA");
-            this.chat("🔥 Tuyệt kỹ đặc biệt: " + skillName + "!!!");
+            this.chat("🔥 [DƯỚI 25% HP] Tuyệt kỹ đặc biệt: " + skillName + "!!!");
         }
         SkillService.gI().useSkill(this, pl, null, -1, null);
+        chosen.lastTimeUseThisSkill = System.currentTimeMillis();
+        if (useLethal) {
+            this.usedLethalSkillOnce = true;
+        } else {
+            this.usedSpecialSkillOnce = true;
+        }
         checkPlayerDie(pl);
         return true;
     }
@@ -1152,7 +1204,10 @@ public class Boss extends Player implements IBoss {
                 if (pl == null || pl.isDie()) {
                     return;
                 }
-                this.playerSkill.skillSelect = this.playerSkill.skills.get(Util.nextInt(0, this.playerSkill.skills.size() - 1));
+                this.playerSkill.skillSelect = this.selectNormalAttackSkill();
+                if (this.playerSkill.skillSelect == null) {
+                    return;
+                }
                 if (Util.getDistance(this, pl) <= this.getRangeCanAttackWithSkillSelect()) {
                     if (Util.isTrue(5, 20)) {
                         if (SkillUtil.isUseSkillChuong(this)) {

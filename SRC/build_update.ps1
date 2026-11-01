@@ -95,6 +95,7 @@ javac -proc:none -encoding UTF-8 -d build/classes -cp "build/classes;lib/*" `
     src/nro/models/boss/VuTru6/Kefla.java `
     src/nro/models/boss/VuTru6/Champa.java `
     src/nro/models/boss/VuTru6/Hit.java `
+    src/nro/models/boss/VuTru6/Toppo.java `
     src/nro/models/boss/Broly/Broly.java `
     src/nro/models/boss/Broly/SuperBroly.java `
     src/nro/models/boss/Broly/Broly18h.java `

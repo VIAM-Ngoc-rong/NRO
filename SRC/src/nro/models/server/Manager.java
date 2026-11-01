@@ -256,6 +256,19 @@ public final class Manager {
         Logger.success(Logger.RED + "Update maps thread started success!\n");
     }
 
+    private static void ensureCustomParts(Connection con) {
+        try (PreparedStatement psPart = con.prepareStatement(
+                "INSERT INTO part (id, TYPE, DATA) VALUES "
+                + "(2099, 0, '[[25010,3,-16],[2955,0,-16],[2955,0,-16]]'), "
+                + "(2100, 1, '[[25011,-22,-37],[25011,-18,-44],[25013,-23,-45],[25014,-9,-45],[25012,-20,-42],[25013,-21,-44],[25014,-12,-44],[25013,-19,-36],[25014,-5,-32],[25017,-49,-30],[25015,-15,-42],[25016,-22,-40],[25012,-17,-33],[25016,-20,-43],[25015,-14,-43],[25017,-51,-40],[25018,-16,-37]]'), "
+                + "(2101, 2, '[[2955,0,0],[2955,0,0],[2955,0,0],[2955,0,0],[2955,0,0],[2955,0,0],[2955,0,0],[2955,0,0],[2955,0,0],[2955,0,0],[2955,0,0],[2955,0,0],[2955,0,0],[2955,0,0]]') "
+                + "ON DUPLICATE KEY UPDATE TYPE = VALUES(TYPE), DATA = VALUES(DATA)")) {
+            psPart.executeUpdate();
+        } catch (Exception e) {
+            Logger.logException(Manager.class, e);
+        }
+    }
+
     public static void loadPart() {
         JSONValue jv = new JSONValue();
         JSONArray dataArray = null;
@@ -264,7 +277,8 @@ public final class Manager {
         ResultSet rs = null;
         try (Connection con = LocalManager.getConnection();) {
             //load part
-            ps = con.prepareStatement("select * from part");
+            ensureCustomParts(con);
+            ps = con.prepareStatement("select * from part order by id asc");
             rs = ps.executeQuery();
             List<Part> parts = new ArrayList<>();
             while (rs.next()) {
@@ -308,7 +322,8 @@ public final class Manager {
         ResultSet rs = null;
         try (Connection ConnectionDatabase = LocalManager.getConnection()) {
             //load part
-            ps = ConnectionDatabase.prepareStatement("select * from part");
+            ensureCustomParts(ConnectionDatabase);
+            ps = ConnectionDatabase.prepareStatement("select * from part order by id asc");
             rs = ps.executeQuery();
             List<Part> parts = new ArrayList<>();
             while (rs.next()) {
@@ -1494,8 +1509,10 @@ public final class Manager {
                 {89, "Rôbốt Đột Biến Xanh", 75_000_000},
                 {97, "Chiến Binh Vũ Trụ 6 Đỏ", 45_000_000},
                 {98, "Chiến Binh Vũ Trụ 6 Xanh", 60_000_000},
-                {94, "Vệ Binh Vũ Trụ 6", 80_000_000},
-                {96, "Ác Quỷ Không Gian U6", 100_000_000}
+                {105, "Dị Thú Vũ Trụ 6 Tím", 80_000_000},
+                {106, "Dị Thú Vũ Trụ 6 Cam", 100_000_000},
+                {94, "Toppo (Vũ Trụ 11)", 80_000_000},
+                {96, "Janemba", 100_000_000}
             };
             try (PreparedStatement psMob = con.prepareStatement(
                     "UPDATE mob_template SET NAME = ?, hp = ? WHERE id = ?")) {
@@ -1513,7 +1530,7 @@ public final class Manager {
                  PreparedStatement psNpc154 = con.prepareStatement(
                     "UPDATE map_template SET npcs = '[[44,810,312],[55,645,312],[56,725,312],[58,560,312]]' WHERE id = 154");
                  PreparedStatement psHeadHit = con.prepareStatement(
-                    "INSERT INTO head_avatar (head_id, avatar_id) VALUES (520, 5112) ON DUPLICATE KEY UPDATE avatar_id = 5112")) {
+                    "INSERT INTO head_avatar (head_id, avatar_id) VALUES (520, 5112), (2099, 25010) ON DUPLICATE KEY UPDATE avatar_id = VALUES(avatar_id)")) {
                 psNpc14.executeUpdate();
                 psNpc154.executeUpdate();
                 psHeadHit.executeUpdate();
@@ -1565,11 +1582,11 @@ public final class Manager {
                     "[[58,560,216]]"},
                 {170, "Thung Lũng Vũ Trụ 6", 15, 15, "[0,0,0,29,16]", 29, 16, 0, 0, 0,
                     "[[\"Hành Tinh Champa\",0,144,24,168,0,0,169,1152,216],[\"Lãnh Địa Sát Thủ Hit\",1200,216,1248,240,0,0,171,60,168]]",
-                    "[[97,22,45000000,168,216],[98,23,60000000,264,264],[98,23,60000000,360,384],[94,24,80000000,456,384],[94,24,80000000,552,384],[96,25,100000000,648,384],[94,24,80000000,768,312],[96,25,100000000,840,312],[94,24,80000000,936,288],[96,25,100000000,1080,240]]",
+                    "[[97,22,45000000,168,216],[98,23,60000000,264,264],[98,23,60000000,360,384],[105,24,80000000,456,384],[105,24,80000000,552,384],[106,25,100000000,648,384],[105,24,80000000,768,312],[106,25,100000000,840,312],[105,24,80000000,936,288],[106,25,100000000,1080,240]]",
                     "[]"},
                 {171, "Lãnh Địa Sát Thủ Hit", 15, 15, "[0,0,0,29,16]", 29, 16, 0, 0, 0,
                     "[[\"Thung Lũng Vũ Trụ 6\",0,144,24,168,0,0,170,1152,240]]",
-                    "[[94,24,80000000,168,456],[94,24,80000000,240,456],[96,25,100000000,312,456],[96,25,100000000,384,456],[96,25,100000000,456,456],[94,24,80000000,528,456],[96,25,100000000,600,456],[94,24,80000000,720,168],[96,25,100000000,804,168],[96,25,100000000,888,168]]",
+                    "[[98,23,60000000,168,456],[105,24,80000000,240,456],[106,25,100000000,312,456],[98,23,60000000,384,456],[105,24,80000000,456,456],[106,25,100000000,528,456],[106,25,100000000,600,456],[105,24,80000000,720,168],[106,25,100000000,804,168],[106,25,100000000,888,168]]",
                     "[]"}
             };
             try (PreparedStatement psMap = con.prepareStatement(
@@ -1720,7 +1737,7 @@ public final class Manager {
                 {36, "Gặp Vados tại Hành Tinh Bill để đến Vũ Trụ 6", 1, "Đến Hành Tinh Bill (Map 154) gặp Vados chọn Đến Hành Tinh Vũ Trụ 6", 58, 154, 162},
                 {36, "Cùng đồng bang diệt 3000 Chiến Binh Vũ Trụ 6", 3000, "Diệt Chiến Binh Vũ Trụ 6 tại Hành Tinh Champa (X2-X3 cùng bang)", -1, 169, 163},
                 {36, "Phối hợp đánh bại 4 Siêu Xayda Kefla", 4, "Cùng đồng bang hạ gục Caulifla / Kefla tại Vũ Trụ 6", -1, 169, 164},
-                {36, "Phối hợp đánh bại 4 Thần Hủy Diệt Champa", 4, "Hợp sức đánh bại Thần Hủy Diệt Champa tại Vũ Trụ 6", -1, 170, 165},
+                {36, "Phối hợp đánh bại 4 Thần Hủy Diệt Champa / Toppo", 4, "Hợp sức đánh bại Thần Hủy Diệt Champa hoặc Toppo (Vũ Trụ 11) tại Vũ Trụ 6", -1, 170, 165},
                 {36, "Phối hợp đánh bại 3 Sát Thủ Hit", 3, "Hạ gục Sát Thủ Hit tại Lãnh Địa Hit (Rơi 100% Quả Trứng Hit - Đệ Cấp 4)", -1, 171, 166},
                 {36, "Báo cáo chiến công với %10", 1, "Quay về %11 báo cáo với %10 hoàn tất huyền thoại Đa Vũ Trụ!", -5, -9, 167},
 

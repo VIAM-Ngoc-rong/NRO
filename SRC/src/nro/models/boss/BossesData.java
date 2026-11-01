@@ -3009,4 +3009,28 @@ public class BossesData {
             new String[]{"|-1|Thú vị lắm... Hãy nhận lấy Quả Trứng Sát Thủ Hit của ta!"},
             REST_5_M
     );
+
+    public static final BossData TOPPO = new BossData(
+            "Toppo (Vũ Trụ 11)",
+            ConstPlayer.XAYDA,
+            new short[]{2099, 2100, 2101, -1, -1, -1},
+            235000,
+            new long[]{3_200_000_000L},
+            new int[]{169, 170, 171},
+            new int[][]{
+                {Skill.GALICK, 7, 500},
+                {Skill.DRAGON, 7, 500},
+                {Skill.KAMEJOKO, 7, 800},
+                {Skill.SUPER_KAME, 7, 10000},
+                {Skill.LIEN_HOAN_CHUONG, 7, 12000},
+                {Skill.QUA_CAU_KENH_KHI, 7, 14000},
+                {Skill.KHIEN_NANG_LUONG, 7, 180000}},
+            new String[]{"|-1|Ta là Toppo — Đội Trưởng Biệt Đội Kiêu Hãnh (Pride Troopers) của Vũ Trụ 11!",
+                "|-1|Trước sức mạnh của Ứng Cử Viên Thần Hủy Diệt, công lý hay tà ác cũng chỉ còn là hư vô!"},
+            new String[]{"|-1|Justice Flash!",
+                "|-1|HAKAI — Quả Cầu Năng Lượng Hủy Diệt!",
+                "|-1|Công lý tất thắng!"},
+            new String[]{"|-1|Sức mạnh của ngươi... vượt qua cả giới hạn của Thần Hủy Diệt sao?!"},
+            REST_5_M
+    );
 }

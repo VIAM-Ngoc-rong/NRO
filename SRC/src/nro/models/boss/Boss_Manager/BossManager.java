@@ -109,6 +109,7 @@ import nro.models.boss.Baby.Baby;
 import nro.models.boss.VuTru6.Kefla;
 import nro.models.boss.VuTru6.Champa;
 import nro.models.boss.VuTru6.Hit;
+import nro.models.boss.VuTru6.Toppo;
 import nro.models.boss.Boss_mini.MatTroi;
 import nro.models.boss.cumber.Cumber;
 import nro.models.map.Zone;
@@ -170,6 +171,7 @@ public class BossManager implements Runnable {
         this.createBoss(BossID.CUMBER, 1);
         this.createBoss(BossID.BABY, 2);
         this.createBoss(BossID.KEFLA, 2);
+        this.createBoss(BossID.TOPPO, 2);
         this.createBoss(BossID.CHAMPA, 2);
         this.createBoss(BossID.HIT, 2);
         this.createBoss(BossID.BROLY_18H, 5);
@@ -416,6 +418,8 @@ public class BossManager implements Runnable {
                     new Kefla();
                 case BossID.CHAMPA ->
                     new Champa();
+                case BossID.TOPPO ->
+                    new Toppo();
                 case BossID.HIT ->
                     new Hit();
                 default ->

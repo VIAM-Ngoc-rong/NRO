@@ -657,7 +657,7 @@ public class TaskService {
                 }
                 case BossID.KEFLA ->
                     completeCoopBossTask(player, boss, ConstTask.TASK_36_2);
-                case BossID.CHAMPA ->
+                case BossID.CHAMPA, BossID.TOPPO ->
                     completeCoopBossTask(player, boss, ConstTask.TASK_36_3);
                 case BossID.HIT ->
                     completeCoopBossTask(player, boss, ConstTask.TASK_36_4);
@@ -819,7 +819,7 @@ public class TaskService {
                     doneCoopMobTask(player, ConstTask.TASK_35_1);
                 case ConstMob.ECH_MAT_DO, ConstMob.JINAI, ConstMob.QUY_DO, ConstMob.QUY_XANH ->
                     doneCoopMobTask(player, ConstTask.TASK_33_0);
-                case ConstMob.TOPPO, ConstMob.JANEMBA, ConstMob.MEZ, ConstMob.GOZ ->
+                case ConstMob.TOPPO, ConstMob.JANEMBA, ConstMob.MEZ, ConstMob.GOZ, ConstMob.FROSTBITE, ConstMob.SNOWY_TANGERINE ->
                     doneCoopMobTask(player, ConstTask.TASK_36_1);
             }
         }
