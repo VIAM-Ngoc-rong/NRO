@@ -7,7 +7,7 @@
 **Hướng dẫn cầm tay chỉ việc từ Phút Đầu Tiên Vào Game cho Người Mới • Định hướng Build 3 Hành Tinh • Đập Đồ 9 Sao & Chuyển Hóa SKH • Hệ Thống Đệ Tử, Săn Boss & Sự Kiện**
 
 [![Tân Thủ](https://img.shields.io/badge/Lộ_Trình_Người_Mới-10_Bước_Cầm_Tay_Chỉ_Việc-10b981?style=for-the-badge)](#-00-lộ-trình-tân-thủ-10-bước-chơi-từ-con-số-0-dành-cho-người-mới-100)
-[![Hành Trang](https://img.shields.io/badge/Hành_Trang_Đa_Tab-200_→_500_Ô_(100_Ô/Tab)-0284c7?style=for-the-badge)](#-26-các-tính-năng-hỗ-trợ-vật-phẩm-hành-trang-đa-tab-200500-ô--auto-lọc-đồ)
+[![Hành Trang](https://img.shields.io/badge/Hành_Trang_1000_Ô-Lưu_5_Set_Đồ_(s1..s5_/_d1..d5)_•_Khóa_Đồ-0284c7?style=for-the-badge)](#-26-các-tính-năng-hỗ-trợ-vật-phẩm-hành-trang-1000-ô-lưu-5-set-đồ-nhanh-khóa-bảo-vệ-autoitem--auto-săn-boss)
 [![SKH Tân Thủ](https://img.shields.io/badge/Tân_Thủ-5_Rương_SKH_Tùy_Chọn_+100%25_Sát_Thương-d97706?style=for-the-badge)](#-13-định-hướng-lối-chơi-build--chọn-set-kích-hoạt-theo-từng-hành-tinh)
 [![Đệ Tử](https://img.shields.io/badge/Đệ_Tử_3_Cấp-Thường_→_Mabư_→_Broly_(+30%25)-7e22ce?style=for-the-badge)](#-32-hệ-thống-tiến-hóa-đệ-tử-3-cấp-thường--mabư--broly)
 [![Săn Boss](https://img.shields.io/badge/Săn_Boss-100%25_Sát_Thương_Thật_•_Skill_9_Xuyên_%25HP-e11d48?style=for-the-badge)](#-05-hệ-thống-boss-quy-luật-hồi-sinh--ma-trận-vật-phẩm-rơi)
@@ -21,7 +21,7 @@
 ```text
 📦 NGOC-RONG-VIAM-HANDBOOK/
 ├── 🌟 00-Lo-Trinh-Tan-Thu-Cam-Tay-Chi-Viec/          <-- NGƯỜI MỚI CHƠI ĐỌC PHẦN NÀY TRƯỚC!
-│   ├── 📄 0.1. Giải thích giao diện, Phím tắt X / E / B, W A S D & AutoItem trực tiếp
+│   ├── 📄 0.1. Giải thích giao diện, Phím tắt X / E / B, W A S D, Set Đồ s1..s5 & AutoItem
 │   ├── 📄 0.2. 10 Bước làm chủ game từ Phút Đầu Tiên (0 SM → 150 Tỷ SM)
 │   └── 📄 0.3. Bảng tra cứu NPC: "Muốn làm việc này thì gặp ai, ở đâu?"
 ├── 📂 01-Tong-Quan-Suc-Manh-Va-Dinh-Huong-Hanh-Tinh/
@@ -29,17 +29,17 @@
 │   ├── 📄 1.2. Cách cộng điểm Tiềm năng (HP, KI, Sức Đánh, Chí Mạng)
 │   └── 📄 1.3. Chọn Set Kích Hoạt (SKH), Chiêu Xuyên Giáp & Lối chơi 3 Hành Tinh
 ├── 📂 02-He-Thong-Vat-Pham-Trang-Bi-Va-Dap-Do-Sao/
-│   ├── 📄 2.1. Quà Tân Thủ miễn phí tại Nhà & 5 cấp bậc Trang bị
+│   ├── 📄 2.1. Quà Tân Thủ miễn phí, BXH Top 1 Ngày tại Nhà & 5 cấp bậc Trang bị
 │   ├── 📄 2.2. Đập Đồ Sao Pha Lê (1 → 9 Sao), SPL Cấp 2 & Đập Cấp [+1..+16]
 │   ├── 📄 2.3. Đập Đồ SKH, Chuyển Hóa (Giữ SKH & SPL), Xóa SKH & Tái Chế Đồ Thần
 │   ├── 📄 2.4. Học Chiêu Đặc Biệt (Skill 9 Xuyên %HP Boss), Sách Tuyệt Kỹ & Đồ Thiên Sứ
 │   ├── 📄 2.5. Quy luật Vật phẩm Hồng Ngọc (100% Random chỉ số), Cải trang & Đeo Lưng
-│   └── 📄 2.6. Hành Trang Đa Tab (200–500 Ô), AutoItem Hành Trang, Auto Săn Boss (Phím B) & Lọc Đồ
+│   └── 📄 2.6. Hành Trang 1.000 Ô, Lưu 5 Set Đồ (s1..s5 / d1..d5), Khóa Trang Bị & Auto Săn Boss (Phím B)
 ├── 📂 03-He-Thong-Tang-Truong-Suc-Manh/
-│   ├── 📄 3.1. Lộ trình cày Sức Mạnh & Mở Giới Hạn SM (Đệ Tử miễn giảm TNSM sau 40 Tỷ)
+│   ├── 📄 3.1. Lộ trình cày Sức Mạnh & Mở Giới Hạn SM (18 Tỷ → 150 Tỷ SM, Đệ miễn giảm TNSM)
 │   ├── 📄 3.2. Tiến Hóa Đệ Tử 3 Cấp (Thường 100% → Mabư 115% → Broly 130%) & Mở Skill 5
 │   ├── 📄 3.3. Nâng cấp Bông Tai Porata Cấp 1 → Cấp 2 → Cấp 3
-│   └── 📄 3.4. Nội Tại, Hào Quang Săn Boss 3 Cấp, Thẻ Sưu Tầm & Danh Hiệu
+│   └── 📄 3.4. Nội Tại, Vòng Chân Hào Quang Săn Boss 8 Cấp, Thẻ Sưu Tầm & Danh Hiệu Top 1
 ├── 📂 04-He-Thong-Ban-Do-Pho-Ban-Va-Nhim-Vu-Chinh-Tuyen/
 │   ├── 📄 4.1. Phân khu Bản Đồ (Ngũ Hành Sơn x5 TNSM, Tương Lai, Cold, Bill)
 │   ├── 📄 4.2. Hệ thống Phó Bản (Doanh Trại, Kho Báu, Khí Gas, Rắn Độc)
@@ -78,13 +78,13 @@ Nếu bạn là người mới hoàn toàn, chưa từng chơi hoặc vừa mớ
 
 | Thao Tác Trong Game | Cách Mở Nhanh Nhất | Dùng Để Làm Gì? |
 | :--- | :--- | :--- |
-| **1. Mở Menu Tiện Ích (`Phím X` / `auto`)** | • **Cách 1**: Bấm **`Phím X`** trên bàn phím để mở **Menu Tiện Ích Client** được gom gọn thành **7 danh mục** (*Tiện ích, Bản đồ, Luyện tập, Nhặt đồ, Đệ tử, BOSS, Khác*).<br>• **Cách 2**: Bấm nút Chat và gõ chữ `auto` rồi Enter để mở Bảng Điều Khiển Server (*Đổi Cờ PK nay nằm gọn trong tab **Chức Năng** của nhân vật*). | Mở trung tâm điều khiển: **Đổi Tab Hành Trang (`1–5`), Auto Buff Đậu, Auto Treo Quái, Auto Săn Boss, Auto Dọn Túi Đồ, Auto Hồi Sinh, Hiển thị Thông tin Sư Phụ & Đệ Tử, Quản lý Đệ Tử & Danh Sách Boss**. |
-| **2. Phím Tắt Săn Boss (`Phím B`) & Auto Hồi Sinh (`Phím E`)** | • Bấm **`Phím B`** (hoặc vào `Phím X -> BOSS`): Bật / Dừng nhanh **Tự Động Săn Boss** (có thêm **Tàn Sát Boss** trong mục `BOSS`).<br>• Bấm **`Phím E`** (hoặc vào `Phím X -> Tiện ích`): Bật / Tắt **Auto Hồi Sinh**. | • **Phím `B`**: Bật/dừng săn Boss tức thì; đặc biệt **thời gian Máy Dò Săn Boss chỉ trừ khi đang bật săn Boss** (tắt săn Boss sẽ bảo toàn 100% thời gian còn lại).<br>• **Phím `E`**: Tự động hồi sinh ngay lập tức khi nhân vật bị hạ gục. |
+| **1. Mở Menu Tiện Ích (`Phím X` / `auto`)** | • **Cách 1**: Bấm **`Phím X`** trên bàn phím để mở **Menu Tiện Ích Client** được gom gọn thành **7 danh mục** (*Tiện ích, Bản đồ, Luyện tập, Nhặt đồ, Đệ tử, BOSS, Khác*).<br>• **Cách 2**: Bấm nút Chat và gõ chữ `auto` (hoặc `menu` / `x`) rồi Enter để mở **Bảng Điều Khiển Tiện Ích Server** (*Đổi Cờ PK cũng có sẵn ngay trong tab **Chức Năng** của nhân vật*). | Mở trung tâm điều khiển: **Trang Bị & Lưu 5 Set Đồ (`s1..s5` / `d1..d5`), Khóa Bảo Vệ Trang Bị (`khoa`), Auto Treo Máy (Auto Đậu, Treo Quái, Mua Giờ Săn Boss `200Tr Vàng/1h`), Danh Sách & Tự Săn Boss, Quản Lý Đệ Tử, Cộng Nhanh Chỉ Số**. |
+| **2. Phím Tắt Săn Boss (`Phím B`) & Auto Hồi Sinh (`Phím E`)** | • Bấm **`Phím B`** (hoặc vào `Phím X -> BOSS` / chat `autosanboss`): Bật / Dừng nhanh **Tự Động Săn Boss** (có thêm **Tàn Sát Boss** trong mục `BOSS`).<br>• Bấm **`Phím E`** (hoặc vào `Phím X -> Tiện ích` / chat `ahs`): Bật / Tắt **Auto Hồi Sinh**. | • **Phím `B`**: Bật/dừng săn Boss tức thì; đặc biệt **thời gian Máy Dò Săn Boss (`200Tr Vàng/1h`) chỉ trừ khi đang bật săn Boss** (tắt săn Boss sẽ bảo toàn 100% thời gian còn lại).<br>• **Phím `E`**: Tự động hồi sinh ngay lập tức khi nhân vật bị hạ gục. |
 | **3. Tự Động Dùng Vật Phẩm (`Thêm vào AutoItem` Trong Hành Trang)** | • Mở **Hành trang**, bấm trực tiếp vào bất kỳ vật phẩm tiêu hao / bổ trợ / **Thỏi Vàng (`ID 457`)** nào $\rightarrow$ Chọn nút **`Thêm vào AutoItem`**. | Tự động sử dụng vật phẩm đó liên tục khi hết hiệu lực (hoặc tự dùng liên tục đối với Thỏi vàng/vật phẩm tiêu hao). Khi muốn dừng, chỉ cần bấm lại vào vật phẩm và chọn **`Xoá khỏi AutoItem`**! |
 | **4. Bảng Thông Tin Sư Phụ & Đệ Tử Trên Màn Hình** | • Vào **`Phím X -> Tiện ích -> Thông tin Sư Phụ & Đệ Tử [Bật/Tắt]`**. | Hiển thị trực tiếp chỉ số **HP, KI, Sức Đánh, Tiềm năng** của cả Sư phụ và Đệ tử ngay trên màn hình chính với giao diện chữ trong suốt gọn gàng (đã lược bỏ nền đen & khung viền rườm rà). |
 | **5. Chỉnh Kích Thước Màn Hình & Tối Ưu `60/120 FPS`** | • Tại màn hình Đăng nhập, bấm vào chữ **`DragonBoy v2.4.0 (x2)` ở góc trên bên phải** để đổi độ phân giải (`x1..x4`), hoặc kéo trực tiếp viền cửa sổ.<br>• Tích hợp sẵn mở khóa **`60/120 FPS`** trên cả PC và iOS ProMotion. | Khắc phục cửa sổ nhỏ trên màn hình độ phân giải cao và mang lại chuyển động mượt mà `60–120Hz` không giật lag. |
 | **6. Di Chuyển Bằng Phím `W A S D` Trên PC** | • Khởi động game bằng file **`Chay_Game_WASD.bat`** (hoặc chạy **`Bat_Phim_WASD.bat`** trong thư mục game). | Điều khiển nhân vật bay/chạy mượt mà bằng các phím **`W` (Lên), `A` (Trái), `S` (Xuống), `D` (Phải)** song song với cụm phím mũi tên. Khi bấm `Enter` mở khung Chat để gõ chữ, bộ phím tự động nhường phím và tự tắt khi đóng game! |
-| **7. Đổi Tab Hành Trang (`Tab 1 → 5`)** | • Gõ chat `t1`, `t2`, `t3`, `t4`, `t5` (hoặc gõ `auto -> Quản lý Túi đồ`). | Nhân vật của bạn có **nhiều ngăn túi đồ (mỗi Tab 100 ô, mặc định 2 Tab = 200 ô, mở tối đa 5 Tab = 500 ô)**. Khi Tab 1 đầy 100 ô, đồ mới nhặt sẽ tự chảy sang Tab 2! |
+| **7. Hành Trang `1.000 Ô` Liên Tục, Đổi Nhanh 5 Set Đồ (`s1..s5` / `d1..d5`) & Khóa Trang Bị** | • Gõ chat **`s1` .. `s5`** (mặc nhanh Set 1..5 cho **Sư phụ**) hoặc **`d1` .. `d5`** (mặc nhanh Set 1..5 cho **Đệ tử**).<br>• Gõ chat **`set`** (thiết lập Set đồ) hoặc **`khoa`** (Khóa bảo vệ trang bị). | Nhân vật có sẵn **Hành trang 1.000 ô liên tục**. Bạn có thể lưu sẵn 5 bộ trang bị (SKH, Săn Boss, Biến Khỉ, Up Đệ...) để mặc chỉ bằng 1 lệnh chat, đồng thời **Khóa bảo vệ trang bị** chống vứt, bán hoặc phân rã nhầm! |
 | **8. Mở Danh Sách Boss & Dùng Capsule Bay Nhanh** | • Gõ chat `boss` để xem Boss đang sống và bay thẳng tới **`Khu 0`**.<br>• Dùng **Viên Capsule Đặc Biệt** để bay giữa các Map hoặc chọn **"Về chỗ cũ (Khu X)"**. | Dịch chuyển tức thời tới bản đồ có Boss hoặc quay lại đúng Map & Khu vừa đứng (hỗ trợ cả toàn bộ Map Tương Lai 92–103). |
 | **9. Hồi Sinh Tại Chỗ (`5 Lần Miễn Phí`)** | • Khi bị hạ gục, bấm chọn **"Hồi sinh tại chỗ"** ngay trên màn hình (hoặc bật **Auto Hồi Sinh `Phím E`**). | Mỗi người chơi được **miễn phí 5 lần hồi sinh tại chỗ đầu tiên** (`0 Vàng, 0 Ngọc`). Từ lần thứ 6 trở đi tiêu tốn **`1.000.000 Vàng / lần`**. Chỉ cần **Về Nhà** là hệ thống **reset lại đủ 5 lượt miễn phí**! |
 
@@ -94,34 +94,37 @@ Nếu bạn là người mới hoàn toàn, chưa từng chơi hoặc vừa mớ
 
 ```mermaid
 flowchart TD
-    B1["Bước 1: Tại Nhà\nNhận Quà Tân Thủ (99 Thỏi Vàng + 1Tr Ngọc)\nNhận 200k Ngọc & Đậu 10 (Vô Hạn)\nMở Rương SKH Tân Thủ (+100% Sát Thương)"] --> B2["Bước 2: Bấm Phím X (hoặc gõ auto)\nNhận Đệ Tử Miễn Phí\nBật Auto Buff Đậu (autodau) & Auto Treo Quái (treoquai)"]
-    B2 --> B3["Bước 3: Đánh Quái Đầu Làng 2 Phút\nCho Đệ Tử lên 1.5 Triệu SM để Mặc Đồ\nBán Thỏi Vàng tại Santa lấy Vàng tiêu"]
-    B3 --> B4["Bước 4: Về Nhà Bấm Ông Gôhan/Moori/Paragus\nChọn 'Đi Ngũ Hành Sơn' (x5 TNSM)\nUp Sư Phụ & Đệ Tử lên 18 Tỷ – 40 Tỷ SM"]
+    B1["Bước 1: Tại Nhà (Ông Gôhan/Moori/Paragus)\nNhận Quà Tân Thủ (99 Thỏi Vàng + 1Tr Ngọc)\nNhận 200k Ngọc & Đậu 10 (Vô Hạn)\nChọn Rương SKH Tân Thủ (+100% Sát Thương)"] --> B2["Bước 2: Bấm Phím X (hoặc gõ auto)\nBật Auto Buff Đậu (autodau) & Auto Treo Quái (treoquai)\nSăn Super Broly Thu Phục Đệ Tử Đầu Tiên"]
+    B2 --> B3["Bước 3: Học Chiêu Tại Quy Lão / Guru / Vegeta\nCho Đệ Tử lên 1.5 Triệu SM để Mặc Đồ\nBán Thỏi Vàng tại Santa lấy Vàng tiêu"]
+    B3 --> B4["Bước 4: Gặp NPC Đường Tăng / Ngộ Không\nBay lên 'Ngũ Hành Sơn' (Map 122–124, x5 TNSM)\nUp Sư Phụ & Đệ Tử lên 18 Tỷ – 40 Tỷ SM"]
     B4 --> B5["Bước 5: Qua Đảo Kame (Bà Hạt Mít)\nĐục lỗ 7–9 Sao cho bộ Đồ Vải Thô SKH\nÉp Sao Pha Lê %SĐ / %HP / %KI & Mở Nội Tại"]
     B5 --> B6["Bước 6: Gặp Trưởng Lão Guru / Quốc Vương\nMở Giới Hạn Sức Mạnh (Lên 150 Tỷ SM)\nĐệ Tử miễn giảm TNSM sau 40 Tỷ SM!"]
     B6 --> B7["Bước 7: Làm Nhiệm Vụ Chính Tuyến & NV Mở Rộng (29 → 34)\nLiên kết Bang hội nhận X2–X3 tiến độ & 210 Thỏi Vàng + 10.500 HN\nSăn Đệ Mabư (115%) -> Đệ Broly (130%) & Bông Tai Cấp 2/3"]
-    B7 --> B8["Bước 8: Săn Boss Cao Cấp (+0.2% Rớt Đồ Mỗi 100Tr HP)\nMáu Boss càng cao đồ càng ngon (Thần Linh, Cấp 12, 5–7 Sao)\nDùng Chuyển Hóa / Đập Đồ SKH lên Đồ Thần & Hủy Diệt"]
+    B7 --> B8["Bước 8: Săn Boss Cao Cấp (+0.2% Rớt Đồ Mỗi 100Tr HP)\nĐổi Vòng Chân Săn Boss 8 Cấp (+16% SĐ/HP/KI, +14% Hút)\nDùng Chuyển Hóa / Đập Đồ SKH lên Đồ Thần & Hủy Diệt"]
 ```
 
 ### 🔹 Bước 1: Nhận Toàn Bộ Quà Tân Thủ Miễn Phí Tại Nhà (0 Giây Đầu Tiên)
-Ngay khi tạo nhân vật xong, bạn đang đứng trong **Nhà** (*Nhà Gôhan* ở Trái Đất, *Nhà Moori* ở Namek, hoặc *Nhà Broly* ở Xayda). Hãy bấm vào **NPC Ông Gôhan / Ông Moori / Ông Paragus** trong nhà và bấm lần lượt:
+Ngay khi tạo nhân vật xong, bạn đang đứng trong **Nhà** (*Nhà Gôhan* ở Trái Đất, *Nhà Moori* ở Namek, hoặc *Nhà Broly* ở Xayda) với **Hành trang 1.000 ô** mở sẵn. Hãy bấm vào **NPC Ông Gôhan / Ông Moori / Ông Paragus** trong nhà và bấm lần lượt:
 1. **Nhận Quà Tân Thủ**: Nhận ngay **99 Thỏi Vàng (`49.5 Tỷ Vàng`)** + **1.000.000 Ngọc Xanh**.
 2. **Nhận 200k Ngọc** & **Nhận Đậu 10 x99**: Bấm nhận **không giới hạn số lần** bất cứ khi nào bạn hết Ngọc Xanh hoặc Đậu Thần!
-3. **Nhận Rương SKH Tân Thủ**: Mỗi tài khoản có sẵn **5 Rương SKH**. Bấm nhận rồi mở Hành trang sử dụng Rương để tự chọn **1 bộ 5 món Đồ Vải Thô (Áo, Quần, Găng, Giày, Rada) có sẵn dòng Set Kích Hoạt (+100% sát thương kỹ năng)**!
+3. **Rương SKH Tân Thủ**: Mỗi tài khoản có sẵn **5 lượt mở Rương SKH trực tiếp ngay tại menu Ông Gôhan / Moori / Paragus**. Bấm vào mục **`Rương SKH Tân Thủ`** và chọn **1 trong 4 bộ Set Kích Hoạt của hành tinh** để nhận thẳng **trọn bộ 5 món Đồ Vải Thô (Áo, Quần, Găng, Giày, Rada cấp 1) kích hoạt +100% sát thương kỹ năng** vào hành trang!
    - *Gợi ý chọn nhanh cho người mới*:
      - **Trái Đất**: Chọn **Set Songoku** (`+100% Kamejoko`) hoặc **Set Thần Vũ Trụ Kaio** (`+60% HP/SĐ/Giáp, +20% Chí mạng, +25% SĐCM, +100% Kaioken`).
      - **Namek**: Chọn **Set Ốc Tiêu** (`+100% Liên Hoàn`) hoặc **Set Chiến Binh Nail** (`+80% HP/KI/Giáp, +50% SĐ, +30% SĐCM, +100% Masenko & -50% hồi chiêu`).
      - **Xayda**: Chọn **Set Kakarot** (`+100% Galick`) hoặc **Set Cadic M** (`+60% Sức Đánh, +50% HP/Giáp, +25% SĐCM, +30% HP nổ & +30% ST Tự Phát Nổ`).
+4. **Bảng Xếp Hạng & Nhận Thưởng Top 1 Ngày**: Tại nhà còn có mục **`Bảng Xếp Hạng`** (*Top Sức Mạnh, Top Nhiệm Vụ, Top Đòn Đánh Cao Nhất*) — người đứng **TOP 1** mỗi hạng mục được nhận miễn phí **1 Danh Hiệu Top 1 (`+5% HP, +5% SĐ, +5% KI` — HSD 1 ngày)** mỗi ngày!
 
-### 🔹 Bước 2: Nhận Đệ Tử Miễn Phí & Bật Chế Độ Tự Động (`Auto` / `Phím X`)
+### 🔹 Bước 2: Bật Chế Độ Tự Động (`Auto` / `Phím X`), Mở Nội Tại & Thu Phục Đệ Tử
 1. Gõ chat `auto` (hoặc bấm **`Phím X`** mở Menu Tiện Ích):
-   - Chọn **Quản lý Đệ tử -> Nhận Đệ tử Miễn phí** để có ngay 1 Đệ tử đi theo.
    - Bấm bật **Auto Buff Đậu** (hoặc gõ chat `autodau`) để hệ thống tự động hồi đầy Máu/KI cho cả bạn và Đệ tử.
    - Bạn cũng có thể bấm trực tiếp vào bất kỳ vật phẩm bổ trợ nào trong **Hành trang** và chọn **`Thêm vào AutoItem`** để tự động sử dụng liên tục.
+   - Sau khi mặc bộ SKH lên người, gõ chat **`set`** $\rightarrow$ chọn **Lưu Đồ Sư Phụ vào Set 1** (trang bị sẽ tự động được **Khóa bảo vệ** chống vứt/bán nhầm và có thể mặc nhanh bất cứ lúc nào bằng lệnh chat **`s1`**).
 2. Mở bảng **Chức Năng -> Nội Tại** của nhân vật: Mở khóa Nội tại trùng với chiêu thức của bạn (VD: *Kamejoko / Dịch Chuyển Tức Thời* cho Trái Đất; *Liên Hoàn / Masenko* cho Namek; *Đấm Galick / Biến Khỉ / Tự Phát Nổ* cho Xayda). *(Mục **Đổi Cờ** cũng được đặt gọn ngay trong tab **Chức Năng** này).*
+3. **Cách thu phục Đệ Tử đầu tiên (`Đệ Tử Thường`)**:
+   - Gõ chat `boss` tìm **Broly** (hoặc **Super Broly**) $\rightarrow$ Hạ **Broly thường** (tại `Khu >= 2`) khi **`HP >= 1.000.000`** sẽ chắc chắn **`100%`** gọi ra **Super Broly** (hoặc `5%` khi `< 1Tr HP`). Kết liễu **Super Broly** sẽ thu phục ngay **Đệ Tử Thường** đi theo bạn! *(Ngoài ra kích hoạt gói VIP tại NPC ToriBot cũng tặng kèm ngay Đệ tử nếu chưa có).*
 
 ### 🔹 Bước 3: Học Chiêu Thức, Đổi Vàng & Cho Đệ Tử Mặc Đồ (`1.5 Triệu SM`)
-1. **Học kỹ năng**: Tại **Ông Gôhan / Moori / Paragus** ở Nhà (hoặc **Quy Lão Kame / Trưởng Lão Guru / Vua Vegeta**), bấm **Học Kỹ Năng** để học đầy đủ các chiêu thức của hành tinh.
+1. **Học kỹ năng**: Gặp **Quy Lão Kame (Đảo Kame)** / **Trưởng Lão Guru (Đảo Guru)** / **Vua Vegeta (Vách Núi Kakarot)** bấm **Học Kỹ Năng** để học đầy đủ các chiêu thức của hành tinh.
 2. **Đổi Thỏi Vàng ra Vàng tiền mặt**: Bay qua **Đảo Kame (Map 5)** gặp **Santa**, bán 1 vài **Thỏi Vàng** trong túi (mỗi Thỏi Vàng bán được **`500.000.000 Vàng`**) để lấy tiền mặt học skill và đập đồ.
 3. **Mua Bùa & Cải trang Up Đệ**:
    - Tại **Bà Hạt Mít (Đảo Kame)**: Mua trọn bộ **Bùa 1 Tháng** (*Bùa Trí Tuệ x2/x3/x4 TNSM, Bùa Mạnh Mẽ, Bùa Da Trâu, Bùa Đệ Tử, Bùa Thu Hút*).
@@ -129,10 +132,10 @@ Ngay khi tạo nhân vật xong, bạn đang đứng trong **Nhà** (*Nhà Gôha
 4. Cho Đệ tử đánh quái đầu làng khoảng 1–2 phút để Đệ tử đạt **1.5 Triệu Sức Mạnh** $\rightarrow$ Lúc này Đệ tử đã có thể **mặc toàn bộ Trang bị, Cải trang, Đeo lưng và Sách Tuyệt Kỹ**!
 
 ### 🔹 Bước 4: Bay Lên Bản Đồ Ngũ Hành Sơn (`x5 TNSM`) Để Up Sức Mạnh Thần Tốc
-1. Về **Nhà**, bấm vào **Ông Gôhan / Moori / Paragus** $\rightarrow$ Chọn **"Đi Ngũ Hành Sơn"** (*Map 122, 123, 124*).
+1. Gặp **NPC Đường Tăng / Ngộ Không** (hoặc dùng Capsule) $\rightarrow$ Chọn **"Đến Ngũ Hành Sơn"** (*Map 122, 123, 124*).
 2. Toàn bộ quái trên **Ngũ Hành Sơn** được nhân **x5 Tiềm Năng & Sức Mạnh**.
 3. Gõ chat `tan cong` (cho Đệ tử đánh quái) và gõ `treoquai` (bật Auto tự đánh quái + tự bán đồ rác lấy Vàng).
-4. **Cách cộng điểm Tiềm năng khi mới chơi**: Dồn **70% điểm vào Sức Đánh**, giữ HP và KI ở mức `50.000 – 200.000` để đánh quái nhanh nhất.
+4. **Cách cộng điểm Tiềm năng nhanh**: Gõ `auto -> Cộng Nhanh Chỉ Số` để cộng `+20.000 HP/KI`, `+1.000 SĐ` hoặc **Max tới giới hạn** chỉ bằng 1 cú bấm! Khi mới chơi, ưu tiên dồn **70% điểm vào Sức Đánh**, giữ HP và KI ở mức `50.000 – 200.000` để đánh quái nhanh nhất.
 
 ### 🔹 Bước 5: Đập Đồ 7–9 Sao Pha Lê Ngay Trên Bộ Đồ Vải Thô SKH Tân Thủ
 Đừng vội bỏ bộ **Đồ Vải Thô SKH Tân Thủ**! Vì dòng Set Kích Hoạt cộng tới **+100% sát thương**, bạn hãy đem 5 món Vải Thô SKH này + Cải trang ra **Bà Hạt Mít (Đảo Kame)**:
@@ -153,12 +156,12 @@ Ngay khi tạo nhân vật xong, bạn đang đứng trong **Nhà** (*Nhà Gôha
    - **Cơ chế Liên Kết Bang Hội / Đồng Đội Cùng Khu**: Đi cùng **2 hoặc 3+ thành viên cùng Bang hội** trong cùng khu sẽ được nhân **`X2 – X3` tốc độ đánh quái nhiệm vụ**, chia sẻ tiến độ quái cho nhau và **tính chung hoàn thành hạ Boss cho toàn bộ đồng đội cùng nhiệm vụ trong khu**!
 
 ### 🔹 Bước 8: Nâng Cấp Đệ Tử 3 Cấp: Thường (`100%`) $\rightarrow$ Mabư (`115%`) $\rightarrow$ Broly (`130%`)
-1. **Đệ Tử Cấp 1 (Thường — Hợp thể cộng `100%` chỉ số đệ)**: Nhận miễn phí tại menu `auto -> Quản lý Đệ tử`.
+1. **Đệ Tử Cấp 1 (Thường — Hợp thể cộng `100%` chỉ số đệ)**: Săn Boss **Broly thường** (khi `HP >= 1.000.000` chắc chắn `100%` gọi ra **Super Broly**, hoặc `5%` khi `< 1Tr HP`) $\rightarrow$ Hạ **Super Broly** để thu phục Đệ Tử Thường.
 2. **Đệ Tử Cấp 2 (Mabư — Max gốc `700k` HP/KI, `32k` SĐ bằng Sư phụ; Hợp thể cộng `115%` chỉ số đệ)**:
-   - Gõ `boss` tìm **Kid Bư** $\rightarrow$ Hạ Kid Bư khi **`HP >= 1.000.000`** chắc chắn **`100%`** gọi ra **Mabư Mập** ngay tại khu đó (hoặc `5%` khi `< 1Tr HP`) $\rightarrow$ Hạ Mabư Mập có **50% rơi Quả Trứng Mabư**. Bấm dùng Trứng rồi về **Nhà** chọn **Nở ngay (1 Tỷ Vàng)**.
+   - Gõ `boss` tìm **Kid Bư** $\rightarrow$ Hạ Kid Bư khi **`HP >= 1.000.000`** chắc chắn **`100%`** gọi ra **Mabư Mập** ngay tại khu đó (hoặc `5%` khi `< 1Tr HP`) $\rightarrow$ Hạ Mabư Mập có **50% rơi Quả Trứng Mabư**. Bấm dùng Trứng rồi về **Nhà** bấm vào **Quả Trứng** chọn **Nở ngay (1 Tỷ Vàng)**.
 3. **Đệ Tử Cấp 3 (Broly — Max gốc `700k` HP/KI, `32k` SĐ bằng Sư phụ; Hợp thể cộng `130%` chỉ số đệ, `100%` Rơi Trứng)**:
    - **Cách gọi Super SSJ Broly (`SSJ Broly`)**: Khi Boss **Broly (nhánh SSJ)** bị tiêu diệt ở mốc máu **`> 10.000.000 HP` (hơn 10 Triệu HP)** sẽ **chắc chắn `100%`** biến hình thành **SSJ Broly** ngay tại chỗ (hoặc `5%` xác suất ngẫu nhiên khi `<= 10Tr HP`). *(Mẹo: Mặc **Cải trang Android 19 / Android 20** vừa hấp thụ chưởng của Broly hồi KI vừa **phản sát thương `PST`** giúp nuôi máu Broly cực dễ).*
-   - **Tỷ lệ rơi Trứng**: Khi đang có **Đệ Tử Mabư**, tiêu diệt **SSJ Broly** rơi **`100%` Quả Trứng Đệ Tử Broly (`ID 1826`)** $\rightarrow$ Dùng Trứng rồi về **Nhà** ấp nở thành **Đệ Tử Broly**!
+   - **Tỷ lệ rơi Trứng**: Khi đang có **Đệ Tử Mabư**, tiêu diệt **SSJ Broly** rơi **`100%` Quả Trứng Đệ Tử Broly (`ID 1826`)** $\rightarrow$ Dùng Trứng rồi về **Nhà** bấm vào **Quả Trứng** ấp nở thành **Đệ Tử Broly**!
 4. **Nâng Bông Tai Porata Cấp 2 & Cấp 3**: Tại **Bà Hạt Mít (Đảo Kame)**, nâng cấp Bông Tai Porata lên Cấp 2 và Cấp 3 rồi Mở chỉ số ẩn để khi **Hợp Thể** cùng Đệ Tử Broly, toàn bộ HP/KI/Sức Đánh của bạn tăng vọt cực đại!
 
 ### 🔹 Bước 9: Học Chiêu Đặc Biệt (`Skill 9` — Đánh Xuyên %HP Boss) Tại Hành Tinh Bill
@@ -183,12 +186,13 @@ Ngay khi tạo nhân vật xong, bạn đang đứng trong **Nhà** (*Nhà Gôha
 
 | Bạn Muốn Làm Gì? | Gặp NPC Nào? | Đứng Ở Bản Đồ Nào? |
 | :--- | :--- | :--- |
-| Nhận **Quà Tân Thủ (99 Thỏi Vàng, 1Tr Ngọc)**, **200k Ngọc**, **Đậu 10**, **5 Rương SKH**, **Đi Ngũ Hành Sơn (x5 TNSM)**, **Ấp Trứng Đệ Mabư / Broly** | **Ông Gôhan / Ông Moori / Ông Paragus** | **Nhà Gôhan / Nhà Moori / Nhà Broly** *(Về Nhà bằng Capsule)* |
+| Nhận **Quà Tân Thủ (99 Thỏi Vàng, 1Tr Ngọc)**, **200k Ngọc**, **Đậu 10**, **5 Rương SKH Tùy Chọn**, xem **Bảng Xếp Hạng & Nhận Danh Hiệu Top 1 Ngày (`+5% HP/SĐ/KI`)**, mở **Tiện ích Tự động**, **Nhập Giftcode** | **Ông Gôhan / Ông Moori / Ông Paragus** *(Ấp Trứng Mabư / Broly tại **NPC Quả Trứng** trong Nhà)* | **Nhà Gôhan / Nhà Moori / Nhà Broly** *(Về Nhà bằng Capsule)* |
+| Đi bản đồ **Ngũ Hành Sơn (`x5 TNSM`)** để cày Sức Mạnh & Up Đệ Tử | **Đường Tăng / Ngộ Không** | **Đảo Kame / Làng / Ngũ Hành Sơn (Map 122–124)** |
 | **Đục lỗ Sao Pha Lê (1–9 Sao)**, **Ép Sao**, **Đập cấp `[+1..+16]`**, **Chuyển Hóa Đồ (chuyển cả SKH & SPL)**, **Đập Đồ SKH theo phôi**, **Xóa dòng SKH**, **Tái chế Đồ Thần**, **Phân rã Đồ Sao**, **Nâng Bông Tai Porata Cấp 2 & 3**, **Nhập Ngọc Rồng**, **Mua Bùa 1 Tháng** | **Bà Hạt Mít** | **Đảo Kame (Map 5)** *(Và Đảo Hạt Mít)* |
-| Mua/Bán **Thỏi Vàng (`500Tr Vàng/thỏi`)**, Mua **Cải trang Hồng Ngọc Vĩnh Viễn**, **Cải trang Up Đệ / Kháng Lạnh (`50 Ngọc`)**, **Sách nâng Skill 4 & 5 Đệ tử (`ID 759`)**, **Mở rộng Hành trang / Rương đồ (`+10 ô`)** | **Santa** | **Đảo Kame (Map 5)** |
-| Đổi **Hào Quang Săn Boss 3 Cấp**, Mua **Đeo Lưng Sự Kiện / Đeo Lưng Hồng Ngọc Vĩnh Viễn**, Nhận **Nhiệm Vụ KOL & KOL VIP**, Đi **Bản Đồ Kho Báu**, Giải tán/Lập Bang | **Quy Lão Kame** | **Đảo Kame (Map 5)** |
-| Nhận **20 Nhiệm vụ hàng ngày (5 độ khó)** & Nhận thưởng **Thành Tích (`515 Thỏi Vàng` = `257.5 Tỷ Vàng`)** | **Bò Mộng** | **Đảo Kame (Map 5)** hoặc **Thần Điện** |
-| **Mở Giới Hạn Sức Mạnh** cho Sư Phụ & Đệ Tử (từ `18 Tỷ` lên `150 Tỷ SM`) | **Trưởng Lão Guru** *(hoặc Quốc Vương)* | **Đảo Guru (Hành Tinh Namek)** |
+| Mua/Bán **Thỏi Vàng (`500Tr Vàng/thỏi`)**, Mua **Cải trang Hồng Ngọc Vĩnh Viễn (Giảm 50% khi có Phiếu Giảm Giá)**, **Cải trang Up Đệ / Kháng Lạnh / Android 19-20 (`50 Ngọc`)**, **Sách nâng Skill 4 & 5 Đệ tử (`ID 759`)**, **Shop Danh Hiệu & Hớt Tóc** | **Santa** | **Đảo Kame (Map 5)**, **Đảo Guru (Map 13)**, **Vách Núi Kakarot (Map 20)** |
+| Đổi **Vòng Chân Hào Quang Săn Boss 8 Cấp (`+2% → +16% SĐ/HP/KI, +14% Hút`)**, Mua **Đeo Lưng Sự Kiện / Đeo Lưng Hồng Ngọc Vĩnh Viễn**, Nhận **Nhiệm Vụ KOL & KOL VIP**, Vào **Đấu Trường PK Bang Hội & Cá Nhân (`x100 HP`)**, Đi **Bản Đồ Kho Báu** | **Quy Lão Kame** | **Đảo Kame (Map 5)** |
+| Nhận **Nhiệm vụ hàng ngày (5 độ khó: `200Tr Vàng → 4 Thỏi Vàng + Ngọc Bí Ngô`)** & Nhận thưởng **Thành Tích (`515 Thỏi Vàng` = `257.5 Tỷ Vàng`)** | **Bò Mộng** | **Rừng Karin (Map 47)** hoặc **Siêu Thị (Map 84)** |
+| **Mở Giới Hạn Sức Mạnh** cho Sư Phụ & Đệ Tử (từ `18 Tỷ` lên `150 Tỷ SM`) | **Trưởng Lão Guru**, **Quốc Vương** hoặc **Tổ Sư Kaio** | **Đảo Guru (Hành Tinh Namek)** & **Thần Điện / Giới Vương Thần** |
 | Đổi **Đồ Thần Linh $\rightarrow$ Đồ Hủy Diệt (Level 14)** | **Thần Hủy Diệt Bill** | **Hành Tinh Bill (Map 154)** |
 | Học **Chiêu Đặc Biệt (Skill 9: Super Kame / Ma Phong Ba / Liên Hoàn Chưởng)**, Đổi & Nâng cấp **Sách Tuyệt Kỹ 1 & 2**, Chế tạo **Đồ Thiên Sứ (Level 15)**, Báo cáo **Nhiệm Vụ Chính Tuyến 34 (Cumber)** | **Thiên Sứ Whis** | **Hành Tinh Bill (Map 154)** |
 | Qua **Bản Đồ Tương Lai (Map 92–103)** săn Black Goku, Zamasu, Siêu Bọ Hung & Báo cáo **Nhiệm Vụ Chính Tuyến 30, 31** | **Calích** | **Vách Núi Kakarot / Trạm Tàu Vũ Trụ** *(Sau khi xong NV Xên)* |
@@ -244,7 +248,7 @@ Mỗi hành tinh trong **Ngọc Rồng VIAM** đều sở hữu **4 Set Kích Ho
 | **1. Xayda Chơi Sức Đánh Cận Chiến**<br>*(<img src="SRC/data/icon/x4/719.png" width="18"/> Đấm Galick + <img src="SRC/data/icon/x4/718.png" width="18"/> Biến Khỉ)* | **Set Kakarot**<br>• **Đủ 5 món**: **`+100% sát thương Đấm Galick`**. | • **Cải trang**: *CT Broly, Cumber SSJ, Super Black Goku Rose, CT Gogeta* (`+32–33% SĐ`, `+45–55% HP`, `Hút 15–20% HP/KI`).<br>• **Sao Pha Lê**: Ép full 9 lỗ **+% Sức Đánh** (kèm 1–2 viên Hút HP/KI). | **Đấm Galick** hoặc **Biến Khỉ** | • **Sát thương cận chiến đơn mục tiêu tốc độ cao**: Khi bật **Biến Khỉ** (`Chí mạng 110%` — luôn chí mạng `x2`), Sức Đánh tăng vọt kết hợp **+100% Galick** và **Hút máu/KI** giúp Xayda đứng đối kháng solo mọi Boss lớn cực nhanh! |
 | **2. Xayda Sát Thủ Bom & Chí Mạng**<br>*(Set Cộng Dồn 1–5 Món)* | **Set Cadic M** *(Cộng dồn từ 1–5 món)*:<br>• **1–4 món**: Mỗi món `+8% HP`, `+10% SĐ`, `+8% Giáp` (*2 món*: `+10% SĐ Chí Mạng` & `+100 tầm nổ`; *4 món*: `+15% SĐ Chí Mạng`, `+15% HP nổ` & `+15% ST Tự Phát Nổ`).<br>• **Đủ 5 món**: **`+60% Sức Đánh`**, **`+50% HP`**, **`+50% Giáp`**, **`+25% SĐ Chí Mạng`**, **`+30% HP tối đa vào sát thương nổ`** & **`+30% ST Tự Phát Nổ`**. | • **Cải trang**: *Cađíc SSJ2 M* hoặc *Cađíc SSJ4* (**`+45% – 75% HP`** + **Random `25% – 75%` Sát thương Nổ** + 2 dòng bí ẩn) hoặc *Broly / Gogeta*.<br>• **Sao Pha Lê**: Ép **+% HP** hoặc **+% Sức Đánh**. | **Tự Phát Nổ** hoặc **Đấm Galick** | • **Set SKH toàn diện công-thủ của Xayda**: Vừa tăng mạnh Sức Đánh (`+60% SĐ`) kèm `+25% SĐ Chí Mạng` để đánh tay cực rát, vừa cường hóa <img src="SRC/data/icon/x4/721.png" width="18"/> **Tự Phát Nổ** thêm `+100 tầm nổ`, cộng thẳng `+30% HP tối đa` và `+30% ST nổ`! |
 | **3. Xayda Chơi Siêu Máu (Tank / Bom HP)**<br>*(Thuần HP Tối Đa)* | **Set Nappa**<br>• **Đủ 5 món**: **`+100% HP tối đa`**. | • **Cải trang**: *Cađíc SSJ2 M / SSJ4* (**`+45% – 75% HP`**, `+25–75% ST Nổ`).<br>• **Sao Pha Lê**: Ép full 9 lỗ **+% HP** trên cả 6 món đồ + Đeo Lưng `% HP`. | **Tự Phát Nổ** hoặc **Biến Khỉ** | • **Nhân đôi lượng HP tối đa (`+100% HP`)**: Phối hợp <img src="SRC/data/icon/x4/718.png" width="18"/> **Biến Khỉ (`+100% HP`)** + <img src="SRC/data/icon/x4/3781.png" width="18"/> **Huýt Sáo (`+100% HP`)** + **Set Nappa (`+100% HP`)** + **Full SPL %HP** giúp bạn có lượng máu khổng lồ để chống chịu hoặc ôm bom cảm tử. |
-| **4. Xayda Duy Trì Khỉ Khổng Lồ**<br>*(Chiến thuật Swap Đồ Tab 2)* | **Set Cadic**<br>• **Đủ 5 món**: **`x5 thời gian Biến Khỉ`** (`300s → 600s`). | • Cất sẵn bộ **Set Cadic** ở **Tab 2 Hành Trang (`t2`)**.<br>• Khi cần biến khỉ: Bấm `t2` mặc Set Cadic $\rightarrow$ Bật <img src="SRC/data/icon/x4/718.png" width="18"/> **Biến Khỉ** $\rightarrow$ Bấm `t1` mặc lại **Set Kakarot / Set Cadic M / Set Nappa**. | **Biến Khỉ** | • Tận dụng được **thời gian hóa Khỉ gấp 5 lần (lên tới 10 phút)** mà vẫn hưởng trọn vẹn sức mạnh của **Set Kakarot**, **Set Cadic M** hoặc **Set Nappa** trong suốt thời gian giao tranh! |
+| **4. Xayda Duy Trì Khỉ Khổng Lồ**<br>*(Chiến thuật Swap Nhanh `s1` / `s2`)* | **Set Cadic**<br>• **Đủ 5 món**: **`x5 thời gian Biến Khỉ`** (`300s → 600s`). | • Lưu sẵn **Set Kakarot / Set Cadic M / Set Nappa** vào **Set 1 (`s1`)** và bộ **Set Cadic** vào **Set 2 (`s2`)**.<br>• Khi cần biến khỉ: Gõ `s2` mặc Set Cadic $\rightarrow$ Bật <img src="SRC/data/icon/x4/718.png" width="18"/> **Biến Khỉ** $\rightarrow$ Gõ `s1` mặc lại **Set Kakarot / Set Cadic M / Set Nappa**. | **Biến Khỉ** | • Tận dụng được **thời gian hóa Khỉ gấp 5 lần (lên tới 10 phút)** mà vẫn hưởng trọn vẹn sức mạnh của **Set Kakarot**, **Set Cadic M** hoặc **Set Nappa** trong suốt thời gian giao tranh chỉ với 1 lệnh chat! |
 
 ---
 
@@ -318,16 +322,18 @@ Dưới đây là bảng thông số chi tiết kèm **biểu tượng kỹ năn
 
 </div>
 
-## 🎁 2.1. Khởi Đầu Tân Thủ & Phân Cấp Trang Bị Mặc
+## 🎁 2.1. Khởi Đầu Tân Thủ, Bảng Xếp Hạng Top 1 Ngày Tại Nhà & Phân Cấp Trang Bị Mặc
 
-Ngay khi vào **Nhà** (`Nhà Gôhan` / `Nhà Moori` / `Nhà Broly`), hãy gặp **Ông Gôhan / Ông Moori / Ông Paragus** để nhận bộ hành trang khởi đầu miễn phí:
+Ngay khi vào **Nhà** (`Nhà Gôhan` / `Nhà Moori` / `Nhà Broly`), hãy gặp **Ông Gôhan / Ông Moori / Ông Paragus** để nhận bộ hành trang khởi đầu miễn phí và tham gia đua Top hằng ngày:
 
-| Biểu Tượng | Phần Thưởng Tại NPC Ở Nhà | Chi Tiết Vật Phẩm | Cơ Chế Nhận |
+| Biểu Tượng | Chức Năng Tại NPC Ở Nhà | Chi Tiết Vật Phẩm & Đặc Quyền | Cơ Chế Nhận |
 | :---: | :--- | :--- | :--- |
 | <img src="SRC/assets/readme/icons/4028.png" width="32"/> | **Nhận Quà Tân Thủ** | **99 Thỏi Vàng** (`49.5 Tỷ Vàng`) + **1.000.000 Ngọc Xanh** | 1 lần / Tài khoản |
-| <img src="SRC/assets/readme/icons/4670.png" width="32"/> | **Rương SKH Tân Thủ** | Trọn bộ **5 món Đồ Vải Thô (Áo, Quần, Găng, Giày, Rada cấp 1)** có **Set Kích Hoạt tùy chọn** | **Mặc định mỗi người chơi có sẵn `5 Rương SKH`** (tự chọn **1 trong 4 Set Kích Hoạt** của hành tinh mỗi lần mở; có thể được Admin tặng thêm qua sự kiện) |
+| <img src="SRC/assets/readme/icons/4670.png" width="32"/> | **Rương SKH Tân Thủ** | Trọn bộ **5 món Đồ Vải Thô (Áo, Quần, Găng, Giày, Rada cấp 1)** có **Set Kích Hoạt tùy chọn** | **Mặc định mỗi tài khoản có sẵn `5 lượt mở Rương SKH`** trực tiếp tại menu NPC ở Nhà (chọn **1 trong 4 Set Kích Hoạt** của hành tinh mỗi lần mở, nhận thẳng 5 món vào túi) |
 | <img src="SRC/assets/readme/icons/933.png" width="32"/> | **Nhận 200k Ngọc** | **+200.000 Ngọc Xanh** mỗi lượt bấm | **Nhận không giới hạn** |
 | <img src="SRC/assets/readme/icons/523.png" width="32"/> | **Nhận Đậu 10 x99** | **x99 Đậu Thần Cấp 10** | **Nhận không giới hạn** |
+| 🏆 | **Bảng Xếp Hạng & Thưởng Top 1 Ngày** | Xem Top 50 trực tiếp (**Top Sức Mạnh**, **Top Nhiệm Vụ**, **Top Đòn Đánh Cao Nhất**). Người đứng **TOP 1** mỗi bảng được nhận **1 Danh Hiệu Top 1 (`+5% HP, +5% SĐ, +5% KI`)** | **Nhận mỗi ngày (HSD 24 giờ)** dành cho Quán quân Top 1 của từng bảng |
+| ⚙️ | **Tiện Ích Tự Động & Nhập Giftcode** | Mở nhanh **Bảng Điều Khiển Tiện Ích (`auto`)** hoặc nhập mã **Giftcode** sự kiện | Sử dụng mọi lúc |
 
 ### 🪜 5 Cấp Bậc Tiến Hóa Trang Bị Mặc Trong Game
 1. **Bậc 1 — Đồ Vải Thô SKH Tân Thủ**: Nhận miễn phí tại Nhà, kích hoạt ngay **+100% sát thương kỹ năng**. Bạn nên đem bộ này đi **Pha Lê Hóa lên 7–9 Sao** ngay từ đầu để dùng xuyên suốt giai đoạn Tân Thủ & Trung Cấp.
@@ -423,34 +429,37 @@ Mỗi hành tinh sở hữu 1 chiêu thức Tuyệt Kỹ tối thượng riêng 
 
 ---
 
-## 🎒 2.6. Các Tính Năng Hỗ Trợ Vật Phẩm: Hành Trang Đa Tab (`200–500 Ô`), AutoItem Trực Tiếp, Auto Săn Boss (`Phím B`) & Auto Lọc Đồ
+## 🎒 2.6. Các Tính Năng Hỗ Trợ Vật Phẩm: Hành Trang 1.000 Ô, Lưu 5 Set Đồ Nhanh, Khóa Bảo Vệ, AutoItem & Auto Săn Boss
 
 <div align="center">
 
-![Kiến Trúc Hành Trang Đa Tab 200 đến 500 Ô](SRC/assets/readme/arch-inventory-tabs.svg)
+![Kiến Trúc Hành Trang & Quản Lý Trang Bị](SRC/assets/readme/arch-inventory-tabs.svg)
 
 </div>
 
-1. **Hành Trang Đa Tab (`200 Ô Mặc Định` $\rightarrow$ `Tối Đa 500 Ô`, `100 Ô / Tab`)**:
-   - Tạo nhân vật có sẵn **200 ô (2 Tab × 100 ô)**, mở rộng tối đa lên **500 ô (5 Tab × 100 ô)** và **Rương đồ tối đa 120 ô**.
-   - **2 Cách mở rộng Hành trang & Rương đồ**:
-     - **Cách 1 (Tại NPC Santa — Đảo Kame)**: Mua vật phẩm **Mở rộng hành trang (ID 517)** hoặc **Mở rộng rương đồ (ID 518)** tại Cửa hàng Santa — mỗi lần mua mở rộng ngay **+10 ô** (mua được cả khi Tab hiện tại đang đầy).
-     - **Cách 2 (Tại Menu Tiện Ích `auto`)**: Gõ `auto -> Tab Túi Đồ -> Mở thêm Tab (+100 ô / 50.000 Ngọc Xanh)`.
-   - **Cách chuyển Tab nhanh**: Gõ `t1`, `t2`, `t3`, `t4`, `t5` (hoặc `tab 1` .. `tab 5`) vào khung chat, hoặc gõ `auto -> Tab Túi Đồ`.
-   - **Tự động tràn Tab & Sắp xếp độc lập**: Khi Tab đang mở đầy `100/100 ô`, đồ nhặt mới sẽ tự động chảy sang các Tab còn trống tiếp theo; bấm *Sắp xếp* chỉ gom gọn trong từng Tab 100 ô để bạn thoải mái phân loại *Tab 1 (Đồ mặc/Đậu), Tab 2 (Bộ SKH phụ & Ngọc Rồng), Tab 3–5 (Đồ săn Boss & Treo quái)*.
-2. **Nút `Thêm vào AutoItem` Trực Tiếp Ngay Trong Hành Trang**:
+1. **Hành Trang `1.000 Ô` Liên Tục Mở Sẵn & Rương Đồ `120 Ô`**:
+   - Ngay khi tạo nhân vật, bạn sở hữu sẵn **Hành trang 1 khối liên tục rộng `1.000 ô` (`DEFAULT_ITEMS_BAG = 1000`, `MAX_ITEMS_BAG = 1000`)** — không giới hạn trang nhỏ, tự động dồn gọn các ô trống giống như Rương đồ (`Tối đa 120 ô`).
+2. **Hệ Thống Lưu & Mặc Nhanh 5 Bộ Trang Bị (`Set 1 → Set 5` Cho Cả Sư Phụ & Đệ Tử)**:
+   - **Cách thiết lập Set đồ**: Mặc bộ trang bị bạn muốn lưu lên người Sư phụ (hoặc Đệ tử) $\rightarrow$ Gõ chat **`set`** (hoặc `setdo` / `doido`, hay vào `auto -> Trang Bị & Set Đồ`) $\rightarrow$ Chọn **`Thiết Lập / Lưu Set Đồ`** (`Set 1 .. Set 5`).
+   - **Lệnh chat mặc đồ tức thì (Swap 1 giây trong chiến đấu)**:
+     - Gõ **`s1`**, **`s2`**, **`s3`**, **`s4`**, **`s5`** (hoặc `set 1` .. `set 5`): Mặc ngay lập tức Set 1..5 cho **Sư Phụ** (cực kỳ lợi hại khi swap *Set Cadic x5 Biến Khỉ $\rightarrow$ Set Kakarot / Set Cadic M / Set Nappa*).
+     - Gõ **`d1`**, **`d2`**, **`d3`**, **`d4`**, **`d5`** (hoặc `dt 1` .. `dt 5` / `pset 1` .. `pset 5`): Mặc ngay lập tức Set 1..5 cho **Đệ Tử**!
+3. **Khóa Bảo Vệ Trang Bị (`Option 39` — Chống Vứt, Bán & Phân Rã Nhầm 100%)**:
+   - Gõ chat **`khoa`** (hoặc `khoado`, hay vào `auto -> Khóa Bảo Vệ Trang Bị`) để khóa/mở khóa từng món hoặc **Khóa TẤT CẢ đồ đang mặc** của Sư phụ & Đệ tử. *(Khi bạn lưu trang bị vào `Set 1..5`, hệ thống cũng **tự động Khóa bảo vệ** toàn bộ trang bị trong Set đó!)*
+   - Trang bị đã khóa sẽ **KHÔNG THỂ vứt ra đất, KHÔNG THỂ bán vào Shop, KHÔNG BỊ tự động bán khi treo quái và KHÔNG THỂ phân rã nhầm tại Bà Hạt Mít**.
+4. **Nút `Thêm vào AutoItem` Trực Tiếp Ngay Trong Hành Trang**:
    - Mở **Hành trang**, bấm vào bất kỳ vật phẩm tiêu hao, bổ trợ (*Cuồng Nộ, Bổ Huyết, Bổ Khí, Giáp Xên, Ẩn Danh, Khẩu Trang, Cỏ 4 Lá, Thức ăn Hủy Diệt...*) hoặc **Thỏi Vàng (`ID 457`)** $\rightarrow$ Bấm nút **`Thêm vào AutoItem`** để nhân vật tự động sử dụng liên tục!
-   - Khi muốn dừng tự động dùng món đồ đó, chỉ cần bấm lại vào vật phẩm trong Hành trang và chọn **`Xoá khỏi AutoItem`** (hoặc quản lý tập trung tại `Phím X -> Tiện ích -> Auto sử dụng Item`).
-3. **Auto Treo Quái & Tự Động Lọc Bán Đồ Rác (`treoquai` / `tq`)**:
-   - Khi bật `treoquai`, nhân vật tự động lọc bán các trang bị thường lấy Vàng khi đầy túi, nhưng **khóa bảo vệ tuyệt đối 100%** đối với: *Đồ có dòng Set Kích Hoạt (SKH), Đồ Thần Linh, Đồ Hủy Diệt, Đồ Thiên Sứ, và mọi trang bị có lỗ Sao Pha Lê*.
-4. **Auto Săn Boss (`Phím B`), Tàn Sát Boss & Bảo Toàn Thời Gian Máy Dò**:
-   - **Phím tắt `B` (hoặc `Phím X -> BOSS`)**: Bấm **`Phím B`** để **Bật / Dừng Tự Động Săn Boss** ngay lập tức (hoặc bật **Tàn Sát Boss** trong mục `BOSS`).
+   - Khi muốn dừng tự động dùng món đồ đó, chỉ cần bấm lại vào vật phẩm trong Hành trang và chọn **`Xoá khỏi AutoItem`** (hoặc gõ `autoitem` / vào `Phím X -> Tiện ích -> Auto sử dụng Item`).
+5. **Auto Treo Quái & Tự Động Lọc Bán Đồ Rác (`treoquai` / `tq`)**:
+   - Khi bật `treoquai`, nhân vật tự động lọc bán các trang bị thường lấy Vàng khi đầy túi, nhưng **khóa bảo vệ tuyệt đối 100%** đối với: *Trang bị đã Khóa bảo vệ (`Option 39`), Trang bị nằm trong Set 1..5 (`Option 209`), Đồ có dòng Set Kích Hoạt (SKH), Đồ Thần Linh, Đồ Hủy Diệt, Đồ Thiên Sứ, và mọi trang bị có lỗ Sao Pha Lê*.
+6. **Auto Săn Boss (`Phím B`), Tàn Sát Boss & Bảo Toàn Thời Gian Máy Dò (`200Tr Vàng / 1 Giờ`)**:
+   - **Phím tắt `B` (hoặc `Phím X -> BOSS` / chat `autosanboss`)**: Bấm **`Phím B`** để **Bật / Dừng Tự Động Săn Boss** ngay lập tức (hoặc bật **Tàn Sát Boss** trong mục `BOSS`).
+   - **Mua giờ Máy Dò Săn Boss (`200.000.000 Vàng / 1 Giờ`)**: Mua trực tiếp tại `auto -> Auto Treo Máy -> Mua Giờ Săn (200Tr Vàng/1h)` (hoặc gõ `maydo`).
    - **Bảo toàn thời gian Máy Dò Săn Boss**: Thời gian hiệu lực của **Máy Dò Săn Boss** chỉ đếm ngược khi bạn **đang bật chế độ Tự Động Săn Boss**; ngay khi bạn bấm **`Phím B`** tạm dừng săn Boss, bộ đếm thời gian sẽ tự động đóng băng để không lãng phí dù chỉ 1 giây!
-   - **Auto Dọn Túi Đồ**: Tự động vứt bỏ các trang bị trắng/rác không có Sao Pha Lê và không có dòng SKH để hành trang luôn còn chỗ trống nhặt Đồ Thần Linh, Đồ SKH và Ngọc Rồng khi treo săn Boss.
-5. **Vật Phẩm Cộng Dồn Số Lượng, Cộng Dồn Thời Gian & Giá Máy Dò CSKB `50 Triệu Vàng`**:
-   - **Cộng dồn trong Hành trang & Rương đồ**: Mọi vật phẩm tiêu hao, bổ trợ, đậu thần, ngọc rồng, đá nâng cấp, sao pha lê, sách kỹ năng đệ tử, capsule kích hoạt... đều tự động **xếp chồng gọn vào 1 ô** (lên tới `99.999` cái/ô).
+7. **Vật Phẩm Cộng Dồn Số Lượng (`100 Triệu / Ô` Với Thỏi Vàng & Đá), Cộng Dồn Thời Gian & Giá Máy Dò CSKB `50 Triệu Vàng`**:
+   - **Cộng dồn trong Hành trang & Rương đồ**: Mọi vật phẩm tiêu hao, bổ trợ, đậu thần, sao pha lê, sách kỹ năng đệ tử... tự động xếp chồng lên tới `99.999` cái/ô (riêng **Thỏi Vàng `ID 457`**, **Ngọc Rồng**, **Đá Nâng Cấp** xếp chồng lên tới **`100.000.000` cái/ô**).
    - **Cộng dồn thời gian khi sử dụng**: Khi bạn bấm dùng nhiều lần liên tiếp các vật phẩm bổ trợ (<img src="SRC/data/icon/x4/2754.png" width="18"/> *Cuồng Nộ*, <img src="SRC/data/icon/x4/2755.png" width="18"/> *Bổ Huyết*, <img src="SRC/data/icon/x4/2756.png" width="18"/> *Bổ Khí*, <img src="SRC/data/icon/x4/2757.png" width="18"/> *Giáp Xên*, <img src="SRC/data/icon/x4/2758.png" width="18"/> *Máy Dò Capsule*, *Ẩn Danh, Item Cấp 2, Cỏ 4 Lá, Nước Mía, Thức Ăn Hủy Diệt, Commeson, Nồi Cơm Điện, Đuôi Khỉ, Bùa Santa...*), **thời gian hiệu lực sẽ được cộng dồn nối tiếp** thay vì bị đếm lại từ đầu!
-   - **Máy Dò Capsule Kỳ Bí (`CSKB`) tại Bunma Tương Lai (Map 102)**: Giá bán đã được điều chỉnh ưu đãi chỉ còn **`50.000.000 Vàng` (`50 Triệu Vàng / cái`)**.
+   - **Máy Dò Capsule Kỳ Bí (`CSKB`) tại Bunma Tương Lai (Map 102)**: Giá bán ưu đãi chỉ **`50.000.000 Vàng` (`50 Triệu Vàng / cái`)**.
 
 ---
 
@@ -498,7 +507,7 @@ flowchart LR
 
 | Cấp Độ Đệ Tử | Biểu Tượng | Chỉ Số Gốc Max & Chỉ Số Cộng Khi Hợp Thể | Cách Săn Trứng & Điều Kiện Ấp Nở |
 | :--- | :---: | :---: | :--- |
-| **1. Đệ Tử Cấp 1 (Thường)** | <img src="SRC/assets/readme/icons/3896.png" width="30"/> | **Cộng `100%` chỉ số đệ tử**<br>*(Chỉ cộng chỉ số đệ, không thêm % phụ)* | Nhận miễn phí tại **Menu Tiện Ích (`auto`) -> Quản lý Đệ tử -> Nhận Đệ tử Miễn phí** hoặc săn Boss **Super Broly**. |
+| **1. Đệ Tử Cấp 1 (Thường)** | <img src="SRC/assets/readme/icons/3896.png" width="30"/> | **Chỉ số gốc giống Sư phụ (`700k` HP/KI max, `32k` SĐ max)**<br>**Cộng `100%` chỉ số đệ tử**<br>*(Chỉ cộng chỉ số đệ, không thêm % phụ)* | • **Cách săn**: Tiêu diệt Boss **Broly thường** (tại `Khu >= 2`): khi **`HP >= 1.000.000`** sẽ chắc chắn **`100%`** gọi ra **Super Broly** (hoặc `5%` khi `< 1Tr HP`). Hạ **Super Broly** sẽ thu phục ngay **Đệ Tử Thường**! *(Hoặc nhận kèm khi kích hoạt gói VIP tại NPC ToriBot)*. |
 | **2. Đệ Tử Cấp 2 (Mabư)** | <img src="SRC/assets/readme/icons/4956.png" width="30"/> | **Chỉ số gốc giống Sư phụ (`700k` HP/KI max, `32k` SĐ max)**<br>**Hợp thể lấy `115%` chỉ số tổng của đệ tử** | • **Cách săn**: Tiêu diệt Boss **Kid Bư** (xuất hiện 5 con ở 3 hành tinh): nếu hạ khi **`HP >= 1.000.000`** sẽ **chắc chắn `100%`** gọi ra **Mabư Mập**; nếu kết liễu khi **`HP < 1.000.000`** sẽ có **tỷ lệ thấp (`5%`)** xuất hiện **Mabư Mập** ngay tại khu đó. Hạ **Mabư Mập** có **50% rơi Quả Trứng Mabư** (hoặc săn Boss Vegeta trong phó bản **Con Đường Rắn Độc**).<br>• **Điều kiện ấp**: Đang sở hữu **Đệ Tử Thường**. Bấm dùng Quả Trứng Mabư $\rightarrow$ Về **Nhà** bấm vào Quả Trứng chọn **Nở ngay (1 Tỷ Vàng)** hoặc chờ 24h. |
 | **3. Đệ Tử Cấp 3 (Broly)**<br>*(Cấp Mạnh Nhất)* | <img src="SRC/assets/readme/icons/5852.png" width="30"/> <img src="SRC/data/icon/x4/15128.png" width="28"/> | **Chỉ số gốc giống Sư phụ (`700k` HP/KI max, `32k` SĐ max)**<br>**Hợp thể lấy `130%` chỉ số tổng của đệ tử** | • **Cách gọi Super SSJ Broly (`SSJ Broly`)**: Khi Boss Broly (nhánh SSJ) bị hạ gục đạt mốc máu **`> 10.000.000 HP` (hơn 10 Triệu HP)** sẽ **chắc chắn `100%`** biến hình thành **SSJ Broly** ngay tại khu đó; hoặc nếu kết liễu khi **`HP <= 10.000.000`** sẽ có **tỷ lệ ngẫu nhiên thấp (`5%`)** xuất hiện **SSJ Broly**!<br>• **Tỷ lệ rơi Trứng**: Hạ **SSJ Broly** rơi **`100%` <img src="SRC/data/icon/x4/15128.png" width="18"/> Quả Trứng Đệ Tử Broly (`ID 1826`)**!<br>• **Điều kiện ấp**: **Bắt buộc đang sở hữu Đệ Tử Mabư**. Bấm dùng Quả Trứng Broly $\rightarrow$ Về **Nhà** bấm vào Quả Trứng chọn hành tinh để nở thành **Đệ Tử Broly** (khởi đầu 1.5 Triệu SM, mặc được đồ ngay)! |
 
@@ -530,17 +539,23 @@ flowchart LR
 
 ---
 
-## 🌟 3.4. Nội Tại, Hào Quang Săn Boss 3 Cấp, Thẻ Sưu Tầm & Danh Hiệu
+## 🌟 3.4. Nội Tại, Vòng Chân Hào Quang Săn Boss 8 Cấp, Thẻ Sưu Tầm & Danh Hiệu Top 1
 
-1. **Hào Quang Săn Boss 3 Cấp (Tại Quy Lão Kame — Đảo Kame)**:
-   - Mỗi lần tiêu diệt bất kỳ Boss nào, bạn nhận được **+1 Điểm Săn Boss**. Đem điểm đến gặp **Quy Lão Kame -> Đổi điểm săn Boss** để kích hoạt **Hào Quang Vĩnh Viễn**:
-     - **Hào Quang Cấp 1 (`100 Điểm Săn Boss`)**: Tăng vĩnh viễn **+3% Sức Đánh, +3% HP, +3% KI**.
-     - **Hào Quang Cấp 2 (`1.000 Điểm Săn Boss`)**: Tăng vĩnh viễn **+5% Sức Đánh, +5% HP, +5% KI, +5% Hút HP, +5% Hút KI**.
-     - **Hào Quang Cấp 3 (`10.000 Điểm Săn Boss`)**: Tăng vĩnh viễn **+10% Sức Đánh, +10% HP, +10% KI, +10% Hút HP, +10% Hút KI**.
+1. **Vòng Chân — Hào Quang Săn Boss 8 Cấp (Tại Quy Lão Kame — Đảo Kame)**:
+   - Mỗi lần tiêu diệt bất kỳ Boss nào, bạn nhận được **+1 Điểm Săn Boss**. Đem điểm đến gặp **Quy Lão Kame -> Đổi điểm săn Boss** để nâng cấp tuần tự **Vòng Chân Vĩnh Viễn (`Cấp 1 → Cấp 8`)**:
+     - **Cấp 1 (`100 Điểm`)**: Tăng vĩnh viễn **`+2% Sức Đánh, +2% HP, +2% KI`**.
+     - **Cấp 2 (`500 Điểm`)**: Tăng vĩnh viễn **`+4% Sức Đánh, +4% HP, +4% KI, +2% Hút HP/KI`**.
+     - **Cấp 3 (`1.000 Điểm`)**: Tăng vĩnh viễn **`+6% Sức Đánh, +6% HP, +6% KI, +4% Hút HP/KI`**.
+     - **Cấp 4 (`2.500 Điểm`)**: Tăng vĩnh viễn **`+8% Sức Đánh, +8% HP, +8% KI, +6% Hút HP/KI`**.
+     - **Cấp 5 (`5.000 Điểm`)**: Tăng vĩnh viễn **`+10% Sức Đánh, +10% HP, +10% KI, +8% Hút HP/KI`**.
+     - **Cấp 6 (`8.000 Điểm`)**: Tăng vĩnh viễn **`+12% Sức Đánh, +12% HP, +12% KI, +10% Hút HP/KI`**.
+     - **Cấp 7 (`14.000 Điểm`)**: Tăng vĩnh viễn **`+14% Sức Đánh, +14% HP, +14% KI, +12% Hút HP/KI`**.
+     - **Cấp 8 MAX (`24.000 Điểm`)**: Tăng vĩnh viễn **`+16% Sức Đánh, +16% HP, +16% KI, +14% Hút HP/KI`**!
 2. **Hệ Thống Nội Tại Nhân Vật**:
    - Mở trong Menu chức năng bản thân bằng Vàng hoặc Ngọc để lấy dòng cộng **+% sát thương kỹ năng chủ lực** (*Kamejoko, Dịch Chuyển Tức Thời, Liên Hoàn, Makankosappo, Galick, Biến Khỉ, Tự Phát Nổ*).
-3. **Bách Khoa Toàn Thư (Thẻ Sưu Tầm Radar) & Danh Hiệu**:
+3. **Bách Khoa Toàn Thư (Thẻ Sưu Tầm Radar) & Danh Hiệu Top 1 Hằng Ngày**:
    - Thu thập các thẻ quái/Boss rơi ra khi cày cuốc, bấm sử dụng để nâng cấp sao trong **Bách Khoa Toàn Thư**, cộng thẳng **Sức Đánh, HP, KI gốc vĩnh viễn**!
+   - **Danh Hiệu Top 1 Ngày (`+5% HP, +5% SĐ, +5% KI`)**: Nhận miễn phí mỗi ngày tại **Ông Gôhan / Moori / Paragus -> Bảng Xếp Hạng** dành cho người chơi đứng Hạng 1 bảng *Top Sức Mạnh*, *Top Nhiệm Vụ* hoặc *Top Đòn Đánh Cao Nhất*.
 
 ---
 
@@ -550,8 +565,8 @@ flowchart LR
 
 | Phân Khu Bản Đồ | Các Map Tiêu Biểu | Cách Di Chuyển Tới | Vai Trò & Đặc Điểm Quan Trọng |
 | :--- | :--- | :--- | :--- |
-| **1. Khu Vực Trung Tâm & NPC** | Nhà 3 Hành Tinh, Làng Aru/Moori/Kakarot, **Đảo Kame (Map 5)**, **Siêu Thị (Map 84)** | Capsule hoặc NPC Tàu Vũ Trụ | Nơi tập trung **Ông Gôhan**, **Quy Lão Kame**, **Bà Hạt Mít**, **Santa**, **Urôn**, **Bò Mộng** để nâng cấp đồ, nhận nhiệm vụ và mua sắm. |
-| **2. Khu Vực Up Sức Mạnh Đặc Biệt (x5 TNSM)** | **Ngũ Hành Sơn**<br>*(Map 122, 123, 124)* | Gặp **Ông Gôhan / Moori / Paragus** tại Nhà chọn **"Đi Ngũ Hành Sơn"** | **Bản đồ cày Sức Mạnh & Up Đệ Tử số 1 máy chủ**: Toàn bộ quái tại đây nhân **x5 Tiềm Năng & Sức Mạnh**! |
+| **1. Khu Vực Trung Tâm & NPC** | Nhà 3 Hành Tinh, Làng Aru/Moori/Kakarot, **Đảo Kame (Map 5)**, **Rừng Karin (Map 47)**, **Siêu Thị (Map 84)** | Capsule hoặc NPC Tàu Vũ Trụ | Nơi tập trung **Ông Gôhan**, **Quy Lão Kame**, **Bà Hạt Mít**, **Santa**, **Urôn**, **Bò Mộng** để nâng cấp đồ, nhận nhiệm vụ và mua sắm. |
+| **2. Khu Vực Up Sức Mạnh Đặc Biệt (x5 TNSM)** | **Ngũ Hành Sơn**<br>*(Map 122, 123, 124)* | Gặp **NPC Đường Tăng / Ngộ Không** chọn **"Đến Ngũ Hành Sơn"** *(hoặc dùng Capsule)* | **Bản đồ cày Sức Mạnh & Up Đệ Tử số 1 máy chủ**: Toàn bộ quái tại đây nhân **x5 Tiềm Năng & Sức Mạnh**! |
 | **3. Khu Vực Nhiệm Vụ Chính Tuyến** | Các Map Trái Đất, Namek, Xayda, Phố, Thành Phố, Võ Đài Xên | Chạy bộ qua Waypoint hoặc dùng Capsule | Nơi xuất hiện chuỗi Boss nhiệm vụ: *Kuku, Mập Đầu Đinh, Rambo, Tiểu Đội Sát Thủ, Fide Đại Ca, Android 19/20/13/14/15, Pic/Poc/King Kong, Xên Bọ Hung*. |
 | **4. Khu Vực Tương Lai**<br>*(Map 92 – 103)* | Thành Phố Phía Đông, Phía Bắc, Cao Nguyên, Võ Đài Xên Tương Lai, Nhà Bunma (Map 102) | Qua NPC **Calích** (sau khi hoàn thành nhiệm vụ Xên) hoặc **Capsule "Về chỗ cũ"** | Đại bản doanh của các Boss lớn (`>= 400Tr HP`): **Black Goku, Super Black Goku, Zamasu, Xên Hoàn Thiện, Siêu Bọ Hung**. Rớt **Đồ Thần Linh (7% gốc + 0.2% mỗi 100Tr HP)**, **Đồ Cấp 12 (75%–92% kèm 3–7 Sao)** & **Đồ SKH (2%)**. |
 | **5. Hành Tinh Cold**<br>*(Map 105 – 110)* | Cánh Đồng Tuyết, Rừng Tuyết, Núi Tuyết, Dòng Sông Băng, Hang Băng | Tàu Vũ Trụ Xayda / Capsule | Nơi săn **Cooler Cấp 1, Cooler Cấp 2**. *Lưu ý: Quái và khí lạnh tại Cold gây giảm 50% HP/SĐ nếu không mặc **Cải trang Kháng Lạnh** (mua tại Santa giá 50 Ngọc)*. |
@@ -658,7 +673,7 @@ Mỗi khi hạ gục bất kỳ Boss nào, người kết liễu đều nhận n
 | Phân Tầng Boss | Danh Sách Boss Trong Nhóm | Ngọc Rồng Thường & Ngọc Rồng Tím | Trang Bị, Trứng Đệ & Tài Nguyên Rơi Thêm (Đã Tính Cộng Thêm Theo HP) |
 | :--- | :--- | :--- | :--- |
 | **Tầng 1: Boss Nhiệm Vụ Đầu**<br>*(3 con / loại cùng lúc)* | **Kuku, Mập Đầu Đinh, Rambo** | Chỉ rơi **Ngọc Rồng 4 – 7 Sao** | Vàng, Hồng Ngọc, Đậu Thần *(Không rơi trang bị)* |
-| **Tầng 2: Boss Đệ Tử Đặc Biệt**<br>*(5 con / loại ở 3 hành tinh)* | **Kid Bư $\rightarrow$ Mabư Mập**, **Broly Thường $\rightarrow$ Super Broly (`SSJ Broly`)** | Rơi Vàng, Hồng Ngọc | • **Quy luật gọi Mabư Mập**: Hạ **Kid Bư** khi **`HP >= 1.000.000`** chắc chắn **`100%`** ra **Mabư Mập** (hoặc **`5%`** tỷ lệ ngẫu nhiên khi chết dưới `1Tr HP`).<br>• **Quy luật gọi Super SSJ Broly (`SSJ Broly`)**: Hạ **Broly (nhánh SSJ)** khi đạt **`HP > 10.000.000` (hơn 10 Triệu HP)** sẽ **chắc chắn `100%`** xuất hiện **SSJ Broly**; hoặc có **tỷ lệ ngẫu nhiên thấp (`5%`)** xuất hiện khi chết ở mốc `<= 10Tr HP`!<br>• Hạ **Mabư Mập** có **`50%` rơi Quả Trứng Mabư**; hạ **SSJ Broly** rơi **`100%` Quả Trứng Đệ Tử Broly (`ID 1826`)**! |
+| **Tầng 2: Boss Đệ Tử Đặc Biệt**<br>*(5 con / loại ở 3 hành tinh)* | **Broly Thường $\rightarrow$ Super Broly**, **Kid Bư $\rightarrow$ Mabư Mập**, **Broly (SSJ) $\rightarrow$ SSJ Broly** | Rơi Vàng, Hồng Ngọc | • **Quy luật gọi Super Broly (Đệ Tử Thường)**: Hạ **Broly thường** (tại `Khu >= 2`) khi **`HP >= 1.000.000`** chắc chắn **`100%`** ra **Super Broly** (hoặc `5%` khi `< 1Tr HP`) $\rightarrow$ Hạ **Super Broly** thu phục ngay **Đệ Tử Thường**.<br>• **Quy luật gọi Mabư Mập (Đệ Tử Mabư)**: Hạ **Kid Bư** khi **`HP >= 1.000.000`** chắc chắn **`100%`** ra **Mabư Mập** (hoặc **`5%`** khi `< 1Tr HP`) $\rightarrow$ Hạ **Mabư Mập** có **`50%` rơi Quả Trứng Mabư**.<br>• **Quy luật gọi Super SSJ Broly (`SSJ Broly` — Đệ Tử Broly)**: Hạ **Broly (nhánh SSJ)** khi đạt **`HP > 10.000.000` (hơn 10 Triệu HP)** sẽ **chắc chắn `100%`** xuất hiện **SSJ Broly** (hoặc **`5%`** khi `<= 10Tr HP`) $\rightarrow$ Hạ **SSJ Broly** rơi **`100%` Quả Trứng Đệ Tử Broly (`ID 1826`)**! |
 | **Tầng 3: Boss Tiểu Đội & Hằng Ngày** | **Tiểu Đội Sát Thủ Namek, Tiểu Đội Bojack (Bujin, Kogu, Zangya, Bido, Bojack)** | Chỉ rơi **Ngọc Rồng Thường (1–3 Sao)** **HOẶC** **Ngọc Rồng Tím 6–7 Sao** | • Chuyên dùng cho tân thủ săn **Ngọc Rồng Thường (1–3 Sao)** & **Ngọc Rồng Tím 6–7 Sao**.<br>• Rơi **`5 – 8 Hồng Ngọc / con`** (đã giảm 75% lượng ngọc rơi để cân bằng kinh tế) *(Không rơi trang bị)*. |
 | **Tầng 4: Boss Cấp Thấp & Trung Cấp (`< 400 Triệu HP`)**<br>*(Từ Nappa trở đi — 1 đội/lần)* | **Tiểu Đội Sát Thủ Nappa (Số 4, 3, 2, 1, Tiểu Đội Trưởng), Nappa, Vegeta, Fide Đại Ca (1, 2, 3), Android 19/20/13/14/15, Pic/Poc/King Kong, Pui Pui, Yacon, Drabura...** | Rơi **Ngọc Rồng 1 – 4 Sao** *(tuyệt đối không rơi 5–7 sao)* **HOẶC** **Ngọc Rồng Tím 6–7 Sao** | • **`25%` gốc + `0.2% / 100Tr HP` tỷ lệ rơi Trang bị thường**: Trong đó `75%` đồ Cấp 10, `20%` đồ Cấp 11, và `5%–8%` đồ Cấp 12 (*Sao Pha Lê: 85% 1–2s, 13% 3–4s, 2% 5s*).<br>• **2% tỷ lệ rơi Trang Bị Kích Hoạt (SKH)** *(Không rơi Đồ Thần Linh)*.<br>• Rơi **5 cục Vàng lớn (1 Triệu Vàng/cục)** + **`5 – 20 Hồng Ngọc`**. |
 | **Tầng 5: Boss Cao Cấp Cuối Game (`>= 400 Triệu HP`)**<br>*(Hồi sinh 5 – 10 phút)* | **Xên Bọ Hung, Xên Hoàn Thiện, Siêu Bọ Hung, Black Goku, Super Black Goku, Zamasu, Cooler, Golden Frieza, Cumber, Super Cumber, 3 Sói (Basil, Lavender, Bergamo), Baby, Mabư 14h** | Rơi **Ngọc Rồng 1 – 4 Sao** *(tỷ lệ 1–2 Sao cao)* **HOẶC** **Ngọc Rồng Tím 6–7 Sao** | • **`7%` gốc + `0.2% / 100Tr HP` (lên tới `25%–35%`) rơi Trang Bị Thần Linh (Level 13 — luôn kèm sẵn `3 – 7 Sao Pha Lê`, máu Boss càng cao tỷ lệ 5–7 Sao & Găng/Rada càng lớn)**!<br>• **`50%` gốc + `0.2% / 100Tr HP` (lên tới `85%`) rơi Trang bị cao cấp**: Tỷ lệ **Đồ Cấp 12 từ `75%` lên tới `92%`**, chỉ số gốc cộng thêm **`100% – 125%`**, **100% có sẵn `3 – 7 Sao Pha Lê`**!<br>• **2% tỷ lệ rơi Trang Bị Kích Hoạt (SKH)** + nhiều **Vàng & Hồng Ngọc**. |
@@ -687,9 +702,13 @@ Mỗi khi hạ gục bất kỳ Boss nào, người kết liễu đều nhận n
 
 ## 💰 7.1. Hệ Thống Kinh Tế Vàng, Nhiệm Vụ Hàng Ngày & Thành Tích Bò Mộng
 Để đảm bảo nền kinh tế Vàng ổn định (tỷ giá chuẩn **`1 Thỏi Vàng = 500.000.000 Vàng`** bán và mua tại **Santa**):
-1. **Nhiệm Vụ Hàng Ngày Bò Mộng (Tại Thần Điện / Đảo Kame)**:
-   - Mỗi ngày bạn có **20 lượt Nhiệm Vụ Bò Mộng** chia làm **5 cấp độ khó** (*Dễ, Thường, Khó, Rất Khó, Siêu Khó*).
-   - Hoàn thành nhiệm vụ nhận trực tiếp **Vàng & Thỏi Vàng** theo độ khó, đồng thời tích lũy tiến độ mở khóa **Nhiệm Vụ KOL**!
+1. **Nhiệm Vụ Hàng Ngày Bò Mộng (Tại Rừng Karin `Map 47` / Siêu Thị `Map 84`)**:
+   - Mỗi ngày bạn có **20 lượt Nhiệm Vụ Bò Mộng** chia làm **5 cấp độ khó** với phần thưởng tăng dần kèm **Ngọc Bí Ngô**:
+     - **Dễ**: **`200.000.000 Vàng`** (`200Tr Vàng`)
+     - **Bình thường**: **`1 Thỏi Vàng`** (`500Tr Vàng`)
+     - **Khó**: **`2 Thỏi Vàng`** (`1 Tỷ Vàng`)
+     - **Rất khó**: **`3 Thỏi Vàng`** (`1.5 Tỷ Vàng`)
+     - **Địa ngục (Siêu Khó)**: **`4 Thỏi Vàng`** (`2 Tỷ Vàng`) — đồng thời tích lũy tiến độ mở khóa **Nhiệm Vụ KOL số 5**!
 2. **Phần Thưởng Thành Tích Bò Mộng (Thưởng Bằng Thỏi Vàng)**:
    - Gặp **Bò Mộng -> Thành tích** để nhận thưởng khi đạt đủ 20 cột mốc thành tích cày cuốc (*Đạt mốc Sức mạnh, Chưởng, Bay, Hạ quái, Hạ Boss, Dùng tuyệt kỹ...*).
    - Toàn bộ các mốc Thành Tích đều thưởng trực tiếp **Thỏi Vàng (`từ 5 đến 100 Thỏi Vàng / mốc`, tổng cộng `515 Thỏi Vàng` = `257.5 Tỷ Vàng`)** thẳng vào hành trang!
@@ -734,16 +753,18 @@ Bạn có thể sử dụng hệ thống phím tắt trực tiếp trên bàn ph
 | Phím Tắt / Lệnh Chat | Chức Năng Thực Thi |
 | :--- | :--- |
 | **`Phím X`** *(Menu Tiện Ích Client)* | Mở **Menu Tiện Ích 7 Danh Mục** (*Tiện ích, Bản đồ, Luyện tập, Nhặt đồ, Đệ tử, BOSS, Khác*): Bật/tắt **Auto Hồi Sinh**, **Auto sử dụng Item**, **Thông tin Sư Phụ & Đệ Tử**, **Tàn Sát Boss**, **Tự Động Săn Boss**... |
-| **`Phím E`** *(Auto Hồi Sinh)* | Bật / Tắt nhanh **Tự Động Hồi Sinh** ngay khi nhân vật bị hạ gục. |
-| **`Phím B`** *(hoặc chat `autosanboss`)* | **Bật / Dừng Tự Động Săn Boss** tức thì *(thời gian **Máy Dò Săn Boss** chỉ trừ khi đang bật săn Boss, tạm dừng sẽ giữ nguyên thời gian)*. |
-| **Nút `Thêm vào AutoItem`** *(Trong Hành Trang)* | Bấm trực tiếp vào bất kỳ vật phẩm bổ trợ / tiêu hao / **Thỏi Vàng (`ID 457`)** nào trong Hành trang để tự động dùng liên tục (bấm **`Xoá khỏi AutoItem`** để dừng). |
+| **`Phím E`** *(hoặc chat `ahs` / `autohoisinh`)* | Bật / Tắt nhanh **Tự Động Hồi Sinh** ngay khi nhân vật bị hạ gục. |
+| **`Phím B`** *(hoặc chat `autosanboss`)* | **Bật / Dừng Tự Động Săn Boss** tức thì *(thời gian **Máy Dò Săn Boss `200Tr Vàng/1h`** chỉ trừ khi đang bật săn Boss, tạm dừng sẽ giữ nguyên thời gian)*. |
+| **Nút `Thêm vào AutoItem`** *(hoặc chat `autoitem`)* | Bấm trực tiếp vào bất kỳ vật phẩm bổ trợ / tiêu hao / **Thỏi Vàng (`ID 457`)** nào trong Hành trang để tự động dùng liên tục (bấm **`Xoá khỏi AutoItem`** để dừng). |
 | **Mục `Đổi Cờ`** *(Trong Tab Chức Năng)* | Mở bảng **Đổi Cờ PK** ngay trong tab **Chức Năng** của nhân vật. |
-| `auto` hoặc `menu` | Mở **Bảng Điều Khiển Tiện Ích Server** (Hành trang đa Tab, Auto Đậu, Auto Treo Quái, **Auto Săn Boss**, **Auto Dọn Túi Đồ**, Đệ Tử, Danh Sách Boss). |
-| `tab` hoặc `tui` hoặc `hanhtrang` | Mở bảng **Quản Lý 5 Tab Hành Trang (100 ô / Tab, tối đa 500 ô)** & Mở rộng thêm Tab mới (`+100 ô`). |
-| `t1` .. `t5` *(hoặc `tab 1` .. `tab 5`)* | Chuyển nhanh lập tức sang **Tab Hành Trang số 1 $\rightarrow$ số 5** (rất tiện để swap Set Cadic / Set Kakarot / Set Nappa). |
+| `auto` hoặc `menu` hoặc `x` | Mở **Bảng Điều Khiển Tiện Ích Server** (Trang Bị & Set Đồ, Khóa Bảo Vệ Trang Bị, Auto Treo Máy, Danh Sách & Tự Săn Boss, Quản Lý Đệ Tử, Cộng Nhanh Chỉ Số). |
+| `s1` .. `s5` *(hoặc `set 1` .. `set 5`)* | Mặc nhanh tức thì **Set Đồ số 1 $\rightarrow$ số 5 cho Sư Phụ** (rất tiện để swap Set Cadic Biến Khỉ $\rightarrow$ Set Kakarot / Set Cadic M / Set Nappa). |
+| `d1` .. `d5` *(hoặc `dt 1` .. `dt 5` / `pset 1` .. `pset 5`)* | Mặc nhanh tức thì **Set Đồ số 1 $\rightarrow$ số 5 cho Đệ Tử**. |
+| `set` hoặc `setdo` hoặc `doido` | Mở bảng **Thiết Lập / Lưu 5 Bộ Trang Bị Nhanh (`Set 1 .. Set 5`)** cho Sư phụ và Đệ tử (tự động Khóa bảo vệ đồ trong Set). |
+| `khoa` hoặc `khoado` *(hoặc `khoabody <ô>`, `khoabag <ô>`, `khoadetu <ô>`)* | Mở bảng **Khóa / Mở Khóa Bảo Vệ Trang Bị (`Option 39`)** chống vứt ra đất, chống bán Shop, chống tự bán rác và chống phân rã nhầm tại Bà Hạt Mít. |
 | `autodau` hoặc `ad` | Bật / Tắt **Auto Buff Đậu Thần** tự động hồi HP/KI cho cả Sư Phụ và Đệ Tử. |
-| `treoquai` hoặc `tq` | Bật / Tắt **Auto Treo Quái & Tự Động Lọc Bán Đồ Rác** (giữ lại 100% Đồ SKH, Đồ Thần Linh, Đồ Sao). |
-| `boss` hoặc `sanboss` | Mở **Danh Sách Boss Đang Sống** và bấm dịch chuyển nhanh tới **Khu 0** của bản đồ Boss. |
+| `treoquai` hoặc `tq` | Bật / Tắt **Auto Treo Quái & Tự Động Lọc Bán Đồ Rác** (bảo vệ 100% Đồ đã Khóa, Đồ trong Set 1..5, Đồ SKH, Đồ Thần Linh, Đồ Sao). |
+| `boss` hoặc `sanboss` *(hoặc `maydo`)* | Mở **Danh Sách Boss Đang Sống** để bay thẳng tới **Khu 0** của bản đồ Boss (hoặc gõ `maydo` mở bảng **Tự Động Săn Boss & Mua Giờ Máy Dò**). |
 | `di theo` / `tan cong` / `bao ve` / `ve nha` | Điều khiển trạng thái chiến đấu của Đệ Tử nhanh không cần mở bảng. |
 | `sach tuyet ky` | Tự động tìm và mặc **Sách Tuyệt Kỹ** trong hành trang cho Đệ Tử (mọi loại Đệ tử từ 1.5tr SM). |
 | `bien hinh` | Cho Đệ Tử biến hình gia tăng chỉ số. |
