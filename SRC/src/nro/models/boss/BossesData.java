@@ -908,12 +908,14 @@ public class BossesData {
             ConstPlayer.TRAI_DAT, //gender
             new short[]{553, 551, 552, -1, -1, -1}, //outfit {head, body, leg, bag, aura, eff}
             100000, //dame
-            new int[]{2_000_000_000}, //hp
+            new long[]{2_200_000_000L}, //hp (2.2 Tỷ)
             new int[]{102, 92, 93, 94, 96, 97, 98, 99, 100}, //map join
             new int[][]{
                 {Skill.THAI_DUONG_HA_SAN, 7, 30000},
                 {Skill.TAI_TAO_NANG_LUONG, 7, 300000},
                 {Skill.KHIEN_NANG_LUONG, 7, 300000},
+                {Skill.SUPER_KAME, 7, 12000},
+                {Skill.QUA_CAU_KENH_KHI, 7, 15000},
                 {Skill.KAMEJOKO, 7, 100},
                 {Skill.GALICK, 7, 100}},
             //skill
@@ -965,13 +967,15 @@ public class BossesData {
             "Super Cumber", //name
             ConstPlayer.TRAI_DAT, //gender
             new short[]{1257, 1255, 1256, -1, -1, -1}, //outfit {head, body, leg, bag, aura, eff}
-            100000, //dame
-            new int[]{2_000_000_000}, //hp
+            120000, //dame
+            new long[]{2_800_000_000L}, //hp (2.8 Tỷ)
             new int[]{155}, //map join
             new int[][]{
                 {Skill.THAI_DUONG_HA_SAN, 7, 300000},
                 {Skill.TAI_TAO_NANG_LUONG, 7, 300000},
                 {Skill.KHIEN_NANG_LUONG, 7, 300000},
+                {Skill.SUPER_KAME, 7, 12000},
+                {Skill.QUA_CAU_KENH_KHI, 7, 15000},
                 {Skill.KAMEJOKO, 7, 100},
                 {Skill.GALICK, 7, 100}},
             //skill
@@ -2593,7 +2597,7 @@ public class BossesData {
             ConstPlayer.XAYDA,
             new short[]{1715, 1716, 1717, -1, -1, -1},
             200000,
-            new int[]{2000000000},
+            new long[]{2_000_000_000L},
             new int[]{166, 167, 172, 173},
             new int[][]{
                 {Skill.GALICK, 7, 100},
@@ -2603,7 +2607,8 @@ public class BossesData {
                 {Skill.ANTOMIC, 7, 100},
                 {Skill.KAMEJOKO, 7, 100},
                 {Skill.LIEN_HOAN, 7, 10000},
-                {Skill.SUPER_KAME, 7, 10000}},//skill
+                {Skill.SUPER_KAME, 7, 10000},
+                {Skill.QUA_CAU_KENH_KHI, 7, 15000}},//skill
             new String[]{"|-2|Cái gì kia vậy!? Đó là loài gì thế!!?",
                 "|-1|Hôm nay sẽ là ngày đáng nhớ đây!",
                 "|-1|Ta sẽ kí sinh vào người của vegeta để đạt được dạng hoàn hảo!",
@@ -2634,7 +2639,7 @@ public class BossesData {
             ConstPlayer.XAYDA,
             new short[]{1718, 1719, 1720, -1, -1, -1},
             250000,
-            new int[]{2000000000},
+            new long[]{2_600_000_000L},
             new int[]{166, 167, 172, 173},
             new int[][]{
                 {Skill.GALICK, 7, 100},
@@ -2644,7 +2649,8 @@ public class BossesData {
                 {Skill.ANTOMIC, 7, 100},
                 {Skill.KAMEJOKO, 7, 100},
                 {Skill.LIEN_HOAN, 7, 10000},
-                {Skill.SUPER_KAME, 7, 20000}},//skill
+                {Skill.SUPER_KAME, 7, 15000},
+                {Skill.QUA_CAU_KENH_KHI, 7, 18000}},//skill
             new String[]{}, //text chat 1
             new String[]{"|-2|Nguy rồi... thực sự nguy to rồi!",
                 "|-1|Các ngươi nghĩ có thể chạy được sao!?",
@@ -2665,8 +2671,8 @@ public class BossesData {
             "Baby Khỉ Đột Vàng",
             ConstPlayer.XAYDA,
             new short[]{1721, 1722, 1723, -1, -1, -1},
-            30000,
-            new int[]{2000000000},
+            280000,
+            new long[]{3_200_000_000L},
             new int[]{166, 167, 172, 173},
             new int[][]{
                 {Skill.GALICK, 7, 100},
@@ -2676,7 +2682,8 @@ public class BossesData {
                 {Skill.ANTOMIC, 7, 100},
                 {Skill.KAMEJOKO, 7, 100},
                 {Skill.LIEN_HOAN, 7, 10000},
-                {Skill.SUPER_KAME, 7, 20000}},//skill
+                {Skill.SUPER_KAME, 7, 15000},
+                {Skill.TU_SAT, 7, 20000}},//skill
             new String[]{"|-2|Cuối cùng hắn cũng đã biến đổi",
                 "|-2|Khốn kiếp! Phải kết liễu hắn ngay lúc này!"
             }, //text chat 1
@@ -2799,13 +2806,15 @@ public class BossesData {
             "Zamasu Hợp Thể",
             ConstPlayer.TRAI_DAT,
             new short[]{903, 904, 905, -1, -1, -1},
-            100000,
-            new int[]{2_000_000_000},
+            115000,
+            new long[]{2_500_000_000L},
             new int[]{102, 92, 93, 94, 96, 97, 98, 99, 100},
             new int[][]{
                 {Skill.THAI_DUONG_HA_SAN, 7, 30000},
                 {Skill.TAI_TAO_NANG_LUONG, 7, 300000},
                 {Skill.KHIEN_NANG_LUONG, 7, 240000},
+                {Skill.SUPER_KAME, 7, 12000},
+                {Skill.QUA_CAU_KENH_KHI, 7, 15000},
                 {Skill.KAMEJOKO, 7, 200},
                 {Skill.GALICK, 7, 200}},
             new String[]{
@@ -2895,12 +2904,14 @@ public class BossesData {
             ConstPlayer.XAYDA,
             new short[]{439, 440, 441, -1, -1, -1},
             110000,
-            new int[]{1_200_000_000},
+            new long[]{1_500_000_000L},
             new int[]{5, 13, 20, 27, 28, 29, 30, 127},
             new int[][]{
                 {Skill.KAMEJOKO, 7, 800},
                 {Skill.DRAGON, 7, 800},
                 {Skill.GALICK, 7, 800},
+                {Skill.SUPER_KAME, 7, 12000},
+                {Skill.QUA_CAU_KENH_KHI, 7, 15000},
                 {Skill.TAI_TAO_NANG_LUONG, 7, 300000}},
             new String[]{"|-1|Ugaaa! Hahahaha! Hủy diệt cả hành tinh!"},
             new String[]{"|-1|Quả Cầu Hủy Diệt Hành Tinh!", "|-1|Ugaaa! Hahahaha!"},
@@ -2913,14 +2924,16 @@ public class BossesData {
             "Caulifla",
             ConstPlayer.XAYDA,
             new short[]{690, 691, 692, -1, -1, -1},
-            120000,
-            new int[]{800_000_000},
+            140000,
+            new long[]{1_500_000_000L},
             new int[]{169, 170},
             new int[][]{
                 {Skill.GALICK, 7, 800},
                 {Skill.DRAGON, 7, 800},
                 {Skill.ANTOMIC, 7, 1000},
-                {Skill.LIEN_HOAN, 7, 5000}},
+                {Skill.LIEN_HOAN, 7, 5000},
+                {Skill.SUPER_KAME, 7, 12000},
+                {Skill.MAKANKOSAPPO, 7, 15000}},
             new String[]{"|-1|Ta là Caulifla — Saiyan thiên tài của Vũ Trụ 6!",
                 "|-1|Nào, cho ta xem sức mạnh của Saiyan Vũ Trụ 7 đi!"},
             new String[]{"|-1|Crush Cannon!", "|-1|Quá chậm chạp!", "|-1|Còn nữa đâu, tung hết sức ra đi!"},
@@ -2932,14 +2945,16 @@ public class BossesData {
             "Siêu Xayda Kefla",
             ConstPlayer.XAYDA,
             new short[]{757, 758, 759, -1, -1, -1},
-            160000,
-            new int[]{1_500_000_000},
+            190000,
+            new long[]{2_800_000_000L},
             new int[]{169, 170},
             new int[][]{
                 {Skill.GALICK, 7, 500},
                 {Skill.DRAGON, 7, 500},
                 {Skill.ANTOMIC, 7, 800},
-                {Skill.SUPER_KAME, 7, 12000},
+                {Skill.SUPER_KAME, 7, 10000},
+                {Skill.LIEN_HOAN_CHUONG, 7, 12000},
+                {Skill.QUA_CAU_KENH_KHI, 7, 15000},
                 {Skill.KHIEN_NANG_LUONG, 7, 180000}},
             new String[]{"|-1|Hahaha! Sức mạnh hợp thể Potara của Caulifla và Kale — Siêu Xayda Kefla xuất chiến!"},
             new String[]{"|-1|Gigantic Burst!", "|-1|Cảm giác năng lượng tuôn trào không đáy thật tuyệt vời!", "|-1|Đừng hòng đỡ nổi đòn này!"},
@@ -2951,14 +2966,16 @@ public class BossesData {
             "Thần Hủy Diệt Champa",
             ConstPlayer.XAYDA,
             new short[]{511, 512, 513, -1, -1, -1},
-            180000,
-            new int[]{1_800_000_000},
+            220000,
+            new long[]{3_500_000_000L},
             new int[]{169, 170, 171},
             new int[][]{
                 {Skill.GALICK, 7, 500},
                 {Skill.DRAGON, 7, 500},
                 {Skill.KAMEJOKO, 7, 800},
                 {Skill.SUPER_KAME, 7, 10000},
+                {Skill.LIEN_HOAN_CHUONG, 7, 12000},
+                {Skill.QUA_CAU_KENH_KHI, 7, 14000},
                 {Skill.KHIEN_NANG_LUONG, 7, 180000}},
             new String[]{"|-1|Ta là Thần Hủy Diệt Champa của Vũ Trụ 6!",
                 "|-1|Kẻ nào dám tự ý xông vào lãnh địa của ta và Vados?!"},
@@ -2971,14 +2988,17 @@ public class BossesData {
             "Sát Thủ Hit",
             ConstPlayer.XAYDA,
             new short[]{520, 521, 522, -1, -1, -1},
-            220000,
-            new int[]{2_000_000_000},
+            260000,
+            new long[]{4_000_000_000L},
             new int[]{170, 171},
             new int[][]{
                 {Skill.DRAGON, 7, 400},
                 {Skill.DEMON, 7, 400},
                 {Skill.GALICK, 7, 400},
                 {Skill.LIEN_HOAN, 7, 3000},
+                {Skill.SUPER_KAME, 7, 10000},
+                {Skill.LIEN_HOAN_CHUONG, 7, 12000},
+                {Skill.MAKANKOSAPPO, 7, 14000},
                 {Skill.DICH_CHUYEN_TUC_THOI, 7, 15000},
                 {Skill.KHIEN_NANG_LUONG, 7, 180000}},
             new String[]{"|-1|Bước Nhảy Thời Gian 0.1 giây... Mục tiêu đã bị khóa.",

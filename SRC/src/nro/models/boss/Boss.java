@@ -130,6 +130,7 @@ public class Boss extends Player implements IBoss {
     public long timeTriggerIdleDespawn;
     public boolean pendingNotifyJoinMap;
     public long timeTriggerNotifyJoinMap;
+    public long lastTimeUseHighHpUltimate;
 
     public Boss(int id, boolean isNotifyDisabled, boolean isZone01SpawnDisabled, BossData... data) throws Exception {
         this(id, data);
@@ -251,6 +252,9 @@ public class Boss extends Player implements IBoss {
     }
 
     public long getPreRebalanceBossHp(long rawHp) {
+        if (rawHp > 2_000_000_000L) {
+            return rawHp;
+        }
         if (isWorldBossForHpBoost() && rawHp >= 500_000L) {
             return Math.min(2_000_000_000L, rawHp * 3L);
         }
@@ -262,6 +266,10 @@ public class Boss extends Player implements IBoss {
             return false;
         }
         int lvl = getSafeLevelIndex();
+        long[] hpLongArr = this.data[lvl].getHpLong();
+        if (hpLongArr != null && hpLongArr.length > 0) {
+            return getPreRebalanceBossHp(hpLongArr[0]) > 400_000_000L;
+        }
         int[] hpArr = this.data[lvl].getHp();
         if (hpArr == null || hpArr.length == 0) {
             return false;
@@ -276,18 +284,29 @@ public class Boss extends Player implements IBoss {
         this.gender = data.getGender();
         this.nPoint.mpg = 31_07_2002;
         this.nPoint.dameg = data.getDame();
-        long rawHp = data.getHp()[Util.nextInt(0, data.getHp().length - 1)];
-        long prevHp = getPreRebalanceBossHp(rawHp);
+        long[] hpLongArr = data.getHpLong();
+        long rawHp = (hpLongArr != null && hpLongArr.length > 0)
+                ? hpLongArr[Util.nextInt(0, hpLongArr.length - 1)]
+                : data.getHp()[Util.nextInt(0, data.getHp().length - 1)];
         long finalHp;
-        if (prevHp > 400_000_000L) {
-            finalHp = Math.min(2_000_000_000L, (prevHp * 3L) / 2L);
+        if (data.isUseExactLongHp() || rawHp > 2_000_000_000L) {
+            finalHp = rawHp;
         } else {
-            finalHp = Math.min(2_000_000_000L, prevHp * 4L);
+            long prevHp = getPreRebalanceBossHp(rawHp);
+            if (prevHp > 400_000_000L) {
+                finalHp = Math.min(2_000_000_000L, (prevHp * 3L) / 2L);
+            } else {
+                finalHp = Math.min(2_000_000_000L, prevHp * 4L);
+            }
         }
-        this.nPoint.hpg = (int) finalHp;
+        this.nPoint.hpgLong = finalHp;
+        this.nPoint.hpMaxLong = finalHp;
+        this.nPoint.hpLong = finalHp;
+        this.nPoint.hpg = (int) Math.min(2_000_000_000L, finalHp);
         this.bossDamageReductionFactor = 1;
-        this.nPoint.hp = nPoint.hpg;
+        this.nPoint.hp = this.nPoint.hpg;
         this.nPoint.calPoint();
+        this.nPoint.setFullHpMp();
         this.initSkill();
         this.resetBase();
     }
@@ -299,12 +318,40 @@ public class Boss extends Player implements IBoss {
         this.playerSkill.skills.clear();
         this.playerSkill.skillSelect = null;
         int[][] skillTemps = data[this.currentLevel].getSkillTemp();
+        boolean hasSpecialSkill = false;
+        boolean hasLethalSkill = false;
         for (int[] skillTemp : skillTemps) {
             Skill skill = SkillUtil.createSkill(skillTemp[0], skillTemp[1]);
             if (skillTemp.length == 3) {
                 skill.coolDown = skillTemp[2];
             }
             this.playerSkill.skills.add(skill);
+            int skId = skillTemp[0];
+            if (skId == Skill.SUPER_KAME || skId == Skill.LIEN_HOAN_CHUONG || skId == Skill.MA_PHONG_BA) {
+                hasSpecialSkill = true;
+            }
+            if (skId == Skill.QUA_CAU_KENH_KHI || skId == Skill.MAKANKOSAPPO || skId == Skill.TU_SAT) {
+                hasLethalSkill = true;
+            }
+        }
+        // Tất cả Boss có HP > 1 tỷ 2 đều sở hữu Chiêu Tất Sát và Skill Đặc Biệt (Super Kamejoko / Liên Hoàn Chưởng)
+        if (this.nPoint != null && this.nPoint.getHpMaxLong() > 1_200_000_000L && !"$".equals(this.name)) {
+            if (!hasSpecialSkill) {
+                Skill superKame = SkillUtil.createSkill(Skill.SUPER_KAME, 7);
+                if (superKame != null) {
+                    superKame.coolDown = 12000;
+                    this.playerSkill.skills.add(superKame);
+                }
+            }
+            if (!hasLethalSkill) {
+                int lethalId = (this.gender == ConstPlayer.NAMEC) ? Skill.MAKANKOSAPPO
+                        : (this.gender == ConstPlayer.XAYDA ? Skill.TU_SAT : Skill.QUA_CAU_KENH_KHI);
+                Skill lethalSkill = SkillUtil.createSkill(lethalId, 7);
+                if (lethalSkill != null) {
+                    lethalSkill.coolDown = 15000;
+                    this.playerSkill.skills.add(lethalSkill);
+                }
+            }
         }
     }
 
@@ -319,7 +366,7 @@ public class Boss extends Player implements IBoss {
         this.lastTimeSpawnOnMap = now;
         this.lastTimeAttacked = now;
         this.firstEncounterPlayerTimeMs = 0L;
-        this.lastRecordedHp = this.nPoint != null ? this.nPoint.hp : 0;
+        this.lastRecordedHp = this.nPoint != null ? this.nPoint.getHpLong() : 0;
         this.pendingIdleDespawn = false;
         this.timeTriggerIdleDespawn = 0;
         this.pendingNotifyJoinMap = false;
@@ -329,6 +376,7 @@ public class Boss extends Player implements IBoss {
         this.isUsingTTNL = false;
         this.lastTimeStartTTNL = 0;
         this.ticksTTNL = 0;
+        this.lastTimeUseHighHpUltimate = now;
     }
 
     public boolean isTieuDoiBojack() {
@@ -521,12 +569,12 @@ public class Boss extends Player implements IBoss {
     }
 
     public boolean hasGroupDroppedBelow50Hp() {
-        if (this.droppedBelow50Hp || (this.nPoint != null && this.nPoint.hpMax > 0 && this.nPoint.hp < this.nPoint.hpMax / 2)) {
+        if (this.droppedBelow50Hp || (this.nPoint != null && this.nPoint.getHpMaxLong() > 0 && this.nPoint.getHpLong() < this.nPoint.getHpMaxLong() / 2L)) {
             this.droppedBelow50Hp = true;
             return true;
         }
         Boss root = this.parentBoss != null ? this.parentBoss : this;
-        if (root.droppedBelow50Hp || (root.nPoint != null && root.nPoint.hpMax > 0 && root.nPoint.hp < root.nPoint.hpMax / 2)) {
+        if (root.droppedBelow50Hp || (root.nPoint != null && root.nPoint.getHpMaxLong() > 0 && root.nPoint.getHpLong() < root.nPoint.getHpMaxLong() / 2L)) {
             return true;
         }
         if (root.bossAppearTogether != null && root.currentLevel >= 0 && root.currentLevel < root.bossAppearTogether.length
@@ -534,7 +582,7 @@ public class Boss extends Player implements IBoss {
             for (Boss sub : root.bossAppearTogether[root.currentLevel]) {
                 if (sub != null && sub.currentLevel >= 0 && sub.bossStatus != BossStatus.REST
                         && (sub.isDie() || sub.droppedBelow50Hp
-                        || (sub.nPoint != null && sub.nPoint.hpMax > 0 && sub.nPoint.hp < sub.nPoint.hpMax / 2))) {
+                        || (sub.nPoint != null && sub.nPoint.getHpMaxLong() > 0 && sub.nPoint.getHpLong() < sub.nPoint.getHpMaxLong() / 2L))) {
                     return true;
                 }
             }
@@ -543,13 +591,13 @@ public class Boss extends Player implements IBoss {
     }
 
     public long getIdleResetTimeMs() {
-        long maxHp = this.nPoint != null ? Math.max(this.nPoint.hpMax, this.nPoint.hpg) : 0;
+        long maxHp = this.nPoint != null ? this.nPoint.getHpMaxLong() : 0;
         if (this.bossAppearTogether != null && this.currentLevel >= 0
                 && this.currentLevel < this.bossAppearTogether.length
                 && this.bossAppearTogether[this.currentLevel] != null) {
             for (Boss sub : this.bossAppearTogether[this.currentLevel]) {
                 if (sub != null && sub.nPoint != null) {
-                    maxHp = Math.max(maxHp, Math.max(sub.nPoint.hpMax, sub.nPoint.hpg));
+                    maxHp = Math.max(maxHp, sub.nPoint.getHpMaxLong());
                 }
             }
         }
@@ -631,7 +679,7 @@ public class Boss extends Player implements IBoss {
             long now = System.currentTimeMillis();
             this.lastTimeSpawnOnMap = now;
             this.lastTimeAttacked = now;
-            this.lastRecordedHp = this.nPoint != null ? this.nPoint.hp : 0;
+            this.lastRecordedHp = this.nPoint != null ? this.nPoint.getHpLong() : 0;
         }
         this.bossStatus = status;
     }
@@ -670,6 +718,89 @@ public class Boss extends Player implements IBoss {
         super.update();
     }
 
+    protected boolean tryCastHighHpBossSpecialOrLethal() {
+        if (this.isDie() || this.zone == null || this.playerSkill == null || this.nPoint == null) {
+            return false;
+        }
+        if (this.nPoint.getHpMaxLong() <= 1_200_000_000L || "$".equals(this.name)) {
+            return false;
+        }
+        // Nếu đang gồng Chiêu Tất Sát (Quả Cầu Kênh Khí / Laze / Tự Phát Nổ), giữ nguyên skill và tung đòn sau 1.5s
+        if (this.playerSkill.prepareQCKK || this.playerSkill.prepareLaze || this.playerSkill.prepareTuSat) {
+            int prepId = this.playerSkill.prepareQCKK ? Skill.QUA_CAU_KENH_KHI
+                    : (this.playerSkill.prepareLaze ? Skill.MAKANKOSAPPO : Skill.TU_SAT);
+            long lastPrepTime = this.playerSkill.prepareQCKK ? this.playerSkill.lastTimePrepareQCKK
+                    : (this.playerSkill.prepareLaze ? this.playerSkill.lastTimePrepareLaze : this.playerSkill.lastTimePrepareTuSat);
+            Skill prepSkill = SkillUtil.getSkillbyId(this, prepId);
+            if (prepSkill == null) {
+                this.playerSkill.prepareQCKK = false;
+                this.playerSkill.prepareLaze = false;
+                this.playerSkill.prepareTuSat = false;
+                return false;
+            }
+            this.playerSkill.skillSelect = prepSkill;
+            prepSkill.lastTimeUseThisSkill = 0;
+            if (!Util.canDoWithTime(lastPrepTime, 1500)) {
+                return true;
+            }
+            Player pl = getPlayerAttack();
+            if (pl != null && !pl.isDie()) {
+                this.chat("💥 CHIÊU TẤT SÁT! Hủy diệt hoàn toàn!");
+                SkillService.gI().useSkill(this, pl, null, -1, null);
+                checkPlayerDie(pl);
+            } else {
+                this.playerSkill.prepareQCKK = false;
+                this.playerSkill.prepareLaze = false;
+                this.playerSkill.prepareTuSat = false;
+            }
+            return true;
+        }
+
+        if (!Util.canDoWithTime(this.lastTimeUseHighHpUltimate, 12000)) {
+            return false;
+        }
+        Player pl = getPlayerAttack();
+        if (pl == null || pl.isDie() || Util.getDistance(this, pl) > 650) {
+            return false;
+        }
+        Skill specialSkill = null;
+        Skill lethalSkill = null;
+        for (Skill sk : this.playerSkill.skills) {
+            if (sk == null || sk.template == null) {
+                continue;
+            }
+            int id = sk.template.id;
+            if (id == Skill.SUPER_KAME || id == Skill.LIEN_HOAN_CHUONG || id == Skill.MA_PHONG_BA) {
+                specialSkill = sk;
+            } else if (id == Skill.QUA_CAU_KENH_KHI || id == Skill.MAKANKOSAPPO || id == Skill.TU_SAT) {
+                lethalSkill = sk;
+            }
+        }
+        if (specialSkill == null && lethalSkill == null) {
+            return false;
+        }
+        this.lastTimeUseHighHpUltimate = System.currentTimeMillis();
+        boolean useLethal = (lethalSkill != null) && (specialSkill == null || Util.isTrue(50, 100));
+        Skill chosen = useLethal ? lethalSkill : specialSkill;
+        this.playerSkill.skillSelect = chosen;
+        chosen.lastTimeUseThisSkill = 0;
+        if (Util.getDistance(this, pl) > 350) {
+            this.moveToPlayer(pl);
+        }
+        if (useLethal) {
+            String skillName = chosen.template.id == Skill.QUA_CAU_KENH_KHI ? "QUẢ CẦU KÊNH KHÍ TẤT SÁT"
+                    : (chosen.template.id == Skill.MAKANKOSAPPO ? "LAZE TỬ THẦN TẤT SÁT" : "VỤ NỔ HỦY DIỆT TẤT SÁT");
+            this.chat("⚡ Chuẩn bị đỡ CHIÊU TẤT SÁT: " + skillName + "!!!");
+        } else {
+            String skillName = chosen.template.id == Skill.SUPER_KAME ? "SUPER KAMEJOKO"
+                    : (chosen.template.id == Skill.LIEN_HOAN_CHUONG ? "LIÊN HOÀN CHƯỞNG" : "MA PHONG BA");
+            this.chat("🔥 Tuyệt kỹ đặc biệt: " + skillName + "!!!");
+        }
+        SkillService.gI().useSkill(this, pl, null, -1, null);
+        checkPlayerDie(pl);
+        return true;
+    }
+
     @Override
     public void update() {
         if (prepareBom) {
@@ -684,7 +815,10 @@ public class Boss extends Player implements IBoss {
             } else if (Util.canDoWithTime(this.timeTriggerNotifyJoinMap, 60_000L)) {
                 this.pendingNotifyJoinMap = false;
                 if (canSendNotify()) {
-                    ServerNotify.gI().notify("BOSS " + this.name + " vừa xuất hiện tại " + this.zone.map.mapName);
+                    String hpInfo = (this.nPoint != null && this.nPoint.getHpMaxLong() > 2_000_000_000L)
+                            ? (" [" + Util.numberToMoney(this.nPoint.getHpMaxLong()) + " HP]")
+                            : "";
+                    ServerNotify.gI().notify("BOSS " + this.name + hpInfo + " vừa xuất hiện tại " + this.zone.map.mapName);
                 }
             }
         }
@@ -703,19 +837,21 @@ public class Boss extends Player implements IBoss {
                 }
             }
         }
-        if (!this.isDie() && this.nPoint != null && this.nPoint.hpMax > 0) {
-            if (this.lastRecordedHp > 0 && this.nPoint.hp < this.lastRecordedHp) {
+        if (!this.isDie() && this.nPoint != null && this.nPoint.getHpMaxLong() > 0) {
+            long currHp = this.nPoint.getHpLong();
+            long maxHp = this.nPoint.getHpMaxLong();
+            if (this.lastRecordedHp > 0 && currHp < this.lastRecordedHp) {
                 this.recordBossAttacked();
             }
-            this.lastRecordedHp = this.nPoint.hp;
-            if (this.nPoint.hp < this.nPoint.hpMax / 2) {
+            this.lastRecordedHp = currHp;
+            if (currHp < maxHp / 2L) {
                 this.droppedBelow50Hp = true;
             }
             if (this.isTieuDoiBojack()) {
-                if (!this.isUsingTTNL && this.nPoint.hp > 0 && this.nPoint.hp < 2000) {
+                if (!this.isUsingTTNL && currHp > 0 && currHp < 2000) {
                     this.startBossTTNL();
                 }
-            } else if (!this.isBrolyBoss() && !this.isUsingTTNL && this.nPoint.hp > 0 && this.nPoint.hp < (this.nPoint.hpMax * 30L / 100L)
+            } else if (!this.isBrolyBoss() && !this.isUsingTTNL && currHp > 0 && currHp < (maxHp * 30L / 100L)
                     && (this.lastTimeStartTTNL == 0 || Util.canDoWithTime(this.lastTimeStartTTNL, 60000))) {
                 this.startBossTTNL();
             }
@@ -728,12 +864,14 @@ public class Boss extends Player implements IBoss {
                     EffectSkillService.gI().sendEffectStopCharge(this);
                 }
             } else {
-                long targetHp = this.isTieuDoiBojack() ? Math.min(this.nPoint.hpMax, 5000L) : (this.nPoint.hpMax / 2);
+                long maxHp = this.nPoint.getHpMaxLong();
+                long currHp = this.nPoint.getHpLong();
+                long targetHp = this.isTieuDoiBojack() ? Math.min(maxHp, 5000L) : (maxHp / 2L);
                 if (Util.canDoWithTime(this.lastTimeTickTTNL, 1000)) {
                     this.lastTimeTickTTNL = System.currentTimeMillis();
                     this.ticksTTNL++;
                     int remainingTicks = Math.max(1, 5 - this.ticksTTNL + 1);
-                    long needHeal = targetHp - this.nPoint.hp;
+                    long needHeal = targetHp - currHp;
                     if (needHeal > 0) {
                         long healAmount = Math.max(1L, needHeal / remainingTicks);
                         PlayerService.gI().hoiPhuc(this, healAmount, 0);
@@ -742,8 +880,9 @@ public class Boss extends Player implements IBoss {
                     this.chat("Phục hồi năng lượng " + this.nPoint.getCurrPercentHP() + "%");
                 }
                 if (Util.canDoWithTime(this.lastTimeStartTTNL, 5000) || this.ticksTTNL >= 5) {
-                    if (this.nPoint.hp < targetHp) {
-                        PlayerService.gI().hoiPhuc(this, targetHp - this.nPoint.hp, 0);
+                    currHp = this.nPoint.getHpLong();
+                    if (currHp < targetHp) {
+                        PlayerService.gI().hoiPhuc(this, targetHp - currHp, 0);
                     }
                     this.isUsingTTNL = false;
                     EffectSkillService.gI().sendEffectStopCharge(this);
@@ -781,6 +920,12 @@ public class Boss extends Player implements IBoss {
                 this.ensureSafeBossLocation();
                 this.chatM();
                 if (this.effectSkill.isCharging && !Util.isTrue(1, 20) || this.effectSkill.useTroi) {
+                    return;
+                }
+                if (this.typePk == ConstPlayer.NON_PK) {
+                    this.changeToTypePK();
+                }
+                if (tryCastHighHpBossSpecialOrLethal()) {
                     return;
                 }
                 this.active();
@@ -1074,7 +1219,7 @@ public class Boss extends Player implements IBoss {
             }
             String mapName = (this.zone != null && this.zone.map != null) ? this.zone.map.mapName : "Không rõ";
             int zoneId = (this.zone != null) ? this.zone.zoneId : -1;
-            long hpMax = (this.nPoint != null) ? this.nPoint.hpMax : 0L;
+            long hpMax = (this.nPoint != null) ? this.nPoint.getHpMaxLong() : 0L;
 
             Player killerOwner = (plKill.isPet && ((Pet) plKill).master != null) ? ((Pet) plKill).master : plKill;
             boolean killedByBot = killerOwner.isBot;
@@ -1242,7 +1387,7 @@ public class Boss extends Player implements IBoss {
         int y = safeDropLoc[1];
 
         // Rớt Hồng Ngọc (ID 861) khi tiêu diệt Boss (phục vụ mua Cải trang tối ưu hành tinh >1000 Hồng ngọc)
-        long bossHpForRuby = this.nPoint != null ? Math.max(1L, (long) this.nPoint.hpMax) : 1L;
+        long bossHpForRuby = this.nPoint != null ? Math.max(1L, this.nPoint.getHpMaxLong()) : 1L;
         int rubyDrop;
         if (this.isDailyEarlyBoss()) {
             // Tiểu đội Bojack & TDST Namek: giảm 75% lượng ngọc nhận (từ 20-30 xuống 5-8 Hồng Ngọc / 1 Boss)
@@ -1258,7 +1403,7 @@ public class Boss extends Player implements IBoss {
         Service.gI().dropItemMap(this.zone, rubyMap);
 
         // 0. Đánh Boss rớt 5 cục vàng
-        long bossHp = this.nPoint != null ? Math.max(1L, (long) this.nPoint.hpMax) : 1L;
+        long bossHp = this.nPoint != null ? Math.max(1L, this.nPoint.getHpMaxLong()) : 1L;
         int piles = 5;
         long baseGoldPerPile;
         if (this.id == BossID.SO_4 || this.id == BossID.SO_3 || this.id == BossID.SO_2 || this.id == BossID.SO_1) {

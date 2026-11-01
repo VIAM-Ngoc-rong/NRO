@@ -161,9 +161,22 @@ Ngay khi tạo nhân vật xong, bạn đang đứng trong **Nhà** (*Nhà Gôha
    - Gõ `boss` tìm **Kid Bư** $\rightarrow$ Hạ Kid Bư khi **`HP >= 1.000.000`** chắc chắn **`100%`** gọi ra **Mabư Mập** ngay tại khu đó (hoặc `5%` khi `< 1Tr HP`) $\rightarrow$ Hạ Mabư Mập có **50% rơi Quả Trứng Mabư**. Bấm dùng Trứng rồi về **Nhà** bấm vào **Quả Trứng** chọn **Nở ngay (1 Tỷ Vàng)**.
 3. **Đệ Tử Cấp 3 (Broly — Max gốc `700k` HP/KI, `32k` SĐ bằng Sư phụ; Hợp thể cộng `130%` chỉ số đệ, `100%` Rơi Trứng tại Hành Tinh Vampa)**:
    - **Cách đến Hành Tinh Vampa**: Bay tới **Hành Tinh Bill (`Map 154`)** gặp **NPC Whis** chọn **"Đến Hành Tinh Vampa"** (`Map 160 -> 163`).
-   - **Cách gọi Super SSJ Broly (`SSJ Broly`)**: Khi Boss **Broly Cổ Đại (`Broly18h`)** tại **Hành Tinh Vampa** bị tiêu diệt ở mốc máu **`>= 10.000.000 HP` (từ 10 Triệu HP trở lên)** sẽ **chắc chắn `100%`** biến hình thành **SSJ Broly** ngay tại chỗ (hoặc `5%` xác suất ngẫu nhiên khi `< 10Tr HP`). *(Mẹo: Mặc **Cải trang Android 19 / Android 20** vừa hấp thụ chưởng của Broly hồi KI vừa **phản sát thương `PST`** giúp nuôi máu Broly cực dễ).*
+   - **Cách gọi Super SSJ Broly (`SSJ Broly`)**: Khi Boss **Broly Cổ Đại (`Broly18h`)** tại **Hành Tinh Vampa** bị tiêu diệt ở mốc máu **`>= 10.000.000 HP` (từ 10 Triệu HP trở lên)** sẽ **chắc chắn `100%`** biến hình thành **SSJ Broly** ngay tại chỗ (hoặc `5%` xác suất ngẫu nhiên khi `< 10Tr HP`). *(Lưu ý: Các Boss **Broly**, **Kid Bư**, **Broly Cổ Đại** khi dưới `50% HP` sẽ liên tục Tái Tạo Năng Lượng để tự hồi và đẩy giới hạn máu lên nhanh chóng).*
    - **Tỷ lệ rơi Trứng**: Khi đang có **Đệ Tử Mabư**, tiêu diệt **SSJ Broly** rơi **`100%` Quả Trứng Đệ Tử Broly (`ID 1826`)** $\rightarrow$ Dùng Trứng rồi về **Nhà** bấm vào **Quả Trứng** ấp nở thành **Đệ Tử Broly**!
-4. **Nâng Bông Tai Porata Cấp 2 & Cấp 3**: Tại **Bà Hạt Mít (Đảo Kame)**, nâng cấp Bông Tai Porata lên Cấp 2 và Cấp 3 rồi Mở chỉ số ẩn để khi **Hợp Thể** cùng Đệ Tử Broly, toàn bộ HP/KI/Sức Đánh của bạn tăng vọt cực đại!
+4. **Đệ Tử Cấp 4 (Sát Thủ Hit — Hợp thể cộng `145%` chỉ số đệ, Biến hình tăng `+35% SĐ/HP/KI` + `+15% Chí mạng`, `100%` Rơi Trứng tại Hành Tinh Vũ Trụ 6)**:
+   - **Cách đến Hành Tinh Hủy Diệt Vũ Trụ 6 (`Map 169 -> 171`)**: Gặp **NPC Whis (`Map 154`)** chọn **"Đến Hành Tinh Vũ Trụ 6"**.
+   - **Săn Boss Sát Thủ Hit (`4.000.000.000 HP` — `4 Tỷ HP`)**: Sát Thủ Hit sở hữu 3 tuyệt kỹ sát thủ tối thượng:
+     1. **⏱️ Ngưng Đọng Thời Gian**: Cứ mỗi `14 giây`, đóng băng toàn bộ người chơi và đệ tử trong khu vực suốt `4 giây` (bỏ qua Kháng TDHS).
+     2. **💀 Chiêu Tất Sát Xuyên Tim**: Cứ mỗi `11 giây`, dịch chuyển tức thời áp sát 1 người chơi, phá Khiên Năng Lượng và kết liễu tức khắc (`100% HP`).
+     3. **🌌 Lĩnh Vực Thời Gian Tuyệt Diệt (Tiêu Diệt Toàn Bộ Người Chơi)**: Kích hoạt tại các mốc máu `75%`, `50%`, `25%` và mỗi `25 giây` (tụ khí cảnh báo `2.5 giây` trước khi xóa sổ toàn bộ người chơi & đệ tử trong khu vực).
+   - **Tỷ lệ rơi Trứng**: Hạ gục **Sát Thủ Hit** rơi **`100%` Quả Trứng Hit (`ID 1834`)** (yêu cầu đang sở hữu **Đệ Tử Broly Cấp 3** để ấp nở lên **Đệ Tử Sát Thủ Hit Cấp 4**).
+5. **Cơ Chế Boss Siêu Cấp `> 1.2 Tỷ HP` & Phá Giới Hạn Máu `3 – 4 Tỷ HP` (Multi-Bar HP)**:
+   - **Toàn bộ Boss có máu `> 1.200.000.000 HP` (`> 1.2 Tỷ HP`)**: Đều sở hữu và chủ động tung **Chiêu Tất Sát** (*Quả Cầu Kênh Khí Tất Sát*, *Laze Tử Thần Tất Sát*, *Vụ Nổ Hủy Diệt Tất Sát* — phá Khiên & sốc chết mục tiêu) kết hợp **Skill Đặc Biệt (`Skill 9`)** như **Super Kamejoko**, **Liên Hoàn Chưởng** hoặc **Ma Phong Ba**.
+   - **Boss ở các Map về sau vượt mốc `2 Tỷ HP` (lên tới `3 – 4 Tỷ HP`, chia nhiều thanh máu `2 Tỷ / thanh`)**:
+     - **Super Black Goku**: `2.2 Tỷ HP` | **Zamasu Hợp Thể**: `2.5 Tỷ HP` | **Super Cumber**: `2.8 Tỷ HP`.
+     - **Chuỗi Phòng Thí Nghiệm Tiến Sĩ Myuu (`Map 166, 167, 172, 173`)**: **Baby Vegeta** (`2.0 Tỷ HP`) $\rightarrow$ **Super Baby 2** (`2.6 Tỷ HP`) $\rightarrow$ **Baby Khỉ Đột Vàng** (`3.2 Tỷ HP`).
+     - **Hành Tinh Hủy Diệt Vũ Trụ 6 (`Map 169, 170, 171`)**: **Caulifla** (`1.5 Tỷ HP`) $\rightarrow$ **Siêu Xayda Kefla** (`2.8 Tỷ HP`), **Thần Hủy Diệt Champa** (`3.5 Tỷ HP`), **Sát Thủ Hit** (`4.0 Tỷ HP`).
+6. **Nâng Bông Tai Porata Cấp 2 & Cấp 3**: Tại **Bà Hạt Mít (Đảo Kame)**, nâng cấp Bông Tai Porata lên Cấp 2 và Cấp 3 rồi Mở chỉ số ẩn để khi **Hợp Thể** cùng Đệ Tử Broly / Sát Thủ Hit, toàn bộ HP/KI/Sức Đánh của bạn tăng vọt cực đại!
 
 ### 🔹 Bước 9: Học Chiêu Đặc Biệt (`Skill 9` — Đánh Xuyên %HP Boss) Tại Hành Tinh Bill
 1. Gặp **Thần Vũ Trụ** hoặc dùng Capsule bay tới **Hành Tinh Bill (Map 154)** gặp **NPC Whis**:

@@ -9,7 +9,9 @@ import nro.models.consts.ConstPlayer;
 import nro.models.map.Zone;
 import nro.models.player.Pet;
 import nro.models.player.Player;
+import nro.models.services.EffectSkillService;
 import nro.models.services.PetService;
+import nro.models.services.Service;
 import nro.models.services.SkillService;
 import nro.models.map.service.ChangeMapService;
 import nro.models.skill.Skill;
@@ -120,11 +122,6 @@ public class Broly extends Boss {
                 this.chat("Xí hụt");
                 return 0;
             }
-            if (Util.isTrue(1, 10)) {
-                this.playerSkill.skillSelect = this.playerSkill.skills.get(Util.nextInt(0, 6));
-                this.tangChiSo();
-                SkillService.gI().useSkill(this, null, null, -1, null);
-            }
             damage = this.nPoint.subDameInjureWithDeff(damage);
             boolean isTuSat = plAtt != null && plAtt.playerSkill != null
                     && plAtt.playerSkill.skillSelect != null
@@ -141,6 +138,12 @@ public class Broly extends Boss {
             if (isDie()) {
                 this.setDie(plAtt);
                 die(plAtt);
+            } else if (this.nPoint.hp < this.nPoint.hpMax / 2) {
+                if (this.effectSkill == null || !this.effectSkill.isCharging || Util.isTrue(1, 3)) {
+                    this.useTTNL();
+                }
+            } else if (Util.isTrue(1, 10)) {
+                this.useTTNL();
             }
             return (int) damage;
         } else {
@@ -150,6 +153,15 @@ public class Broly extends Boss {
 
     @Override
     public void attack() {
+        if (this.typePk == ConstPlayer.PK_ALL) {
+            if (this.nPoint.hp < this.nPoint.hpMax / 2) {
+                this.useTTNL();
+                return;
+            }
+            if (this.effectSkill != null && this.effectSkill.isCharging) {
+                return;
+            }
+        }
         if (Util.canDoWithTime(this.lastTimeAttack, 100) && this.typePk == ConstPlayer.PK_ALL) {
             this.lastTimeAttack = System.currentTimeMillis();
             try {
@@ -169,8 +181,8 @@ public class Broly extends Boss {
                         }
                     }
                     if (Util.isTrue(1, 100)) {
-                        this.playerSkill.skillSelect = this.playerSkill.skills.get(Util.nextInt(0, 6));
-                        this.tangChiSo();
+                        this.useTTNL();
+                        return;
                     }
 
                     SkillService.gI().useSkill(this, pl, null, -1, null);
@@ -192,10 +204,32 @@ public class Broly extends Boss {
         this.changeStatus(BossStatus.DIE);
     }
 
-    private void tangChiSo() {
+    public void useTTNL() {
+        if (this.isDie() || this.zone == null || this.effectSkill == null) {
+            return;
+        }
+        if (this.effectSkill.anTroi || this.effectSkill.isHaveEffectSkill() || this.effectSkill.isBinh || this.effectSkill.isSocola) {
+            return;
+        }
+        this.playerSkill.skillSelect = this.playerSkill.skills.get(Util.nextInt(0, 6));
+        this.tangChiSo();
+        if (!this.effectSkill.isCharging) {
+            EffectSkillService.gI().startCharge(this);
+            Service.gI().sendEffAllPlayer(this, 284, 1, -1, -1);
+        } else {
+            if (this.effectSkill.countCharging >= 8) {
+                this.effectSkill.countCharging = 0;
+            }
+            EffectSkillService.gI().sendEffectCharge(this);
+        }
+        Service.gI().reload_HP_NV(this);
+    }
+
+    public void tangChiSo() {
         long hpMax = this.nPoint.hpMax;
-        int rand = Util.nextInt(10, 100);
-        hpMax = hpMax + hpMax / rand < 16_070_777L ? hpMax + hpMax / rand : 16_070_777L;
+        int rand = this.nPoint.hp < this.nPoint.hpMax / 2 ? Util.nextInt(10, 20) : Util.nextInt(10, 100);
+        long add = Math.max(10L, hpMax / rand);
+        hpMax = hpMax + add < 16_070_777L ? hpMax + add : 16_070_777L;
         this.nPoint.hpg = (int) hpMax;
         this.nPoint.hpMax = (int) hpMax;
         this.nPoint.dame = (int) (hpMax / 10L);

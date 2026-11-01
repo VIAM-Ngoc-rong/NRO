@@ -88,6 +88,7 @@ javac -proc:none -encoding UTF-8 -d build/classes -cp "build/classes;lib/*" `
     src/nro/models/task/SideTask.java `
     src/nro/models/services/TaskService.java `
     src/nro/models/boss/BossID.java `
+    src/nro/models/boss/BossData.java `
     src/nro/models/boss/BossesData.java `
     src/nro/models/boss/Boss.java `
     src/nro/models/boss/Baby/Baby.java `

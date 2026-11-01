@@ -80,7 +80,42 @@ public class NPoint {
     public long tiemNang;
 
     public int hp, hpMax, hpg;
+    public long hpLong, hpMaxLong, hpgLong;
     public int mp, mpMax, mpg;
+
+    public static final long MULTI_BAR_SIZE = 2_000_000_000L;
+
+    public boolean isMultiBarHp() {
+        return this.player != null && this.player.isBoss && this.hpMaxLong > MULTI_BAR_SIZE;
+    }
+
+    public long getHpLong() {
+        return isMultiBarHp() ? this.hpLong : this.hp;
+    }
+
+    public long getHpMaxLong() {
+        return isMultiBarHp() ? this.hpMaxLong : this.hpMax;
+    }
+
+    public void syncMultiBarHp() {
+        if (!isMultiBarHp()) {
+            return;
+        }
+        if (this.hpLong <= 0L) {
+            this.hpLong = 0L;
+            this.hp = 0;
+            this.hpMax = (int) MULTI_BAR_SIZE;
+            return;
+        }
+        if (this.hpLong > this.hpMaxLong) {
+            this.hpLong = this.hpMaxLong;
+        }
+        long barIndex = (this.hpLong - 1L) / MULTI_BAR_SIZE;
+        long barBase = barIndex * MULTI_BAR_SIZE;
+        this.hp = (int) (this.hpLong - barBase);
+        long currentBarCap = Math.min(MULTI_BAR_SIZE, this.hpMaxLong - barBase);
+        this.hpMax = (int) Math.max(this.hp, currentBarCap);
+    }
     public int dame, dameg;
     public int def, defg;
     public int crit, critg, critdragon;
@@ -987,7 +1022,9 @@ public class NPoint {
     }
 
     private void setHpMax() {
-        long hpMax = this.hpg + this.hpAdd;
+        long hpMax = (this.player != null && this.player.isBoss && this.hpgLong > MULTI_BAR_SIZE)
+                ? (this.hpgLong + this.hpAdd)
+                : ((long) this.hpg + this.hpAdd);
 
         if (this.tlHp != null) {
             for (Integer tl : new ArrayList<>(this.tlHp)) {
@@ -1147,6 +1184,13 @@ public class NPoint {
         }
         this.clanArenaHpOverflowScale = (hpMax > 2_147_483_647L) ? ((double) hpMax / 2_147_483_647.0) : 1.0;
 
+        if (this.player != null && this.player.isBoss && hpMax > MULTI_BAR_SIZE) {
+            this.hpMaxLong = hpMax;
+            syncMultiBarHp();
+            return;
+        }
+        this.hpMaxLong = Math.min(2_147_483_647L, hpMax);
+
         if (hpMax > 2_147_483_647) {
             hpMax = 2_147_483_647;
         }
@@ -1157,6 +1201,13 @@ public class NPoint {
     public double clanArenaHpOverflowScale = 1.0;
 
     private void setHp() {
+        if (isMultiBarHp()) {
+            if (this.hpLong > this.hpMaxLong) {
+                this.hpLong = this.hpMaxLong;
+            }
+            syncMultiBarHp();
+            return;
+        }
         this.hp = Math.min(this.hp, this.hpMax);
     }
 
@@ -1296,8 +1347,16 @@ public class NPoint {
 
     public void setHP(long hp) {
         if (hp > 0) {
-            this.hp = (int) (hp <= this.hpMax ? hp : this.hpMax);
+            if (isMultiBarHp()) {
+                this.hpLong = Math.min(hp, this.hpMaxLong);
+                syncMultiBarHp();
+            } else {
+                this.hp = (int) (hp <= this.hpMax ? hp : this.hpMax);
+                this.hpLong = this.hp;
+            }
         } else {
+            this.hpLong = 0;
+            this.hp = 0;
             player.setDie();
         }
     }
@@ -1638,11 +1697,17 @@ public class NPoint {
 
     public void addHp(long hp) {
         if (hp > 0) {
-            long potentialHp = (long) this.hp + hp;
-            if (potentialHp > this.hpMax) {
-                this.hp = this.hpMax;
+            if (isMultiBarHp()) {
+                this.hpLong = Math.min(this.hpMaxLong, this.hpLong + hp);
+                syncMultiBarHp();
             } else {
-                this.hp = (int) Math.min(potentialHp, 2_147_483_647);
+                long potentialHp = (long) this.hp + hp;
+                if (potentialHp > this.hpMax) {
+                    this.hp = this.hpMax;
+                } else {
+                    this.hp = (int) Math.min(potentialHp, 2_147_483_647);
+                }
+                this.hpLong = this.hp;
             }
         }
     }
@@ -1660,10 +1725,15 @@ public class NPoint {
     }
 
     public void setHp(long hp) {
-        if (hp < 0) {
+        if (hp <= 0) {
+            this.hpLong = 0;
             this.hp = 0;
+        } else if (isMultiBarHp()) {
+            this.hpLong = Math.min(hp, this.hpMaxLong);
+            syncMultiBarHp();
         } else {
-            this.hp = (int) Math.min(hp, 2_147_483_647);
+            this.hp = (int) Math.min(hp, Math.min(this.hpMax > 0 ? this.hpMax : 2_147_483_647L, 2_147_483_647L));
+            this.hpLong = this.hp;
         }
     }
 
@@ -1760,6 +1830,9 @@ public class NPoint {
                 if (this.tlBom > 0) {
                     percentXDame += this.tlBom;
                 }
+                if (this.player != null && this.player.isBoss && this.getHpMaxLong() > 1_200_000_000L) {
+                    return recordAndClampDame(Math.max((long) this.dame * 30L, 1_500_000_000L));
+                }
                 break;
             case Skill.DEMON:
                 if (intrinsic.id == 8) {
@@ -1824,6 +1897,9 @@ public class NPoint {
                 percentDameSkill = skillSelect.damage;
                 long mpForLaze = Math.max(this.mp, this.mpMax);
                 long dameSkill = mpForLaze * percentDameSkill / 100L;
+                if (this.player != null && this.player.isBoss && this.getHpMaxLong() > 1_200_000_000L) {
+                    dameSkill = Math.max(dameSkill, Math.max((long) this.dame * 25L, 1_500_000_000L));
+                }
                 if (this.player.setClothes.picolo == 5) {
                     dameSkill += dameSkill * 50L / 100L;
                 }
@@ -1858,12 +1934,15 @@ public class NPoint {
                     for (Player pl : this.player.zone.getHumanoids()) {
                         if (!pl.isDie() && this.player.id != pl.id
                                 && Util.getDistance(this.player, pl) <= scanRangeQCKK) {
-                            hppl += pl.nPoint.hp;
+                            hppl += pl.nPoint.getHpLong();
                         }
                     }
                 }
 
                 long dameqckk = (hpmob * 10 / 100) + (hppl * 10 / 100) + (long) this.dame * 10L;
+                if (this.player != null && this.player.isBoss && this.getHpMaxLong() > 1_200_000_000L) {
+                    dameqckk = Math.max(dameqckk, Math.max((long) this.dame * 25L, 1_500_000_000L));
+                }
 
                 if (this.player.setClothes.kirin == 5) {
                     dameqckk *= 2;
@@ -1894,6 +1973,9 @@ public class NPoint {
             case Skill.SUPER_KAME:
             case Skill.LIEN_HOAN_CHUONG:
                 percentDameSkill = skillSelect.damage;
+                if (this.player != null && this.player.isBoss && this.getHpMaxLong() > 1_200_000_000L) {
+                    percentDameSkill = Math.max(percentDameSkill, 500);
+                }
                 if (this.tlDameChuong > 0) {
                     percentXDame += this.tlDameChuong;
                 }
@@ -1964,10 +2046,11 @@ public class NPoint {
     }
 
     public int getCurrPercentHP() {
-        if (this.hpMax == 0) {
+        long max = getHpMaxLong();
+        if (max <= 0) {
             return 100;
         }
-        return (int) ((long) this.hp * 100 / this.hpMax);
+        return (int) (getHpLong() * 100L / max);
     }
 
     public int getCurrPercentMP() {
@@ -1975,20 +2058,50 @@ public class NPoint {
     }
 
     public void setFullHpMp() {
-        this.hp = this.hpMax;
+        if (isMultiBarHp()) {
+            this.hpLong = this.hpMaxLong;
+            syncMultiBarHp();
+        } else {
+            this.hp = this.hpMax;
+            this.hpLong = this.hp;
+        }
         this.mp = this.mpMax;
     }
 
     public void subHP(long sub) {
-        this.hp -= sub;
-        if (this.hp <= 0) {
-            this.hp = 0;
-            this.setHp(0);
-        } else if (this.player != null && this.player.isBoss && this.player instanceof nro.models.boss.Boss boss && this.hpMax > 0) {
-            if (this.hp < this.hpMax / 2) {
+        if (isMultiBarHp()) {
+            long oldBar = (this.hpLong - 1L) / MULTI_BAR_SIZE;
+            this.hpLong -= sub;
+            if (this.hpLong <= 0) {
+                this.hpLong = 0;
+                this.hp = 0;
+                this.setHp(0);
+                return;
+            }
+            long newBar = (this.hpLong - 1L) / MULTI_BAR_SIZE;
+            syncMultiBarHp();
+            if (newBar < oldBar && this.player != null && this.player.zone != null) {
+                Service.gI().Send_Info_NV(this.player);
+                Service.gI().reload_HP_NV(this.player);
+                Service.gI().chat(this.player, "⚡ Vỡ thanh máu! HP còn lại: " + Util.numberToMoney(this.hpLong) + " / " + Util.numberToMoney(this.hpMaxLong));
+            }
+        } else {
+            this.hp -= sub;
+            this.hpLong = Math.max(0, this.hp);
+            if (this.hp <= 0) {
+                this.hp = 0;
+                this.hpLong = 0;
+                this.setHp(0);
+                return;
+            }
+        }
+        long currHp = getHpLong();
+        long maxHp = getHpMaxLong();
+        if (this.player != null && this.player.isBoss && this.player instanceof nro.models.boss.Boss boss && maxHp > 0) {
+            if (currHp < maxHp / 2L) {
                 boss.droppedBelow50Hp = true;
             }
-            if (!boss.usedTTNL && this.hp > 0 && this.hp < (this.hpMax * 30L / 100L)) {
+            if (!boss.usedTTNL && currHp > 0 && currHp < (maxHp * 30L / 100L)) {
                 boss.startBossTTNL();
             }
         }
@@ -2552,16 +2665,23 @@ public class NPoint {
     public void update() {
         if (player != null && player.effectSkill != null) {
             if (player.effectSkill.isCharging && player.effectSkill.countCharging < 10) {
+                if (player instanceof nro.models.boss.Broly.Broly b) {
+                    b.tangChiSo();
+                } else if (player instanceof nro.models.boss.Broly.KidBuWorld kb) {
+                    kb.tangChiSo();
+                } else if (player instanceof nro.models.boss.Broly.Broly18h b18) {
+                    b18.tangChiSo();
+                }
                 Skill skillTTNL = SkillUtil.getSkillbyId(player, Skill.TAI_TAO_NANG_LUONG);
                 int point = (skillTTNL != null) ? skillTTNL.point
                         : (player.playerSkill.skillSelect != null ? player.playerSkill.skillSelect.point : 1);
                 int tiLeHoiPhuc = SkillUtil.getPercentCharge(point);
                 if (player.effectSkill.isCharging && !player.isDie() && !player.effectSkill.isHaveEffectSkill()
-                        && (hp < hpMax || mp < mpMax)) {
-                    long hpRecovered = Math.max(1, hpMax / 100 * tiLeHoiPhuc);
-                    long mpRecovered = Math.max(1, mpMax / 100 * tiLeHoiPhuc);
+                        && (getHpLong() < getHpMaxLong() || mp < mpMax)) {
+                    long hpRecovered = Math.max(1, getHpMaxLong() * tiLeHoiPhuc / 100L);
+                    long mpRecovered = Math.max(1, (long) mpMax * tiLeHoiPhuc / 100L);
 
-                    if (hp + hpRecovered > 2_147_483_647) {
+                    if (!isMultiBarHp() && hp + hpRecovered > 2_147_483_647) {
                         hpRecovered = 2_147_483_647 - hp;
                     }
                     if (mp + mpRecovered > 2_147_483_647) {
@@ -2576,6 +2696,9 @@ public class NPoint {
                         if (pet.master != null) {
                             Service.gI().showInfoPet(pet.master);
                         }
+                    } else if (player.isBoss) {
+                        EffectSkillService.gI().sendEffectCharge(player);
+                        Service.gI().reload_HP_NV(player);
                     }
 
                     if (player.effectSkill.countCharging % 3 == 0) {
@@ -2584,7 +2707,12 @@ public class NPoint {
                 } else {
                     EffectSkillService.gI().stopCharge(player);
                 }
-                if (++player.effectSkill.countCharging >= 10) {
+                boolean isContinuousTTNLBoss = (player instanceof nro.models.boss.Broly.Broly)
+                        || (player instanceof nro.models.boss.Broly.KidBuWorld)
+                        || (player instanceof nro.models.boss.Broly.Broly18h);
+                if (isContinuousTTNLBoss && getHpLong() < getHpMaxLong() / 2L && player.effectSkill.countCharging >= 8) {
+                    player.effectSkill.countCharging = 0;
+                } else if (++player.effectSkill.countCharging >= 10) {
                     EffectSkillService.gI().stopCharge(player);
                 }
             }

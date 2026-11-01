@@ -513,12 +513,15 @@ public class BossManager implements Runnable {
                         long remDespawnSec = Math.max(0L, (firstEnc + 900_000L - System.currentTimeMillis()) / 1000L);
                         despawnTag = " [Còn " + (remDespawnSec / 60) + "p" + (remDespawnSec % 60) + "s]";
                     }
+                    String hpTag = (boss.nPoint != null && boss.nPoint.getHpMaxLong() > 0)
+                            ? (" [HP: " + nro.models.utils.Util.numberToMoney(boss.nPoint.getHpLong()) + "/" + nro.models.utils.Util.numberToMoney(boss.nPoint.getHpMaxLong()) + "]")
+                            : "";
                     msg.writer().writeUTF(boss.zone.map.mapName + (isHuntingThis ? " [Đang Tự Săn]" : " (Chọn Săn/Đến)"));
                     if (player.isAdmin()) {
                         msg.writer().writeUTF(boss.zone.map.mapName + " (" + boss.zone.map.mapId + ") khu " + boss.zone.zoneId
-                                + despawnTag + (isHuntingThis ? " - [ĐANG TỰ SĂN]" : " - Bấm Chọn để Đến hoặc Tự Động Săn"));
+                                + hpTag + despawnTag + (isHuntingThis ? " - [ĐANG TỰ SĂN]" : " - Bấm Chọn để Đến hoặc Tự Động Săn"));
                     } else {
-                        msg.writer().writeUTF("Đang ở " + boss.zone.map.mapName + " (" + boss.zone.map.mapId + ")" + despawnTag
+                        msg.writer().writeUTF("Đang ở " + boss.zone.map.mapName + " (" + boss.zone.map.mapId + ")" + hpTag + despawnTag
                                 + (isHuntingThis ? " [ĐANG TỰ SĂN]" : "\nBấm Chọn để Đến Khu 0 hoặc Bật Tự Động Săn!"));
                     }
                 } else {

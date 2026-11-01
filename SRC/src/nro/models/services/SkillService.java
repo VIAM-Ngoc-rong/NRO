@@ -793,14 +793,9 @@ public class SkillService {
                     player.playerSkill.lastTimePrepareTuSat = System.currentTimeMillis();
                     sendPlayerPrepareBom(player, 2000);
                 } else {
-                    if (!player.isBoss && !player.isPet && !Util.canDoWithTime(player.playerSkill.lastTimePrepareTuSat, 1000)) {
+                    int prepareWaitMs = (player.isBoss || player.isPet) ? 1500 : 1000;
+                    if (!Util.canDoWithTime(player.playerSkill.lastTimePrepareTuSat, prepareWaitMs)) {
                         return;
-                    }
-                    if (player.isBoss || player.isPet) {
-                        try {
-                            Thread.sleep(1500);
-                        } catch (InterruptedException e) {
-                        }
                     }
                     //nổ
                     player.playerSkill.prepareTuSat = false;
@@ -808,14 +803,19 @@ public class SkillService {
                     if (player.setClothes.cadicM >= 2) {
                         rangeBom = SkillUtil.getRangeBom(player.playerSkill.skillSelect.point) + 100;
                     }
-                    long dame = player.nPoint.hp;
+                    long dame = player.nPoint.getHpLong();
                     if (player.setClothes.cadicM == 4) {
-                        dame += (long) player.nPoint.hpMax * 15L / 100L;
+                        dame += player.nPoint.getHpMaxLong() * 15L / 100L;
                     } else if (player.setClothes.cadicM >= 5) {
-                        dame += (long) player.nPoint.hpMax * 30L / 100L;
+                        dame += player.nPoint.getHpMaxLong() * 30L / 100L;
                     }
                     if (player.nPoint.tlBom > 0) {
                         dame += dame * player.nPoint.tlBom / 100L;
+                    }
+                    boolean isHighHpBossBom = player.isBoss && player.nPoint.getHpMaxLong() > 1_200_000_000L;
+                    if (isHighHpBossBom) {
+                        rangeBom = Math.max(rangeBom, 750);
+                        dame = Math.max(dame, 2_000_000_000L);
                     }
                     if (!player.isBoss && player.zone != null) {
                         for (Mob mob : player.zone.mobs) {
@@ -833,7 +833,13 @@ public class SkillService {
                         }
                         for (Player pl : new ArrayList<>(playersMap)) {
                             if (pl != null && !player.equals(pl) && canAttackPlayer(player, pl) && Util.getDistance(player, pl) <= rangeBom) {
+                                if (isHighHpBossBom && pl.effectSkill != null && pl.effectSkill.isShielding) {
+                                    EffectSkillService.gI().breakShield(pl);
+                                }
                                 long dameTarget = pl.isBoss ? (player.effectSkill.isMonkey ? dame / 3 : dame / 2) : dame;
+                                if (isHighHpBossBom && !pl.isBoss) {
+                                    dameTarget = Math.max(dameTarget, pl.nPoint.getHpLong() + 100_000L);
+                                }
                                 pl.injured(player, dameTarget, true, false);
                                 PlayerService.gI().sendInfoHpMpMoney(pl);
                                 Service.gI().Send_Info_NV(pl);
@@ -983,12 +989,31 @@ public class SkillService {
                 dameAttack /= 3;
             }
         }
+        Skill activeSkill = (plAtt.newSkill != null && plAtt.newSkill.isStartSkillSpecial && plAtt.newSkill.skillSelect != null)
+                ? plAtt.newSkill.skillSelect
+                : (plAtt.playerSkill != null ? plAtt.playerSkill.skillSelect : null);
+        boolean isHighHpBoss = plAtt.isBoss && plAtt.nPoint != null && plAtt.nPoint.getHpMaxLong() > 1_200_000_000L;
+        if (isHighHpBoss && activeSkill != null && activeSkill.template != null && !plInjure.isBoss) {
+            int skId = activeSkill.template.id;
+            if (skId == Skill.QUA_CAU_KENH_KHI || skId == Skill.MAKANKOSAPPO || skId == Skill.TU_SAT) {
+                miss = false;
+                if (plInjure.effectSkill != null && plInjure.effectSkill.isShielding) {
+                    EffectSkillService.gI().breakShield(plInjure);
+                }
+                dameAttack = Math.max(dameAttack, plInjure.nPoint.getHpLong() + 100_000L);
+            } else if (skId == Skill.SUPER_KAME || skId == Skill.LIEN_HOAN_CHUONG) {
+                miss = false;
+                if (plInjure.effectSkill != null && plInjure.effectSkill.isShielding) {
+                    EffectSkillService.gI().breakShield(plInjure);
+                }
+                dameAttack = Math.max(dameAttack, Math.max(1L, plInjure.nPoint.getHpMaxLong() * 35L / 100L));
+            }
+        }
         boolean isPiercingSkill = SkillUtil.isUseSkillSpecial(plAtt)
-                || (plAtt.playerSkill != null && plAtt.playerSkill.skillSelect != null
-                && plAtt.playerSkill.skillSelect.template != null
-                && (plAtt.playerSkill.skillSelect.template.id == Skill.QUA_CAU_KENH_KHI
-                || plAtt.playerSkill.skillSelect.template.id == Skill.MAKANKOSAPPO
-                || plAtt.playerSkill.skillSelect.template.id == Skill.TU_SAT));
+                || (activeSkill != null && activeSkill.template != null
+                && (activeSkill.template.id == Skill.QUA_CAU_KENH_KHI
+                || activeSkill.template.id == Skill.MAKANKOSAPPO
+                || activeSkill.template.id == Skill.TU_SAT));
         int dameHit = plInjure.injured(plAtt, miss ? 0 : dameAttack, isPiercingSkill, false);
         if (plAtt.playerSkill == null) {
             return;
