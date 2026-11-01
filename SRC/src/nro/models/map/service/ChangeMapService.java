@@ -374,6 +374,9 @@ public class ChangeMapService {
             if (pl.effectSkill.isCharging) {
                 EffectSkillService.gI().stopCharge(pl);
             }
+            if (pl.isPl()) {
+                pl.resetServerAutoAttackState();
+            }
             if (pl.effectSkill.useTroi) {
                 EffectSkillService.gI().removeUseTroi(pl);
             }

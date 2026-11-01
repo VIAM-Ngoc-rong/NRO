@@ -394,6 +394,8 @@ public class Player implements Runnable {
 
     // Trạng thái Tự Đánh phía Server (duy trì tự đánh khi mở Tab Hành Trang & tự dùng chiêu đang trỏ như TTNL, TDHS...)
     public boolean isServerAutoAttack = false;
+    public boolean isManualServerAutoAttack = false;
+    public int clientAutoAttackStreak = 0;
     public long lastTimeClientAttack = 0L;
     public long lastTimeServerAutoAttack = 0L;
     public long lastTimeClientSkillNotFocus = 0L;
@@ -1535,6 +1537,7 @@ public class Player implements Runnable {
         this.playerSkill.prepareQCKK = false;
         this.playerSkill.prepareLaze = false;
         this.playerSkill.prepareTuSat = false;
+        this.resetServerAutoAttackState();
         this.effectSkill.removeSkillEffectWhenDie();
         nPoint.setHp(0);
         nPoint.setMp(0);
@@ -3006,8 +3009,21 @@ public class Player implements Runnable {
         }
     }
 
+    public void resetServerAutoAttackState() {
+        this.isServerAutoAttack = false;
+        this.clientAutoAttackStreak = 0;
+        this.lastAttackMobId = -1;
+        this.lastAttackPlayerId = -1;
+    }
+
     public void recordClientAttack(int mobId, int playerId) {
-        this.lastTimeClientAttack = System.currentTimeMillis();
+        long now = System.currentTimeMillis();
+        if (this.lastTimeClientAttack > 0 && now - this.lastTimeClientAttack <= 1400L) {
+            this.clientAutoAttackStreak++;
+        } else {
+            this.clientAutoAttackStreak = 1;
+        }
+        this.lastTimeClientAttack = now;
         if (mobId >= 0) {
             this.lastAttackMobId = mobId;
             this.lastAttackPlayerId = -1;
@@ -3020,7 +3036,12 @@ public class Player implements Runnable {
                 && this.playerSkill.skillSelect != null && this.playerSkill.skillSelect.template != null) {
             this.lastPointedSkillTemplateId = this.playerSkill.skillSelect.template.id;
         }
-        this.isServerAutoAttack = true;
+        if (this.isManualServerAutoAttack
+                || this.isAutoCleanBag
+                || ((this.itemTime != null && this.itemTime.isUseTDLT) && this.clientAutoAttackStreak >= 2)
+                || this.clientAutoAttackStreak >= 3) {
+            this.isServerAutoAttack = true;
+        }
     }
 
     public void recordClientSkillNotFocus() {
@@ -3028,11 +3049,9 @@ public class Player implements Runnable {
         if (this.playerSkill != null && this.playerSkill.skillSelect != null && this.playerSkill.skillSelect.template != null) {
             this.lastPointedSkillTemplateId = this.playerSkill.skillSelect.template.id;
         }
-        if ((this.lastTimeClientSkillNotFocus > 0 && now - this.lastTimeClientSkillNotFocus <= 4000L)
-                || (this.lastTimeClientAttack > 0 && now - this.lastTimeClientAttack <= 20000L)
-                || (this.itemTime != null && this.itemTime.isUseTDLT)
+        if (this.isManualServerAutoAttack
                 || this.isAutoCleanBag
-                || this.isAutoHuntBoss) {
+                || (this.clientAutoAttackStreak >= 2 && now - this.lastTimeClientAttack <= 3000L)) {
             this.isServerAutoAttack = true;
         }
         this.lastTimeClientSkillNotFocus = now;
@@ -3043,10 +3062,11 @@ public class Player implements Runnable {
             return;
         }
         int dist = Util.getDistance(this.location.x, this.location.y, toX, toY);
-        if (dist >= 15) {
-            if ((this.itemTime == null || !this.itemTime.isUseTDLT) && !this.isAutoHuntBoss) {
-                this.isServerAutoAttack = false;
-            }
+        if (dist >= 1 && !this.isAutoHuntBoss) {
+            this.isServerAutoAttack = false;
+            this.clientAutoAttackStreak = 0;
+            this.lastAttackMobId = -1;
+            this.lastAttackPlayerId = -1;
         }
     }
 
@@ -3056,7 +3076,6 @@ public class Player implements Runnable {
         }
         this.lastPointedSkillTemplateId = skill.template.id;
         if (isAutoPlayActive()) {
-            this.isServerAutoAttack = true;
             tryUsePointedSupportOrSpecialSkill();
         }
     }
@@ -3068,13 +3087,7 @@ public class Player implements Runnable {
         if (this.isAutoHuntBoss) {
             return true;
         }
-        if (this.itemTime != null && this.itemTime.isUseTDLT) {
-            return true;
-        }
-        if (this.isServerAutoAttack) {
-            return true;
-        }
-        return false;
+        return this.isServerAutoAttack;
     }
 
     public static boolean isSupportOrSpecialPointedSkill(byte tempId) {
@@ -3184,36 +3197,21 @@ public class Player implements Runnable {
     }
 
     private Player findServerAutoAttackPlayer() {
-        if (this.zone == null) {
+        if (this.zone == null || this.lastAttackPlayerId == -1) {
             return null;
         }
-        if (this.lastAttackPlayerId != -1) {
-            Player target;
-            if (MapService.gI().isMapOffline(this.zone.map.mapId)) {
-                target = this.zone.getPlayerInMapOffline(this, this.lastAttackPlayerId);
-            } else {
-                target = this.zone.getPlayerInMap(this.lastAttackPlayerId);
-            }
-            if (target != null && !target.isDie() && nro.models.services.SkillService.gI().canAttackPlayer(this, target)
-                    && Util.getDistance(this, target) <= 350) {
-                return target;
-            }
+        Player target;
+        if (MapService.gI().isMapOffline(this.zone.map.mapId)) {
+            target = this.zone.getPlayerInMapOffline(this, this.lastAttackPlayerId);
+        } else {
+            target = this.zone.getPlayerInMap(this.lastAttackPlayerId);
         }
-        Player nearestBoss = null;
-        int minDist = Integer.MAX_VALUE;
-        for (Player b : this.zone.getBosses()) {
-            if (b != null && !b.isDie() && nro.models.services.SkillService.gI().canAttackPlayer(this, b)) {
-                int d = Util.getDistance(this, b);
-                if (d <= 280 && d < minDist) {
-                    minDist = d;
-                    nearestBoss = b;
-                }
-            }
+        if (target != null && !target.isDie() && nro.models.services.SkillService.gI().canAttackPlayer(this, target)
+                && Util.getDistance(this, target) <= 350) {
+            return target;
         }
-        if (nearestBoss != null) {
-            this.lastAttackPlayerId = (int) nearestBoss.id;
-        }
-        return nearestBoss;
+        this.lastAttackPlayerId = -1;
+        return null;
     }
 
     private Mob findServerAutoAttackMob() {
@@ -3229,12 +3227,15 @@ public class Player implements Runnable {
                 }
             }
         }
+        if (!this.isManualServerAutoAttack && !this.isAutoCleanBag && (this.itemTime == null || !this.itemTime.isUseTDLT)) {
+            return null;
+        }
         Mob nearest = null;
         int minDist = Integer.MAX_VALUE;
         for (Mob m : this.zone.mobs) {
             if (m != null && !m.isDie() && m.status != 0 && m.status != 1) {
                 int d = Util.getDistance(this, m);
-                if (d <= 350 && d < minDist) {
+                if (d <= 300 && d < minDist) {
                     minDist = d;
                     nearest = m;
                 }
@@ -3349,8 +3350,17 @@ public class Player implements Runnable {
                 return;
             }
 
-            // 3. Nếu Client ngừng gửi gói đánh (do đang mở Tab Hành Trang hoặc đang trỏ vào ô TTNL/TDHS...)
-            // thì Server tự động duy trì đánh mục tiêu giúp người chơi!
+            // 3. Nếu người chơi không bật Auto Server (td / treoquai) và không đang trỏ vào chiêu hỗ trợ/đặc biệt (TTNL, TDHS...),
+            // mà Client đã ngừng gửi gói đánh (do người chơi tắt Tự Đánh / ngừng bấm đánh trên Android), thì dừng ngay!
+            boolean isPointingSupportOrSpecial = isSupportOrSpecialPointedSkill(this.lastPointedSkillTemplateId);
+            if (!this.isManualServerAutoAttack && !this.isAutoCleanBag && !isPointingSupportOrSpecial) {
+                if (Util.canDoWithTime(this.lastTimeClientAttack, 1200)) {
+                    this.isServerAutoAttack = false;
+                    this.clientAutoAttackStreak = 0;
+                }
+                return;
+            }
+
             if (!Util.canDoWithTime(this.lastTimeClientAttack, 520)
                     || !Util.canDoWithTime(this.lastTimeServerAutoAttack, 420)) {
                 return;
