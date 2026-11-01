@@ -240,6 +240,19 @@ public final class Manager {
             }
         }, 0, 1, TimeUnit.SECONDS);
 
+        scheduler.scheduleAtFixedRate(() -> {
+            try {
+                List<Player> players = Client.gI().getPlayers();
+                for (int i = 0; i < players.size(); i++) {
+                    Player pl = players.get(i);
+                    if (pl != null && pl.isPl() && !pl.isBot && pl.isAutoPlayActive()) {
+                        pl.updateServerAutoAttack();
+                    }
+                }
+            } catch (Exception ignored) {
+            }
+        }, 400, 400, TimeUnit.MILLISECONDS);
+
         Logger.success(Logger.RED + "Update maps thread started success!\n");
     }
 

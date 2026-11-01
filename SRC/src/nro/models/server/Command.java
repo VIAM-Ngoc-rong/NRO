@@ -462,9 +462,15 @@ public class Command {
             case "treoquai", "tq", "autoban", "chongday", "upquai" -> {
                 player.isAutoCleanBag = !player.isAutoCleanBag;
                 if (player.isAutoCleanBag) {
+                    player.isServerAutoAttack = true;
                     player.autoCleanTrashAndSellItems();
                 }
                 Service.gI().sendThongBao(player, "Up treo quái (Chống đầy hành trang & Tự bán đồ rác): " + (player.isAutoCleanBag ? "[Bật]" : "[Tắt]"));
+                return true;
+            }
+            case "tudanh", "td", "ak", "autokill" -> {
+                player.isServerAutoAttack = !player.isServerAutoAttack;
+                Service.gI().sendThongBao(player, "Tự Đánh Server (Mở Hành Trang & Tự Dùng Chiêu Đang Trỏ): " + (player.isServerAutoAttack ? "[Bật]" : "[Tắt]"));
                 return true;
             }
             case "boss", "dsboss", "sanboss" -> {

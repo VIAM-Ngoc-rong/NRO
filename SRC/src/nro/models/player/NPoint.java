@@ -2699,6 +2699,8 @@ public class NPoint {
                     } else if (player.isBoss) {
                         EffectSkillService.gI().sendEffectCharge(player);
                         Service.gI().reload_HP_NV(player);
+                    } else if (player.isPl()) {
+                        EffectSkillService.gI().sendEffectCharge(player);
                     }
 
                     if (player.effectSkill.countCharging % 3 == 0) {
@@ -2710,9 +2712,11 @@ public class NPoint {
                 boolean isContinuousTTNLBoss = (player instanceof nro.models.boss.Broly.Broly)
                         || (player instanceof nro.models.boss.Broly.KidBuWorld)
                         || (player instanceof nro.models.boss.Broly.Broly18h);
+                player.effectSkill.countCharging++;
+                int maxChargeTicks = (player.isPl() && player.isAutoPlayActive()) ? 3 : 10;
                 if (isContinuousTTNLBoss && getHpLong() < getHpMaxLong() / 2L && player.effectSkill.countCharging >= 8) {
                     player.effectSkill.countCharging = 0;
-                } else if (++player.effectSkill.countCharging >= 10) {
+                } else if (player.effectSkill.countCharging >= maxChargeTicks) {
                     EffectSkillService.gI().stopCharge(player);
                 }
             }

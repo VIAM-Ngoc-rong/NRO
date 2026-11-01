@@ -17,6 +17,7 @@ import nro.models.npc.MagicTree;
 import nro.models.consts.ConstPlayer;
 import nro.models.consts.ConstTask;
 import nro.models.npc.MabuEgg;
+import nro.models.mob.Mob;
 import nro.models.mob.MobMe;
 import nro.models.data.DataGame;
 import nro.models.clan.ClanMember;
@@ -391,6 +392,15 @@ public class Player implements Runnable {
     public long lastChallengeGauTuopCuopTime;
     public LocalDateTime lastCheckIn;
 
+    // Trạng thái Tự Đánh phía Server (duy trì tự đánh khi mở Tab Hành Trang & tự dùng chiêu đang trỏ như TTNL, TDHS...)
+    public boolean isServerAutoAttack = false;
+    public long lastTimeClientAttack = 0L;
+    public long lastTimeServerAutoAttack = 0L;
+    public long lastTimeClientSkillNotFocus = 0L;
+    public int lastAttackMobId = -1;
+    public int lastAttackPlayerId = -1;
+    public byte lastPointedSkillTemplateId = -1;
+
     public Player() {
         LearnSkill = new LearnSkill();
         lastUseOptionTime = System.currentTimeMillis();
@@ -676,6 +686,9 @@ public class Player implements Runnable {
                     }
                     if (this.isPl() && !this.isBot && this.isAutoHuntBoss) {
                         this.updateAutoHuntBoss();
+                    }
+                    if (this.isPl() && !this.isBot) {
+                        this.updateServerAutoAttack();
                     }
                     if (event != null) {
                         event.update();
@@ -2347,6 +2360,14 @@ public class Player implements Runnable {
                         return s;
                     }
                 }
+                case Skill.TAI_TAO_NANG_LUONG -> {
+                    if (this.effectSkill != null && !this.effectSkill.isCharging
+                            && (this.lastPointedSkillTemplateId == Skill.TAI_TAO_NANG_LUONG
+                            || this.nPoint.getHpLong() < this.nPoint.getHpMaxLong() * 50L / 100L
+                            || this.nPoint.mp < this.nPoint.mpMax * 30L / 100L)) {
+                        return s;
+                    }
+                }
             }
         }
 
@@ -2971,7 +2992,389 @@ public class Player implements Runnable {
                     if (chosenSkill != null) {
                         this.lastTimeAutoHuntAttack = System.currentTimeMillis();
                         this.playerSkill.skillSelect = chosenSkill;
-                        nro.models.services.SkillService.gI().useSkill(this, targetBoss, null, -1, null);
+                        boolean ok = nro.models.services.SkillService.gI().useSkill(this, targetBoss, null, -1, null);
+                        if (ok) {
+                            if (chosenSkill.template.id != Skill.TAI_TAO_NANG_LUONG) {
+                                EffectSkillService.gI().sendAutoSkillPaintToPlayer(this, chosenSkill.skillId);
+                            }
+                            Service.gI().sendTimeSkill(this, chosenSkill);
+                        }
+                    }
+                }
+            }
+        } catch (Exception ignored) {
+        }
+    }
+
+    public void recordClientAttack(int mobId, int playerId) {
+        this.lastTimeClientAttack = System.currentTimeMillis();
+        if (mobId >= 0) {
+            this.lastAttackMobId = mobId;
+            this.lastAttackPlayerId = -1;
+        }
+        if (playerId != -1) {
+            this.lastAttackPlayerId = playerId;
+            this.lastAttackMobId = -1;
+        }
+        if (this.lastPointedSkillTemplateId == -1 && this.playerSkill != null
+                && this.playerSkill.skillSelect != null && this.playerSkill.skillSelect.template != null) {
+            this.lastPointedSkillTemplateId = this.playerSkill.skillSelect.template.id;
+        }
+        this.isServerAutoAttack = true;
+    }
+
+    public void recordClientSkillNotFocus() {
+        long now = System.currentTimeMillis();
+        if (this.playerSkill != null && this.playerSkill.skillSelect != null && this.playerSkill.skillSelect.template != null) {
+            this.lastPointedSkillTemplateId = this.playerSkill.skillSelect.template.id;
+        }
+        if ((this.lastTimeClientSkillNotFocus > 0 && now - this.lastTimeClientSkillNotFocus <= 4000L)
+                || (this.lastTimeClientAttack > 0 && now - this.lastTimeClientAttack <= 20000L)
+                || (this.itemTime != null && this.itemTime.isUseTDLT)
+                || this.isAutoCleanBag
+                || this.isAutoHuntBoss) {
+            this.isServerAutoAttack = true;
+        }
+        this.lastTimeClientSkillNotFocus = now;
+    }
+
+    public void notifyManualMove(int toX, int toY) {
+        if (this.location == null) {
+            return;
+        }
+        int dist = Util.getDistance(this.location.x, this.location.y, toX, toY);
+        if (dist >= 15) {
+            if ((this.itemTime == null || !this.itemTime.isUseTDLT) && !this.isAutoHuntBoss) {
+                this.isServerAutoAttack = false;
+            }
+        }
+    }
+
+    public void onClientSelectSkill(Skill skill) {
+        if (skill == null || skill.template == null) {
+            return;
+        }
+        this.lastPointedSkillTemplateId = skill.template.id;
+        if (isAutoPlayActive()) {
+            this.isServerAutoAttack = true;
+            tryUsePointedSupportOrSpecialSkill();
+        }
+    }
+
+    public boolean isAutoPlayActive() {
+        if (!this.isPl() || this.isBot || this.isDie() || this.zone == null) {
+            return false;
+        }
+        if (this.isAutoHuntBoss) {
+            return true;
+        }
+        if (this.itemTime != null && this.itemTime.isUseTDLT) {
+            return true;
+        }
+        if (this.isServerAutoAttack) {
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean isSupportOrSpecialPointedSkill(byte tempId) {
+        return switch (tempId) {
+            case Skill.TAI_TAO_NANG_LUONG,
+                 Skill.THAI_DUONG_HA_SAN,
+                 Skill.KHIEN_NANG_LUONG,
+                 Skill.HUYT_SAO,
+                 Skill.BIEN_KHI,
+                 Skill.DE_TRUNG,
+                 Skill.TU_SAT,
+                 Skill.TRI_THUONG,
+                 Skill.QUA_CAU_KENH_KHI,
+                 Skill.MAKANKOSAPPO,
+                 Skill.DICH_CHUYEN_TUC_THOI,
+                 Skill.THOI_MIEN,
+                 Skill.TROI,
+                 Skill.SOCOLA,
+                 Skill.SUPER_KAME,
+                 Skill.LIEN_HOAN_CHUONG,
+                 Skill.MA_PHONG_BA -> true;
+            default -> false;
+        };
+    }
+
+    public boolean tryUsePointedSupportOrSpecialSkill() {
+        if (!isAutoPlayActive() || this.playerSkill == null || this.nPoint == null) {
+            return false;
+        }
+        if (this.effectSkill != null && (this.effectSkill.isHaveEffectSkill() || this.effectSkill.isCharging)) {
+            return false;
+        }
+        if (this.newSkill != null && this.newSkill.isStartSkillSpecial) {
+            return false;
+        }
+        byte pointedId = this.lastPointedSkillTemplateId;
+        if (pointedId == -1 && this.playerSkill.skillSelect != null && this.playerSkill.skillSelect.template != null) {
+            pointedId = this.playerSkill.skillSelect.template.id;
+            this.lastPointedSkillTemplateId = pointedId;
+        }
+        if (!isSupportOrSpecialPointedSkill(pointedId)) {
+            return false;
+        }
+        Skill pointedSkill = this.playerSkill.getSkillbyId(pointedId);
+        if (pointedSkill == null || pointedSkill.skillId == -1 || pointedSkill.point <= 0 || pointedSkill.template == null) {
+            return false;
+        }
+        if (!Util.canDoWithTime(pointedSkill.lastTimeUseThisSkill, pointedSkill.coolDown)) {
+            return false;
+        }
+        long manaNeed = switch (pointedSkill.template.manaUseType) {
+            case 2 -> 1L;
+            case 1 -> (long) this.nPoint.mpMax * pointedSkill.manaUse / 100L;
+            default -> pointedSkill.manaUse;
+        };
+        if (this.nPoint.mp < manaNeed) {
+            return false;
+        }
+
+        Skill prevSelect = this.playerSkill.skillSelect;
+        this.playerSkill.skillSelect = pointedSkill;
+
+        if (pointedId == Skill.TRI_THUONG) {
+            if (this.nPoint.getHpLong() >= this.nPoint.getHpMaxLong() && this.nPoint.mp >= this.nPoint.mpMax) {
+                return false;
+            }
+            boolean ok = nro.models.services.SkillService.gI().useSkill(this, this, null, -1, null);
+            if (ok) {
+                EffectSkillService.gI().sendAutoSkillPaintToPlayer(this, pointedSkill.skillId);
+                Service.gI().sendTimeSkill(this, pointedSkill);
+                this.lastTimeServerAutoAttack = System.currentTimeMillis();
+            }
+            return ok;
+        }
+
+        if (pointedSkill.template.type == 3) {
+            if (pointedId == Skill.BIEN_KHI && this.effectSkill != null && this.effectSkill.isMonkey) {
+                return false;
+            }
+            if (pointedId == Skill.KHIEN_NANG_LUONG && this.effectSkill != null && this.effectSkill.isShielding) {
+                return false;
+            }
+            boolean ok = nro.models.services.SkillService.gI().useSkill(this, null, null, -1, null);
+            if (ok) {
+                if (pointedId != Skill.TAI_TAO_NANG_LUONG) {
+                    EffectSkillService.gI().sendAutoSkillPaintToPlayer(this, pointedSkill.skillId);
+                }
+                Service.gI().sendTimeSkill(this, pointedSkill);
+                this.lastTimeServerAutoAttack = System.currentTimeMillis();
+            }
+            return ok;
+        }
+
+        Player targetPl = findServerAutoAttackPlayer();
+        Mob targetMob = (targetPl == null) ? findServerAutoAttackMob() : null;
+        if (targetPl == null && targetMob == null) {
+            this.playerSkill.skillSelect = prevSelect;
+            return false;
+        }
+        boolean ok = nro.models.services.SkillService.gI().useSkill(this, targetPl, targetMob, -1, null);
+        if (ok) {
+            EffectSkillService.gI().sendAutoSkillPaintToPlayer(this, pointedSkill.skillId);
+            Service.gI().sendTimeSkill(this, pointedSkill);
+            this.lastTimeServerAutoAttack = System.currentTimeMillis();
+        }
+        return ok;
+    }
+
+    private Player findServerAutoAttackPlayer() {
+        if (this.zone == null) {
+            return null;
+        }
+        if (this.lastAttackPlayerId != -1) {
+            Player target;
+            if (MapService.gI().isMapOffline(this.zone.map.mapId)) {
+                target = this.zone.getPlayerInMapOffline(this, this.lastAttackPlayerId);
+            } else {
+                target = this.zone.getPlayerInMap(this.lastAttackPlayerId);
+            }
+            if (target != null && !target.isDie() && nro.models.services.SkillService.gI().canAttackPlayer(this, target)
+                    && Util.getDistance(this, target) <= 350) {
+                return target;
+            }
+        }
+        Player nearestBoss = null;
+        int minDist = Integer.MAX_VALUE;
+        for (Player b : this.zone.getBosses()) {
+            if (b != null && !b.isDie() && nro.models.services.SkillService.gI().canAttackPlayer(this, b)) {
+                int d = Util.getDistance(this, b);
+                if (d <= 280 && d < minDist) {
+                    minDist = d;
+                    nearestBoss = b;
+                }
+            }
+        }
+        if (nearestBoss != null) {
+            this.lastAttackPlayerId = (int) nearestBoss.id;
+        }
+        return nearestBoss;
+    }
+
+    private Mob findServerAutoAttackMob() {
+        if (this.zone == null || this.zone.mobs == null || this.zone.mobs.isEmpty()) {
+            return null;
+        }
+        if (this.lastAttackMobId >= 0) {
+            for (Mob m : this.zone.mobs) {
+                if (m != null && m.id == this.lastAttackMobId && !m.isDie() && m.status != 0 && m.status != 1) {
+                    if (Util.getDistance(this, m) <= 380) {
+                        return m;
+                    }
+                }
+            }
+        }
+        Mob nearest = null;
+        int minDist = Integer.MAX_VALUE;
+        for (Mob m : this.zone.mobs) {
+            if (m != null && !m.isDie() && m.status != 0 && m.status != 1) {
+                int d = Util.getDistance(this, m);
+                if (d <= 350 && d < minDist) {
+                    minDist = d;
+                    nearest = m;
+                }
+            }
+        }
+        if (nearest != null) {
+            this.lastAttackMobId = nearest.id;
+        }
+        return nearest;
+    }
+
+    private Skill chooseServerAutoAttackSkill() {
+        if (this.playerSkill == null || this.playerSkill.skills == null) {
+            return null;
+        }
+        byte pointedId = this.lastPointedSkillTemplateId;
+        if (pointedId != -1 && !isSupportOrSpecialPointedSkill(pointedId)) {
+            Skill pointedAttack = this.playerSkill.getSkillbyId(pointedId);
+            if (isAutoSkillReady(pointedAttack)) {
+                return pointedAttack;
+            }
+        }
+        List<Skill> active = getActiveAutoHuntSkills();
+        for (Skill s : active) {
+            if (s != null && s.template != null && isAutoSkillReady(s)) {
+                switch (s.template.id) {
+                    case Skill.KAMEJOKO, Skill.MASENKO, Skill.ANTOMIC,
+                         Skill.LIEN_HOAN, Skill.DRAGON, Skill.DEMON, Skill.GALICK, Skill.KAIOKEN -> {
+                        return s;
+                    }
+                }
+            }
+        }
+        for (Skill s : this.playerSkill.skills) {
+            if (s != null && s.template != null && isAutoSkillReady(s)) {
+                switch (s.template.id) {
+                    case Skill.KAMEJOKO, Skill.MASENKO, Skill.ANTOMIC,
+                         Skill.LIEN_HOAN, Skill.DRAGON, Skill.DEMON, Skill.GALICK, Skill.KAIOKEN -> {
+                        return s;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    public void updateServerAutoAttack() {
+        try {
+            if (!isAutoPlayActive() || this.isAutoHuntBoss || this.playerSkill == null || this.zone == null) {
+                return;
+            }
+            if (this.effectSkill != null && (this.effectSkill.isHaveEffectSkill() || this.effectSkill.isCharging)) {
+                return;
+            }
+            if (this.newSkill != null && this.newSkill.isStartSkillSpecial) {
+                return;
+            }
+
+            // 1. Hoàn tất bước 2 của các chiêu gồng (Quả Cầu Kênh Khí / Laze / Tự Sát) nếu đang gồng dở
+            if (this.playerSkill.prepareQCKK) {
+                if (Util.canDoWithTime(this.playerSkill.lastTimePrepareQCKK, 1600)) {
+                    Skill qckk = this.playerSkill.getSkillbyId(Skill.QUA_CAU_KENH_KHI);
+                    Player targetPl = findServerAutoAttackPlayer();
+                    Mob targetMob = (targetPl == null) ? findServerAutoAttackMob() : null;
+                    if (qckk != null && (targetPl != null || targetMob != null)) {
+                        this.lastTimeServerAutoAttack = System.currentTimeMillis();
+                        this.playerSkill.skillSelect = qckk;
+                        nro.models.services.SkillService.gI().useSkill(this, targetPl, targetMob, -1, null);
+                        EffectSkillService.gI().sendAutoSkillPaintToPlayer(this, qckk.skillId);
+                        Service.gI().sendTimeSkill(this, qckk);
+                    } else {
+                        this.playerSkill.prepareQCKK = false;
+                    }
+                }
+                return;
+            }
+            if (this.playerSkill.prepareLaze) {
+                if (Util.canDoWithTime(this.playerSkill.lastTimePrepareLaze, 1600)) {
+                    Skill laze = this.playerSkill.getSkillbyId(Skill.MAKANKOSAPPO);
+                    Player targetPl = findServerAutoAttackPlayer();
+                    Mob targetMob = (targetPl == null) ? findServerAutoAttackMob() : null;
+                    if (laze != null && (targetPl != null || targetMob != null)) {
+                        this.lastTimeServerAutoAttack = System.currentTimeMillis();
+                        this.playerSkill.skillSelect = laze;
+                        nro.models.services.SkillService.gI().useSkill(this, targetPl, targetMob, -1, null);
+                        EffectSkillService.gI().sendAutoSkillPaintToPlayer(this, laze.skillId);
+                        Service.gI().sendTimeSkill(this, laze);
+                    } else {
+                        this.playerSkill.prepareLaze = false;
+                    }
+                }
+                return;
+            }
+            if (this.playerSkill.prepareTuSat) {
+                if (Util.canDoWithTime(this.playerSkill.lastTimePrepareTuSat, 1600)) {
+                    Skill bom = this.playerSkill.getSkillbyId(Skill.TU_SAT);
+                    if (bom != null) {
+                        this.lastTimeServerAutoAttack = System.currentTimeMillis();
+                        this.playerSkill.skillSelect = bom;
+                        nro.models.services.SkillService.gI().useSkill(this, null, null, -1, null);
+                        Service.gI().sendTimeSkill(this, bom);
+                    } else {
+                        this.playerSkill.prepareTuSat = false;
+                    }
+                }
+                return;
+            }
+
+            // 2. Nếu người chơi đang trỏ vào ô kỹ năng thụ động/hỗ trợ/đặc biệt (TTNL, TDHS, Khiên, Huýt Sáo, Biến Khỉ, Đẻ Trứng...)
+            // thì tự động thi triển ngay khi chiêu đó hồi xong!
+            if (tryUsePointedSupportOrSpecialSkill()) {
+                return;
+            }
+
+            // 3. Nếu Client ngừng gửi gói đánh (do đang mở Tab Hành Trang hoặc đang trỏ vào ô TTNL/TDHS...)
+            // thì Server tự động duy trì đánh mục tiêu giúp người chơi!
+            if (!Util.canDoWithTime(this.lastTimeClientAttack, 520)
+                    || !Util.canDoWithTime(this.lastTimeServerAutoAttack, 420)) {
+                return;
+            }
+
+            Player targetPl = findServerAutoAttackPlayer();
+            Mob targetMob = (targetPl == null) ? findServerAutoAttackMob() : null;
+            if (targetPl == null && targetMob == null) {
+                return;
+            }
+
+            Skill attackSkill = chooseServerAutoAttackSkill();
+            if (attackSkill != null) {
+                this.lastTimeServerAutoAttack = System.currentTimeMillis();
+                this.playerSkill.skillSelect = attackSkill;
+                boolean ok = nro.models.services.SkillService.gI().useSkill(this, targetPl, targetMob, -1, null);
+                if (ok) {
+                    EffectSkillService.gI().sendAutoSkillPaintToPlayer(this, attackSkill.skillId);
+                    Service.gI().sendTimeSkill(this, attackSkill);
+                }
+                if (this.lastPointedSkillTemplateId != -1) {
+                    Skill pointed = this.playerSkill.getSkillbyId(this.lastPointedSkillTemplateId);
+                    if (pointed != null) {
+                        this.playerSkill.skillSelect = pointed;
                     }
                 }
             }

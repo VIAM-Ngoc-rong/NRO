@@ -1204,6 +1204,9 @@ public class Service {
 
     public void attackMob(Player pl, int mobId, boolean isMobMe, int masterId) {
         if (pl != null && pl.zone != null) {
+            if (pl.isPl() && !pl.isBot && !isMobMe) {
+                pl.recordClientAttack(mobId, -1);
+            }
             if (!isMobMe) {
                 for (Mob mob : pl.zone.mobs) {
                     if (mob.id == mobId) {
@@ -1509,13 +1512,18 @@ public class Service {
     }
 
     public void attackPlayer(Player pl, int idPlAnPem) {
-        Player player;
-        if (MapService.gI().isMapOffline(pl.zone.map.mapId)) {
-            player = pl.zone.getPlayerInMapOffline(pl, idPlAnPem);
-        } else {
-            player = pl.zone.getPlayerInMap(idPlAnPem);
+        if (pl != null && pl.zone != null) {
+            if (pl.isPl() && !pl.isBot) {
+                pl.recordClientAttack(-1, idPlAnPem);
+            }
+            Player player;
+            if (MapService.gI().isMapOffline(pl.zone.map.mapId)) {
+                player = pl.zone.getPlayerInMapOffline(pl, idPlAnPem);
+            } else {
+                player = pl.zone.getPlayerInMap(idPlAnPem);
+            }
+            SkillService.gI().useSkill(pl, player, null, -1, null);
         }
-        SkillService.gI().useSkill(pl, player, null, -1, null);
     }
 
     public void releaseCooldownSkill(Player pl) {
@@ -1548,6 +1556,9 @@ public class Service {
                 if (timeLeft < 0) {
                     timeLeft = 0;
                 }
+                if (timeLeft >= skill.coolDown && skill.coolDown > 0) {
+                    timeLeft = skill.coolDown - 1;
+                }
                 msg.writer().writeInt(timeLeft);
             }
             pl.sendMessage(msg);
@@ -1565,6 +1576,9 @@ public class Service {
             int timeLeft = (int) (skill.lastTimeUseThisSkill + skill.coolDown - System.currentTimeMillis());
             if (timeLeft < 0) {
                 timeLeft = 0;
+            }
+            if (timeLeft >= skill.coolDown && skill.coolDown > 0) {
+                timeLeft = skill.coolDown - 1;
             }
             msg.writer().writeInt(timeLeft);
             pl.sendMessage(msg);

@@ -51,7 +51,24 @@ public class EffectSkillService {
             msg.writer().writeByte(8);
             msg.writer().writeInt((int) player.id);
             msg.writer().writeShort(skill.skillId);
-            Service.gI().sendMessAnotherNotMeInMap(player, msg);
+            Service.gI().sendMessAllPlayerInMap(player, msg);
+            msg.cleanup();
+        } catch (Exception e) {
+            nro.models.utils.Logger.logException(EffectSkillService.class, e);
+        }
+    }
+
+    public void sendAutoSkillPaintToPlayer(Player player, short skillId) {
+        if (player == null || !player.isPl() || player.isBot) {
+            return;
+        }
+        Message msg;
+        try {
+            msg = new Message(-45);
+            msg.writer().writeByte(6);
+            msg.writer().writeInt((int) player.id);
+            msg.writer().writeShort(skillId);
+            player.sendMessage(msg);
             msg.cleanup();
         } catch (Exception e) {
             nro.models.utils.Logger.logException(EffectSkillService.class, e);
