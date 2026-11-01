@@ -1287,20 +1287,33 @@ public class Boss extends Player implements IBoss {
 
         // 1. Chỉ các Boss từ Nappa trở đi (hoặc Boss cao cấp) mới rơi Đồ (Trang bị).
         // Các Boss hằng ngày như TDST Namek, Bojack không rơi đồ, chỉ rơi Ngọc Rồng.
+        // Cứ mỗi 100tr HP của Boss sẽ tăng thêm 0.2% (+2 phần nghìn) tỷ lệ rớt đồ & Đồ Thần Linh,
+        // đồng thời Boss máu càng cao thì phẩm chất trang bị, chỉ số và số Sao Pha Lê càng ngon.
         boolean droppedEquip = false;
-        boolean isHighHpBoss = isHighTierBossPreRebalance();
-        boolean canDropGodEquip = isHighHpBoss;
+        int hpSegments100M = (int) Math.max(0L, bossHp / 100_000_000L);
+        int bonusRatePer1000 = hpSegments100M * 2; // +0.2% cho mỗi 100tr HP
+        boolean isHighHpBoss = isHighTierBossPreRebalance() || bossHp >= 400_000_000L;
+        boolean canDropGodEquip = isHighHpBoss || hpSegments100M >= 1;
         boolean canDropEquip = isBossFromNappaOnwards()
                 || (isHighHpBoss && !isDailyEarlyBoss() && !isMiniBoss() && !isBrolyBoss());
 
         if (canDropEquip && canDropGodEquip) {
-            // Chỉ Boss >= 400tr HP mới rớt Đồ Thần Linh (tỉ lệ 7%)
-            int ratePer1000 = 70;
-            if (Util.isTrue(ratePer1000, 1000)) {
+            // Tỷ lệ rớt Đồ Thần Linh:
+            // - Boss >= 400tr HP: cơ bản 7% (70/1000) + 0.2% mỗi 100tr HP
+            // - Boss < 400tr HP (từ 100tr HP trở lên): 0.2% mỗi 100tr HP
+            int baseGodRatePer1000 = isHighHpBoss ? 70 : 0;
+            int godRatePer1000 = Math.min(500, baseGodRatePer1000 + bonusRatePer1000);
+            if (godRatePer1000 > 0 && Util.isTrue(godRatePer1000, 1000)) {
                 ItemMap godItem = ItemService.gI().randDoTLBoss(this.zone, 1, x, y, plOwner.id);
                 if (godItem != null) {
+                    // Boss máu càng cao, tỷ lệ Đồ Thần Linh có nhiều Sao Pha Lê (5-7 sao) càng lớn
+                    int highStarBonus = Math.min(35, hpSegments100M * 2);
                     int randTlStar = Util.nextInt(1, 100);
-                    int tlStars = randTlStar <= 65 ? Util.nextInt(3, 4) : (randTlStar <= 90 ? 5 : Util.nextInt(6, 7));
+                    int sixSevenStarThreshold = 90 - highStarBonus; // Tăng dần tỷ lệ 6-7 sao theo HP
+                    int fiveStarThreshold = Math.max(25, 65 - highStarBonus);
+                    int tlStars = randTlStar <= fiveStarThreshold
+                            ? Util.nextInt(3, 4)
+                            : (randTlStar <= sixSevenStarThreshold ? 5 : Util.nextInt(6, 7));
                     godItem.options.add(new Item.ItemOption(107, tlStars));
                     Service.gI().dropItemMap(this.zone, godItem);
                     droppedEquip = true;
@@ -1308,11 +1321,15 @@ public class Boss extends Player implements IBoss {
             }
         }
 
-        int equipDropChance = isHighHpBoss ? 75 : 25;
-        if (canDropEquip && !droppedEquip && Util.isTrue(equipDropChance, 100)) {
-            int group = isHighHpBoss
-                    ? (Util.nextInt(1, 100) <= 70 ? 0 : 1)
-                    : (Util.nextInt(1, 100) <= 85 ? 0 : 1);
+        // Tỷ lệ rớt Trang bị thường (Cấp 10 / 11 / 12): cộng thêm 0.2% (2/1000) cho mỗi 100tr HP
+        int baseEquipRatePer1000 = isHighHpBoss ? 750 : (250 + hpSegments100M * 80);
+        int equipRatePer1000 = Math.min(950, baseEquipRatePer1000 + bonusRatePer1000);
+        if (canDropEquip && !droppedEquip && Util.isTrue(equipRatePer1000, 1000)) {
+            // Máu càng cao, tỷ lệ ra Găng & Rada (nhóm hiếm group 1) càng tăng (+0.2% mỗi 100tr HP)
+            int baseRareGroupPer1000 = isHighHpBoss ? 300 : 150;
+            int rareGroupPer1000 = Math.min(450, baseRareGroupPer1000 + bonusRatePer1000);
+            int group = Util.isTrue(rareGroupPer1000, 1000) ? 1 : 0;
+
             int[][] dropPool;
             if (isHighHpBoss) {
                 // Boss >= 400tr HP: Rớt đồ cao cấp cấp 12 (Kaio, Lưỡng Long, Jean, Rada cấp 12)
@@ -1321,42 +1338,54 @@ public class Boss extends Player implements IBoss {
                     {257, 261, 265, 281}                           // Găng & Rada cấp 12 (>= 1 tỷ 500tr SM)
                 };
             } else {
-                // Boss cấp thấp < 400tr HP: Giảm mạnh tỷ lệ rớt đồ cao cấp (75% cấp 10, 20% cấp 11, chỉ 5% cấp 12)
-                int tierRoll = Util.nextInt(1, 100);
-                if (tierRoll <= 75) {
+                // Boss < 400tr HP: Máu càng cao thì tỷ lệ rớt đồ Cấp 11 và Cấp 12 càng tăng
+                int tierRoll = Util.nextInt(1, 1000);
+                int lv12ChancePer1000 = Math.min(500, 50 + hpSegments100M * 120 + bonusRatePer1000);
+                int lv11ChancePer1000 = Math.min(450, 200 + hpSegments100M * 80);
+                if (tierRoll <= lv12ChancePer1000) {
                     dropPool = new int[][]{
-                        {231, 235, 239, 243, 247, 251, 267, 271, 275}, // Áo, Quần, Giày cấp 10
-                        {255, 259, 263, 279}                           // Găng & Rada cấp 10
+                        {233, 237, 241, 245, 249, 253, 269, 273, 277}, // Áo, Quần, Giày cấp 12
+                        {257, 261, 265, 281}                           // Găng & Rada cấp 12
                     };
-                } else if (tierRoll <= 95) {
+                } else if (tierRoll <= lv12ChancePer1000 + lv11ChancePer1000) {
                     dropPool = new int[][]{
                         {232, 236, 240, 244, 248, 252, 268, 272, 276}, // Áo, Quần, Giày cấp 11
                         {256, 260, 264, 280}                           // Găng & Rada cấp 11
                     };
                 } else {
                     dropPool = new int[][]{
-                        {233, 237, 241, 245, 249, 253, 269, 273, 277}, // Áo, Quần, Giày cấp 12 (chỉ 5%)
-                        {257, 261, 265, 281}                           // Găng & Rada cấp 12 (chỉ 5%)
+                        {231, 235, 239, 243, 247, 251, 267, 271, 275}, // Áo, Quần, Giày cấp 10
+                        {255, 259, 263, 279}                           // Găng & Rada cấp 10
                     };
                 }
             }
             int dropItemId = dropPool[group][Util.nextInt(0, dropPool[group].length - 1)];
             ItemMap shopItemMap = new ItemMap(this.zone, dropItemId, 1, x, y, plOwner.id);
             List<Item.ItemOption> shopOps = ItemService.gI().getListOptionItemShop((short) dropItemId);
+            // Boss máu càng cao thì chỉ số cộng thêm của trang bị càng cao
+            int minOptPct = Math.min(112, 100 + hpSegments100M / 2);
+            int maxOptPct = Math.min(125, 115 + hpSegments100M / 2);
             if (shopOps.isEmpty() && shopItemMap.itemTemplate != null) {
                 nro.models.services.RewardService.gI().initBaseOptionClothes(null, dropItemId, shopItemMap.itemTemplate.type, shopOps);
+                shopOps.forEach(option -> option.param = (int) (option.param * Util.nextInt(minOptPct, maxOptPct) / 100.0));
             } else {
-                shopOps.forEach(option -> option.param = (int) (option.param * Util.nextInt(100, 115) / 100.0));
+                shopOps.forEach(option -> option.param = (int) (option.param * Util.nextInt(minOptPct, maxOptPct) / 100.0));
             }
             shopItemMap.options.addAll(shopOps);
             int randStar = Util.nextInt(1, 100);
             int stars;
             if (isHighHpBoss) {
-                // Boss >= 400tr HP: Tỷ lệ có Sao Pha Lê luôn từ 3 sao trở lên (3s - 7s)
-                stars = randStar <= 55 ? Util.nextInt(3, 4) : (randStar <= 85 ? 5 : Util.nextInt(6, 7));
+                // Boss >= 400tr HP: Sao Pha Lê từ 3s - 7s, máu càng cao tỷ lệ 5-7 sao càng lớn
+                int starBonus = Math.min(30, hpSegments100M);
+                int t67 = 85 - starBonus;
+                int t5 = Math.max(25, 55 - starBonus);
+                stars = randStar <= t5 ? Util.nextInt(3, 4) : (randStar <= t67 ? 5 : Util.nextInt(6, 7));
             } else {
-                // Boss < 400tr HP: Chủ yếu 1-2 sao (85%), 3-4 sao (13%), 5 sao (2%)
-                stars = randStar <= 85 ? Util.nextInt(1, 2) : (randStar <= 98 ? Util.nextInt(3, 4) : 5);
+                // Boss < 400tr HP: Máu càng cao càng dễ ra 3-5 sao
+                int starBonus = Math.min(40, hpSegments100M * 10);
+                stars = randStar <= (85 - starBonus)
+                        ? Util.nextInt(1, 2)
+                        : (randStar <= (98 - starBonus / 3) ? Util.nextInt(3, 4) : 5);
             }
             shopItemMap.options.add(new Item.ItemOption(107, stars));
             Service.gI().dropItemMap(this.zone, shopItemMap);
