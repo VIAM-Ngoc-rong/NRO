@@ -28,7 +28,7 @@
 
     <rect x="20" y="150" width="290" height="68" rx="10" fill="#1e293b" stroke="#38bdf8" stroke-width="1"/>
     <text x="35" y="177" font-family="Segoe UI, sans-serif" font-size="15" font-weight="700" fill="#38bdf8">2. Auto Treo Quái &amp; Ngũ Hành Sơn</text>
-    <text x="35" y="201" font-family="Segoe UI, sans-serif" font-size="13" fill="#cbd5e1">• x5 TNSM + Lọc đồ thông minh vào 10 Tab</text>
+    <text x="35" y="201" font-family="Segoe UI, sans-serif" font-size="13" fill="#cbd5e1">• x5 TNSM + Túi 1.000 Ô &amp; Lọc đồ thông minh</text>
 
     <rect x="20" y="235" width="290" height="68" rx="10" fill="#1e293b" stroke="#38bdf8" stroke-width="1"/>
     <text x="35" y="262" font-family="Segoe UI, sans-serif" font-size="15" font-weight="700" fill="#38bdf8">3. Chuỗi Nhiệm Vụ Mở Bản Đồ</text>
@@ -36,7 +36,7 @@
 
     <rect x="20" y="320" width="290" height="55" rx="10" fill="#1e293b" stroke="#38bdf8" stroke-width="1"/>
     <text x="35" y="344" font-family="Segoe UI, sans-serif" font-size="15" font-weight="700" fill="#38bdf8">4. Săn Boss Chiến Thuật (Khu 1..N)</text>
-    <text x="35" y="365" font-family="Segoe UI, sans-serif" font-size="13" fill="#cbd5e1">• Đồ Thần (15%), SKH (2%), NRT, Điểm Boss</text>
+    <text x="35" y="365" font-family="Segoe UI, sans-serif" font-size="13" fill="#cbd5e1">• Đồ Thần 3–7s (7%), SKH (2%), NRT, Điểm Boss</text>
   </g>
 
   <!-- LAYER 2: PROCESSING / SYNTHESIS -->

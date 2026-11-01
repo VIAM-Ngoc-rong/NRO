@@ -1010,6 +1010,7 @@ public final class Manager {
             Logger.success(Logger.RED + "Successfully loaded Consign Item (" + ConsignShopManager.gI().listItem.size() + ")\n");
 
             //load mob template
+            ensureVampaPlanetData(ConnectionDatabase);
             ps = ConnectionDatabase.prepareStatement("select * from mob_template");
             rs = ps.executeQuery();
             while (rs.next()) {
@@ -1456,6 +1457,62 @@ public final class Manager {
         }
     }
 
+    private void ensureVampaPlanetData(Connection con) {
+        try {
+            Object[][] vampaMobs = {
+                {80, "Bọ Cạp Vampa", 8_000_000},
+                {81, "Thằn Lằn Vampa", 12_000_000},
+                {107, "Khủng Long Vampa", 18_000_000},
+                {108, "Mãng Xà Vampa", 25_000_000}
+            };
+            try (PreparedStatement psMob = con.prepareStatement(
+                    "UPDATE mob_template SET NAME = ?, hp = ? WHERE id = ?")) {
+                for (Object[] m : vampaMobs) {
+                    psMob.setString(1, (String) m[1]);
+                    psMob.setInt(2, (Integer) m[2]);
+                    psMob.setInt(3, (Integer) m[0]);
+                    psMob.addBatch();
+                }
+                psMob.executeBatch();
+            }
+
+            Object[][] vampaMaps = {
+                {160, "Hang Động Vampa", 15, 15,
+                    "[[\"Bìa Rừng Vampa\",1416,1560,1440,1584,0,0,161,60,312]]",
+                    "[[80,21,8000000,132,168],[80,21,8000000,540,168],[80,21,8000000,708,600],[80,21,8000000,1212,648],[80,21,8000000,876,1080],[80,21,8000000,1308,144],[81,22,12000000,348,168],[81,22,12000000,756,168],[81,22,12000000,372,1320],[81,22,12000000,1080,1584],[81,22,12000000,1308,1824],[81,22,12000000,684,1824],[81,22,12000000,492,576],[81,22,12000000,156,888],[80,21,8000000,996,1824],[80,21,8000000,1140,1704],[80,21,8000000,348,576],[81,22,12000000,1068,288]]",
+                    "[[56,1248,1584]]"},
+                {161, "Bìa Rừng Vampa", 15, 15,
+                    "[[\"Hang Động Vampa\",0,288,24,312,0,0,160,1350,1584],[\"Rừng Cổ Đại Vampa\",1896,312,1920,336,0,0,162,60,288]]",
+                    "[[80,21,8000000,108,528],[80,21,8000000,852,792],[81,22,12000000,564,144],[81,22,12000000,1116,288],[81,22,12000000,1500,96],[80,21,8000000,900,144],[107,23,18000000,1476,336],[81,22,12000000,1116,600],[107,23,18000000,1500,1032],[81,22,12000000,900,1104],[81,22,12000000,324,552],[107,23,18000000,1740,960],[81,22,12000000,1212,144],[80,21,8000000,1812,96],[107,23,18000000,468,936],[107,23,18000000,1812,648],[80,21,8000000,804,336]]",
+                    "[]"},
+                {162, "Rừng Cổ Đại Vampa", 15, 15,
+                    "[[\"Bìa Rừng Vampa\",0,264,24,288,0,0,161,1860,336],[\"Thung Lũng Vampa\",1896,240,1920,264,0,0,163,60,816]]",
+                    "[[107,23,18000000,1308,144],[107,23,18000000,1140,384],[81,22,12000000,876,744],[81,22,12000000,276,528],[81,22,12000000,636,744],[81,22,12000000,492,96],[81,22,12000000,492,456],[107,23,18000000,396,792],[107,23,18000000,468,1080],[81,22,12000000,204,1032],[108,24,25000000,132,1272],[108,24,25000000,444,1272],[108,24,25000000,804,1272],[107,23,18000000,1236,648],[107,23,18000000,1788,720],[108,24,25000000,1380,912],[108,24,25000000,1356,1152],[108,24,25000000,1044,1272],[108,24,25000000,1596,1152]]",
+                    "[]"},
+                {163, "Thung Lũng Vampa", 15, 15,
+                    "[[\"Rừng Cổ Đại Vampa\",0,792,24,816,0,0,162,1860,264]]",
+                    "[[107,23,18000000,444,528],[107,23,18000000,396,144],[108,24,25000000,804,744],[108,24,25000000,1188,744],[107,23,18000000,1788,168],[107,23,18000000,1692,456],[108,24,25000000,1812,816],[108,24,25000000,588,744],[108,24,25000000,1524,816],[108,24,25000000,420,816]]",
+                    "[]"}
+            };
+            try (PreparedStatement psMap = con.prepareStatement(
+                    "UPDATE map_template SET NAME = ?, zones = ?, max_player = ?, waypoints = ?, mobs = ?, npcs = ? WHERE id = ?")) {
+                for (Object[] row : vampaMaps) {
+                    psMap.setString(1, (String) row[1]);
+                    psMap.setInt(2, (Integer) row[2]);
+                    psMap.setInt(3, (Integer) row[3]);
+                    psMap.setString(4, (String) row[4]);
+                    psMap.setString(5, (String) row[5]);
+                    psMap.setString(6, (String) row[6]);
+                    psMap.setInt(7, (Integer) row[0]);
+                    psMap.addBatch();
+                }
+                psMap.executeBatch();
+            }
+        } catch (Exception e) {
+            Logger.logException(Manager.class, e);
+        }
+    }
+
     private void ensureExtendedStoryTasks(Connection con) {
         try {
             Object[][] mainTasks = {
@@ -1488,7 +1545,12 @@ public final class Manager {
                     + "Hãy sát cánh cùng những chiến binh mạnh nhất tiêu diệt Cumber và Super Cumber.\n"
                     + "- Đi cùng đồng bang trong khu: X2-X3 tiến độ quái & tính chung hạ Boss!\n"
                     + "- Thưởng: 60 Thỏi vàng + 3.000 Hồng ngọc + 300Tr SM/TN"},
-                {35, "Huyền Thoại Ngọc Rồng",
+                {35, "Hành Tinh Vampa - Broly Cổ Đại",
+                    "Tại Hành Tinh Vampa hoang dã, nguồn năng lượng của Broly Cổ Đại đã thức tỉnh!\n"
+                    + "Hãy gặp Whis tại Hành Tinh Bill để đến Vampa, diệt Dị Thú và hạ gục SSJ Broly.\n"
+                    + "- Đi cùng đồng bang trong khu: X2-X3 tiến độ quái & tính chung hạ Boss!\n"
+                    + "- Thưởng: 80 Thỏi vàng + 5.000 Hồng ngọc + 500Tr SM/TN"},
+                {36, "Huyền Thoại Ngọc Rồng",
                     "Xin chúc mừng! Bạn đã vượt qua mọi thử thách khắc nghiệt nhất và trở thành Huyền Thoại!"}
             };
 
@@ -1505,7 +1567,7 @@ public final class Manager {
             }
 
             try (PreparedStatement psDelSub = con.prepareStatement(
-                    "DELETE FROM task_sub_template WHERE task_main_id >= 29 AND task_main_id <= 35")) {
+                    "DELETE FROM task_sub_template WHERE task_main_id >= 29 AND task_main_id <= 36")) {
                 psDelSub.executeUpdate();
             }
 
@@ -1552,10 +1614,17 @@ public final class Manager {
                 {34, "Cùng đồng bang diệt 3000 quái Ngục Tù", 3000, "Diệt Khỉ Lông Xanh & Taburine Đỏ tại Ngục Tù (X2-X3 cùng bang)", -1, 155, 153},
                 {34, "Phối hợp tiêu diệt 5 Saiyan Tà Ác Cumber", 5, "Cùng đồng đội hạ gục Cumber tại Hành Tinh Ngục Tù", -1, 155, 154},
                 {34, "Phối hợp tiêu diệt 5 Super Cumber", 5, "Hợp sức đánh bại Super Cumber tối thượng!", -1, 155, 155},
-                {34, "Báo cáo với Bunma Tương Lai", 1, "Quay về báo cáo với Bunma Tương Lai hoàn tất huyền thoại!", 37, 102, 156},
+                {34, "Báo cáo với Bunma Tương Lai", 1, "Quay về báo cáo với Bunma Tương Lai!", 37, 102, 156},
 
-                // NV 35: Hoàn thành toàn bộ nhiệm vụ
-                {35, "Bạn đã hoàn thành toàn bộ nhiệm vụ cốt truyện!", -1, "Chúc mừng Huyền Thoại Ngọc Rồng!", -1, -1, 157}
+                // NV 35: Hành Tinh Vampa - Broly Cổ Đại (80 TV + 5000 HN)
+                {35, "Gặp Whis tại Hành Tinh Bill để đến Vampa", 1, "Đến Hành Tinh Bill (Map 154) gặp Whis chọn Đến Hành Tinh Vampa", 56, 154, 157},
+                {35, "Cùng đồng bang diệt 2500 Dị Thú Vampa", 2500, "Diệt Bọ Cạp, Thằn Lằn, Khủng Long, Mãng Xà tại Vampa (X2-X3 cùng bang)", -1, 160, 158},
+                {35, "Phối hợp đánh bại 5 Broly Cổ Đại", 5, "Cùng đồng bang hạ gục 5 Boss Broly Cổ Đại tại Hành Tinh Vampa", -1, 161, 159},
+                {35, "Phối hợp đánh bại 2 SSJ Broly Huyền Thoại", 2, "Hạ gục SSJ Broly tại Hành Tinh Vampa (Rơi 100% Trứng Broly)", -1, 162, 160},
+                {35, "Báo cáo chiến công với %10", 1, "Quay về %11 báo cáo với %10 hoàn tất huyền thoại!", -5, -9, 161},
+
+                // NV 36: Hoàn thành toàn bộ nhiệm vụ
+                {36, "Bạn đã hoàn thành toàn bộ nhiệm vụ cốt truyện!", -1, "Chúc mừng Huyền Thoại Ngọc Rồng!", -1, -1, 162}
             };
 
             try (PreparedStatement psSub = con.prepareStatement(

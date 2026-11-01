@@ -36,7 +36,7 @@
 │   ├── 📄 2.5. Quy luật Vật phẩm Hồng Ngọc (100% Random chỉ số), Cải trang & Đeo Lưng
 │   └── 📄 2.6. Hành Trang 1.000 Ô, Lưu 5 Set Đồ (s1..s5 / d1..d5), Khóa Trang Bị & Auto Săn Boss (Phím B)
 ├── 📂 03-He-Thong-Tang-Truong-Suc-Manh/
-│   ├── 📄 3.1. Lộ trình cày Sức Mạnh & Mở Giới Hạn SM (18 Tỷ → 150 Tỷ SM, Đệ miễn giảm TNSM)
+│   ├── 📄 3.1. Lộ trình cày Sức Mạnh & Mở Giới Hạn SM (18 Tỷ → 150 Tỷ SM, Đệ giảm nhẹ hơn Sư phụ)
 │   ├── 📄 3.2. Tiến Hóa Đệ Tử 3 Cấp (Thường 100% → Mabư 115% → Broly 130%) & Mở Skill 5
 │   ├── 📄 3.3. Nâng cấp Bông Tai Porata Cấp 1 → Cấp 2 → Cấp 3
 │   └── 📄 3.4. Nội Tại, Vòng Chân Hào Quang Săn Boss 8 Cấp, Thẻ Sưu Tầm & Danh Hiệu Top 1
@@ -98,7 +98,7 @@ flowchart TD
     B2 --> B3["Bước 3: Học Chiêu Tại Quy Lão / Guru / Vegeta\nCho Đệ Tử lên 1.5 Triệu SM để Mặc Đồ\nBán Thỏi Vàng tại Santa lấy Vàng tiêu"]
     B3 --> B4["Bước 4: Gặp NPC Đường Tăng / Ngộ Không\nBay lên 'Ngũ Hành Sơn' (Map 122–124, x5 TNSM)\nUp Sư Phụ & Đệ Tử lên 18 Tỷ – 40 Tỷ SM"]
     B4 --> B5["Bước 5: Qua Đảo Kame (Bà Hạt Mít)\nĐục lỗ 7–9 Sao cho bộ Đồ Vải Thô SKH\nÉp Sao Pha Lê %SĐ / %HP / %KI & Mở Nội Tại"]
-    B5 --> B6["Bước 6: Gặp Trưởng Lão Guru / Quốc Vương\nMở Giới Hạn Sức Mạnh (Lên 150 Tỷ SM)\nĐệ Tử miễn giảm TNSM sau 40 Tỷ SM!"]
+    B5 --> B6["Bước 6: Gặp Trưởng Lão Guru / Quốc Vương\nMở Giới Hạn Sức Mạnh (Lên 150 Tỷ SM)\nĐệ Tử giảm TNSM nhẹ hơn Sư Phụ (x2.5–x3 tốc độ)!"]
     B6 --> B7["Bước 7: Làm Nhiệm Vụ Chính Tuyến & NV Mở Rộng (29 → 34)\nLiên kết Bang hội nhận X2–X3 tiến độ & 210 Thỏi Vàng + 10.500 HN\nSăn Đệ Mabư (115%) -> Đệ Broly (130%) & Bông Tai Cấp 2/3"]
     B7 --> B8["Bước 8: Săn Boss Cao Cấp (+0.2% Rớt Đồ Mỗi 100Tr HP)\nĐổi Vòng Chân Săn Boss 8 Cấp (+16% SĐ/HP/KI, +14% Hút)\nDùng Chuyển Hóa / Đập Đồ SKH lên Đồ Thần & Hủy Diệt"]
 ```
@@ -143,24 +143,25 @@ Ngay khi tạo nhân vật xong, bạn đang đứng trong **Nhà** (*Nhà Gôha
 2. Chọn **Ép Sao Pha Lê**: Mua hoặc nhặt Sao Pha Lê **+% Sức Đánh** (hoặc **+% HP / +% KI** tùy hệ) ép kín 7–9 lỗ trên cả 6 món đồ $\rightarrow$ Sức đánh và máu của bạn sẽ tăng vọt gấp nhiều lần!
 
 ### 🔹 Bước 6: Mở Giới Hạn Sức Mạnh (`18 Tỷ → 150 Tỷ SM`) & Hợp Thể Đệ Tử
-1. Khi bạn hoặc Đệ tử cày chạm mốc giới hạn (`17.99 Tỷ SM`, `40 Tỷ SM`, `60 Tỷ SM`... không tăng thêm được nữa), hãy bay đến **Đảo Guru (Hành tinh Namek)** gặp **Trưởng Lão Guru** (hoặc **Quốc Vương**) chọn **Mở Giới Hạn Sức Mạnh** cho Sư phụ và Đệ tử bằng Ngọc Xanh (tối đa lên **150 Tỷ SM** với trần chỉ số gốc **`700.000 HP/KI`** và **`32.000 SĐ`**).
-   - *Đặc quyền Đệ Tử*: Sau mốc **40 Tỷ SM**, **Đệ tử hoàn toàn KHÔNG bị giảm tốc độ nhận Tiềm Năng & Sức Mạnh** (miễn trừ 100% cơ chế giảm TNSM Endgame của Sư phụ), giúp cày Đệ tử lên `100 Tỷ SM`, `120 Tỷ SM` và `150 Tỷ SM` cực nhanh!
+1. Khi bạn hoặc Đệ tử cày chạm mốc giới hạn (`17.99 Tỷ SM`, `40 Tỷ SM`, `60 Tỷ SM`... không tăng thêm được nữa), hãy bay đến **Đảo Guru (Hành tinh Namek)** gặp **Trưởng Lão Guru** (hoặc **Quốc Vương**) chọn **Mở Giới Hạn Sức Mạnh** cho Sư phụ và Đệ tử bằng Ngọc Xanh (ở các mốc `100 Tỷ`, `120 Tỷ`, `150 Tỷ` dùng **Thỏi Vàng + Hồng Ngọc**, tối đa lên **150 Tỷ SM** với trần chỉ số gốc **`700.000 HP/KI`** và **`32.000 SĐ`**).
+   - *Ưu đãi tốc độ Up Đệ Tử sau 40 Tỷ SM*: Từ mốc **40 Tỷ SM trở đi**, cả Sư phụ và Đệ tử đều có lộ trình giảm tốc độ nhận TNSM Endgame, nhưng **Đệ tử được giảm nhẹ hơn rất nhiều so với Sư phụ** (hệ số chia TNSM của Đệ tử thấp hơn `2 – 3 lần` so với Sư phụ), giúp cày Đệ tử lên `100 Tỷ SM` (mở Skill 5), `120 Tỷ SM` và `150 Tỷ SM` nhanh hơn Sư phụ rõ rệt!
 2. Khi Đệ tử đạt các mốc **150 Triệu SM (Skill 2)** $\rightarrow$ **1.5 Tỷ SM (Skill 3)** $\rightarrow$ **20 Tỷ SM (Skill 4)** $\rightarrow$ **100 Tỷ SM (Skill 5: Super Kame / Ma Phong Ba / Liên Hoàn Chưởng)**, Đệ tử sẽ tự động mở khóa thêm kỹ năng mới! Mua sách **Nâng kỹ năng 4 đệ tử (`ID 759` tại Santa)** để nâng cấp Skill 4 & Skill 5 của Đệ tử lên tối đa **Cấp 7**.
 
-### 🔹 Bước 7: Làm Nhiệm Vụ Chính Tuyến & Chuỗi Nhiệm Vụ Mở Rộng (`NV 29 → NV 34` — Liên Kết Bang Hội)
+### 🔹 Bước 7: Làm Nhiệm Vụ Chính Tuyến & Chuỗi Nhiệm Vụ Mở Rộng (`NV 29 → NV 35` — Liên Kết Bang Hội)
 1. **Nhiệm vụ chính tuyến cơ bản (NV 1 $\rightarrow$ NV 28)**: Hạ *Kuku $\rightarrow$ Mập Đầu Đinh $\rightarrow$ Rambo $\rightarrow$ Tiểu Đội Sát Thủ $\rightarrow$ Fide Đại Ca $\rightarrow$ Android 19/20/13/14/15 $\rightarrow$ Pic/Poc/King Kong $\rightarrow$ Xên Bọ Hung $\rightarrow$ Xên Hoàn Thiện $\rightarrow$ Siêu Bọ Hung* để mở khóa **Map Tương Lai** và **Hành Tinh Cold**.
    - **Mẹo làm nhiệm vụ cực nhanh**: Gõ chat `boss` $\rightarrow$ Bấm vào tên Boss đang sống để bay thẳng tới **Khu 0** $\rightarrow$ Đổi khu dò từ Khu 1 trở đi hoặc bấm **`Phím B`** bật **Tự Động Săn Boss**!
-2. **Chuỗi Nhiệm Vụ Chính Tuyến Mở Rộng (`NV 29 → NV 34` — Tổng thưởng `210 Thỏi Vàng + 10.500 Hồng Ngọc`)**:
-   - Sau khi hoàn thành NV 28, bạn tiếp tục bước vào 6 chương cốt truyện lớn: **NV 29 (Ma Bư Cuối Cùng)** $\rightarrow$ **NV 30 (Cooler & Fide Hoàng Kim)** $\rightarrow$ **NV 31 (Black Goku & Zamasu)** $\rightarrow$ **NV 32 (Bộ Ba Sói Vũ Trụ 9)** $\rightarrow$ **NV 33 (Baby Vegeta)** $\rightarrow$ **NV 34 (Cumber & Super Cumber)**.
-   - **Phần thưởng tăng dần cực khủng**: Từ **`10 Thỏi Vàng + 500 Hồng Ngọc`** (NV 29) tăng dần lên tới **`60 Thỏi Vàng + 3.000 Hồng Ngọc`** (NV 34).
+2. **Chuỗi Nhiệm Vụ Chính Tuyến Mở Rộng (`NV 29 → NV 35` — Tổng thưởng `290 Thỏi Vàng + 15.500 Hồng Ngọc`)**:
+   - Sau khi hoàn thành NV 28, bạn tiếp tục bước vào 7 chương cốt truyện lớn: **NV 29 (Ma Bư Cuối Cùng)** $\rightarrow$ **NV 30 (Cooler & Fide Hoàng Kim)** $\rightarrow$ **NV 31 (Black Goku & Zamasu)** $\rightarrow$ **NV 32 (Bộ Ba Sói Vũ Trụ 9)** $\rightarrow$ **NV 33 (Baby Vegeta)** $\rightarrow$ **NV 34 (Cumber & Super Cumber)** $\rightarrow$ **NV 35 (Hành Tinh Vampa - Broly Cổ Đại)**.
+   - **Phần thưởng tăng dần cực khủng**: Từ **`10 Thỏi Vàng + 500 Hồng Ngọc`** (NV 29) tăng dần lên tới **`80 Thỏi Vàng + 5.000 Hồng Ngọc`** (NV 35).
    - **Cơ chế Liên Kết Bang Hội / Đồng Đội Cùng Khu**: Đi cùng **2 hoặc 3+ thành viên cùng Bang hội** trong cùng khu sẽ được nhân **`X2 – X3` tốc độ đánh quái nhiệm vụ**, chia sẻ tiến độ quái cho nhau và **tính chung hoàn thành hạ Boss cho toàn bộ đồng đội cùng nhiệm vụ trong khu**!
 
 ### 🔹 Bước 8: Nâng Cấp Đệ Tử 3 Cấp: Thường (`100%`) $\rightarrow$ Mabư (`115%`) $\rightarrow$ Broly (`130%`)
 1. **Đệ Tử Cấp 1 (Thường — Hợp thể cộng `100%` chỉ số đệ)**: Săn Boss **Broly thường** (khi `HP >= 1.000.000` chắc chắn `100%` gọi ra **Super Broly**, hoặc `5%` khi `< 1Tr HP`) $\rightarrow$ Hạ **Super Broly** để thu phục Đệ Tử Thường.
 2. **Đệ Tử Cấp 2 (Mabư — Max gốc `700k` HP/KI, `32k` SĐ bằng Sư phụ; Hợp thể cộng `115%` chỉ số đệ)**:
    - Gõ `boss` tìm **Kid Bư** $\rightarrow$ Hạ Kid Bư khi **`HP >= 1.000.000`** chắc chắn **`100%`** gọi ra **Mabư Mập** ngay tại khu đó (hoặc `5%` khi `< 1Tr HP`) $\rightarrow$ Hạ Mabư Mập có **50% rơi Quả Trứng Mabư**. Bấm dùng Trứng rồi về **Nhà** bấm vào **Quả Trứng** chọn **Nở ngay (1 Tỷ Vàng)**.
-3. **Đệ Tử Cấp 3 (Broly — Max gốc `700k` HP/KI, `32k` SĐ bằng Sư phụ; Hợp thể cộng `130%` chỉ số đệ, `100%` Rơi Trứng)**:
-   - **Cách gọi Super SSJ Broly (`SSJ Broly`)**: Khi Boss **Broly (nhánh SSJ)** bị tiêu diệt ở mốc máu **`> 10.000.000 HP` (hơn 10 Triệu HP)** sẽ **chắc chắn `100%`** biến hình thành **SSJ Broly** ngay tại chỗ (hoặc `5%` xác suất ngẫu nhiên khi `<= 10Tr HP`). *(Mẹo: Mặc **Cải trang Android 19 / Android 20** vừa hấp thụ chưởng của Broly hồi KI vừa **phản sát thương `PST`** giúp nuôi máu Broly cực dễ).*
+3. **Đệ Tử Cấp 3 (Broly — Max gốc `700k` HP/KI, `32k` SĐ bằng Sư phụ; Hợp thể cộng `130%` chỉ số đệ, `100%` Rơi Trứng tại Hành Tinh Vampa)**:
+   - **Cách đến Hành Tinh Vampa**: Bay tới **Hành Tinh Bill (`Map 154`)** gặp **NPC Whis** chọn **"Đến Hành Tinh Vampa"** (`Map 160 -> 163`).
+   - **Cách gọi Super SSJ Broly (`SSJ Broly`)**: Khi Boss **Broly Cổ Đại (`Broly18h`)** tại **Hành Tinh Vampa** bị tiêu diệt ở mốc máu **`>= 1.000.000 HP` (từ 1 Triệu HP trở lên)** sẽ **chắc chắn `100%`** biến hình thành **SSJ Broly** ngay tại chỗ (hoặc `20%` xác suất ngẫu nhiên khi `< 1Tr HP`). *(Mẹo: Mặc **Cải trang Android 19 / Android 20** vừa hấp thụ chưởng của Broly hồi KI vừa **phản sát thương `PST`** giúp nuôi máu Broly cực dễ).*
    - **Tỷ lệ rơi Trứng**: Khi đang có **Đệ Tử Mabư**, tiêu diệt **SSJ Broly** rơi **`100%` Quả Trứng Đệ Tử Broly (`ID 1826`)** $\rightarrow$ Dùng Trứng rồi về **Nhà** bấm vào **Quả Trứng** ấp nở thành **Đệ Tử Broly**!
 4. **Nâng Bông Tai Porata Cấp 2 & Cấp 3**: Tại **Bà Hạt Mít (Đảo Kame)**, nâng cấp Bông Tai Porata lên Cấp 2 và Cấp 3 rồi Mở chỉ số ẩn để khi **Hợp Thể** cùng Đệ Tử Broly, toàn bộ HP/KI/Sức Đánh của bạn tăng vọt cực đại!
 
@@ -471,11 +472,13 @@ Mỗi hành tinh sở hữu 1 chiêu thức Tuyệt Kỹ tối thượng riêng 
 flowchart LR
     M1["0 → 1.5 Tỷ SM\nUp Ngũ Hành Sơn (x5 TNSM)\nĐệ Tử Mặc Trang Bị (1.5Tr SM)"] --> M2["1.5 Tỷ → 18 Tỷ SM\nMở Skill 2 & 3 Đệ Tử\nLàm Nhiệm Vụ Qua Tương Lai"]
     M2 --> M3["18 Tỷ → 40 Tỷ SM\nMở Giới Hạn SM (Guru / Quốc Vương)\nMở Skill 4 Đệ Tử (20 Tỷ SM)"]
-    M3 --> M4["40 Tỷ → 150 Tỷ SM\nĐệ Tử Miễn Giảm TNSM Sau 40 Tỷ!\nMở Skill 5 Đệ Tử (100 Tỷ SM)"]
+    M3 --> M4["40 Tỷ → 150 Tỷ SM\nĐệ Tử Giảm TNSM Nhẹ Hơn Sư Phụ!\nMở Skill 5 Đệ Tử (100 Tỷ SM)"]
 ```
 
-- **Mở Giới Hạn Sức Mạnh Bằng Ngọc Xanh (`Bậc 0 → Bậc 12`)**: Gặp **Trưởng Lão Guru (Đảo Guru - Namek)** hoặc **Quốc Vương** để mở khóa các mốc giới hạn sức mạnh tiếp theo cho cả Sư Phụ và Đệ Tử bằng Ngọc Xanh (tối đa **150 Tỷ SM**). Khi đã chạm trần Sức Mạnh của bậc nhưng chưa nâng kịch trần chỉ số gốc (`HP`, `KI`, `Sức Đánh`, `Giáp`, `Chí Mạng`), nhân vật vẫn tiếp tục nhận được **Tiềm Năng** khi đánh quái để nâng tối đa chỉ số gốc!
-- **Đặc Quyền Đệ Tử — Hoàn Toàn Không Bị Giảm TNSM Sau Mốc 40 Tỷ SM**: Trong khi Sư phụ từ mốc `40 Tỷ – 150 Tỷ SM` áp dụng lộ trình giảm tốc độ nhận TNSM Endgame, **Đệ Tử (`isPet`) được miễn trừ 100% — giữ nguyên tốc độ nhận Tiềm năng & Sức mạnh sau 40 Tỷ SM**, giúp bạn cày Đệ tử lên `100 Tỷ SM` (mở Skill 5), `120 Tỷ SM` và `150 Tỷ SM` nhanh vượt trội!
+- **Mở Giới Hạn Sức Mạnh (`Bậc 0 → Bậc 12`)**: Gặp **Trưởng Lão Guru (Đảo Guru - Namek)**, **Quốc Vương** hoặc **Tổ Sư Kaio** để mở khóa các mốc giới hạn sức mạnh tiếp theo cho cả Sư Phụ và Đệ Tử (tối đa **150 Tỷ SM**). Khi đã chạm trần Sức Mạnh của bậc nhưng chưa nâng kịch trần chỉ số gốc (`HP`, `KI`, `Sức Đánh`, `Giáp`, `Chí Mạng`), nhân vật vẫn tiếp tục nhận được **Tiềm Năng** khi đánh quái để nâng tối đa chỉ số gốc!
+- **Cơ Chế Giảm TNSM Endgame Sau 40 Tỷ SM (Đệ Tử Giảm Nhẹ Hơn Sư Phụ)**:
+  - **Sư Phụ**: Từ `40 Tỷ SM` giảm `50%` (chia `30`), `50 Tỷ` chia `40`, `60 Tỷ` giảm `75%` (chia `50`), `80 Tỷ` giảm `90%` (chia `90`), `90 Tỷ` chia `100`, `100 Tỷ` chia `110`, `120 Tỷ+` chia `120`.
+  - **Đệ Tử (`isPet` — Nhanh hơn Sư phụ gấp `2 – 3 lần` ở giai đoạn Endgame)**: Từ `40 Tỷ SM` chỉ giảm `30%` (chia `10`), `50 Tỷ` chia `15`, `60 Tỷ` giảm `50%` (chia `20`), `80 Tỷ` giảm `70%` (chia `35`), `90 Tỷ` chia `50`, `100 Tỷ` chia `60`, `120 Tỷ+` chia `70` — cộng hưởng thêm **Bùa Đệ Tử, Bùa Santa & Cải trang `+30% TNSM Đệ`** giúp cày Đệ tử lên `100 Tỷ SM` (mở Skill 5), `120 Tỷ SM` và `150 Tỷ SM` thuận lợi hơn!
 
 | Bậc Mở Giới Hạn (`limitPower`) | Giới Hạn Sức Mạnh | Trần HP / KI Gốc | Trần Sức Đánh Gốc | Trần Giáp Gốc | Trần Chí Mạng Gốc | Điều Kiện & Chi Phí Mở Giới Hạn |
 | :---: | :---: | :---: | :---: | :---: | :---: | :--- |
@@ -509,7 +512,7 @@ flowchart LR
 | :--- | :---: | :---: | :--- |
 | **1. Đệ Tử Cấp 1 (Thường)** | <img src="SRC/assets/readme/icons/3896.png" width="30"/> | **Chỉ số gốc giống Sư phụ (`700k` HP/KI max, `32k` SĐ max)**<br>**Cộng `100%` chỉ số đệ tử**<br>*(Chỉ cộng chỉ số đệ, không thêm % phụ)* | • **Cách săn**: Tiêu diệt Boss **Broly thường** (tại `Khu >= 2`): khi **`HP >= 1.000.000`** sẽ chắc chắn **`100%`** gọi ra **Super Broly** (hoặc `5%` khi `< 1Tr HP`). Hạ **Super Broly** sẽ thu phục ngay **Đệ Tử Thường**! *(Hoặc nhận kèm khi kích hoạt gói VIP tại NPC ToriBot)*. |
 | **2. Đệ Tử Cấp 2 (Mabư)** | <img src="SRC/assets/readme/icons/4956.png" width="30"/> | **Chỉ số gốc giống Sư phụ (`700k` HP/KI max, `32k` SĐ max)**<br>**Hợp thể lấy `115%` chỉ số tổng của đệ tử** | • **Cách săn**: Tiêu diệt Boss **Kid Bư** (xuất hiện 5 con ở 3 hành tinh): nếu hạ khi **`HP >= 1.000.000`** sẽ **chắc chắn `100%`** gọi ra **Mabư Mập**; nếu kết liễu khi **`HP < 1.000.000`** sẽ có **tỷ lệ thấp (`5%`)** xuất hiện **Mabư Mập** ngay tại khu đó. Hạ **Mabư Mập** có **50% rơi Quả Trứng Mabư** (hoặc săn Boss Vegeta trong phó bản **Con Đường Rắn Độc**).<br>• **Điều kiện ấp**: Đang sở hữu **Đệ Tử Thường**. Bấm dùng Quả Trứng Mabư $\rightarrow$ Về **Nhà** bấm vào Quả Trứng chọn **Nở ngay (1 Tỷ Vàng)** hoặc chờ 24h. |
-| **3. Đệ Tử Cấp 3 (Broly)**<br>*(Cấp Mạnh Nhất)* | <img src="SRC/assets/readme/icons/5852.png" width="30"/> <img src="SRC/data/icon/x4/15128.png" width="28"/> | **Chỉ số gốc giống Sư phụ (`700k` HP/KI max, `32k` SĐ max)**<br>**Hợp thể lấy `130%` chỉ số tổng của đệ tử** | • **Cách gọi Super SSJ Broly (`SSJ Broly`)**: Khi Boss Broly (nhánh SSJ) bị hạ gục đạt mốc máu **`> 10.000.000 HP` (hơn 10 Triệu HP)** sẽ **chắc chắn `100%`** biến hình thành **SSJ Broly** ngay tại khu đó; hoặc nếu kết liễu khi **`HP <= 10.000.000`** sẽ có **tỷ lệ ngẫu nhiên thấp (`5%`)** xuất hiện **SSJ Broly**!<br>• **Tỷ lệ rơi Trứng**: Hạ **SSJ Broly** rơi **`100%` <img src="SRC/data/icon/x4/15128.png" width="18"/> Quả Trứng Đệ Tử Broly (`ID 1826`)**!<br>• **Điều kiện ấp**: **Bắt buộc đang sở hữu Đệ Tử Mabư**. Bấm dùng Quả Trứng Broly $\rightarrow$ Về **Nhà** bấm vào Quả Trứng chọn hành tinh để nở thành **Đệ Tử Broly** (khởi đầu 1.5 Triệu SM, mặc được đồ ngay)! |
+| **3. Đệ Tử Cấp 3 (Broly)**<br>*(Cấp Mạnh Nhất)* | <img src="SRC/assets/readme/icons/5852.png" width="30"/> <img src="SRC/data/icon/x4/15128.png" width="28"/> | **Chỉ số gốc giống Sư phụ (`700k` HP/KI max, `32k` SĐ max)**<br>**Hợp thể lấy `130%` chỉ số tổng của đệ tử** | • **Vị trí săn**: Gặp **Whis (Hành Tinh Bill - Map 154)** chọn **Đến Hành Tinh Vampa (`Map 160–163`)**.<br>• **Cách gọi `SSJ Broly`**: Khi Boss **Broly Cổ Đại** tại Hành Tinh Vampa bị hạ gục đạt mốc máu **`>= 1.000.000 HP`** sẽ **chắc chắn `100%`** biến hình thành **SSJ Broly** ngay tại khu đó (hoặc `20%` khi `< 1Tr HP`)!<br>• **Tỷ lệ rơi Trứng**: Hạ **SSJ Broly** rơi **`100%` <img src="SRC/data/icon/x4/15128.png" width="18"/> Quả Trứng Đệ Tử Broly (`ID 1826`)**!<br>• **Điều kiện ấp**: **Bắt buộc đang sở hữu Đệ Tử Mabư**. Bấm dùng Quả Trứng Broly $\rightarrow$ Về **Nhà** bấm vào Quả Trứng chọn hành tinh để nở thành **Đệ Tử Broly** (khởi đầu 1.5 Triệu SM, mặc được đồ ngay)! |
 
 ### ⚡ Cách Up Đệ Tử Nhanh Nhất & Mốc Mở 5 Kỹ Năng Cho Mọi Đệ Tử
 1. **Cách Up Đệ Tử Thần Tốc**:
@@ -571,6 +574,7 @@ flowchart LR
 | **4. Khu Vực Tương Lai**<br>*(Map 92 – 103)* | Thành Phố Phía Đông, Phía Bắc, Cao Nguyên, Võ Đài Xên Tương Lai, Nhà Bunma (Map 102) | Qua NPC **Calích** (sau khi hoàn thành nhiệm vụ Xên) hoặc **Capsule "Về chỗ cũ"** | Đại bản doanh của các Boss lớn (`>= 400Tr HP`): **Black Goku, Super Black Goku, Zamasu, Xên Hoàn Thiện, Siêu Bọ Hung**. Rớt **Đồ Thần Linh (7% gốc + 0.2% mỗi 100Tr HP)**, **Đồ Cấp 12 (75%–92% kèm 3–7 Sao)** & **Đồ SKH (2%)**. |
 | **5. Hành Tinh Cold**<br>*(Map 105 – 110)* | Cánh Đồng Tuyết, Rừng Tuyết, Núi Tuyết, Dòng Sông Băng, Hang Băng | Tàu Vũ Trụ Xayda / Capsule | Nơi săn **Cooler Cấp 1, Cooler Cấp 2**. *Lưu ý: Quái và khí lạnh tại Cold gây giảm 50% HP/SĐ nếu không mặc **Cải trang Kháng Lạnh** (mua tại Santa giá 50 Ngọc)*. |
 | **6. Hành Tinh Bill & Ngục Tù**<br>*(Map 154, 155)* | Hành Tinh Bill, Hành Tinh Ngục Tù | Gặp **Thần Vũ Trụ / Whis** | Nơi gặp **Bill & Whis** để đổi **Đồ Hủy Diệt**, chế tạo **Đồ Thiên Sứ**, **Sách Tuyệt Kỹ** và săn Boss **Cumber / Super Cumber**. |
+| **7. Hành Tinh Vampa (Broly Cổ Đại)**<br>*(Map 160 – 163)* | **Hang Động Vampa (160)**, **Bìa Rừng Vampa (161)**, **Rừng Cổ Đại Vampa (162)**, **Thung Lũng Vampa (163)** | Gặp **NPC Whis tại Hành Tinh Bill (Map 154)** chọn **"Đến Hành Tinh Vampa"** *(Tại Map 160 có Whis đưa về Bill)* | Lãnh địa của 4 loài Dị Thú Cổ Đại (**Bọ Cạp Vampa `8Tr HP`**, **Thằn Lằn Vampa `12Tr HP`**, **Khủng Long Vampa `18Tr HP`**, **Mãng Xà Vampa `25Tr HP`**) và nơi duy nhất xuất hiện **5 Boss Broly Cổ Đại $\rightarrow$ SSJ Broly** (rơi **100% Quả Trứng Đệ Tử Broly** + làm **Nhiệm Vụ Chính 35**). |
 
 ---
 
@@ -611,29 +615,30 @@ flowchart LR
 
 ---
 
-## ⚔️ 4.4. Chuỗi Nhiệm Vụ Chính Tuyến Mở Rộng (`NV 29 → NV 34`) & Cơ Chế Liên Kết Bang Hội / Đồng Đội
+## ⚔️ 4.4. Chuỗi Nhiệm Vụ Chính Tuyến Mở Rộng (`NV 29 → NV 35`) & Cơ Chế Liên Kết Bang Hội / Đồng Đội
 
-Sau khi hoàn thành **Nhiệm Vụ 28 (Tiêu diệt Siêu Bọ Hung)**, người chơi bước vào **6 Chương Nhiệm Vụ Chính Tuyến Mở Rộng (`NV 29 → NV 34`)** bám sát cốt truyện phim (*Majin Buu Saga $\rightarrow$ Golden Frieza & Cooler $\rightarrow$ Goku Black & Zamasu $\rightarrow$ Vũ Trụ 9 Trio De Dangers $\rightarrow$ Baby Vegeta $\rightarrow$ Ác Quỷ Saiyan Cumber*), được thiết kế với độ khó cao để khuyến khích người chơi **liên kết Bang hội & lập tổ đội**:
+Sau khi hoàn thành **Nhiệm Vụ 28 (Tiêu diệt Siêu Bọ Hung)**, người chơi bước vào **7 Chương Nhiệm Vụ Chính Tuyến Mở Rộng (`NV 29 → NV 35`)** bám sát cốt truyện phim (*Majin Buu Saga $\rightarrow$ Golden Frieza & Cooler $\rightarrow$ Goku Black & Zamasu $\rightarrow$ Vũ Trụ 9 Trio De Dangers $\rightarrow$ Baby Vegeta $\rightarrow$ Ác Quỷ Saiyan Cumber $\rightarrow$ Hành Tinh Vampa - Broly Cổ Đại*), được thiết kế với độ khó cao để khuyến khích người chơi **liên kết Bang hội & lập tổ đội**:
 
 ### 🤝 A. Cơ Chế Liên Kết Bang Hội & Tổ Đội Cùng Khu (`Co-op Boost`)
 1. **Liên Kết Đánh Quái Nhiệm Vụ Theo Bang Hội (Trong Cùng Khu)**:
    - Khi có **2 thành viên cùng Bang hội** đứng trong cùng khu: Mỗi 1 con quái bạn hạ gục sẽ được tính **`+2` tiến độ (`X2 tốc độ`)**, đồng thời thành viên cùng Bang đang làm cùng bước nhiệm vụ đó trong khu cũng được cộng thêm **`+1` tiến độ/quái**!
    - Khi có **từ 3 thành viên cùng Bang hội trở lên** trong cùng khu: Mỗi 1 con quái bạn hạ gục được tính **`+3` tiến độ (`X3 tốc độ`)**, và tất cả đồng bang đang làm cùng bước nhiệm vụ trong khu đều nhận thêm **`+1` tiến độ/quái**!
 2. **Liên Kết Hạ Boss Nhiệm Vụ Cùng Khu (Chia Sẻ Hoàn Thành & Nhân Đôi Tiến Độ)**:
-   - Khi 1 người chơi kết liễu Boss thuộc chuỗi nhiệm vụ `NV 29 → NV 34`, **toàn bộ thành viên cùng Bang hội** (hoặc **người chơi khác đang ở đúng bước nhiệm vụ săn con Boss đó**) còn sống trong cùng Khu đều **được tính hoàn thành hạ Boss cùng lúc**!
+   - Khi 1 người chơi kết liễu Boss thuộc chuỗi nhiệm vụ `NV 29 → NV 35`, **toàn bộ thành viên cùng Bang hội** (hoặc **người chơi khác đang ở đúng bước nhiệm vụ săn con Boss đó**) còn sống trong cùng Khu đều **được tính hoàn thành hạ Boss cùng lúc**!
    - Đặc biệt, nếu trong khu lúc hạ Boss có **từ 3 thành viên cùng Bang hội trở lên**, mỗi con Boss bị tiêu diệt sẽ được tính **`+2` tiến độ (`X2 Boss`)** cho cả đội!
 
-### 🏆 B. Bảng Chi Tiết 6 Nhiệm Vụ Chính Tuyến Mới (`NV 29 → NV 34`) & Phần Thưởng Tăng Dần
+### 🏆 B. Bảng Chi Tiết 7 Nhiệm Vụ Chính Tuyến Mới (`NV 29 → NV 35`) & Phần Thưởng Tăng Dần
 
 | Nhiệm Vụ | Tên Chương Cốt Truyện | Các Bước Thử Thách Tuần Tự | Phần Thưởng Khi Hoàn Thành |
 | :---: | :--- | :--- | :--- |
-| **NV 29** | **Cuộc Chiến Ma Bư Cuối Cùng** | 1. Nói chuyện với **Osin**<br>2. Đánh bại **1.500 Quái Tương Lai** *(Lập đội Bang hội trong khu nhận X2–X3 tiến độ)*<br>3. Hạ gục **3 Boss Kid Bư**<br>4. Hạ gục **2 Boss Mabư Mập**<br>5. Hạ gục **1 Boss Mabư 14h**<br>6. Báo cáo với **Osin** | • **`10 Thỏi Vàng`** (`5 Tỷ Vàng`)<br>• **`500 Hồng Ngọc`**<br>• **`+50.000.000` SM & TN** |
-| **NV 30** | **Đế Chế Băng Giá & Fide Hoàng Kim** | 1. Nói chuyện với **Calích**<br>2. Đánh bại **2.500 Quái Hành Tinh Cold** *(Đi cùng Bang hội trong khu nhận X2–X3 tiến độ)*<br>3. Hạ gục **2 Boss Cooler**<br>4. Hạ gục **2 Boss Golden Frieza (Fide Hoàng Kim)**<br>5. Báo cáo với **Calích** | • **`20 Thỏi Vàng`** (`10 Tỷ Vàng`)<br>• **`1.000 Hồng Ngọc`**<br>• **`+100.000.000` SM & TN** |
-| **NV 31** | **Công Lý Bóng Tối (Black Goku & Zamasu)** | 1. Nói chuyện với **Calích**<br>2. Đánh bại **4.000 Quái Tương Lai** *(Đi cùng Bang hội trong khu nhận X2–X3 tiến độ)*<br>3. Hạ gục **2 Boss Black Goku**<br>4. Hạ gục **2 Boss Super Black Goku**<br>5. Hạ gục **2 Boss Zamasu**<br>6. Báo cáo với **Calích** | • **`30 Thỏi Vàng`** (`15 Tỷ Vàng`)<br>• **`1.500 Hồng Ngọc`**<br>• **`+150.000.000` SM & TN** |
-| **NV 32** | **Bộ Ba Nguy Hiểm Vũ Trụ 9** | 1. Nói chuyện với **Thần Vũ Trụ**<br>2. Hợp sức hạ gục **2 Sói Basil**<br>3. Hợp sức hạ gục **2 Sói Lavender**<br>4. Hợp sức hạ gục **2 Sói Bergamo**<br>5. Báo cáo với **Thần Vũ Trụ** | • **`40 Thỏi Vàng`** (`20 Tỷ Vàng`)<br>• **`2.000 Hồng Ngọc`**<br>• **`+200.000.000` SM & TN** |
-| **NV 33** | **Ký Sinh Trùng Tuyệt Diệt (Baby Vegeta)** | 1. Nói chuyện với **Thần Vũ Trụ**<br>2. Hợp sức cùng Bang hội tiêu diệt **3 Boss Baby**<br>3. Báo cáo với **Thần Vũ Trụ** | • **`50 Thỏi Vàng`** (`25 Tỷ Vàng`)<br>• **`2.500 Hồng Ngọc`**<br>• **`+250.000.000` SM & TN** |
-| **NV 34** | **Ác Quỷ Saiyan Cổ Đại (Cumber)** | 1. Nói chuyện với **Thiên Sứ Whis** *(Hành Tinh Bill)*<br>2. Đánh bại **6.000 Quái Hành Tinh Bill / Ngục Tù** *(Đi cùng Bang hội nhận X2–X3 tiến độ)*<br>3. Hợp sức hạ gục **3 Boss Cumber**<br>4. Hợp sức hạ gục **3 Boss Super Cumber**<br>5. Báo cáo với **Thiên Sứ Whis** | • **`60 Thỏi Vàng`** (`30 Tỷ Vàng`)<br>• **`3.000 Hồng Ngọc`**<br>• **`+300.000.000` SM & TN** |
-| **TỔNG** | **Hoàn Tất Toàn Bộ Chuỗi NV 29 $\rightarrow$ 34** | **Mở khóa danh hiệu Chiến Binh Huyền Thoại Đa Vũ Trụ (Mốc NV 35)** | **🔥 `210 Thỏi Vàng` (`105 Tỷ Vàng`) + `10.500 Hồng Ngọc` + `1.05 Tỷ SM & TN`** |
+| **NV 29** | **Cuộc Chiến Ma Bư Cuối Cùng** | 1. Nói chuyện với **Osin**<br>2. Đánh bại **1.200 Xên con cấp 8** *(Lập đội Bang hội trong khu nhận X2–X3 tiến độ)*<br>3. Hạ gục **5 Boss Kid Bư (hoặc Mabư 14h)**<br>4. Hạ gục **3 Boss Mabư Mập (hoặc Super Bư)**<br>5. Báo cáo với **Osin** | • **`10 Thỏi Vàng`** (`5 Tỷ Vàng`)<br>• **`500 Hồng Ngọc`**<br>• **`+50.000.000` SM & TN** |
+| **NV 30** | **Sự Trả Thù Của Đế Chế Băng Giá** | 1. Đến **Cánh đồng tuyết (Cold)**<br>2. Đánh bại **1.500 Abo & Kado tại Cold** *(Đi cùng Bang hội nhận X2–X3 tiến độ)*<br>3. Hạ gục **3 Cooler cấp 1**<br>4. Hạ gục **3 Cooler cấp 2**<br>5. Hạ gục **3 Fide Hoàng Kim**<br>6. Báo cáo với **Quy Lão / Guru / Vua Vegeta** | • **`20 Thỏi Vàng`** (`10 Tỷ Vàng`)<br>• **`1.000 Hồng Ngọc`**<br>• **`+100.000.000` SM & TN** |
+| **NV 31** | **Kế Hoạch Không Người Trần** | 1. Gặp **Bunma Tương Lai**<br>2. Đánh bại **2.000 Tai Tím & Đá Xanh** *(Đi cùng Bang hội nhận X2–X3 tiến độ)*<br>3. Hạ gục **4 Boss Black Goku**<br>4. Hạ gục **4 Boss Super Black Goku**<br>5. Hạ gục **4 Boss Thần Zamasu**<br>6. Báo cáo với **Bunma Tương Lai** | • **`30 Thỏi Vàng`** (`15 Tỷ Vàng`)<br>• **`1.500 Hồng Ngọc`**<br>• **`+150.000.000` SM & TN** |
+| **NV 32** | **Giải Đấu Sức Mạnh - Bộ 3 Sói** | 1. Gặp **Ôsin** tại Đại hội võ thuật<br>2. Hợp sức hạ gục **4 Sói Basil**<br>3. Hợp sức hạ gục **4 Sói Lavender**<br>4. Hợp sức hạ gục **4 Sói Bergamo**<br>5. Báo cáo với **Ôsin** | • **`40 Thỏi Vàng`** (`20 Tỷ Vàng`)<br>• **`2.000 Hồng Ngọc`**<br>• **`+200.000.000` SM & TN** |
+| **NV 33** | **Ký Sinh Trùng Báo Thù - Baby Vegeta** | 1. Diệt **2.500 quái Thánh Địa** *(X2–X3 cùng bang)*<br>2. Hạ gục **4 Baby Vegeta**<br>3. Hạ gục **4 Super Baby 2**<br>4. Hạ gục **4 Baby Khỉ Đột Vàng**<br>5. Báo cáo với **Quy Lão / Guru / Vua Vegeta** | • **`50 Thỏi Vàng`** (`25 Tỷ Vàng`)<br>• **`2.500 Hồng Ngọc`**<br>• **`+250.000.000` SM & TN** |
+| **NV 34** | **Saiyan Tà Ác Cổ Đại - Cumber** | 1. Tiến vào **Hành Tinh Ngục Tù (Map 155)**<br>2. Đánh bại **3.000 quái Ngục Tù** *(Đi cùng Bang hội nhận X2–X3 tiến độ)*<br>3. Hợp sức hạ gục **5 Boss Cumber**<br>4. Hợp sức hạ gục **5 Boss Super Cumber**<br>5. Báo cáo với **Bunma Tương Lai** | • **`60 Thỏi Vàng`** (`30 Tỷ Vàng`)<br>• **`3.000 Hồng Ngọc`**<br>• **`+300.000.000` SM & TN** |
+| **NV 35** | **Hành Tinh Vampa - Broly Cổ Đại** | 1. Đến **Hành Tinh Bill (Map 154)** gặp **Whis** chọn **Đến Hành Tinh Vampa (Map 160)**<br>2. Cùng đồng bang diệt **2.500 Dị Thú Vampa** *(Bọ Cạp, Thằn Lằn, Khủng Long, Mãng Xà — X2–X3 cùng bang)*<br>3. Phối hợp đánh bại **5 Boss Broly Cổ Đại** tại Vampa<br>4. Phối hợp đánh bại **2 Boss SSJ Broly Huyền Thoại** tại Vampa *(Rơi 100% Trứng Broly)*<br>5. Báo cáo chiến công với **Quy Lão / Guru / Vua Vegeta** | • **`80 Thỏi Vàng`** (`40 Tỷ Vàng`)<br>• **`5.000 Hồng Ngọc`**<br>• **`+500.000.000` SM & TN** |
+| **TỔNG** | **Hoàn Tất Toàn Bộ Chuỗi NV 29 $\rightarrow$ 35** | **Mở khóa danh hiệu Chiến Binh Huyền Thoại Đa Vũ Trụ (Mốc NV 36)** | **🔥 `290 Thỏi Vàng` (`145 Tỷ Vàng`) + `15.500 Hồng Ngọc` + `1.55 Tỷ SM & TN`** |
 
 ---
 

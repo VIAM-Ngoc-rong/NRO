@@ -75,6 +75,7 @@ javac -proc:none -encoding UTF-8 -d build/classes -cp "build/classes;lib/*" `
     src/nro/models/npc_list/OngMoori.java `
     src/nro/models/npc_list/OngParagus.java `
     src/nro/models/npc_list/Osin.java `
+    src/nro/models/npc_list/Whis.java `
     src/nro/models/utils/SkillUtil.java `
     src/nro/models/shop/ShopService.java `
     src/nro/models/matches/dai_hoi_vo_thuat/ClanMartialArtsService.java `

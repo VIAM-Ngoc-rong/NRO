@@ -41,8 +41,8 @@
   <!-- Feature Pills -->
   <g transform="translate(275, 215)">
     <rect x="0" y="0" width="165" height="72" rx="12" fill="#1e293b" stroke="#38bdf8" stroke-width="1.5"/>
-    <text x="82" y="30" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="18" font-weight="800" fill="#38bdf8">200 → 500 Ô</text>
-    <text x="82" y="54" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="13" fill="#cbd5e1">Hành Trang 10 Tab</text>
+    <text x="82" y="30" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="18" font-weight="800" fill="#38bdf8">1.000 Ô TÚI</text>
+    <text x="82" y="54" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="13" fill="#cbd5e1">Lưu 5 Set Đồ Nhanh</text>
 
     <rect x="180" y="0" width="175" height="72" rx="12" fill="#1e293b" stroke="#f59e0b" stroke-width="1.5"/>
     <text x="267" y="30" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="18" font-weight="800" fill="#fbbf24">RƯƠNG SKH</text>

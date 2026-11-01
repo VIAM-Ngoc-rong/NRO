@@ -684,7 +684,7 @@ public class Mob {
         } else if (MapService.gI().isMapNappa(mapid)) {
             baseDropGoldRate = 50;
             baseVang = Util.nextInt(12000, 20000);
-        } else if (MapService.gI().isMapCold(mapid)) {
+        } else if (MapService.gI().isMapCold(mapid) || MapService.gI().isMapHanhTinhThucVat(mapid)) {
             baseDropGoldRate = 55;
             baseVang = Util.nextInt(32000, 45000);
         } else if (MapService.gI().isMapTuongLai(mapid) || MapService.gI().isMapPhoBan(mapid)) {
@@ -983,7 +983,7 @@ public class Mob {
             candidateItems.add(0, it);
         }
 
-        boolean isMapBillOrNgucTu = MapService.gI().isMapNgucTu(mapid) || mapid == 154;
+        boolean isMapBillOrNgucTu = MapService.gI().isMapNgucTu(mapid) || mapid == 154 || MapService.gI().isMapHanhTinhThucVat(mapid);
         boolean hasSetDes = (plOwner != null && plOwner.setClothes != null && plOwner.setClothes.checkSetDes())
                 || (player.setClothes != null && player.setClothes.checkSetDes());
         boolean hasCoBonLa = plOwner != null && plOwner.itemTime != null && plOwner.itemTime.isUseCoBonLa;

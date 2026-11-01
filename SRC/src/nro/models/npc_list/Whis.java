@@ -37,7 +37,11 @@ public class Whis extends Npc {
             case 154 ->
                 createOtherMenu(player, ConstNpc.BASE_MENU,
                         "Thử đánh với ta xem nào.\nNgươi còn 1 lượt nữa cơ mà.",
-                        "Nói chuyện", "Học\ntuyệt kỹ", "Top 100", "[LV:" + (player.traning.getTop() + 1) + "]");
+                        "Nói chuyện", "Học\ntuyệt kỹ", "Top 100", "[LV:" + (player.traning.getTop() + 1) + "]", "Đến Hành Tinh\nVampa");
+            case 160 ->
+                createOtherMenu(player, ConstNpc.BASE_MENU,
+                        "Đây là Hành Tinh Vampa hoang dã, lãnh địa của Dị Thú Cổ Đại và Huyền Thoại Broly!\nNgươi muốn quay về Hành Tinh Bill chứ?",
+                        "Quay về\nHành Tinh Bill", "Ở lại");
             case 164 ->
                 createOtherMenu(player, ConstNpc.BASE_MENU,
                         "Ta có thể giúp gì cho ngươi?", "Quay về", "Từ chối");
@@ -70,6 +74,12 @@ public class Whis extends Npc {
     }
 
     private void handleBaseMenu(Player player, int select) {
+        if (this.mapId == 160) {
+            if (select == 0) {
+                ChangeMapService.gI().changeMapInYard(player, 154, -1, 725);
+            }
+            return;
+        }
         Item biKiepTuyetKy = InventoryService.gI().findItem(player.inventory.itemsBag, 1229);
 
         switch (select) {
@@ -82,12 +92,17 @@ public class Whis extends Npc {
                     ChangeMapService.gI().changeMapInYard(player, 154, -1, 758);
                 }
             }
-            case 2 ->
-                Service.gI().showListTop(player, Manager.Topwhis);
             case 1 ->
                 showSkillLearningMenu(player, biKiepTuyetKy);
+            case 2 ->
+                Service.gI().showListTop(player, Manager.Topwhis);
             case 3 ->
                 TrainingService.gI().callBoss(player, BossID.WHIS, false);
+            case 4 -> {
+                if (this.mapId == 154) {
+                    ChangeMapService.gI().changeMap(player, 160, -1, 1280, 1584);
+                }
+            }
         }
     }
 

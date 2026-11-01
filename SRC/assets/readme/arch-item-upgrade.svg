@@ -34,7 +34,7 @@
 
     <rect x="585" y="44" width="245" height="74" rx="10" fill="#1e293b" stroke="#f59e0b"/>
     <text x="707" y="68" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="14" font-weight="800" fill="#fbbf24">3. Đồ Thần Linh &amp; Hủy Diệt</text>
-    <text x="707" y="90" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="12" fill="#cbd5e1">Săn Boss Tương Lai / Cold (15% rớt)</text>
+    <text x="707" y="90" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="12" fill="#cbd5e1">Boss &gt;= 400Tr HP (7% rớt kèm 3–7 Sao)</text>
     <text x="707" y="108" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="11.5" fill="#fde047">Nền tảng đổi Đồ Hủy Diệt (+15% chỉ số)</text>
 
     <line x1="835" y1="81" x2="865" y2="81" stroke="#fbbf24" stroke-width="2.5" marker-end="url(#arrGold2)"/>

@@ -22,12 +22,12 @@ public class Broly18h extends Boss {
 
     public Broly18h() throws Exception {
         super(BossID.BROLY_18H - Util.nextInt(1, 100000), false, true, new BossData(
-                "Broly",
+                "Broly Cổ Đại",
                 ConstPlayer.XAYDA,
                 new short[]{1080, 1081, 1082, -1, -1, -1},
                 1_000,
                 new int[]{5_000},
-                new int[]{5, 13, 20, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38},
+                new int[]{160, 161, 162, 163},
                 new int[][]{
                     {Skill.TAI_TAO_NANG_LUONG, 1, 1000}, {Skill.TAI_TAO_NANG_LUONG, 2, 1000}, {Skill.TAI_TAO_NANG_LUONG, 3, 1000}, {Skill.TAI_TAO_NANG_LUONG, 4, 1000}, {Skill.TAI_TAO_NANG_LUONG, 5, 1000}, {Skill.TAI_TAO_NANG_LUONG, 6, 1000}, {Skill.TAI_TAO_NANG_LUONG, 7, 100},
                     {Skill.DRAGON, 1, 1000}, {Skill.DRAGON, 2, 1000}, {Skill.DRAGON, 3, 1000}, {Skill.DRAGON, 4, 1000}, {Skill.DRAGON, 5, 1000}, {Skill.DRAGON, 6, 1000}, {Skill.DRAGON, 7, 1000},
@@ -44,7 +44,7 @@ public class Broly18h extends Boss {
                     "|-1|Vào hết đây!!!"
                 },
                 new String[]{"|-1|Grrr! Cơn giận của ta đã đạt đến cực hạn!"},
-                300
+                120
         ));
     }
 
@@ -76,7 +76,7 @@ public class Broly18h extends Boss {
     public void initBase() {
         super.initBase();
         this.killedByPlayer = false;
-        this.name = "Broly " + Util.nextInt(10, 100);
+        this.name = "Broly Cổ Đại " + Util.nextInt(10, 100);
         this.nPoint.hpMax = Util.nextInt(5_000, 1_000_000);
         this.nPoint.hpg = this.nPoint.hpMax;
         this.nPoint.hp = this.nPoint.hpMax;
@@ -188,8 +188,8 @@ public class Broly18h extends Boss {
         int y = this.location.y;
         boolean canSpawnSuper = false;
         if (this.killedByPlayer && zone != null && zone.zoneId >= 1) {
-            boolean enoughHp = this.nPoint != null && this.nPoint.hpMax > 10_000_000;
-            boolean lowChance = Util.isTrue(5, 100);
+            boolean enoughHp = this.nPoint != null && this.nPoint.hpMax >= 1_000_000;
+            boolean lowChance = Util.isTrue(20, 100);
             canSpawnSuper = enoughHp || lowChance;
         }
         this.killedByPlayer = false;
@@ -202,7 +202,7 @@ public class Broly18h extends Boss {
             }
         }
         this.lastZone = null;
-        this.secondsRest = 300;
+        this.secondsRest = 120;
         this.lastTimeRest = System.currentTimeMillis();
         this.changeStatus(BossStatus.REST);
     }
