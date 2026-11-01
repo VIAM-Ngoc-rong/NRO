@@ -1866,6 +1866,16 @@ public class Player implements Runnable {
                         PetService.Pet2(this, 1680, 1681, 1682);
                         Service.gI().point(this);
                     }
+                    case 1900 -> {
+                        PetService.Pet2(this, 1968, 1969, 1970);
+                        Service.gI().point(this);
+                    }
+                    default -> {
+                        if (it.template.head != -1 && it.template.body != -1 && it.template.leg != -1) {
+                            PetService.Pet2(this, it.template.head, it.template.body, it.template.leg);
+                            Service.gI().point(this);
+                        }
+                    }
                 }
             }
         }

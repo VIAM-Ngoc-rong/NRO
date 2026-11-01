@@ -299,10 +299,11 @@ public class InventoryService {
         }
         return switch (item.template.type) {
             case 0, 1, 2, 3, 4, 5 -> item.template.type;
+            case 35 -> 5;
             case 32 -> 6;
             case 23, 24 -> targetPl.isPet ? -1 : 9;
             case 11 -> 8;
-            case 27 -> 7;
+            case 21, 27, 72 -> 7;
             case 25 -> targetPl.isPet ? 7 : 10;
             default -> -1;
         };
@@ -316,7 +317,8 @@ public class InventoryService {
         if (slot < 0) {
             return false;
         }
-        if (item.template.gender < 3 && item.template.gender != targetPl.gender) {
+        if (item.template.type >= 0 && item.template.type <= 3
+                && item.template.gender < 3 && item.template.gender != targetPl.gender) {
             if (skipReasons != null) {
                 skipReasons.add(item.template.name + " (khác hành tinh)");
             }
@@ -938,7 +940,7 @@ public class InventoryService {
 
         // Kiểm tra các loại item hợp lệ
         switch (item.template.type) {
-            case 0, 1, 2, 3, 4, 5, 32, 23, 24, 11, 27, 25 -> {
+            case 0, 1, 2, 3, 4, 5, 32, 35, 23, 24, 11, 21, 27, 25, 72 -> {
             }
             default -> {
                 Service.gI().sendThongBaoOK(player.isPet ? ((Pet) player).master : player, "Trang bị không phù hợp!1");
@@ -946,8 +948,9 @@ public class InventoryService {
             }
         }
 
-        // Kiểm tra giới tính của vật phẩm
-        if (item.template.gender < 3 && item.template.gender != player.gender) {
+        // Kiểm tra giới tính của vật phẩm (chỉ áp dụng cho Áo, Quần, Găng, Giày type 0..3; Cải trang/Nón/Sách cho phép mọi hành tinh)
+        if (item.template.type >= 0 && item.template.type <= 3
+                && item.template.gender < 3 && item.template.gender != player.gender) {
             Service.gI().sendThongBaoOK(player.isPet ? ((Pet) player).master : player, "Trang bị không phù hợp!");
             return sItem;
         }
@@ -985,6 +988,9 @@ public class InventoryService {
             case 5:
                 index = item.template.type;
                 break;
+            case 35:
+                index = 5;
+                break;
             case 32:
                 index = 6;
                 break;
@@ -995,7 +1001,9 @@ public class InventoryService {
             case 11:
                 index = 8;
                 break;
+            case 21:
             case 27:
+            case 72:
                 index = 7;
                 break;
             case 25:
@@ -1030,13 +1038,22 @@ public class InventoryService {
     }
 
     public void itemBagToBody(Player player, int index) {
-        if (index < 0) {
+        if (index < 0 || index >= player.inventory.itemsBag.size()) {
             Service.gI().sendThongBao(player, "Không thể thực hiện");
             return;
         }
         Item item = player.inventory.itemsBag.get(index);
         if (item.isNotNullItem()) {
+            boolean isPetSlot = (item.template.type == 27 || item.template.type == 21 || item.template.type == 72);
+            if (isPetSlot && !player.isPet && player.newPet != null) {
+                ChangeMapService.gI().exitMap(player.newPet);
+                player.newPet.dispose();
+                player.newPet = null;
+            }
             player.inventory.itemsBag.set(index, putItemBody(player, item));
+            if (isPetSlot && !player.isPet) {
+                player.sendNewPet();
+            }
             sendItemBags(player);
             sendItemBody(player);
             Service.gI().point(player);
@@ -1217,16 +1234,18 @@ public class InventoryService {
         //**********************************************************************
     }
 
-    public static void sanitizeStarOptions(Item item) {
+    public static void ensureDefaultItemOptions(Item item) {
         if (item == null || !item.isNotNullItem() || item.template == null) {
             return;
         }
         if (item.itemOptions == null) {
             item.itemOptions = new ArrayList<>();
         }
-        if (item.template.id >= 441 && item.template.id <= 447 && hasOnlyPlaceholderOptions(item.itemOptions)) {
+        int id = item.template.id;
+        int type = item.template.type;
+        if (id >= 441 && id <= 447 && hasOnlyPlaceholderOptions(item.itemOptions)) {
             item.itemOptions.clear();
-            switch (item.template.id) {
+            switch (id) {
                 case 441 -> item.itemOptions.add(new Item.ItemOption(95, 5));
                 case 442 -> item.itemOptions.add(new Item.ItemOption(96, 5));
                 case 443 -> item.itemOptions.add(new Item.ItemOption(97, 5));
@@ -1237,6 +1256,71 @@ public class InventoryService {
             }
             return;
         }
+        if (hasOnlyPlaceholderOptions(item.itemOptions)) {
+            switch (type) {
+                case 0, 1, 2, 3, 4 -> {
+                    item.itemOptions.clear();
+                    try {
+                        RewardService.gI().initChiSoItem(item);
+                    } catch (Exception ignored) {
+                    }
+                    if (hasOnlyPlaceholderOptions(item.itemOptions)) {
+                        item.itemOptions.clear();
+                        int lv = Math.max(1, item.template.level);
+                        switch (type) {
+                            case 0 -> item.itemOptions.add(new Item.ItemOption(47, lv * 50));
+                            case 1 -> item.itemOptions.add(new Item.ItemOption(6, lv * 500));
+                            case 2 -> item.itemOptions.add(new Item.ItemOption(0, lv * 200));
+                            case 3 -> item.itemOptions.add(new Item.ItemOption(7, lv * 500));
+                            case 4 -> item.itemOptions.add(new Item.ItemOption(14, Math.min(15, lv)));
+                        }
+                    }
+                }
+                case 5, 35 -> {
+                    item.itemOptions.clear();
+                    item.itemOptions.add(new Item.ItemOption(50, 20));
+                    item.itemOptions.add(new Item.ItemOption(77, 20));
+                    item.itemOptions.add(new Item.ItemOption(103, 20));
+                }
+                case 11, 21, 23, 24, 72 -> {
+                    item.itemOptions.clear();
+                    item.itemOptions.add(new Item.ItemOption(50, 10));
+                    item.itemOptions.add(new Item.ItemOption(77, 10));
+                    item.itemOptions.add(new Item.ItemOption(103, 10));
+                }
+                case 32 -> {
+                    item.itemOptions.clear();
+                    item.itemOptions.add(new Item.ItemOption(9, 100));
+                }
+                case 25 -> {
+                    if (id != 361) {
+                        item.itemOptions.clear();
+                        item.itemOptions.add(new Item.ItemOption(214, 15));
+                        item.itemOptions.add(new Item.ItemOption(217, 0));
+                        item.itemOptions.add(new Item.ItemOption(219, 5));
+                        item.itemOptions.add(new Item.ItemOption(212, 1000));
+                    }
+                }
+                case 27 -> {
+                    if (item.template.head != -1 && item.template.body != -1 && item.template.leg != -1) {
+                        item.itemOptions.clear();
+                        item.itemOptions.add(new Item.ItemOption(50, 10));
+                        item.itemOptions.add(new Item.ItemOption(77, 10));
+                        item.itemOptions.add(new Item.ItemOption(103, 10));
+                    }
+                }
+            }
+        }
+        if (item.itemOptions.isEmpty()) {
+            item.itemOptions.add(new Item.ItemOption(73, 0));
+        }
+    }
+
+    public static void sanitizeStarOptions(Item item) {
+        if (item == null || !item.isNotNullItem() || item.template == null) {
+            return;
+        }
+        ensureDefaultItemOptions(item);
         if (item.itemOptions.isEmpty()) {
             return;
         }

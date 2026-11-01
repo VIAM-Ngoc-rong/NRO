@@ -265,58 +265,43 @@ public class SkillUtil {
         } else if (id >= 509 && id <= 515) {
             return Skill.HUYT_SAO;
         } else {
-            return -1;
+            return switch (id) {
+                case 1319 -> Skill.DRAGON;
+                case 1320 -> Skill.KAMEJOKO;
+                case 1321 -> Skill.THAI_DUONG_HA_SAN;
+                case 1322 -> Skill.KAIOKEN;
+                case 1323 -> Skill.QUA_CAU_KENH_KHI;
+                case 1324 -> Skill.DICH_CHUYEN_TUC_THOI;
+                case 1325 -> Skill.THOI_MIEN;
+                case 1326 -> Skill.DEMON;
+                case 1327 -> Skill.MASENKO;
+                case 1328 -> Skill.TRI_THUONG;
+                case 1329 -> Skill.MAKANKOSAPPO;
+                case 1330 -> Skill.DE_TRUNG;
+                case 1331 -> Skill.SOCOLA;
+                case 1332 -> Skill.LIEN_HOAN;
+                case 1333 -> Skill.GALICK;
+                case 1334 -> Skill.ANTOMIC;
+                case 1335 -> Skill.TAI_TAO_NANG_LUONG;
+                case 1336 -> Skill.BIEN_KHI;
+                case 1337 -> Skill.TU_SAT;
+                case 1338 -> Skill.TROI;
+                case 1339 -> Skill.HUYT_SAO;
+                case 1340 -> Skill.KHIEN_NANG_LUONG;
+                case 1341 -> Skill.SUPER_KAME;
+                case 1342 -> Skill.MA_PHONG_BA;
+                case 1343 -> Skill.LIEN_HOAN_CHUONG;
+                default -> -1;
+            };
         }
     }
 
     public static Skill getSkillByItemID(Player pl, int tempId) {
-        if (tempId >= 66 && tempId <= 72) {
-            return getSkillbyId(pl, Skill.DRAGON);
-        } else if (tempId >= 79 && tempId <= 84 || tempId == 86) {
-            return getSkillbyId(pl, Skill.DEMON);
-        } else if (tempId >= 87 && tempId <= 93) {
-            return getSkillbyId(pl, Skill.GALICK);
-        } else if (tempId >= 94 && tempId <= 100) {
-            return getSkillbyId(pl, Skill.KAMEJOKO);
-        } else if (tempId >= 101 && tempId <= 107) {
-            return getSkillbyId(pl, Skill.MASENKO);
-        } else if (tempId >= 108 && tempId <= 114) {
-            return getSkillbyId(pl, Skill.ANTOMIC);
-        } else if (tempId >= 115 && tempId <= 121) {
-            return getSkillbyId(pl, Skill.THAI_DUONG_HA_SAN);
-        } else if (tempId >= 122 && tempId <= 128) {
-            return getSkillbyId(pl, Skill.TRI_THUONG);
-        } else if (tempId >= 129 && tempId <= 135) {
-            return getSkillbyId(pl, Skill.TAI_TAO_NANG_LUONG);
-        } else if (tempId >= 300 && tempId <= 306) {
-            return getSkillbyId(pl, Skill.KAIOKEN);
-        } else if (tempId >= 307 && tempId <= 313) {
-            return getSkillbyId(pl, Skill.QUA_CAU_KENH_KHI);
-        } else if (tempId >= 314 && tempId <= 320) {
-            return getSkillbyId(pl, Skill.BIEN_KHI);
-        } else if (tempId >= 321 && tempId <= 327) {
-            return getSkillbyId(pl, Skill.TU_SAT);
-        } else if (tempId >= 328 && tempId <= 334) {
-            return getSkillbyId(pl, Skill.MAKANKOSAPPO);
-        } else if (tempId >= 335 && tempId <= 341) {
-            return getSkillbyId(pl, Skill.DE_TRUNG);
-        } else if (tempId >= 434 && tempId <= 440) {
-            return getSkillbyId(pl, Skill.KHIEN_NANG_LUONG);
-        } else if (tempId >= 474 && tempId <= 480) {
-            return getSkillbyId(pl, Skill.SOCOLA);
-        } else if (tempId >= 481 && tempId <= 487) {
-            return getSkillbyId(pl, Skill.LIEN_HOAN);
-        } else if (tempId >= 488 && tempId <= 494) {
-            return getSkillbyId(pl, Skill.DICH_CHUYEN_TUC_THOI);
-        } else if (tempId >= 495 && tempId <= 501) {
-            return getSkillbyId(pl, Skill.THOI_MIEN);
-        } else if (tempId >= 502 && tempId <= 508) {
-            return getSkillbyId(pl, Skill.TROI);
-        } else if (tempId >= 509 && tempId <= 515) {
-            return getSkillbyId(pl, Skill.HUYT_SAO);
-        } else {
-            return null;
+        byte skillTempId = getTempSkillSkillByItemID(tempId);
+        if (skillTempId != -1) {
+            return getSkillbyId(pl, skillTempId);
         }
+        return null;
     }
 
     public static void setSkill(Player pl, Skill skill) {

@@ -66,8 +66,8 @@ public class MabuEgg {
 
     public void openEgg(int gender) {
         if (this.typeEgg == 2) {
-            if (this.player.pet == null || this.player.pet.typePet != 5) {
-                Service.gI().sendThongBao(player, "Bắt buộc phải có Đệ tử Broly trước mới mở được Trứng Hit!");
+            if (this.player.pet == null) {
+                Service.gI().sendThongBao(player, "Bạn cần có Đệ tử trước mới mở được Trứng Hit!");
                 return;
             }
             try {
@@ -81,8 +81,8 @@ public class MabuEgg {
             return;
         }
         if (this.typeEgg == 1) {
-            if (this.player.pet == null || this.player.pet.typePet != 1) {
-                Service.gI().sendThongBao(player, "Bắt buộc phải có Đệ tử Mabư trước mới mở được Trứng Broly!");
+            if (this.player.pet == null) {
+                Service.gI().sendThongBao(player, "Bạn cần có Đệ tử trước mới mở được Trứng Broly!");
                 return;
             }
             try {
@@ -109,7 +109,7 @@ public class MabuEgg {
             } catch (Exception e) {
             }
         } else {
-            Service.gI().sendThongBao(player, "Bắt buộc phải có Đệ tử trước mới mở được Trứng Mabư!");
+            Service.gI().sendThongBao(player, "Bạn cần có Đệ tử trước mới mở được Trứng Mabư!");
         }
     }
 

@@ -1251,6 +1251,7 @@ public class AdminWebServer {
                                         item.itemOptions.addAll(shopOps);
                                     }
                                 }
+                                InventoryService.ensureDefaultItemOptions(item);
                                 InventoryService.gI().addItemBag(pl, item);
                                 InventoryService.gI().sendItemBags(pl);
                                 given.append(" +x").append(quantity).append(" ").append(item.template.name);
