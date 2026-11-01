@@ -821,7 +821,7 @@ public class SkillService {
                     if (player.nPoint.tlBom > 0) {
                         dame += dame * player.nPoint.tlBom / 100L;
                     }
-                    boolean isHighHpBossBom = player.isBoss && player.nPoint.getHpMaxLong() > 1_200_000_000L;
+                    boolean isHighHpBossBom = player.isBoss && player.nPoint.getHpMaxLong() >= 2_000_000_000L;
                     if (isHighHpBossBom) {
                         rangeBom = Math.max(rangeBom, 750);
                         dame = Math.max(dame, 2_000_000_000L);
@@ -1001,7 +1001,7 @@ public class SkillService {
         Skill activeSkill = (plAtt.newSkill != null && plAtt.newSkill.isStartSkillSpecial && plAtt.newSkill.skillSelect != null)
                 ? plAtt.newSkill.skillSelect
                 : (plAtt.playerSkill != null ? plAtt.playerSkill.skillSelect : null);
-        boolean isHighHpBoss = plAtt.isBoss && plAtt.nPoint != null && plAtt.nPoint.getHpMaxLong() > 1_200_000_000L;
+        boolean isHighHpBoss = plAtt.isBoss && plAtt.nPoint != null && plAtt.nPoint.getHpMaxLong() >= 2_000_000_000L;
         if (isHighHpBoss && activeSkill != null && activeSkill.template != null && !plInjure.isBoss) {
             int skId = activeSkill.template.id;
             if (skId == Skill.QUA_CAU_KENH_KHI || skId == Skill.MAKANKOSAPPO || skId == Skill.TU_SAT) {

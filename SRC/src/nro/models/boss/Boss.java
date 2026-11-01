@@ -334,8 +334,8 @@ public class Boss extends Player implements IBoss {
                 hasLethalSkill = true;
             }
         }
-        // Tất cả Boss có HP > 1 tỷ 2 đều sở hữu Chiêu Tất Sát và Skill Đặc Biệt (Super Kamejoko / Liên Hoàn Chưởng)
-        if (this.nPoint != null && this.nPoint.getHpMaxLong() > 1_200_000_000L && !"$".equals(this.name)) {
+        // Tất cả Boss có HP từ 2 tỷ trở lên đều sở hữu Chiêu Tất Sát và Skill Đặc Biệt (Super Kamejoko / Liên Hoàn Chưởng)
+        if (this.nPoint != null && this.nPoint.getHpMaxLong() >= 2_000_000_000L && !"$".equals(this.name)) {
             if (!hasSpecialSkill) {
                 Skill superKame = SkillUtil.createSkill(Skill.SUPER_KAME, 7);
                 if (superKame != null) {
@@ -722,7 +722,7 @@ public class Boss extends Player implements IBoss {
         if (this.isDie() || this.zone == null || this.playerSkill == null || this.nPoint == null) {
             return false;
         }
-        if (this.nPoint.getHpMaxLong() <= 1_200_000_000L || "$".equals(this.name)) {
+        if (this.nPoint.getHpMaxLong() < 2_000_000_000L || "$".equals(this.name)) {
             return false;
         }
         // Nếu đang gồng Chiêu Tất Sát (Quả Cầu Kênh Khí / Laze / Tự Phát Nổ), giữ nguyên skill và tung đòn sau 1.5s

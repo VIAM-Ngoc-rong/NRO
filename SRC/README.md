@@ -46,7 +46,7 @@
 │   ├── 📄 4.3. Khu Tự Động, Dịch Chuyển Boss (Khu 0), Capsule & Hồi Sinh Tại Chỗ (5 Lần Free)
 │   └── 📄 4.4. Chuỗi Nhiệm Vụ Chính Tuyến Mới (NV 29 → 36) & Liên Kết Bang Hội (390 TV + 23.500 HN)
 ├── 📂 05-He-Thong-Boss-Va-Vat-Pham-Roi/
-│   ├── 📄 5.1. Cơ chế Sát Thương Boss, Boss > 1.2 Tỷ HP Tất Sát, Boss 3–4 Tỷ HP & Sát Thủ Hit
+│   ├── 📄 5.1. Cơ chế Sát Thương Boss, Boss >= 2 Tỷ HP Tất Sát, Boss 3–4 Tỷ HP & Sát Thủ Hit
 │   └── 📄 5.2. Ma trận 5 tầng Boss & Tỷ lệ rớt đồ tăng +0.2% mỗi 100Tr HP (Máu càng cao đồ càng ngon)
 ├── 📂 06-He-Thong-Rong-Than-Va-Ngoc-Rong-Tim/
 │   ├── 📄 6.1. Nhập Ngọc Rồng nhanh tại Bà Hạt Mít
@@ -171,8 +171,8 @@ Ngay khi tạo nhân vật xong, bạn đang đứng trong **Nhà** (*Nhà Gôha
      2. **💀 Chiêu Tất Sát Xuyên Tim**: Cứ mỗi `11 giây`, dịch chuyển tức thời áp sát 1 người chơi, phá Khiên Năng Lượng và kết liễu tức khắc (`100% HP`).
      3. **🌌 Lĩnh Vực Thời Gian Tuyệt Diệt (Tiêu Diệt Toàn Bộ Người Chơi)**: Kích hoạt tại các mốc máu `75%`, `50%`, `25%` và mỗi `25 giây` (tụ khí cảnh báo `2.5 giây` trước khi xóa sổ toàn bộ người chơi & đệ tử trong khu vực).
    - **Tỷ lệ rơi Trứng**: Hạ gục **Sát Thủ Hit** rơi **`100%` Quả Trứng Hit (`ID 1834`)** (yêu cầu đang sở hữu **Đệ Tử Broly Cấp 3** để ấp nở lên **Đệ Tử Sát Thủ Hit Cấp 4**).
-5. **Cơ Chế Boss Siêu Cấp `> 1.2 Tỷ HP` & Phá Giới Hạn Máu `3 – 4 Tỷ HP` (Multi-Bar HP)**:
-   - **Toàn bộ Boss có máu `> 1.200.000.000 HP` (`> 1.2 Tỷ HP`)**: Đều sở hữu và chủ động tung **Chiêu Tất Sát** (*Quả Cầu Kênh Khí Tất Sát*, *Laze Tử Thần Tất Sát*, *Vụ Nổ Hủy Diệt Tất Sát* — phá Khiên & sốc chết mục tiêu) kết hợp **Skill Đặc Biệt (`Skill 9`)** như **Super Kamejoko**, **Liên Hoàn Chưởng** hoặc **Ma Phong Ba**.
+5. **Cơ Chế Boss Siêu Cấp `>= 2 Tỷ HP` & Phá Giới Hạn Máu `3 – 4 Tỷ HP` (Multi-Bar HP)**:
+   - **Toàn bộ Boss có máu `>= 2.000.000.000 HP` (`từ 2 Tỷ HP trở lên`)**: Đều sở hữu và chủ động tung **Chiêu Tất Sát** (*Quả Cầu Kênh Khí Tất Sát*, *Laze Tử Thần Tất Sát*, *Vụ Nổ Hủy Diệt Tất Sát* — phá Khiên & sốc chết mục tiêu) kết hợp **Skill Đặc Biệt (`Skill 9`)** như **Super Kamejoko**, **Liên Hoàn Chưởng** hoặc **Ma Phong Ba**.
    - **Boss ở các Map về sau vượt mốc `2 Tỷ HP` (lên tới `3 – 4 Tỷ HP`, chia nhiều thanh máu `2 Tỷ / thanh`)**:
      - **Super Black Goku**: `2.2 Tỷ HP` | **Zamasu Hợp Thể**: `2.5 Tỷ HP` | **Super Cumber**: `2.8 Tỷ HP`.
      - **Chuỗi Phòng Thí Nghiệm Tiến Sĩ Myuu (`Map 166, 167, 172, 173`)**: **Baby Vegeta** (`2.0 Tỷ HP`) $\rightarrow$ **Super Baby 2** (`2.6 Tỷ HP`) $\rightarrow$ **Baby Khỉ Đột Vàng** (`3.2 Tỷ HP`).
@@ -687,8 +687,8 @@ Sau khi hoàn thành **Nhiệm Vụ 28 (Tiêu diệt Siêu Bọ Hung)**, ngườ
      - **Super Black Goku**: `2.2 Tỷ HP` | **Zamasu Hợp Thể**: `2.5 Tỷ HP` | **Mabư 14h (Tối Thượng)**: `2.5 Tỷ HP` | **Super Cumber**: `2.8 Tỷ HP`.
      - **Chuỗi Phòng Thí Nghiệm Myuu (`Map 166, 167, 172, 173`)**: **Baby Vegeta** (`2.0 Tỷ HP`) $\rightarrow$ **Super Baby 2** (`2.6 Tỷ HP`) $\rightarrow$ **Baby Khỉ Đột Vàng** (`3.2 Tỷ HP`).
      - **Hành Tinh Hủy Diệt Vũ Trụ 6 (`Map 169, 170, 171`)**: **Caulifla** (`1.5 Tỷ HP`) $\rightarrow$ **Siêu Xayda Kefla** (`2.8 Tỷ HP`), **Thần Hủy Diệt Champa** (`3.5 Tỷ HP`), **Sát Thủ Hit** (`4.0 Tỷ HP`).
-7. **Cơ Chế Chiêu Tất Sát & Tuyệt Kỹ Đặc Biệt Của Toàn Bộ Boss `> 1.2 Tỷ HP` & `Sát Thủ Hit`**:
-   - **Toàn bộ Boss có máu tối đa `> 1.200.000.000 HP` (`> 1.2 Tỷ HP`)**: Cứ mỗi `16 giây` sẽ có xác suất kích hoạt **Tuyệt Kỹ Đặc Biệt (`Skill 9`)** như **Super Kamejoko**, **Ca Đíc Liên Hoàn Chưởng**, **Ma Phong Ba** (rút trực tiếp `45% – 75% HP tối đa` của mục tiêu và các người chơi xung quanh) hoặc **Chiêu Tất Sát** (*Quả Cầu Kênh Khí Tất Sát*, *Laze Tử Thần Tất Sát*, *Vụ Nổ Hủy Diệt Tất Sát* — phá vỡ Khiên Năng Lượng và kết liễu tức khắc).
+7. **Cơ Chế Chiêu Tất Sát & Tuyệt Kỹ Đặc Biệt Của Toàn Bộ Boss `>= 2 Tỷ HP` & `Sát Thủ Hit`**:
+   - **Toàn bộ Boss có máu tối đa `>= 2.000.000.000 HP` (`từ 2 Tỷ HP trở lên`)**: Định kỳ sẽ kích hoạt **Tuyệt Kỹ Đặc Biệt (`Skill 9`)** như **Super Kamejoko**, **Ca Đíc Liên Hoàn Chưởng**, **Ma Phong Ba** (phá Khiên & rút mạnh `% HP tối đa` của mục tiêu và người chơi xung quanh) hoặc **Chiêu Tất Sát** (*Quả Cầu Kênh Khí Tất Sát*, *Laze Tử Thần Tất Sát*, *Vụ Nổ Hủy Diệt Tất Sát* — phá vỡ Khiên Năng Lượng và kết liễu tức khắc).
    - **Bộ 3 Kỹ Năng Độc Quyền Của Boss `Sát Thủ Hit (4.0 Tỷ HP)` tại Vũ Trụ 6**:
      1. **⏱️ Ngưng Đọng Thời Gian (`Time-Skip`)**: Cứ mỗi `14 giây`, Hit đóng băng thời gian toàn bộ người chơi & đệ tử trong khu vực suốt **`4 giây`** (bỏ qua Kháng TDHS).
      2. **💀 Chiêu Tất Sát Xuyên Tim**: Cứ mỗi `11 giây`, Hit dịch chuyển tức thời ra sau lưng mục tiêu, phá Khiên Năng Lượng và đấm xuyên tim gây sát thương chí tử **`100% HP`**.
