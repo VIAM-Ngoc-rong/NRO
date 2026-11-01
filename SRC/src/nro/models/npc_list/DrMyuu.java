@@ -44,7 +44,7 @@ public class DrMyuu extends Npc {
                         if (this.mapId == 166) {
                             ChangeMapService.gI().changeMap(player, 14, -1, 600, 408);
                         } else {
-                            ChangeMapService.gI().changeMap(player, 166, -1, 180, 480);
+                            ChangeMapService.gI().changeMap(player, 166, -1, 180, 504);
                         }
                     }
                 }
