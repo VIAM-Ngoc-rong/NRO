@@ -22,7 +22,7 @@
 📦 NGOC-RONG-VIAM-HANDBOOK/
 ├── 🌟 00-Lo-Trinh-Tan-Thu-Cam-Tay-Chi-Viec/          <-- NGƯỜI MỚI CHƠI ĐỌC PHẦN NÀY TRƯỚC!
 │   ├── 📄 0.1. Giải thích giao diện, Phím tắt X / E / B, W A S D & AutoItem trực tiếp
-│   ├── 📄 0.2. 10 Bước làm chủ game từ Phút Đầu Tiên (0 SM → 120 Tỷ SM)
+│   ├── 📄 0.2. 10 Bước làm chủ game từ Phút Đầu Tiên (0 SM → 150 Tỷ SM)
 │   └── 📄 0.3. Bảng tra cứu NPC: "Muốn làm việc này thì gặp ai, ở đâu?"
 ├── 📂 01-Tong-Quan-Suc-Manh-Va-Dinh-Huong-Hanh-Tinh/
 │   ├── 📄 1.1. Kiến trúc 3 tầng sức mạnh & Công thức tính sát thương
@@ -98,7 +98,7 @@ flowchart TD
     B2 --> B3["Bước 3: Đánh Quái Đầu Làng 2 Phút\nCho Đệ Tử lên 1.5 Triệu SM để Mặc Đồ\nBán Thỏi Vàng tại Santa lấy Vàng tiêu"]
     B3 --> B4["Bước 4: Về Nhà Bấm Ông Gôhan/Moori/Paragus\nChọn 'Đi Ngũ Hành Sơn' (x5 TNSM)\nUp Sư Phụ & Đệ Tử lên 18 Tỷ – 40 Tỷ SM"]
     B4 --> B5["Bước 5: Qua Đảo Kame (Bà Hạt Mít)\nĐục lỗ 7–9 Sao cho bộ Đồ Vải Thô SKH\nÉp Sao Pha Lê %SĐ / %HP / %KI & Mở Nội Tại"]
-    B5 --> B6["Bước 6: Gặp Trưởng Lão Guru / Quốc Vương\nMở Giới Hạn Sức Mạnh (Lên 120 Tỷ SM)\nĐệ Tử miễn giảm TNSM sau 40 Tỷ SM!"]
+    B5 --> B6["Bước 6: Gặp Trưởng Lão Guru / Quốc Vương\nMở Giới Hạn Sức Mạnh (Lên 150 Tỷ SM)\nĐệ Tử miễn giảm TNSM sau 40 Tỷ SM!"]
     B6 --> B7["Bước 7: Làm Nhiệm Vụ Chính Tuyến & NV Mở Rộng (29 → 34)\nLiên kết Bang hội nhận X2–X3 tiến độ & 210 Thỏi Vàng + 10.500 HN\nSăn Đệ Mabư (115%) -> Đệ Broly (130%) & Bông Tai Cấp 2/3"]
     B7 --> B8["Bước 8: Săn Boss Cao Cấp (+0.2% Rớt Đồ Mỗi 100Tr HP)\nMáu Boss càng cao đồ càng ngon (Thần Linh, Cấp 12, 5–7 Sao)\nDùng Chuyển Hóa / Đập Đồ SKH lên Đồ Thần & Hủy Diệt"]
 ```
@@ -139,9 +139,9 @@ Ngay khi tạo nhân vật xong, bạn đang đứng trong **Nhà** (*Nhà Gôha
 1. Chọn **Pha Lê Hóa Trang Bị** $\rightarrow$ Chọn **Đập x100 lần** để đục lên **7 Sao** (sau đó dùng *Đá Hematite + Dùi Đục* mở tiếp **lỗ Sao thứ 8 & 9**).
 2. Chọn **Ép Sao Pha Lê**: Mua hoặc nhặt Sao Pha Lê **+% Sức Đánh** (hoặc **+% HP / +% KI** tùy hệ) ép kín 7–9 lỗ trên cả 6 món đồ $\rightarrow$ Sức đánh và máu của bạn sẽ tăng vọt gấp nhiều lần!
 
-### 🔹 Bước 6: Mở Giới Hạn Sức Mạnh (`18 Tỷ → 120 Tỷ SM`) & Hợp Thể Đệ Tử
-1. Khi bạn hoặc Đệ tử cày chạm mốc giới hạn (`17.99 Tỷ SM`, `40 Tỷ SM`, `60 Tỷ SM`... không tăng thêm được nữa), hãy bay đến **Đảo Guru (Hành tinh Namek)** gặp **Trưởng Lão Guru** (hoặc **Quốc Vương**) chọn **Mở Giới Hạn Sức Mạnh** cho Sư phụ và Đệ tử bằng Ngọc Xanh (tối đa lên **120 Tỷ SM**).
-   - *Đặc quyền Đệ Tử*: Sau mốc **40 Tỷ SM**, **Đệ tử hoàn toàn KHÔNG bị giảm tốc độ nhận Tiềm Năng & Sức Mạnh** (miễn trừ 100% cơ chế giảm TNSM Endgame của Sư phụ), giúp cày Đệ tử lên `100 Tỷ SM` và `120 Tỷ SM` cực nhanh!
+### 🔹 Bước 6: Mở Giới Hạn Sức Mạnh (`18 Tỷ → 150 Tỷ SM`) & Hợp Thể Đệ Tử
+1. Khi bạn hoặc Đệ tử cày chạm mốc giới hạn (`17.99 Tỷ SM`, `40 Tỷ SM`, `60 Tỷ SM`... không tăng thêm được nữa), hãy bay đến **Đảo Guru (Hành tinh Namek)** gặp **Trưởng Lão Guru** (hoặc **Quốc Vương**) chọn **Mở Giới Hạn Sức Mạnh** cho Sư phụ và Đệ tử bằng Ngọc Xanh (tối đa lên **150 Tỷ SM** với trần chỉ số gốc **`700.000 HP/KI`** và **`32.000 SĐ`**).
+   - *Đặc quyền Đệ Tử*: Sau mốc **40 Tỷ SM**, **Đệ tử hoàn toàn KHÔNG bị giảm tốc độ nhận Tiềm Năng & Sức Mạnh** (miễn trừ 100% cơ chế giảm TNSM Endgame của Sư phụ), giúp cày Đệ tử lên `100 Tỷ SM`, `120 Tỷ SM` và `150 Tỷ SM` cực nhanh!
 2. Khi Đệ tử đạt các mốc **150 Triệu SM (Skill 2)** $\rightarrow$ **1.5 Tỷ SM (Skill 3)** $\rightarrow$ **20 Tỷ SM (Skill 4)** $\rightarrow$ **100 Tỷ SM (Skill 5: Super Kame / Ma Phong Ba / Liên Hoàn Chưởng)**, Đệ tử sẽ tự động mở khóa thêm kỹ năng mới! Mua sách **Nâng kỹ năng 4 đệ tử (`ID 759` tại Santa)** để nâng cấp Skill 4 & Skill 5 của Đệ tử lên tối đa **Cấp 7**.
 
 ### 🔹 Bước 7: Làm Nhiệm Vụ Chính Tuyến & Chuỗi Nhiệm Vụ Mở Rộng (`NV 29 → NV 34` — Liên Kết Bang Hội)
@@ -154,9 +154,9 @@ Ngay khi tạo nhân vật xong, bạn đang đứng trong **Nhà** (*Nhà Gôha
 
 ### 🔹 Bước 8: Nâng Cấp Đệ Tử 3 Cấp: Thường (`100%`) $\rightarrow$ Mabư (`115%`) $\rightarrow$ Broly (`130%`)
 1. **Đệ Tử Cấp 1 (Thường — Hợp thể cộng `100%` chỉ số đệ)**: Nhận miễn phí tại menu `auto -> Quản lý Đệ tử`.
-2. **Đệ Tử Cấp 2 (Mabư — Max gốc `575k` HP/KI, `26k` SĐ bằng Sư phụ; Hợp thể cộng `115%` chỉ số đệ)**:
+2. **Đệ Tử Cấp 2 (Mabư — Max gốc `700k` HP/KI, `32k` SĐ bằng Sư phụ; Hợp thể cộng `115%` chỉ số đệ)**:
    - Gõ `boss` tìm **Kid Bư** $\rightarrow$ Hạ Kid Bư khi **`HP >= 1.000.000`** chắc chắn **`100%`** gọi ra **Mabư Mập** ngay tại khu đó (hoặc `5%` khi `< 1Tr HP`) $\rightarrow$ Hạ Mabư Mập có **50% rơi Quả Trứng Mabư**. Bấm dùng Trứng rồi về **Nhà** chọn **Nở ngay (1 Tỷ Vàng)**.
-3. **Đệ Tử Cấp 3 (Broly — Max gốc `575k` HP/KI, `26k` SĐ bằng Sư phụ; Hợp thể cộng `130%` chỉ số đệ, `100%` Rơi Trứng)**:
+3. **Đệ Tử Cấp 3 (Broly — Max gốc `700k` HP/KI, `32k` SĐ bằng Sư phụ; Hợp thể cộng `130%` chỉ số đệ, `100%` Rơi Trứng)**:
    - **Cách gọi Super SSJ Broly (`SSJ Broly`)**: Khi Boss **Broly (nhánh SSJ)** bị tiêu diệt ở mốc máu **`> 10.000.000 HP` (hơn 10 Triệu HP)** sẽ **chắc chắn `100%`** biến hình thành **SSJ Broly** ngay tại chỗ (hoặc `5%` xác suất ngẫu nhiên khi `<= 10Tr HP`). *(Mẹo: Mặc **Cải trang Android 19 / Android 20** vừa hấp thụ chưởng của Broly hồi KI vừa **phản sát thương `PST`** giúp nuôi máu Broly cực dễ).*
    - **Tỷ lệ rơi Trứng**: Khi đang có **Đệ Tử Mabư**, tiêu diệt **SSJ Broly** rơi **`100%` Quả Trứng Đệ Tử Broly (`ID 1826`)** $\rightarrow$ Dùng Trứng rồi về **Nhà** ấp nở thành **Đệ Tử Broly**!
 4. **Nâng Bông Tai Porata Cấp 2 & Cấp 3**: Tại **Bà Hạt Mít (Đảo Kame)**, nâng cấp Bông Tai Porata lên Cấp 2 và Cấp 3 rồi Mở chỉ số ẩn để khi **Hợp Thể** cùng Đệ Tử Broly, toàn bộ HP/KI/Sức Đánh của bạn tăng vọt cực đại!
@@ -188,7 +188,7 @@ Ngay khi tạo nhân vật xong, bạn đang đứng trong **Nhà** (*Nhà Gôha
 | Mua/Bán **Thỏi Vàng (`500Tr Vàng/thỏi`)**, Mua **Cải trang Hồng Ngọc Vĩnh Viễn**, **Cải trang Up Đệ / Kháng Lạnh (`50 Ngọc`)**, **Sách nâng Skill 4 & 5 Đệ tử (`ID 759`)**, **Mở rộng Hành trang / Rương đồ (`+10 ô`)** | **Santa** | **Đảo Kame (Map 5)** |
 | Đổi **Hào Quang Săn Boss 3 Cấp**, Mua **Đeo Lưng Sự Kiện / Đeo Lưng Hồng Ngọc Vĩnh Viễn**, Nhận **Nhiệm Vụ KOL & KOL VIP**, Đi **Bản Đồ Kho Báu**, Giải tán/Lập Bang | **Quy Lão Kame** | **Đảo Kame (Map 5)** |
 | Nhận **20 Nhiệm vụ hàng ngày (5 độ khó)** & Nhận thưởng **Thành Tích (`515 Thỏi Vàng` = `257.5 Tỷ Vàng`)** | **Bò Mộng** | **Đảo Kame (Map 5)** hoặc **Thần Điện** |
-| **Mở Giới Hạn Sức Mạnh** cho Sư Phụ & Đệ Tử (từ `18 Tỷ` lên `120 Tỷ SM`) | **Trưởng Lão Guru** *(hoặc Quốc Vương)* | **Đảo Guru (Hành Tinh Namek)** |
+| **Mở Giới Hạn Sức Mạnh** cho Sư Phụ & Đệ Tử (từ `18 Tỷ` lên `150 Tỷ SM`) | **Trưởng Lão Guru** *(hoặc Quốc Vương)* | **Đảo Guru (Hành Tinh Namek)** |
 | Đổi **Đồ Thần Linh $\rightarrow$ Đồ Hủy Diệt (Level 14)** | **Thần Hủy Diệt Bill** | **Hành Tinh Bill (Map 154)** |
 | Học **Chiêu Đặc Biệt (Skill 9: Super Kame / Ma Phong Ba / Liên Hoàn Chưởng)**, Đổi & Nâng cấp **Sách Tuyệt Kỹ 1 & 2**, Chế tạo **Đồ Thiên Sứ (Level 15)**, Báo cáo **Nhiệm Vụ Chính Tuyến 34 (Cumber)** | **Thiên Sứ Whis** | **Hành Tinh Bill (Map 154)** |
 | Qua **Bản Đồ Tương Lai (Map 92–103)** săn Black Goku, Zamasu, Siêu Bọ Hung & Báo cáo **Nhiệm Vụ Chính Tuyến 30, 31** | **Calích** | **Vách Núi Kakarot / Trạm Tàu Vũ Trụ** *(Sau khi xong NV Xên)* |
@@ -462,11 +462,27 @@ Mỗi hành tinh sở hữu 1 chiêu thức Tuyệt Kỹ tối thượng riêng 
 flowchart LR
     M1["0 → 1.5 Tỷ SM\nUp Ngũ Hành Sơn (x5 TNSM)\nĐệ Tử Mặc Trang Bị (1.5Tr SM)"] --> M2["1.5 Tỷ → 18 Tỷ SM\nMở Skill 2 & 3 Đệ Tử\nLàm Nhiệm Vụ Qua Tương Lai"]
     M2 --> M3["18 Tỷ → 40 Tỷ SM\nMở Giới Hạn SM (Guru / Quốc Vương)\nMở Skill 4 Đệ Tử (20 Tỷ SM)"]
-    M3 --> M4["40 Tỷ → 120 Tỷ SM\nĐệ Tử Miễn Giảm TNSM Sau 40 Tỷ!\nMở Skill 5 Đệ Tử (100 Tỷ SM)"]
+    M3 --> M4["40 Tỷ → 150 Tỷ SM\nĐệ Tử Miễn Giảm TNSM Sau 40 Tỷ!\nMở Skill 5 Đệ Tử (100 Tỷ SM)"]
 ```
 
-- **Mở Giới Hạn Sức Mạnh Bằng Ngọc Xanh**: Gặp **Trưởng Lão Guru (Đảo Guru - Namek)** hoặc **Quốc Vương** để mở khóa các mốc giới hạn sức mạnh tiếp theo cho cả Sư Phụ và Đệ Tử bằng Ngọc Xanh (tối đa **120 Tỷ SM**).
-- **Đặc Quyền Đệ Tử — Hoàn Toàn Không Bị Giảm TNSM Sau Mốc 40 Tỷ SM**: Trong khi Sư phụ từ mốc `40 Tỷ – 120 Tỷ SM` áp dụng lộ trình giảm tốc độ nhận TNSM Endgame, **Đệ Tử (`isPet`) được miễn trừ 100% — giữ nguyên tốc độ nhận Tiềm năng & Sức mạnh sau 40 Tỷ SM**, giúp bạn cày Đệ tử lên `100 Tỷ SM` (mở Skill 5) và `120 Tỷ SM` nhanh vượt trội!
+- **Mở Giới Hạn Sức Mạnh Bằng Ngọc Xanh (`Bậc 0 → Bậc 12`)**: Gặp **Trưởng Lão Guru (Đảo Guru - Namek)** hoặc **Quốc Vương** để mở khóa các mốc giới hạn sức mạnh tiếp theo cho cả Sư Phụ và Đệ Tử bằng Ngọc Xanh (tối đa **150 Tỷ SM**). Khi đã chạm trần Sức Mạnh của bậc nhưng chưa nâng kịch trần chỉ số gốc (`HP`, `KI`, `Sức Đánh`, `Giáp`, `Chí Mạng`), nhân vật vẫn tiếp tục nhận được **Tiềm Năng** khi đánh quái để nâng tối đa chỉ số gốc!
+- **Đặc Quyền Đệ Tử — Hoàn Toàn Không Bị Giảm TNSM Sau Mốc 40 Tỷ SM**: Trong khi Sư phụ từ mốc `40 Tỷ – 150 Tỷ SM` áp dụng lộ trình giảm tốc độ nhận TNSM Endgame, **Đệ Tử (`isPet`) được miễn trừ 100% — giữ nguyên tốc độ nhận Tiềm năng & Sức mạnh sau 40 Tỷ SM**, giúp bạn cày Đệ tử lên `100 Tỷ SM` (mở Skill 5), `120 Tỷ SM` và `150 Tỷ SM` nhanh vượt trội!
+
+| Bậc Mở Giới Hạn (`limitPower`) | Giới Hạn Sức Mạnh | Trần HP / KI Gốc | Trần Sức Đánh Gốc | Trần Giáp Gốc | Trần Chí Mạng Gốc | Điều Kiện & Chi Phí Mở Giới Hạn |
+| :---: | :---: | :---: | :---: | :---: | :---: | :--- |
+| **Bậc 0** *(Mặc định)* | `17.999.999.999` (`~18 Tỷ`) | `220.000` | `11.000` | `550` | `5%` | Mặc định khi tạo nhân vật / đệ tử |
+| **Bậc 1** | `19.999.999.999` (`~20 Tỷ`) | `240.000` | `12.000` | `600` | `6%` | `1.000 Ngọc Xanh` *(Mở nhanh)* hoặc Đủ SM *(Mở thường)* |
+| **Bậc 2** | `24.999.999.999` (`~25 Tỷ`) | `300.000` | `15.000` | `700` | `7%` | `1.000 Ngọc Xanh` *(Mở nhanh)* hoặc Đủ SM *(Mở thường)* |
+| **Bậc 3** | `29.999.999.999` (`~30 Tỷ`) | `350.000` | `18.000` | `800` | `8%` | `1.000 Ngọc Xanh` *(Mở nhanh)* hoặc Đủ SM *(Mở thường)* |
+| **Bậc 4** | `39.999.999.999` (`~40 Tỷ`) | `400.000` | `20.000` | `1.000` | `8%` | `1.000 Ngọc Xanh` *(Mở nhanh)* hoặc Đủ SM *(Mở thường)* |
+| **Bậc 5** | `50.010.000.000` (`50 Tỷ`) | `450.000` | `22.000` | `1.200` | `9%` | `1.000 Ngọc Xanh` *(Mở nhanh)* hoặc Đủ SM *(Mở thường)* |
+| **Bậc 6** | `60.010.000.000` (`60 Tỷ`) | `500.000` | `23.000` | `1.400` | `9%` | `1.000 Ngọc Xanh / Vàng` hoặc Đủ SM |
+| **Bậc 7** | `70.010.000.000` (`70 Tỷ`) | `525.000` | `24.000` | `1.500` | `10%` | `1.000 Ngọc Xanh / Vàng` hoặc Đủ SM |
+| **Bậc 8** | `80.010.000.000` (`80 Tỷ`) | `550.000` | `25.000` | `1.600` | `10%` | `1.000 Ngọc Xanh / Vàng` hoặc Đủ SM |
+| **Bậc 9** | `90.010.000.000` (`90 Tỷ`) | `575.000` | `26.000` | `1.800` | `10%` | `1.000 Ngọc Xanh / Vàng` hoặc Đủ SM |
+| **Bậc 10** | **`100.010.000.000` (`100 Tỷ`)** | **`600.000`** | **`27.000`** | **`2.000`** | **`11%`** | • Đạt đủ **`90 Tỷ SM`** *(Đệ tử cần Sư phụ đã mở mốc 100 Tỷ)*<br>• Chi phí: **`20 Thỏi Vàng` + `1.000 Hồng Ngọc`** |
+| **Bậc 11** | **`120.010.000.000` (`120 Tỷ`)** | **`650.000`** | **`29.000`** | **`2.200`** | **`12%`** | • Đạt đủ **`100 Tỷ SM`** *(Đệ tử cần Sư phụ đã mở mốc 120 Tỷ)*<br>• Chi phí: **`50 Thỏi Vàng` + `2.000 Hồng Ngọc`** |
+| **Bậc 12** *(Tối đa)* | **`150.010.000.000` (`150 Tỷ`)** | **`700.000`** | **`32.000`** | **`2.500`** | **`13%`** | • Đạt đủ **`120 Tỷ SM`** *(Đệ tử cần Sư phụ đã mở mốc 150 Tỷ)*<br>• Chi phí: **`100 Thỏi Vàng` + `5.000 Hồng Ngọc`** |
 
 ---
 
@@ -483,8 +499,8 @@ flowchart LR
 | Cấp Độ Đệ Tử | Biểu Tượng | Chỉ Số Gốc Max & Chỉ Số Cộng Khi Hợp Thể | Cách Săn Trứng & Điều Kiện Ấp Nở |
 | :--- | :---: | :---: | :--- |
 | **1. Đệ Tử Cấp 1 (Thường)** | <img src="SRC/assets/readme/icons/3896.png" width="30"/> | **Cộng `100%` chỉ số đệ tử**<br>*(Chỉ cộng chỉ số đệ, không thêm % phụ)* | Nhận miễn phí tại **Menu Tiện Ích (`auto`) -> Quản lý Đệ tử -> Nhận Đệ tử Miễn phí** hoặc săn Boss **Super Broly**. |
-| **2. Đệ Tử Cấp 2 (Mabư)** | <img src="SRC/assets/readme/icons/4956.png" width="30"/> | **Chỉ số gốc giống Sư phụ (`575k` HP/KI max, `26k` SĐ max)**<br>**Hợp thể lấy `115%` chỉ số tổng của đệ tử** | • **Cách săn**: Tiêu diệt Boss **Kid Bư** (xuất hiện 5 con ở 3 hành tinh): nếu hạ khi **`HP >= 1.000.000`** sẽ **chắc chắn `100%`** gọi ra **Mabư Mập**; nếu kết liễu khi **`HP < 1.000.000`** sẽ có **tỷ lệ thấp (`5%`)** xuất hiện **Mabư Mập** ngay tại khu đó. Hạ **Mabư Mập** có **50% rơi Quả Trứng Mabư** (hoặc săn Boss Vegeta trong phó bản **Con Đường Rắn Độc**).<br>• **Điều kiện ấp**: Đang sở hữu **Đệ Tử Thường**. Bấm dùng Quả Trứng Mabư $\rightarrow$ Về **Nhà** bấm vào Quả Trứng chọn **Nở ngay (1 Tỷ Vàng)** hoặc chờ 24h. |
-| **3. Đệ Tử Cấp 3 (Broly)**<br>*(Cấp Mạnh Nhất)* | <img src="SRC/assets/readme/icons/5852.png" width="30"/> <img src="SRC/data/icon/x4/15128.png" width="28"/> | **Chỉ số gốc giống Sư phụ (`575k` HP/KI max, `26k` SĐ max)**<br>**Hợp thể lấy `130%` chỉ số tổng của đệ tử** | • **Cách gọi Super SSJ Broly (`SSJ Broly`)**: Khi Boss Broly (nhánh SSJ) bị hạ gục đạt mốc máu **`> 10.000.000 HP` (hơn 10 Triệu HP)** sẽ **chắc chắn `100%`** biến hình thành **SSJ Broly** ngay tại khu đó; hoặc nếu kết liễu khi **`HP <= 10.000.000`** sẽ có **tỷ lệ ngẫu nhiên thấp (`5%`)** xuất hiện **SSJ Broly**!<br>• **Tỷ lệ rơi Trứng**: Hạ **SSJ Broly** rơi **`100%` <img src="SRC/data/icon/x4/15128.png" width="18"/> Quả Trứng Đệ Tử Broly (`ID 1826`)**!<br>• **Điều kiện ấp**: **Bắt buộc đang sở hữu Đệ Tử Mabư**. Bấm dùng Quả Trứng Broly $\rightarrow$ Về **Nhà** bấm vào Quả Trứng chọn hành tinh để nở thành **Đệ Tử Broly** (khởi đầu 1.5 Triệu SM, mặc được đồ ngay)! |
+| **2. Đệ Tử Cấp 2 (Mabư)** | <img src="SRC/assets/readme/icons/4956.png" width="30"/> | **Chỉ số gốc giống Sư phụ (`700k` HP/KI max, `32k` SĐ max)**<br>**Hợp thể lấy `115%` chỉ số tổng của đệ tử** | • **Cách săn**: Tiêu diệt Boss **Kid Bư** (xuất hiện 5 con ở 3 hành tinh): nếu hạ khi **`HP >= 1.000.000`** sẽ **chắc chắn `100%`** gọi ra **Mabư Mập**; nếu kết liễu khi **`HP < 1.000.000`** sẽ có **tỷ lệ thấp (`5%`)** xuất hiện **Mabư Mập** ngay tại khu đó. Hạ **Mabư Mập** có **50% rơi Quả Trứng Mabư** (hoặc săn Boss Vegeta trong phó bản **Con Đường Rắn Độc**).<br>• **Điều kiện ấp**: Đang sở hữu **Đệ Tử Thường**. Bấm dùng Quả Trứng Mabư $\rightarrow$ Về **Nhà** bấm vào Quả Trứng chọn **Nở ngay (1 Tỷ Vàng)** hoặc chờ 24h. |
+| **3. Đệ Tử Cấp 3 (Broly)**<br>*(Cấp Mạnh Nhất)* | <img src="SRC/assets/readme/icons/5852.png" width="30"/> <img src="SRC/data/icon/x4/15128.png" width="28"/> | **Chỉ số gốc giống Sư phụ (`700k` HP/KI max, `32k` SĐ max)**<br>**Hợp thể lấy `130%` chỉ số tổng của đệ tử** | • **Cách gọi Super SSJ Broly (`SSJ Broly`)**: Khi Boss Broly (nhánh SSJ) bị hạ gục đạt mốc máu **`> 10.000.000 HP` (hơn 10 Triệu HP)** sẽ **chắc chắn `100%`** biến hình thành **SSJ Broly** ngay tại khu đó; hoặc nếu kết liễu khi **`HP <= 10.000.000`** sẽ có **tỷ lệ ngẫu nhiên thấp (`5%`)** xuất hiện **SSJ Broly**!<br>• **Tỷ lệ rơi Trứng**: Hạ **SSJ Broly** rơi **`100%` <img src="SRC/data/icon/x4/15128.png" width="18"/> Quả Trứng Đệ Tử Broly (`ID 1826`)**!<br>• **Điều kiện ấp**: **Bắt buộc đang sở hữu Đệ Tử Mabư**. Bấm dùng Quả Trứng Broly $\rightarrow$ Về **Nhà** bấm vào Quả Trứng chọn hành tinh để nở thành **Đệ Tử Broly** (khởi đầu 1.5 Triệu SM, mặc được đồ ngay)! |
 
 ### ⚡ Cách Up Đệ Tử Nhanh Nhất & Mốc Mở 5 Kỹ Năng Cho Mọi Đệ Tử
 1. **Cách Up Đệ Tử Thần Tốc**:

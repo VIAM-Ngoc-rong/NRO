@@ -32,12 +32,18 @@ public class QuocVuong extends Npc {
 
                     case 0 -> {
                         if (player.nPoint.limitPower < MAX_LIMIT_CUSTOM) {
-                            this.createOtherMenu(player, ConstNpc.OPEN_POWER_MYSEFT,
-                                    "Ta sẽ truyền năng lượng giúp con mở giới hạn sức mạnh của bản thân lên "
-                                    + Util.numberToMoney(player.nPoint.getPowerNextLimit()),
-                                    "Nâng\ngiới hạn\nsức mạnh",
-                                    "Nâng ngay\n" + Util.numberToMoney(OpenPowerService.COST_SPEED_OPEN_LIMIT_POWER) + " ngọc",
-                                    "Đóng");
+                            if (OpenPowerService.gI().isHighTierLimit(player.nPoint.limitPower)) {
+                                this.createOtherMenu(player, ConstNpc.OPEN_POWER_MYSEFT,
+                                        OpenPowerService.gI().getMenuDescription(player),
+                                        OpenPowerService.gI().getSpeedButtonLabel(player.nPoint.limitPower, "ngọc"),
+                                        "Đóng");
+                            } else {
+                                this.createOtherMenu(player, ConstNpc.OPEN_POWER_MYSEFT,
+                                        OpenPowerService.gI().getMenuDescription(player),
+                                        "Nâng\ngiới hạn\nsức mạnh",
+                                        OpenPowerService.gI().getSpeedButtonLabel(player.nPoint.limitPower, "ngọc"),
+                                        "Đóng");
+                            }
                         } else {
                             this.createOtherMenu(player, ConstNpc.IGNORE_MENU,
                                     "Sức mạnh của con đã đạt tới giới hạn hiện tại",
@@ -49,9 +55,8 @@ public class QuocVuong extends Npc {
                         if (player.pet != null) {
                             if (player.pet.nPoint.limitPower < MAX_LIMIT_CUSTOM) {
                                 this.createOtherMenu(player, ConstNpc.OPEN_POWER_PET,
-                                        "Ta sẽ truyền năng lượng giúp con mở giới hạn sức mạnh của đệ tử lên "
-                                        + Util.numberToMoney(player.pet.nPoint.getPowerNextLimit()),
-                                        "Nâng ngay\n" + Util.numberToMoney(OpenPowerService.COST_SPEED_OPEN_LIMIT_POWER) + " ngọc", "Đóng");
+                                        OpenPowerService.gI().getMenuDescription(player.pet),
+                                        OpenPowerService.gI().getSpeedButtonLabel(player.pet.nPoint.limitPower, "ngọc"), "Đóng");
                             } else {
                                 this.createOtherMenu(player, ConstNpc.IGNORE_MENU,
                                         "Sức mạnh của đệ con đã đạt tới giới hạn hiện tại",
@@ -73,7 +78,9 @@ public class QuocVuong extends Npc {
                     }
                     case 1 -> {
                         if (player.nPoint.limitPower < MAX_LIMIT_CUSTOM) {
-                            if (player.inventory.gem >= OpenPowerService.COST_SPEED_OPEN_LIMIT_POWER) {
+                            if (OpenPowerService.gI().isHighTierLimit(player.nPoint.limitPower)) {
+                                OpenPowerService.gI().openPowerSpeed(player);
+                            } else if (player.inventory.gem >= OpenPowerService.COST_SPEED_OPEN_LIMIT_POWER) {
                                 if (OpenPowerService.gI().openPowerSpeed(player)) {
                                     player.inventory.gem -= OpenPowerService.COST_SPEED_OPEN_LIMIT_POWER;
                                     Service.gI().sendMoney(player);
@@ -91,7 +98,9 @@ public class QuocVuong extends Npc {
             } else if (player.idMark.getIndexMenu() == ConstNpc.OPEN_POWER_PET) {
                 if (select == 0) {
                     if (player.pet.nPoint.limitPower < MAX_LIMIT_CUSTOM) {
-                        if (player.inventory.gem >= OpenPowerService.COST_SPEED_OPEN_LIMIT_POWER) {
+                        if (OpenPowerService.gI().isHighTierLimit(player.pet.nPoint.limitPower)) {
+                            OpenPowerService.gI().openPowerSpeed(player.pet);
+                        } else if (player.inventory.gem >= OpenPowerService.COST_SPEED_OPEN_LIMIT_POWER) {
                             if (OpenPowerService.gI().openPowerSpeed(player.pet)) {
                                 player.inventory.gem -= OpenPowerService.COST_SPEED_OPEN_LIMIT_POWER;
                                 Service.gI().sendMoney(player);

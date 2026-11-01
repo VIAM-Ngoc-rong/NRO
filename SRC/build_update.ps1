@@ -43,6 +43,7 @@ javac -proc:none -encoding UTF-8 -d build/classes -cp "build/classes;lib/*" `
     src/nro/models/services/EffectSkillService.java `
     src/nro/models/services/InventoryService.java `
     src/nro/models/services/ItemService.java `
+    src/nro/models/services/OpenPowerService.java `
     src/nro/models/services/Service.java `
     src/nro/models/services/SkillService.java `
     src/nro/models/services_func/UseItem.java `
@@ -67,6 +68,8 @@ javac -proc:none -encoding UTF-8 -d build/classes -cp "build/classes;lib/*" `
     src/nro/models/npc_list/BoMong.java `
     src/nro/models/npc_list/KyGui.java `
     src/nro/models/npc_list/QuyLaoKame.java `
+    src/nro/models/npc_list/TruongLaoGuru.java `
+    src/nro/models/npc_list/QuocVuong.java `
     src/nro/models/npc_list/ToSuKaio.java `
     src/nro/models/npc_list/OngGohan.java `
     src/nro/models/npc_list/OngMoori.java `

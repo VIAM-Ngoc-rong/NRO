@@ -38,7 +38,7 @@ public class NPoint {
     public static final int[] HAO_QUANG_TL = {2, 4, 6, 8, 10, 12, 14, 16};
     public static final int[] HAO_QUANG_HUT = {0, 2, 4, 6, 8, 10, 12, 14};
 
-    public static final byte MAX_LIMIT = 11;
+    public static final byte MAX_LIMIT = 12;
 
     @Setter
     private Player player;
@@ -2113,7 +2113,11 @@ public class NPoint {
 
     public int getSubTNSMDivisor() {
         if (this.player != null && this.player.isPet) {
-            if (power >= 90_000_000_000L) {
+            if (power >= 120_000_000_000L) {
+                return 70;
+            } else if (power >= 100_000_000_000L) {
+                return 60;
+            } else if (power >= 90_000_000_000L) {
                 return 50;
             } else if (power >= 80_000_000_000L) {
                 return 35;
@@ -2126,7 +2130,11 @@ public class NPoint {
             }
             return 1;
         }
-        if (power >= 90_000_000_000L) {
+        if (power >= 120_000_000_000L) {
+            return 120;
+        } else if (power >= 100_000_000_000L) {
+            return 110;
+        } else if (power >= 90_000_000_000L) {
             return 100;
         } else if (power >= 80_000_000_000L) {
             return 90;
@@ -2215,6 +2223,8 @@ public class NPoint {
                 return 100010000000L;
             case 11:
                 return 120010000000L;
+            case 12:
+                return 150010000000L;
             default:
                 return 0;
         }
@@ -2246,6 +2256,8 @@ public class NPoint {
                 return 100010000000L;
             case 11:
                 return 120010000000L;
+            case 12:
+                return 150010000000L;
             default:
                 return 0;
         }
@@ -2272,9 +2284,13 @@ public class NPoint {
             case 8:
                 return 550000;
             case 9:
-            case 10:
-            case 11:
                 return 575000;
+            case 10:
+                return 600000;
+            case 11:
+                return 650000;
+            case 12:
+                return 700000;
             default:
                 return 0;
         }
@@ -2301,9 +2317,13 @@ public class NPoint {
             case 8:
                 return 25000;
             case 9:
-            case 10:
-            case 11:
                 return 26000;
+            case 10:
+                return 27000;
+            case 11:
+                return 29000;
+            case 12:
+                return 32000;
             default:
                 return 0;
         }
@@ -2335,6 +2355,8 @@ public class NPoint {
                 return 2000;
             case 11:
                 return 2200;
+            case 12:
+                return 2500;
             default:
                 return 0;
         }
@@ -2366,6 +2388,8 @@ public class NPoint {
                 return 11;
             case 11:
                 return 12;
+            case 12:
+                return 13;
             default:
                 return 0;
         }

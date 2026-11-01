@@ -1075,8 +1075,9 @@ public class Service {
         Captions.add("Giới Vương Thần cấp 2");
         Captions.add("Giới Vương Thần cấp 3");
         Captions.add("Thiên đạo");
-        Captions.add("kẻ hũy diệt vũ trụ");
-        Captions.add("vô địch đa giới");
+        Captions.add("Kẻ hủy diệt vũ trụ");
+        Captions.add("Vô địch đa giới");
+        Captions.add("Huyền thoại tối thượng");
         return Captions;
     }
 
@@ -1131,8 +1132,10 @@ public class Service {
             return 19;
         } else if (sucmanh < 120010000000L) {
             return 20;
+        } else if (sucmanh < 150010000000L) {
+            return 21;
         }
-        return 21;
+        return 22;
     }
 
     public void hsChar(Player pl, int hp, int mp) {

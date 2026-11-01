@@ -241,7 +241,7 @@ public class Mob {
                 return 1;
             }
         }
-        if (pl.nPoint.power >= pl.nPoint.getPowerLimit()) {
+        if (pl.nPoint.power >= pl.nPoint.getPowerLimit() && !pl.nPoint.hasUnmaxedBaseStats()) {
             return 0;
         }
         int levelPlayer = Service.gI().getCurrLevel(pl);
