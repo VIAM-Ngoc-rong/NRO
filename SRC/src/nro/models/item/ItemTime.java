@@ -130,8 +130,7 @@ public class ItemTime {
             return;
         }
         if (lastSyncAutoSanBossMs <= 0) {
-            lastSyncAutoSanBossMs = now;
-            return;
+            lastSyncAutoSanBossMs = (lastTimeAutoSanBoss > 0) ? lastTimeAutoSanBoss : now;
         }
         long delta = now - lastSyncAutoSanBossMs;
         if (delta > 0 && (player == null || !player.isAutoHuntBoss)) {

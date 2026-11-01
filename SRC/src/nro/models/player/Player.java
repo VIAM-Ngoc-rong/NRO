@@ -2601,6 +2601,7 @@ public class Player implements Runnable {
         }
         if (!hasActiveAutoHuntBossTime() && !tryAutoConsumeMayDoSanBossFromBag()) {
             Service.gI().sendThongBao(this, "Bạn chưa có thời gian Máy Dò Săn Boss! Hãy bấm 'Kích Hoạt Ngay 1 Giờ (200Tr Vàng)' hoặc dùng Máy Dò trong Hành trang trước.");
+            nro.models.npc.NpcFactory.openMenuSelectBossAction(this, -999);
             return;
         }
         if (!this.isAutoHuntAllBoss && this.autoHuntBossGroupKeys.isEmpty()) {
