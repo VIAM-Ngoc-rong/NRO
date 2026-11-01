@@ -178,7 +178,8 @@ public class TaskService {
                         || doneTask(player, ConstTask.TASK_21_4)
                         || doneTask(player, ConstTask.TASK_30_5)
                         || doneTask(player, ConstTask.TASK_33_4)
-                        || doneTask(player, ConstTask.TASK_35_4));
+                        || doneTask(player, ConstTask.TASK_35_4)
+                        || doneTask(player, ConstTask.TASK_36_5));
             }
             case ConstNpc.TRUONG_LAO_GURU -> {
                 return player.gender == ConstPlayer.NAMEC && (doneTask(player, ConstTask.TASK_9_1)
@@ -198,7 +199,8 @@ public class TaskService {
                         || doneTask(player, ConstTask.TASK_21_4)
                         || doneTask(player, ConstTask.TASK_30_5)
                         || doneTask(player, ConstTask.TASK_33_4)
-                        || doneTask(player, ConstTask.TASK_35_4));
+                        || doneTask(player, ConstTask.TASK_35_4)
+                        || doneTask(player, ConstTask.TASK_36_5));
             }
             case ConstNpc.VUA_VEGETA -> {
                 return player.gender == ConstPlayer.XAYDA && (doneTask(player, ConstTask.TASK_9_1)
@@ -218,7 +220,8 @@ public class TaskService {
                         || doneTask(player, ConstTask.TASK_21_4)
                         || doneTask(player, ConstTask.TASK_30_5)
                         || doneTask(player, ConstTask.TASK_33_4)
-                        || doneTask(player, ConstTask.TASK_35_4));
+                        || doneTask(player, ConstTask.TASK_35_4)
+                        || doneTask(player, ConstTask.TASK_36_5));
             }
             case ConstNpc.ONG_GOHAN, ConstNpc.ONG_MOORI, ConstNpc.ONG_PARAGUS -> {
                 return (doneTask(player, ConstTask.TASK_0_2)
@@ -367,6 +370,8 @@ public class TaskService {
                     doneTask(player, ConstTask.TASK_34_0);
                 case 160, 161, 162, 163 ->
                     doneTask(player, ConstTask.TASK_35_0);
+                case 169, 170, 171 ->
+                    doneTask(player, ConstTask.TASK_36_0);
             }
         }
     }
@@ -650,6 +655,12 @@ public class TaskService {
                         completeCoopBossTask(player, boss, ConstTask.TASK_34_3);
                     }
                 }
+                case BossID.KEFLA ->
+                    completeCoopBossTask(player, boss, ConstTask.TASK_36_2);
+                case BossID.CHAMPA ->
+                    completeCoopBossTask(player, boss, ConstTask.TASK_36_3);
+                case BossID.HIT ->
+                    completeCoopBossTask(player, boss, ConstTask.TASK_36_4);
             }
         }
     }
@@ -806,6 +817,10 @@ public class TaskService {
                     doneCoopMobTask(player, ConstTask.TASK_34_1);
                 case ConstMob.CABIRA, ConstMob.TOBI, ConstMob.DEINONYCHUS, ConstMob.SNAKE ->
                     doneCoopMobTask(player, ConstTask.TASK_35_1);
+                case ConstMob.ECH_MAT_DO, ConstMob.JINAI, ConstMob.QUY_DO, ConstMob.QUY_XANH ->
+                    doneCoopMobTask(player, ConstTask.TASK_33_0);
+                case ConstMob.TOPPO, ConstMob.JANEMBA, ConstMob.MEZ, ConstMob.GOZ ->
+                    doneCoopMobTask(player, ConstTask.TASK_36_1);
             }
         }
     }
@@ -1298,13 +1313,13 @@ public class TaskService {
                     break;
                 case ConstTask.TASK_32_4:
                     npcSay(player, ConstNpc.OSIN,
-                            "Tuyệt vời! Nhưng tại Thánh Địa, ký sinh trùng Tuffle Baby đã chiếm xác Vegeta!\n"
-                            + "Hãy tập hợp toàn Bang hội giải cứu vũ trụ!");
+                            "Tuyệt vời! Nhưng tại Phòng Thí Nghiệm Bí Mật, ký sinh trùng Tuffle Baby của Tiến Sĩ Myuu đã chiếm xác Vegeta!\n"
+                            + "Hãy đến Làng Kakarot gặp Dr. Myuu tiến vào Phòng Thí Nghiệm giải cứu vũ trụ!");
                     break;
                 case ConstTask.TASK_33_4:
                     npcSay(player, ConstTask.NPC_QUY_LAO,
-                            "Không ngờ con đã vượt qua được cả Khỉ Đột Vàng Baby!\n"
-                            + "Thử thách cuối cùng đang chờ con tại Hành Tinh Ngục Tù: Saiyan Tà Ác Cổ Đại Cumber!");
+                            "Không ngờ con đã vượt qua được cả Khỉ Đột Vàng Baby trong Phòng Thí Nghiệm Myuu!\n"
+                            + "Thử thách tiếp theo đang chờ con tại Hành Tinh Ngục Tù: Saiyan Tà Ác Cổ Đại Cumber!");
                     break;
                 case ConstTask.TASK_34_4:
                     npcSay(player, ConstNpc.BUNMA_TL,
@@ -1315,7 +1330,13 @@ public class TaskService {
                 case ConstTask.TASK_35_4:
                     npcSay(player, ConstTask.NPC_QUY_LAO,
                             "Xin chúc mừng! Con và các đồng đội đã chinh phục Hành Tinh Vampa và đánh bại Huyền Thoại SSJ Broly!\n"
-                            + "Danh hiệu Huyền Thoại Ngọc Rồng xứng đáng thuộc về con!");
+                            + "Tuy nhiên Thiên Sứ Vados vừa gửi lời thách đấu từ Hành Tinh Hủy Diệt Vũ Trụ 6 — nơi Kefla, Thần Champa và Sát Thủ Huyền Thoại Hit đang chờ đợi!\n"
+                            + "Hãy đến Hành Tinh Bill gặp Vados để sang Vũ Trụ 6 ngay!");
+                    break;
+                case ConstTask.TASK_36_5:
+                    npcSay(player, ConstTask.NPC_QUY_LAO,
+                            "Thật phi thường! Con đã vượt qua cả Siêu Xayda Kefla, Thần Hủy Diệt Champa và Sát Thủ Huyền Thoại Hit tại Vũ Trụ 6!\n"
+                            + "Danh hiệu Bá Chủ Đa Vũ Trụ xứng đáng thuộc về con!");
                     break;
             }
             InventoryService.gI().sendItemBags(player);
@@ -1376,12 +1397,13 @@ public class TaskService {
             Service.gI().addSMTN(player, (byte) 2, 500L * (player.playerTask.taskMain.id + 1), false);
             player.inventory.gold += (player.playerTask.taskMain.id < 5 && player.playerTask.taskMain.id >= 0) ? 100000 * (player.playerTask.taskMain.id + 1) : 500000;
             Service.gI().sendMoney(player);
-        } else if (player.playerTask.taskMain.id >= 29 && player.playerTask.taskMain.id <= 35) {
-            // Phần thưởng chuỗi nhiệm vụ cốt truyện mở rộng (NV 29 -> NV 35):
-            int tier = player.playerTask.taskMain.id - 28; // 1..7
-            int thoiVangReward = (player.playerTask.taskMain.id == 35) ? 80 : (tier * 10);
-            int rubyReward = (player.playerTask.taskMain.id == 35) ? 5000 : (tier * 500);
-            long smtnReward = (player.playerTask.taskMain.id == 35) ? 500_000_000L : (tier * 50_000_000L);
+        } else if (player.playerTask.taskMain.id >= 29 && player.playerTask.taskMain.id <= 36) {
+            // Phần thưởng chuỗi nhiệm vụ cốt truyện mở rộng (NV 29 -> NV 36):
+            int taskId = player.playerTask.taskMain.id;
+            int tier = taskId - 28; // 1..8
+            int thoiVangReward = (taskId == 36) ? 100 : (taskId == 35) ? 80 : (tier * 10);
+            int rubyReward = (taskId == 36) ? 8000 : (taskId == 35) ? 5000 : (tier * 500);
+            long smtnReward = (taskId == 36) ? 1_000_000_000L : (taskId == 35) ? 500_000_000L : (tier * 50_000_000L);
 
             Service.gI().addSMTN(player, (byte) 2, smtnReward, false);
             player.inventory.ruby = (int) Math.min(2_000_000_000L, (long) player.inventory.ruby + rubyReward);

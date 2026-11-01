@@ -125,6 +125,22 @@ public class Pet extends Player {
     }
 
     private String getTextStatus(byte status) {
+        if (this.typePet == 6) {
+            switch (status) {
+                case FOLLOW:
+                    return "Bước nhảy thời gian luôn ở bên cạnh sư phụ";
+                case PROTECT:
+                    return "Mọi kẻ ngáng đường sư phụ sẽ bị kết liễu trong 0.1 giây!";
+                case ATTACK:
+                    return "Mục tiêu đã vào tầm ngắm của Sát Thủ Vũ Trụ 6!";
+                case GOHOME:
+                    return "Ta lui về ẩn mình trong chiều không gian riêng đây";
+                case HTVV:
+                    return "Bước nhảy thời gian của ta vừa tiến thêm một cảnh giới mới!";
+                default:
+                    return "Không ai thoát khỏi Bước Nhảy Thời Gian của Hit!";
+            }
+        }
         if (this.typePet == 4) {
             switch (status) {
                 case FOLLOW:
@@ -378,7 +394,7 @@ public class Pet extends Player {
 
                         playerAttack = findPlayerAttack();
                         if (playerAttack != null) {
-                            if ((this.typePet == 2 || this.typePet == 4)
+                            if ((this.typePet == 2 || this.typePet == 4 || this.typePet == 6)
                                     && Util.isTrue(1, 5)
                                     && playerAttack.nPoint.hp < 1_000_000_000
                                     && !playerAttack.nPoint.islinhthuydanhbac
@@ -872,6 +888,8 @@ public class Pet extends Player {
                 return 876;
             case 5:
                 return (short) (this.isTransform ? 1083 : 1080);
+            case 6:
+                return 520;
             default:
                 if (hasValidDisguise()) {
                     return (short) this.inventory.itemsBody.get(5).template.head;
@@ -907,6 +925,8 @@ public class Pet extends Player {
             return 876;
         } else if (this.typePet == 5) {
             return (short) (this.isTransform ? 1083 : 1080);
+        } else if (this.typePet == 6) {
+            return 520;
         } else if (inventory.itemsBody.get(5).isNotNullItem()) {
             int part = inventory.itemsBody.get(5).template.head;
             if (part != -1) {
@@ -947,6 +967,8 @@ public class Pet extends Player {
             return 877;
         } else if (this.typePet == 5) {
             return (short) (this.isTransform ? 1084 : 1081);
+        } else if (this.typePet == 6) {
+            return 521;
         } else if (inventory.itemsBody.get(5).isNotNullItem()) {
             int body = inventory.itemsBody.get(5).template.body;
             if (body != -1) {
@@ -990,6 +1012,8 @@ public class Pet extends Player {
             return 878;
         } else if (this.typePet == 5) {
             return (short) (this.isTransform ? 1085 : 1082);
+        } else if (this.typePet == 6) {
+            return 522;
         } else if (inventory.itemsBody.get(5).isNotNullItem()) {
             int leg = inventory.itemsBody.get(5).template.leg;
             if (leg != -1) {
@@ -1210,6 +1234,11 @@ public class Pet extends Player {
             this.isTransform = !this.isTransform;
             Service.gI().Send_Caitrang(this);
             Service.gI().chat(this, "Kakarotttt!! Sức mạnh Siêu Xayda Huyền Thoại!");
+        }
+        if (this.typePet == 6) {
+            this.isTransform = !this.isTransform;
+            Service.gI().Send_Caitrang(this);
+            Service.gI().chat(this, "Bước Nhảy Thời Gian Tối Thượng — Sát Thủ Vũ Trụ 6 Hit!");
         }
         if (this.master != null) {
             Service.gI().showInfoPet(this.master);

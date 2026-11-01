@@ -1085,6 +1085,13 @@ public class ChangeMapService {
                 case 161:
                 case 162:
                 case 163:
+                case 166:
+                case 167:
+                case 172:
+                case 173:
+                case 169:
+                case 170:
+                case 171:
                     if (TaskService.gI().getIdTask(player) < ConstTask.TASK_27_0) {
                         return null;
                     }

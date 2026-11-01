@@ -106,6 +106,9 @@ import nro.models.map.service.MapService;
 import java.util.ArrayList;
 import java.util.List;
 import nro.models.boss.Baby.Baby;
+import nro.models.boss.VuTru6.Kefla;
+import nro.models.boss.VuTru6.Champa;
+import nro.models.boss.VuTru6.Hit;
 import nro.models.boss.Boss_mini.MatTroi;
 import nro.models.boss.cumber.Cumber;
 import nro.models.map.Zone;
@@ -165,7 +168,10 @@ public class BossManager implements Runnable {
         this.createBoss(BossID.BERGAMO, 1);
         this.createBoss(BossID.MABU_14H, 1);
         this.createBoss(BossID.CUMBER, 1);
-        this.createBoss(BossID.BABY, 1);
+        this.createBoss(BossID.BABY, 2);
+        this.createBoss(BossID.KEFLA, 2);
+        this.createBoss(BossID.CHAMPA, 2);
+        this.createBoss(BossID.HIT, 2);
         this.createBoss(BossID.BROLY_18H, 5);
         this.createBoss(BossID.KID_BU_MAP, 5);
         this.createBoss(BossID.SOI_HEC_QUYN1, 1);
@@ -406,6 +412,12 @@ public class BossManager implements Runnable {
                     new RongNhi();
                 case BossID.BABY ->
                     new Baby();
+                case BossID.KEFLA ->
+                    new Kefla();
+                case BossID.CHAMPA ->
+                    new Champa();
+                case BossID.HIT ->
+                    new Hit();
                 default ->
                     null;
             };
@@ -444,7 +456,7 @@ public class BossManager implements Runnable {
                     continue;
                 }
                 int mapId = boss.data[0].getMapJoin()[0];
-                if (MapService.gI().isMapBossFinal(mapId) || MapService.gI().isMapCadic(mapId) || MapService.gI().isMapYardart(mapId) || MapService.gI().isMapHuyDiet(mapId) || MapService.gI().isMapMaBu(mapId) || MapService.gI().isMapMabu2H(mapId) || MapService.gI().isMapBlackBallWar(mapId)) {
+                if (MapService.gI().isMapBossFinal(mapId) || MapService.gI().isMapCadic(mapId) || MapService.gI().isMapYardart(mapId) || MapService.gI().isMapMaBu(mapId) || MapService.gI().isMapMabu2H(mapId) || MapService.gI().isMapBlackBallWar(mapId)) {
                     continue;
                 }
                 validIndices.add(i);

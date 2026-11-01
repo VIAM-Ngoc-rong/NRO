@@ -254,6 +254,58 @@ public class PetService {
         createBrolyPet(player, gender, limitPower);
     }
 
+    public void createHitPet(Player player, int gender, byte... limitPower) {
+        new Thread(() -> {
+            try {
+                int[] data = getDataPetHit();
+                Pet pet = new Pet(player);
+                pet.name = "$Hit";
+                pet.gender = (byte) gender;
+                pet.id = player.isPl() ? -player.id : -Math.abs(player.id) - 100000;
+                pet.nPoint.power = 1_500_000L;
+                pet.typePet = 6;
+                pet.nPoint.stamina = 1000;
+                pet.nPoint.maxStamina = 1000;
+                pet.nPoint.hpg = data[0];
+                pet.nPoint.mpg = data[1];
+                pet.nPoint.dameg = data[2];
+                pet.nPoint.defg = data[3];
+                pet.nPoint.critg = data[4];
+                for (int i = 0; i < 9; i++) {
+                    pet.inventory.itemsBody.add(ItemService.gI().createItemNull());
+                }
+                pet.playerSkill.skills.add(SkillUtil.createSkill(Util.nextInt(0, 2) * 2, 1));
+                for (int i = 0; i < 4; i++) {
+                    pet.playerSkill.skills.add(SkillUtil.createEmptySkill());
+                }
+                pet.updatePower();
+                pet.nPoint.setFullHpMp();
+                player.pet = pet;
+                if (limitPower != null && limitPower.length == 1) {
+                    player.pet.nPoint.limitPower = limitPower[0];
+                }
+                Service.gI().sendHavePet(player);
+                Service.gI().showInfoPet(player);
+                Thread.sleep(1000);
+                Service.gI().chatJustForMe(player, player.pet, "Bước Nhảy Thời Gian! Sát Thủ Vũ Trụ 6 Hit sẵn sàng phục vụ sư phụ!");
+            } catch (Exception e) {
+            }
+        }).start();
+    }
+
+    public void changeHitPet(Player player, int gender) {
+        byte limitPower = player.pet != null ? player.pet.nPoint.limitPower : 1;
+        if (player.fusion.typeFusion != ConstPlayer.NON_FUSION && player.pet != null) {
+            player.pet.unFusion();
+        }
+        if (player.pet != null) {
+            ChangeMapService.gI().exitMap(player.pet);
+            player.pet.dispose();
+            player.pet = null;
+        }
+        createHitPet(player, gender, limitPower);
+    }
+
     public void changeNamePet(Player player, String name) {
         try {
             if (!InventoryService.gI().isExistItemBag(player, 400)) {
@@ -308,6 +360,16 @@ public class PetService {
         petData[2] = Util.nextInt(80, 160); //dame
         petData[3] = Util.nextInt(20, 70); //def
         petData[4] = Util.nextInt(2, 5); //crit
+        return petData;
+    }
+
+    private int[] getDataPetHit() {
+        int[] petData = new int[5];
+        petData[0] = Util.nextInt(150, 250) * 20; //hp
+        petData[1] = Util.nextInt(150, 250) * 20; //mp
+        petData[2] = Util.nextInt(150, 300); //dame
+        petData[3] = Util.nextInt(50, 120); //def
+        petData[4] = Util.nextInt(5, 8); //crit
         return petData;
     }
 

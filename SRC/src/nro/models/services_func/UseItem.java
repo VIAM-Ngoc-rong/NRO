@@ -1161,6 +1161,24 @@ public class UseItem {
                                     Service.gI().sendThongBao(pl, "Bạn đang có Quả Trứng ở nhà nên không thể sử dụng thêm!");
                                 }
                                 break;
+                            case 1834: //quả trứng hit
+                                if (pl.pet == null || pl.pet.typePet != 5) {
+                                    Service.gI().sendThongBao(pl, "Bắt buộc phải có Đệ tử Broly trước mới sử dụng được Quả Trứng Hit!");
+                                    break;
+                                }
+                                if (pl.mabuEgg == null) {
+                                    MabuEgg.createHitEgg(pl);
+                                    InventoryService.gI().subQuantityItemsBag(pl, item, 1);
+                                    Service.gI().sendThongBao(pl, "Đã đặt Quả Trứng Hit tại nhà! Hãy về nhà để đợi 1 ngày hoặc mở ngay bằng 1 tỷ vàng.");
+                                    if (pl.zone.map.mapId == (21 + pl.gender)) {
+                                        if (pl.mabuEgg != null) {
+                                            pl.mabuEgg.sendMabuEgg();
+                                        }
+                                    }
+                                } else {
+                                    Service.gI().sendThongBao(pl, "Bạn đang có Quả Trứng ở nhà nên không thể sử dụng thêm!");
+                                }
+                                break;
                             case 1999:
                             case 2006:
                                 Input.gI().createFormChangeNameByItem(pl);
@@ -2292,8 +2310,7 @@ public class UseItem {
 
         if (zoneChose.getNumOfPlayers() > 25
                 || MapService.gI().isMapDoanhTrai(zoneChose.map.mapId)
-                || MapService.gI().isMapMaBu(zoneChose.map.mapId)
-                || MapService.gI().isMapHuyDiet(zoneChose.map.mapId)) {
+                || MapService.gI().isMapMaBu(zoneChose.map.mapId)) {
             Service.gI().sendThongBao(pl, "Hiện tại không thể vào được khu!");
             return;
         }

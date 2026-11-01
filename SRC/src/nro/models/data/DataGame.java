@@ -31,10 +31,10 @@ import nro.models.player_system.Template.BgItem;
 
 public class DataGame {
 
-    public static byte vsData = 9;
-    public static byte vsMap = 3;
+    public static byte vsData = 10;
+    public static byte vsMap = 4;
     public static byte vsSkill = 1;
-    public static byte vsItem = 22;
+    public static byte vsItem = 23;
     public static int vsRes = 1;
     public static short maxSmallVersion = 32767;
 
@@ -119,9 +119,25 @@ public class DataGame {
         try {
             msg = Service.gI().messageNotMap((byte) 6);
             msg.writer().writeByte(vsMap);
-            msg.writer().writeByte(Manager.MAP_TEMPLATES.length);
+            int maxMapId = 0;
             for (MapTemplate temp : Manager.MAP_TEMPLATES) {
-                msg.writer().writeUTF(temp.name);
+                if (temp != null && temp.id > maxMapId) {
+                    maxMapId = temp.id;
+                }
+            }
+            int mapNameCount = Math.min(255, Math.max(Manager.MAP_TEMPLATES.length, maxMapId + 1));
+            String[] mapNamesById = new String[mapNameCount];
+            for (int i = 0; i < mapNameCount; i++) {
+                mapNamesById[i] = "";
+            }
+            for (MapTemplate temp : Manager.MAP_TEMPLATES) {
+                if (temp != null && temp.id >= 0 && temp.id < mapNameCount && temp.name != null) {
+                    mapNamesById[temp.id] = temp.name;
+                }
+            }
+            msg.writer().writeByte(mapNameCount);
+            for (int i = 0; i < mapNameCount; i++) {
+                msg.writer().writeUTF(mapNamesById[i]);
             }
             msg.writer().writeByte(Manager.NPC_TEMPLATES.size());
             for (NpcTemplate temp : Manager.NPC_TEMPLATES) {

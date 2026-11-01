@@ -2589,12 +2589,12 @@ public class BossesData {
 
     //************************************************************************** Boss Baby
     public static final BossData BABY = new BossData(
-            "Baby",
+            "Baby Vegeta",
             ConstPlayer.XAYDA,
             new short[]{1715, 1716, 1717, -1, -1, -1},
             200000,
             new int[]{2000000000},
-            new int[]{14},
+            new int[]{166, 167, 172, 173},
             new int[][]{
                 {Skill.GALICK, 7, 100},
                 {Skill.DRAGON, 7, 100},
@@ -2626,16 +2626,16 @@ public class BossesData {
                 "|-1|Lại thêm một tên ngốc nữa chán sống!"
             }, //text chat 2
             new String[]{"|-2|Khốn kiếp, vegeta.. hắn bị baby kí sinh rồi!!"}, //text chat 3
-            REST_15_M
+            REST_5_M
     );
 
     public static final BossData BABY_2 = new BossData(
-            "Baby",
+            "Super Baby 2",
             ConstPlayer.XAYDA,
             new short[]{1718, 1719, 1720, -1, -1, -1},
             250000,
             new int[]{2000000000},
-            new int[]{14},
+            new int[]{166, 167, 172, 173},
             new int[][]{
                 {Skill.GALICK, 7, 100},
                 {Skill.DRAGON, 7, 100},
@@ -2662,12 +2662,12 @@ public class BossesData {
     );
 
     public static final BossData BABY_3 = new BossData(
-            "Baby",
+            "Baby Khỉ Đột Vàng",
             ConstPlayer.XAYDA,
             new short[]{1721, 1722, 1723, -1, -1, -1},
             30000,
             new int[]{2000000000},
-            new int[]{14},
+            new int[]{166, 167, 172, 173},
             new int[][]{
                 {Skill.GALICK, 7, 100},
                 {Skill.DRAGON, 7, 100},
@@ -2906,5 +2906,87 @@ public class BossesData {
             new String[]{"|-1|Quả Cầu Hủy Diệt Hành Tinh!", "|-1|Ugaaa! Hahahaha!"},
             new String[]{"|-1|Ugaaa...!"},
             AppearType.ANOTHER_LEVEL
+    );
+
+    //************************************************************************** Boss Vũ Trụ 6 (Map 169, 170, 171)
+    public static final BossData KEFLA_1 = new BossData(
+            "Caulifla",
+            ConstPlayer.XAYDA,
+            new short[]{690, 691, 692, -1, -1, -1},
+            120000,
+            new int[]{800_000_000},
+            new int[]{169, 170},
+            new int[][]{
+                {Skill.GALICK, 7, 800},
+                {Skill.DRAGON, 7, 800},
+                {Skill.ANTOMIC, 7, 1000},
+                {Skill.LIEN_HOAN, 7, 5000}},
+            new String[]{"|-1|Ta là Caulifla — Saiyan thiên tài của Vũ Trụ 6!",
+                "|-1|Nào, cho ta xem sức mạnh của Saiyan Vũ Trụ 7 đi!"},
+            new String[]{"|-1|Crush Cannon!", "|-1|Quá chậm chạp!", "|-1|Còn nữa đâu, tung hết sức ra đi!"},
+            new String[]{"|-1|Kale! Đeo Bông Tai Potara vào ngay! Chúng ta sẽ hợp thể!"},
+            REST_5_M
+    );
+
+    public static final BossData KEFLA_2 = new BossData(
+            "Siêu Xayda Kefla",
+            ConstPlayer.XAYDA,
+            new short[]{757, 758, 759, -1, -1, -1},
+            160000,
+            new int[]{1_500_000_000},
+            new int[]{169, 170},
+            new int[][]{
+                {Skill.GALICK, 7, 500},
+                {Skill.DRAGON, 7, 500},
+                {Skill.ANTOMIC, 7, 800},
+                {Skill.SUPER_KAME, 7, 12000},
+                {Skill.KHIEN_NANG_LUONG, 7, 180000}},
+            new String[]{"|-1|Hahaha! Sức mạnh hợp thể Potara của Caulifla và Kale — Siêu Xayda Kefla xuất chiến!"},
+            new String[]{"|-1|Gigantic Burst!", "|-1|Cảm giác năng lượng tuôn trào không đáy thật tuyệt vời!", "|-1|Đừng hòng đỡ nổi đòn này!"},
+            new String[]{"|-1|Không thể nào... Bản Năng Vô Cực sao?!"},
+            AppearType.ANOTHER_LEVEL
+    );
+
+    public static final BossData CHAMPA = new BossData(
+            "Thần Hủy Diệt Champa",
+            ConstPlayer.XAYDA,
+            new short[]{511, 512, 513, -1, -1, -1},
+            180000,
+            new int[]{1_800_000_000},
+            new int[]{169, 170, 171},
+            new int[][]{
+                {Skill.GALICK, 7, 500},
+                {Skill.DRAGON, 7, 500},
+                {Skill.KAMEJOKO, 7, 800},
+                {Skill.SUPER_KAME, 7, 10000},
+                {Skill.KHIEN_NANG_LUONG, 7, 180000}},
+            new String[]{"|-1|Ta là Thần Hủy Diệt Champa của Vũ Trụ 6!",
+                "|-1|Kẻ nào dám tự ý xông vào lãnh địa của ta và Vados?!"},
+            new String[]{"|-1|Quả Cầu Hủy Diệt!", "|-1|Vados đâu, mang đồ ăn ra đây!", "|-1|Ta sẽ thổi bay ngươi khỏi Vũ Trụ 6!"},
+            new String[]{"|-1|Hừm... Ngươi mạnh chẳng kém gì tên Beerus đáng ghét!"},
+            REST_5_M
+    );
+
+    public static final BossData HIT = new BossData(
+            "Sát Thủ Hit",
+            ConstPlayer.XAYDA,
+            new short[]{520, 521, 522, -1, -1, -1},
+            220000,
+            new int[]{2_000_000_000},
+            new int[]{170, 171},
+            new int[][]{
+                {Skill.DRAGON, 7, 400},
+                {Skill.DEMON, 7, 400},
+                {Skill.GALICK, 7, 400},
+                {Skill.LIEN_HOAN, 7, 3000},
+                {Skill.DICH_CHUYEN_TUC_THOI, 7, 15000},
+                {Skill.KHIEN_NANG_LUONG, 7, 180000}},
+            new String[]{"|-1|Bước Nhảy Thời Gian 0.1 giây... Mục tiêu đã bị khóa.",
+                "|-1|Ta là Hit — Sát Thủ Huyền Thoại Bất Bại của Vũ Trụ 6."},
+            new String[]{"|-1|Time-Skip: Điểm Tử Huyệt!",
+                "|-1|Ngươi không thể nhìn thấy chuyển động của ta trong khoảng không thời gian bị đóng băng!",
+                "|-1|Bước nhảy thời gian của ta vừa tiến hóa lên 0.5 giây!"},
+            new String[]{"|-1|Thú vị lắm... Hãy nhận lấy Quả Trứng Sát Thủ Hit của ta!"},
+            REST_5_M
     );
 }

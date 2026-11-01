@@ -207,4 +207,7 @@ public class BossID {
     public static final int BERGAMO = -929;
     public static final int ZAMASU = -930;
     public static final int MABU_14H = -931;
+    //========================VU TRU 6========================
+    public static final int KEFLA = -932;
+    public static final int CHAMPA = -933;
 }

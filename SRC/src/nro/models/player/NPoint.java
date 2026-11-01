@@ -1074,6 +1074,7 @@ public class NPoint {
         // - Đệ cấp 1 (typePet == 0): 100% (chỉ cộng chỉ số đệ, không thêm gì cả)
         // - Đệ cấp 2 (typePet == 1..4): 115% chỉ số tổng của đệ tử
         // - Đệ cấp 3 (typePet == 5): 130% chỉ số tổng của đệ tử
+        // - Đệ cấp 4 (typePet == 6 - Sát Thủ Hit): 145% chỉ số tổng của đệ tử
         if (this.player.isPet && ((Pet) this.player).master != null
                 && ((Pet) this.player).master.fusion.typeFusion != ConstPlayer.NON_FUSION) {
             byte typePet = ((Pet) this.player).typePet;
@@ -1081,6 +1082,8 @@ public class NPoint {
                 hpMax = (hpMax * 115L / 100L);
             } else if (typePet == 5) {
                 hpMax = (hpMax * 130L / 100L);
+            } else if (typePet == 6) {
+                hpMax = (hpMax * 145L / 100L);
             }
         }
 
@@ -1220,6 +1223,7 @@ public class NPoint {
         // - Đệ cấp 1 (typePet == 0): 100% (chỉ cộng chỉ số đệ, không thêm gì cả)
         // - Đệ cấp 2 (typePet == 1..4): 115% chỉ số tổng của đệ tử
         // - Đệ cấp 3 (typePet == 5): 130% chỉ số tổng của đệ tử
+        // - Đệ cấp 4 (typePet == 6 - Sát Thủ Hit): 145% chỉ số tổng của đệ tử
         if (this.player.isPet && ((Pet) this.player).master != null
                 && ((Pet) this.player).master.fusion.typeFusion != ConstPlayer.NON_FUSION) {
             byte typePet = ((Pet) this.player).typePet;
@@ -1227,6 +1231,8 @@ public class NPoint {
                 mpMax = (mpMax * 115L / 100L);
             } else if (typePet == 5) {
                 mpMax = (mpMax * 130L / 100L);
+            } else if (typePet == 6) {
+                mpMax = (mpMax * 145L / 100L);
             }
         }
 
@@ -1445,6 +1451,7 @@ public class NPoint {
         // - Đệ cấp 1 (typePet == 0): 100% (chỉ cộng chỉ số đệ, không thêm gì cả)
         // - Đệ cấp 2 (typePet == 1..4): 115% chỉ số tổng của đệ tử
         // - Đệ cấp 3 (typePet == 5): 130% chỉ số tổng của đệ tử
+        // - Đệ cấp 4 (typePet == 6 - Sát Thủ Hit): 145% chỉ số tổng của đệ tử
         if (this.player.isPet && ((Pet) this.player).master != null
                 && ((Pet) this.player).master.fusion.typeFusion != ConstPlayer.NON_FUSION) {
             byte typePet = ((Pet) this.player).typePet;
@@ -1452,6 +1459,8 @@ public class NPoint {
                 dame = (dame * 115L / 100L);
             } else if (typePet == 5) {
                 dame = (dame * 130L / 100L);
+            } else if (typePet == 6) {
+                dame = (dame * 145L / 100L);
             }
         }
 

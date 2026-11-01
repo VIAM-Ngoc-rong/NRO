@@ -1169,7 +1169,7 @@ public class Boss extends Player implements IBoss {
                  BossID.BLACK_GOKU, BossID.ZAMASU, BossID.CUMBER, BossID.GOLDEN_FRIEZA,
                  BossID.BASIL, BossID.LAVENDER, BossID.BERGAMO, BossID.MABU_14H,
                  BossID.DEATH_BEAM_1, BossID.DEATH_BEAM_2, BossID.DEATH_BEAM_3, BossID.DEATH_BEAM_4, BossID.DEATH_BEAM_5,
-                 BossID.HIT, BossID.CHILL_1, BossID.CHILL_2, BossID.HATCHIYACK, BossID.DR_LYCHEE,
+                 BossID.HIT, BossID.KEFLA, BossID.CHAMPA, BossID.CHILL_1, BossID.CHILL_2, BossID.HATCHIYACK, BossID.DR_LYCHEE,
                  BossID.DRABURA, BossID.BUI_BUI, BossID.YA_CON, BossID.MABU_12H, BossID.DRABURA_2, BossID.BUI_BUI_2, BossID.GOKU, BossID.CADIC, BossID.DRABURA_3,
                  BossID.MABU, BossID.SUPERBU, BossID.BABY, BossID.CADIC_M:
                 return true;
@@ -1198,7 +1198,7 @@ public class Boss extends Player implements IBoss {
                  BossID.XEN_CON_1, BossID.XEN_CON_2, BossID.XEN_CON_3, BossID.XEN_CON_4, BossID.XEN_CON_5, BossID.XEN_CON_6, BossID.XEN_CON_7,
                  BossID.ANDROID_19, BossID.DR_KORE, BossID.ANDROID_13, BossID.ANDROID_14, BossID.ANDROID_15,
                  BossID.PIC, BossID.POC, BossID.KING_KONG,
-                 BossID.GOLDEN_FRIEZA, BossID.HIT, BossID.CHILL_1, BossID.CHILL_2,
+                 BossID.GOLDEN_FRIEZA, BossID.HIT, BossID.KEFLA, BossID.CHAMPA, BossID.CHILL_1, BossID.CHILL_2,
                  BossID.MABU_12H, BossID.MABU, BossID.SUPERBU, BossID.BABY, BossID.CADIC_M:
                 return true;
             default:

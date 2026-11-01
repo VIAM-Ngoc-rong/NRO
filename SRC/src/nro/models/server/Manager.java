@@ -716,6 +716,14 @@ public final class Manager {
             } catch (Exception ignored) {
             }
 
+            try (PreparedStatement psUpdateHitEgg = ConnectionDatabase.prepareStatement(
+                    "UPDATE item_template SET TYPE = 27, gender = 3, NAME = 'Quả Trứng Hit', "
+                    + "description = 'Sử dụng để ấp Đệ tử Cấp 4 Sát Thủ Hit tại nhà (Yêu cầu Đệ tử Broly, Hợp thể +45% chỉ số)', "
+                    + "level = 1, icon_id = 4969, part = -1, is_up_to_up = 0 WHERE id = 1834")) {
+                psUpdateHitEgg.executeUpdate();
+            } catch (Exception ignored) {
+            }
+
             try (PreparedStatement psUpdateBagSwitch = ConnectionDatabase.prepareStatement(
                     "UPDATE item_template SET TYPE = 27, gender = 3, NAME = 'Chuyển Trang Hành Trang', "
                     + "description = 'Bấm Sử dụng để chuyển sang Trang Hành Trang khác hoặc mở thêm Trang', level = 1, icon_id = 4340, part = -1, is_up_to_up = 0 WHERE id = 1998")) {
@@ -868,10 +876,13 @@ public final class Manager {
                         }
                     }
                 }
+                if (registeredHeads.add(520)) {
+                    HEAD_AVATARS.add(new HeadAvatar(520, 5112));
+                }
                 int[] specialHeads = {
                     192, 195, 196, 197, 198, 199, 200,
                     282, 285, 288, 297, 303, 304, 305,
-                    380, 383, 391, 412, 454, 545, 546, 547,
+                    380, 383, 391, 412, 454, 520, 545, 546, 547,
                     651, 654, 760, 867, 870, 873, 876, 946,
                     1080, 1083, 1218, 1422, 1578, 1743,
                     1856, 1861, 1866, 2082, 2083, 2084, 2100
@@ -1459,15 +1470,23 @@ public final class Manager {
 
     private void ensureVampaPlanetData(Connection con) {
         try {
-            Object[][] vampaMobs = {
+            Object[][] customMobs = {
                 {80, "Bọ Cạp Vampa", 8_000_000},
                 {81, "Thằn Lằn Vampa", 12_000_000},
                 {107, "Khủng Long Vampa", 18_000_000},
-                {108, "Mãng Xà Vampa", 25_000_000}
+                {108, "Mãng Xà Vampa", 25_000_000},
+                {86, "Dị Nhân Mắt Đỏ", 30_000_000},
+                {87, "Chiến Binh Tuffle", 40_000_000},
+                {88, "Rôbốt Đột Biến Đỏ", 55_000_000},
+                {89, "Rôbốt Đột Biến Xanh", 75_000_000},
+                {97, "Chiến Binh Vũ Trụ 6 Đỏ", 45_000_000},
+                {98, "Chiến Binh Vũ Trụ 6 Xanh", 60_000_000},
+                {94, "Vệ Binh Vũ Trụ 6", 80_000_000},
+                {96, "Ác Quỷ Không Gian U6", 100_000_000}
             };
             try (PreparedStatement psMob = con.prepareStatement(
                     "UPDATE mob_template SET NAME = ?, hp = ? WHERE id = ?")) {
-                for (Object[] m : vampaMobs) {
+                for (Object[] m : customMobs) {
                     psMob.setString(1, (String) m[1]);
                     psMob.setInt(2, (Integer) m[2]);
                     psMob.setInt(3, (Integer) m[0]);
@@ -1476,34 +1495,89 @@ public final class Manager {
                 psMob.executeBatch();
             }
 
-            Object[][] vampaMaps = {
-                {160, "Hang Động Vampa", 15, 15,
+            try (PreparedStatement psNpc14 = con.prepareStatement(
+                    "UPDATE map_template SET npcs = '[[9,396,408],[6,252,408],[74,286,409],[84,953,408],[83,640,408]]' WHERE id = 14");
+                 PreparedStatement psNpc154 = con.prepareStatement(
+                    "UPDATE map_template SET npcs = '[[44,810,312],[55,645,312],[56,725,312],[58,560,312]]' WHERE id = 154");
+                 PreparedStatement psHeadHit = con.prepareStatement(
+                    "INSERT INTO head_avatar (head_id, avatar_id) VALUES (520, 5112) ON DUPLICATE KEY UPDATE avatar_id = 5112")) {
+                psNpc14.executeUpdate();
+                psNpc154.executeUpdate();
+                psHeadHit.executeUpdate();
+            } catch (Exception ignored) {
+            }
+
+            Object[][] customMaps = {
+                // Hành Tinh Vampa (Map 160, 161, 162, 163)
+                {160, "Hang Động Vampa", 15, 15, "[]", 1, 0, 0, 2, 0,
                     "[[\"Bìa Rừng Vampa\",1416,1560,1440,1584,0,0,161,60,312]]",
                     "[[80,21,8000000,132,168],[80,21,8000000,540,168],[80,21,8000000,708,600],[80,21,8000000,1212,648],[80,21,8000000,876,1080],[80,21,8000000,1308,144],[81,22,12000000,348,168],[81,22,12000000,756,168],[81,22,12000000,372,1320],[81,22,12000000,1080,1584],[81,22,12000000,1308,1824],[81,22,12000000,684,1824],[81,22,12000000,492,576],[81,22,12000000,156,888],[80,21,8000000,996,1824],[80,21,8000000,1140,1704],[80,21,8000000,348,576],[81,22,12000000,1068,288]]",
                     "[[56,1248,1584]]"},
-                {161, "Bìa Rừng Vampa", 15, 15,
+                {161, "Bìa Rừng Vampa", 15, 15, "[]", 1, 0, 0, 2, 0,
                     "[[\"Hang Động Vampa\",0,288,24,312,0,0,160,1350,1584],[\"Rừng Cổ Đại Vampa\",1896,312,1920,336,0,0,162,60,288]]",
                     "[[80,21,8000000,108,528],[80,21,8000000,852,792],[81,22,12000000,564,144],[81,22,12000000,1116,288],[81,22,12000000,1500,96],[80,21,8000000,900,144],[107,23,18000000,1476,336],[81,22,12000000,1116,600],[107,23,18000000,1500,1032],[81,22,12000000,900,1104],[81,22,12000000,324,552],[107,23,18000000,1740,960],[81,22,12000000,1212,144],[80,21,8000000,1812,96],[107,23,18000000,468,936],[107,23,18000000,1812,648],[80,21,8000000,804,336]]",
                     "[]"},
-                {162, "Rừng Cổ Đại Vampa", 15, 15,
+                {162, "Rừng Cổ Đại Vampa", 15, 15, "[]", 1, 0, 0, 2, 0,
                     "[[\"Bìa Rừng Vampa\",0,264,24,288,0,0,161,1860,336],[\"Thung Lũng Vampa\",1896,240,1920,264,0,0,163,60,816]]",
                     "[[107,23,18000000,1308,144],[107,23,18000000,1140,384],[81,22,12000000,876,744],[81,22,12000000,276,528],[81,22,12000000,636,744],[81,22,12000000,492,96],[81,22,12000000,492,456],[107,23,18000000,396,792],[107,23,18000000,468,1080],[81,22,12000000,204,1032],[108,24,25000000,132,1272],[108,24,25000000,444,1272],[108,24,25000000,804,1272],[107,23,18000000,1236,648],[107,23,18000000,1788,720],[108,24,25000000,1380,912],[108,24,25000000,1356,1152],[108,24,25000000,1044,1272],[108,24,25000000,1596,1152]]",
                     "[]"},
-                {163, "Thung Lũng Vampa", 15, 15,
+                {163, "Thung Lũng Vampa", 15, 15, "[]", 1, 0, 0, 2, 0,
                     "[[\"Rừng Cổ Đại Vampa\",0,792,24,816,0,0,162,1860,264]]",
                     "[[107,23,18000000,444,528],[107,23,18000000,396,144],[108,24,25000000,804,744],[108,24,25000000,1188,744],[107,23,18000000,1788,168],[107,23,18000000,1692,456],[108,24,25000000,1812,816],[108,24,25000000,588,744],[108,24,25000000,1524,816],[108,24,25000000,420,816]]",
+                    "[]"},
+
+                // Phương án A: Chuỗi Phòng Thí Nghiệm Tiến Sĩ Myuu (Map 166, 167, 172, 173)
+                {166, "Phòng Thí Nghiệm Myuu", 15, 15, "[]", 12, 6, 0, 2, 2,
+                    "[[\"Khu Chế Tạo Baby\",936,456,960,480,0,0,167,60,480]]",
+                    "[[86,21,30000000,240,480],[86,21,30000000,360,480],[86,21,30000000,480,480],[87,22,40000000,600,480],[87,22,40000000,720,480],[87,22,40000000,840,480],[86,21,30000000,240,192],[87,22,40000000,480,192],[86,21,30000000,720,192],[87,22,40000000,840,192]]",
+                    "[[83,120,480]]"},
+                {167, "Khu Chế Tạo Baby", 15, 15, "[]", 12, 6, 0, 2, 2,
+                    "[[\"Phòng Thí Nghiệm Myuu\",0,456,24,480,0,0,166,880,480],[\"Lõi Nghiên Cứu Tuffle\",1032,336,1056,360,0,0,172,60,360]]",
+                    "[[86,21,30000000,180,480],[87,22,40000000,300,480],[87,22,40000000,420,480],[88,23,55000000,540,480],[88,23,55000000,660,480],[88,23,55000000,780,360],[87,22,40000000,900,360],[88,23,55000000,240,240],[87,22,40000000,480,240],[88,23,55000000,720,240]]",
+                    "[]"},
+                {172, "Lõi Nghiên Cứu Tuffle", 15, 15, "[]", 12, 6, 0, 2, 2,
+                    "[[\"Khu Chế Tạo Baby\",0,336,24,360,0,0,167,980,360],[\"Buồng Ấp Chúa Tể Baby\",1128,336,1152,360,0,0,173,60,360]]",
+                    "[[87,22,40000000,180,360],[88,23,55000000,300,360],[88,23,55000000,420,360],[88,23,55000000,540,360],[89,24,75000000,660,360],[89,24,75000000,780,360],[89,24,75000000,900,360],[88,23,55000000,1020,360],[89,24,75000000,360,192],[89,24,75000000,720,192]]",
+                    "[]"},
+                {173, "Buồng Ấp Chúa Tể Baby", 15, 15, "[]", 12, 6, 0, 2, 2,
+                    "[[\"Lõi Nghiên Cứu Tuffle\",0,336,24,360,0,0,172,1080,360]]",
+                    "[[88,23,55000000,180,360],[88,23,55000000,300,360],[89,24,75000000,420,360],[89,24,75000000,540,360],[89,24,75000000,660,360],[89,24,75000000,780,360],[89,24,75000000,900,360],[89,24,75000000,1020,360],[89,24,75000000,360,192],[89,24,75000000,720,192]]",
+                    "[]"},
+
+                // Phương án B: Hành Tinh Hủy Diệt Vũ Trụ 6 (Map 169, 170, 171)
+                {169, "Hành Tinh Champa", 15, 15, "[]", 4, 2, 0, 3, 2,
+                    "[[\"Thung Lũng Vũ Trụ 6\",1200,264,1224,288,0,0,170,60,672]]",
+                    "[[97,22,45000000,180,288],[97,22,45000000,300,264],[97,22,45000000,420,240],[98,23,60000000,720,216],[98,23,60000000,840,216],[98,23,60000000,960,240],[97,22,45000000,1080,264],[98,23,60000000,360,168],[97,22,45000000,780,168],[98,23,60000000,1020,192]]",
+                    "[[58,560,216]]"},
+                {170, "Thung Lũng Vũ Trụ 6", 15, 15, "[]", 4, 2, 0, 3, 2,
+                    "[[\"Hành Tinh Champa\",0,648,24,672,0,0,169,1140,288],[\"Lãnh Địa Sát Thủ Hit\",1680,672,1704,696,0,0,171,60,696]]",
+                    "[[97,22,45000000,180,672],[98,23,60000000,320,672],[98,23,60000000,480,672],[94,24,80000000,640,672],[94,24,80000000,800,672],[94,24,80000000,960,672],[98,23,60000000,1120,672],[94,24,80000000,1280,672],[96,25,100000000,1440,696],[96,25,100000000,1560,696],[94,24,80000000,540,384],[96,25,100000000,1080,384]]",
+                    "[]"},
+                {171, "Lãnh Địa Sát Thủ Hit", 15, 15, "[]", 4, 2, 0, 3, 2,
+                    "[[\"Thung Lũng Vũ Trụ 6\",0,672,24,696,0,0,170,1620,696]]",
+                    "[[94,24,80000000,180,696],[94,24,80000000,320,696],[94,24,80000000,480,696],[96,25,100000000,640,696],[96,25,100000000,800,696],[96,25,100000000,960,696],[96,25,100000000,1120,696],[96,25,100000000,1280,672],[94,24,80000000,1440,672],[96,25,100000000,1580,648],[96,25,100000000,540,408],[96,25,100000000,1080,408]]",
                     "[]"}
             };
             try (PreparedStatement psMap = con.prepareStatement(
-                    "UPDATE map_template SET NAME = ?, zones = ?, max_player = ?, waypoints = ?, mobs = ?, npcs = ? WHERE id = ?")) {
-                for (Object[] row : vampaMaps) {
-                    psMap.setString(1, (String) row[1]);
-                    psMap.setInt(2, (Integer) row[2]);
-                    psMap.setInt(3, (Integer) row[3]);
-                    psMap.setString(4, (String) row[4]);
-                    psMap.setString(5, (String) row[5]);
-                    psMap.setString(6, (String) row[6]);
-                    psMap.setInt(7, (Integer) row[0]);
+                    "INSERT INTO map_template (id, NAME, zones, max_player, data, type, planet_id, bg_type, tile_id, bg_id, waypoints, mobs, npcs) "
+                    + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
+                    + "ON DUPLICATE KEY UPDATE NAME = VALUES(NAME), zones = VALUES(zones), max_player = VALUES(max_player), "
+                    + "type = VALUES(type), planet_id = VALUES(planet_id), bg_type = VALUES(bg_type), tile_id = VALUES(tile_id), bg_id = VALUES(bg_id), "
+                    + "waypoints = VALUES(waypoints), mobs = VALUES(mobs), npcs = VALUES(npcs)")) {
+                for (Object[] row : customMaps) {
+                    psMap.setInt(1, (Integer) row[0]);
+                    psMap.setString(2, (String) row[1]);
+                    psMap.setInt(3, (Integer) row[2]);
+                    psMap.setInt(4, (Integer) row[3]);
+                    psMap.setString(5, (String) row[4]);
+                    psMap.setInt(6, (Integer) row[7]);
+                    psMap.setInt(7, (Integer) row[8]);
+                    psMap.setInt(8, (Integer) row[9]);
+                    psMap.setInt(9, (Integer) row[5]);
+                    psMap.setInt(10, (Integer) row[6]);
+                    psMap.setString(11, (String) row[10]);
+                    psMap.setString(12, (String) row[11]);
+                    psMap.setString(13, (String) row[12]);
                     psMap.addBatch();
                 }
                 psMap.executeBatch();
@@ -1535,9 +1609,9 @@ public final class Manager {
                     "Bước vào Giải Đấu Đa Vũ Trụ! Đối đầu Bộ 3 Sói nguy hiểm nhất Vũ Trụ 9: Basil, Lavender và Bergamo.\n"
                     + "- Đi cùng đồng bang trong khu: Tính chung tiến độ hạ Boss (3+ đồng bang nhận X2 điểm Boss)!\n"
                     + "- Thưởng: 40 Thỏi vàng + 2.000 Hồng ngọc + 200Tr SM/TN"},
-                {33, "Ký Sinh Trùng Báo Thù - Baby Vegeta",
-                    "Ký sinh trùng Tuffle Baby đã chiếm xác Vegeta và hóa Khỉ Đột Vàng!\n"
-                    + "Hãy tập hợp lực lượng Bang hội đẩy lùi hiểm họa.\n"
+                {33, "Phòng Thí Nghiệm Myuu - Baby Vegeta",
+                    "Tại Phòng Thí Nghiệm Bí Mật của Tiến Sĩ Myuu, ký sinh trùng Tuffle Baby đã chiếm xác Vegeta và hóa Khỉ Đột Vàng!\n"
+                    + "Hãy gặp Dr. Myuu tại Làng Kakarot để tiến vào Phòng Thí Nghiệm tiêu diệt chúng.\n"
                     + "- Đi cùng đồng bang trong khu: X2-X3 tiến độ quái & tính chung hạ Boss!\n"
                     + "- Thưởng: 50 Thỏi vàng + 2.500 Hồng ngọc + 250Tr SM/TN"},
                 {34, "Saiyan Tà Ác Cổ Đại - Cumber",
@@ -1550,8 +1624,13 @@ public final class Manager {
                     + "Hãy gặp Whis tại Hành Tinh Bill để đến Vampa, diệt Dị Thú và hạ gục SSJ Broly.\n"
                     + "- Đi cùng đồng bang trong khu: X2-X3 tiến độ quái & tính chung hạ Boss!\n"
                     + "- Thưởng: 80 Thỏi vàng + 5.000 Hồng ngọc + 500Tr SM/TN"},
-                {36, "Huyền Thoại Ngọc Rồng",
-                    "Xin chúc mừng! Bạn đã vượt qua mọi thử thách khắc nghiệt nhất và trở thành Huyền Thoại!"}
+                {36, "Vũ Trụ 6 - Sát Thủ Huyền Thoại Hit",
+                    "Gặp Thiên Sứ Vados tại Hành Tinh Bill để tiến sang Hành Tinh Hủy Diệt Vũ Trụ 6!\n"
+                    + "Đối đầu Siêu Xayda Kefla, Thần Hủy Diệt Champa và Sát Thủ Huyền Thoại Hit (rơi 100% Quả Trứng Hit - ấp Đệ Tử Cấp 4 Hợp Thể +45% chỉ số).\n"
+                    + "- Đi cùng đồng bang trong khu: X2-X3 tiến độ quái & tính chung hạ Boss!\n"
+                    + "- Thưởng: 100 Thỏi vàng + 8.000 Hồng ngọc + 1 Tỷ SM/TN"},
+                {37, "Huyền Thoại Đa Vũ Trụ",
+                    "Xin chúc mừng! Bạn đã vượt qua mọi thử thách khắc nghiệt nhất của Đa Vũ Trụ và trở thành Huyền Thoại!"}
             };
 
             try (PreparedStatement psMain = con.prepareStatement(
@@ -1567,7 +1646,7 @@ public final class Manager {
             }
 
             try (PreparedStatement psDelSub = con.prepareStatement(
-                    "DELETE FROM task_sub_template WHERE task_main_id >= 29 AND task_main_id <= 36")) {
+                    "DELETE FROM task_sub_template WHERE task_main_id >= 29 AND task_main_id <= 37")) {
                 psDelSub.executeUpdate();
             }
 
@@ -1602,11 +1681,11 @@ public final class Manager {
                 {32, "Phối hợp hạ 4 Sói Bergamo", 4, "Cùng đồng bang đánh bại Sói Khổng Lồ Bergamo", -1, -1, 145},
                 {32, "Báo cáo chiến thắng với Ôsin", 1, "Quay về báo cáo với Ôsin tại Đại hội võ thuật", 44, 52, 146},
 
-                // NV 33: Ký Sinh Trùng Báo Thù - Baby Vegeta (50 TV + 2500 HN)
-                {33, "Cùng đồng bang diệt 2500 quái Thánh Địa", 2500, "Đến Bắc/Nam Thánh Địa cùng đồng bang diệt quái (X2-X3)", -1, 158, 147},
-                {33, "Phối hợp tiêu diệt 4 Baby Vegeta", 4, "Cùng đồng đội tiêu diệt Baby cấp 1", -1, -1, 148},
-                {33, "Phối hợp tiêu diệt 4 Super Baby 2", 4, "Tiếp tục tiêu diệt Super Baby 2", -1, -1, 149},
-                {33, "Phối hợp tiêu diệt 4 Baby Khỉ Đột Vàng", 4, "Hợp lực hạ gục Khỉ Đột Vàng Baby", -1, -1, 150},
+                // NV 33: Phòng Thí Nghiệm Myuu - Baby Vegeta (50 TV + 2500 HN)
+                {33, "Cùng đồng bang diệt 2500 Dị Nhân tại Phòng Thí Nghiệm Myuu", 2500, "Gặp Dr. Myuu tại Làng Kakarot để vào Phòng Thí Nghiệm (X2-X3 cùng bang)", 83, 166, 147},
+                {33, "Phối hợp tiêu diệt 4 Baby Vegeta", 4, "Cùng đồng đội tiêu diệt Baby Vegeta tại Phòng Thí Nghiệm Myuu", -1, 166, 148},
+                {33, "Phối hợp tiêu diệt 4 Super Baby 2", 4, "Tiếp tục tiêu diệt Super Baby 2 tại Khu Chế Tạo Baby", -1, 167, 149},
+                {33, "Phối hợp tiêu diệt 4 Baby Khỉ Đột Vàng", 4, "Hợp lực hạ gục Khỉ Đột Vàng Baby tại Lõi Nghiên Cứu", -1, 172, 150},
                 {33, "Báo cáo với %10", 1, "Quay về %11 báo cáo với %10", -5, -9, 151},
 
                 // NV 34: Saiyan Tà Ác Cổ Đại - Cumber (60 TV + 3000 HN)
@@ -1623,8 +1702,16 @@ public final class Manager {
                 {35, "Phối hợp đánh bại 2 SSJ Broly Huyền Thoại", 2, "Hạ gục SSJ Broly tại Hành Tinh Vampa (Rơi 100% Trứng Broly)", -1, 162, 160},
                 {35, "Báo cáo chiến công với %10", 1, "Quay về %11 báo cáo với %10 hoàn tất huyền thoại!", -5, -9, 161},
 
-                // NV 36: Hoàn thành toàn bộ nhiệm vụ
-                {36, "Bạn đã hoàn thành toàn bộ nhiệm vụ cốt truyện!", -1, "Chúc mừng Huyền Thoại Ngọc Rồng!", -1, -1, 162}
+                // NV 36: Vũ Trụ 6 - Sát Thủ Huyền Thoại Hit (100 TV + 8000 HN)
+                {36, "Gặp Vados tại Hành Tinh Bill để đến Vũ Trụ 6", 1, "Đến Hành Tinh Bill (Map 154) gặp Vados chọn Đến Hành Tinh Vũ Trụ 6", 58, 154, 162},
+                {36, "Cùng đồng bang diệt 3000 Chiến Binh Vũ Trụ 6", 3000, "Diệt Chiến Binh Vũ Trụ 6 tại Hành Tinh Champa (X2-X3 cùng bang)", -1, 169, 163},
+                {36, "Phối hợp đánh bại 4 Siêu Xayda Kefla", 4, "Cùng đồng bang hạ gục Caulifla / Kefla tại Vũ Trụ 6", -1, 169, 164},
+                {36, "Phối hợp đánh bại 4 Thần Hủy Diệt Champa", 4, "Hợp sức đánh bại Thần Hủy Diệt Champa tại Vũ Trụ 6", -1, 170, 165},
+                {36, "Phối hợp đánh bại 3 Sát Thủ Hit", 3, "Hạ gục Sát Thủ Hit tại Lãnh Địa Hit (Rơi 100% Quả Trứng Hit - Đệ Cấp 4)", -1, 171, 166},
+                {36, "Báo cáo chiến công với %10", 1, "Quay về %11 báo cáo với %10 hoàn tất huyền thoại Đa Vũ Trụ!", -5, -9, 167},
+
+                // NV 37: Hoàn thành toàn bộ nhiệm vụ
+                {37, "Bạn đã hoàn thành toàn bộ nhiệm vụ cốt truyện!", -1, "Chúc mừng Huyền Thoại Đa Vũ Trụ!", -1, -1, 168}
             };
 
             try (PreparedStatement psSub = con.prepareStatement(

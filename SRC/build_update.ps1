@@ -44,6 +44,7 @@ javac -proc:none -encoding UTF-8 -d build/classes -cp "build/classes;lib/*" `
     src/nro/models/services/InventoryService.java `
     src/nro/models/services/ItemService.java `
     src/nro/models/services/OpenPowerService.java `
+    src/nro/models/services/PetService.java `
     src/nro/models/services/Service.java `
     src/nro/models/services/SkillService.java `
     src/nro/models/services_func/UseItem.java `
@@ -62,11 +63,14 @@ javac -proc:none -encoding UTF-8 -d build/classes -cp "build/classes;lib/*" `
     src/nro/models/combine/DapDoKichHoat.java `
     src/nro/models/combine/CheTaoTrangBiThienSu.java `
     src/nro/models/combine/TinhLuyenDaNguSac.java `
+    src/nro/models/npc/MabuEgg.java `
     src/nro/models/npc/NpcFactory.java `
     src/nro/models/npc_list/BaHatMit.java `
     src/nro/models/npc_list/Bill.java `
     src/nro/models/npc_list/BoMong.java `
+    src/nro/models/npc_list/DrMyuu.java `
     src/nro/models/npc_list/KyGui.java `
+    src/nro/models/npc_list/QuaTrung.java `
     src/nro/models/npc_list/QuyLaoKame.java `
     src/nro/models/npc_list/TruongLaoGuru.java `
     src/nro/models/npc_list/QuocVuong.java `
@@ -75,6 +79,7 @@ javac -proc:none -encoding UTF-8 -d build/classes -cp "build/classes;lib/*" `
     src/nro/models/npc_list/OngMoori.java `
     src/nro/models/npc_list/OngParagus.java `
     src/nro/models/npc_list/Osin.java `
+    src/nro/models/npc_list/Vados.java `
     src/nro/models/npc_list/Whis.java `
     src/nro/models/utils/SkillUtil.java `
     src/nro/models/shop/ShopService.java `
@@ -82,7 +87,13 @@ javac -proc:none -encoding UTF-8 -d build/classes -cp "build/classes;lib/*" `
     src/nro/models/shop_ky_gui/ConsignShopService.java `
     src/nro/models/task/SideTask.java `
     src/nro/models/services/TaskService.java `
+    src/nro/models/boss/BossID.java `
+    src/nro/models/boss/BossesData.java `
     src/nro/models/boss/Boss.java `
+    src/nro/models/boss/Baby/Baby.java `
+    src/nro/models/boss/VuTru6/Kefla.java `
+    src/nro/models/boss/VuTru6/Champa.java `
+    src/nro/models/boss/VuTru6/Hit.java `
     src/nro/models/boss/Broly/Broly.java `
     src/nro/models/boss/Broly/SuperBroly.java `
     src/nro/models/boss/Broly/Broly18h.java `
@@ -162,6 +173,8 @@ $pkgs = @(
     "nro\models\shop_ky_gui",
     "nro\models\task",
     "nro\models\boss",
+    "nro\models\boss\Baby",
+    "nro\models\boss\VuTru6",
     "nro\models\boss\Broly",
     "nro\models\boss\yardrat",
     "nro\models\boss\vo_dai_hat_mit",

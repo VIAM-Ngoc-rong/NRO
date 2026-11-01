@@ -15,7 +15,7 @@ public class MabuEgg {
     private Player player;
     public long lastTimeCreate;
     public long timeDone;
-    public int typeEgg = 0; // 0: Trứng Mabư, 1: Trứng Broly
+    public int typeEgg = 0; // 0: Trứng Mabư, 1: Trứng Broly, 2: Trứng Hit
 
     private final short id = 50;
 
@@ -36,6 +36,10 @@ public class MabuEgg {
 
     public static void createBrolyEgg(Player player) {
         player.mabuEgg = new MabuEgg(player, System.currentTimeMillis(), DEFAULT_TIME_DONE, 1);
+    }
+
+    public static void createHitEgg(Player player) {
+        player.mabuEgg = new MabuEgg(player, System.currentTimeMillis(), DEFAULT_TIME_DONE, 2);
     }
 
     public void sendMabuEgg() {
@@ -61,6 +65,21 @@ public class MabuEgg {
     }
 
     public void openEgg(int gender) {
+        if (this.typeEgg == 2) {
+            if (this.player.pet == null || this.player.pet.typePet != 5) {
+                Service.gI().sendThongBao(player, "Bắt buộc phải có Đệ tử Broly trước mới mở được Trứng Hit!");
+                return;
+            }
+            try {
+                destroyEgg();
+                Thread.sleep(4000);
+                PetService.gI().changeHitPet(this.player, gender);
+                ChangeMapService.gI().changeMapInYard(this.player, this.player.gender * 7, -1, Util.nextInt(300, 500));
+                player.mabuEgg = null;
+            } catch (Exception e) {
+            }
+            return;
+        }
         if (this.typeEgg == 1) {
             if (this.player.pet == null || this.player.pet.typePet != 1) {
                 Service.gI().sendThongBao(player, "Bắt buộc phải có Đệ tử Mabư trước mới mở được Trứng Broly!");
