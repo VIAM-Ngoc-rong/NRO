@@ -3009,6 +3009,10 @@ public class Player implements Runnable {
         }
     }
 
+    public boolean isPcClient() {
+        return this.session != null && this.session.isQwerty;
+    }
+
     public void resetServerAutoAttackState() {
         this.isServerAutoAttack = false;
         this.clientAutoAttackStreak = 0;
@@ -3032,14 +3036,12 @@ public class Player implements Runnable {
             this.lastAttackPlayerId = playerId;
             this.lastAttackMobId = -1;
         }
-        if (this.lastPointedSkillTemplateId == -1 && this.playerSkill != null
-                && this.playerSkill.skillSelect != null && this.playerSkill.skillSelect.template != null) {
+        if (this.playerSkill != null && this.playerSkill.skillSelect != null && this.playerSkill.skillSelect.template != null) {
             this.lastPointedSkillTemplateId = this.playerSkill.skillSelect.template.id;
         }
-        if (this.isManualServerAutoAttack
-                || this.isAutoCleanBag
-                || ((this.itemTime != null && this.itemTime.isUseTDLT) && this.clientAutoAttackStreak >= 2)
-                || this.clientAutoAttackStreak >= 3) {
+        if (this.isManualServerAutoAttack || this.isAutoCleanBag) {
+            this.isServerAutoAttack = true;
+        } else if (isPcClient() && this.clientAutoAttackStreak >= 2) {
             this.isServerAutoAttack = true;
         }
     }
@@ -3049,9 +3051,9 @@ public class Player implements Runnable {
         if (this.playerSkill != null && this.playerSkill.skillSelect != null && this.playerSkill.skillSelect.template != null) {
             this.lastPointedSkillTemplateId = this.playerSkill.skillSelect.template.id;
         }
-        if (this.isManualServerAutoAttack
-                || this.isAutoCleanBag
-                || (this.clientAutoAttackStreak >= 2 && now - this.lastTimeClientAttack <= 3000L)) {
+        if (this.isManualServerAutoAttack || this.isAutoCleanBag) {
+            this.isServerAutoAttack = true;
+        } else if (isPcClient() && this.clientAutoAttackStreak >= 2 && now - this.lastTimeClientAttack <= 5000L) {
             this.isServerAutoAttack = true;
         }
         this.lastTimeClientSkillNotFocus = now;
@@ -3090,6 +3092,24 @@ public class Player implements Runnable {
         return this.isServerAutoAttack;
     }
 
+    private Skill getPointedSkill() {
+        if (this.playerSkill == null) {
+            return null;
+        }
+        if (this.lastPointedSkillTemplateId != -1) {
+            Skill s = this.playerSkill.getSkillbyId(this.lastPointedSkillTemplateId);
+            if (s != null && s.skillId != -1 && s.point > 0 && s.template != null) {
+                return s;
+            }
+        }
+        Skill sel = this.playerSkill.skillSelect;
+        if (sel != null && sel.skillId != -1 && sel.point > 0 && sel.template != null) {
+            this.lastPointedSkillTemplateId = sel.template.id;
+            return sel;
+        }
+        return null;
+    }
+
     public static boolean isSupportOrSpecialPointedSkill(byte tempId) {
         return switch (tempId) {
             case Skill.TAI_TAO_NANG_LUONG,
@@ -3123,16 +3143,12 @@ public class Player implements Runnable {
         if (this.newSkill != null && this.newSkill.isStartSkillSpecial) {
             return false;
         }
-        byte pointedId = this.lastPointedSkillTemplateId;
-        if (pointedId == -1 && this.playerSkill.skillSelect != null && this.playerSkill.skillSelect.template != null) {
-            pointedId = this.playerSkill.skillSelect.template.id;
-            this.lastPointedSkillTemplateId = pointedId;
-        }
-        if (!isSupportOrSpecialPointedSkill(pointedId)) {
+        Skill pointedSkill = getPointedSkill();
+        if (pointedSkill == null || pointedSkill.template == null) {
             return false;
         }
-        Skill pointedSkill = this.playerSkill.getSkillbyId(pointedId);
-        if (pointedSkill == null || pointedSkill.skillId == -1 || pointedSkill.point <= 0 || pointedSkill.template == null) {
+        byte pointedId = pointedSkill.template.id;
+        if (!isSupportOrSpecialPointedSkill(pointedId)) {
             return false;
         }
         if (!Util.canDoWithTime(pointedSkill.lastTimeUseThisSkill, pointedSkill.coolDown)) {
@@ -3147,7 +3163,6 @@ public class Player implements Runnable {
             return false;
         }
 
-        Skill prevSelect = this.playerSkill.skillSelect;
         this.playerSkill.skillSelect = pointedSkill;
 
         if (pointedId == Skill.TRI_THUONG) {
@@ -3184,12 +3199,13 @@ public class Player implements Runnable {
         Player targetPl = findServerAutoAttackPlayer();
         Mob targetMob = (targetPl == null) ? findServerAutoAttackMob() : null;
         if (targetPl == null && targetMob == null) {
-            this.playerSkill.skillSelect = prevSelect;
             return false;
         }
         boolean ok = nro.models.services.SkillService.gI().useSkill(this, targetPl, targetMob, -1, null);
         if (ok) {
-            EffectSkillService.gI().sendAutoSkillPaintToPlayer(this, pointedSkill.skillId);
+            if (targetMob == null || !targetMob.isDie()) {
+                EffectSkillService.gI().sendAutoSkillPaintToPlayer(this, pointedSkill.skillId);
+            }
             Service.gI().sendTimeSkill(this, pointedSkill);
             this.lastTimeServerAutoAttack = System.currentTimeMillis();
         }
@@ -3218,16 +3234,18 @@ public class Player implements Runnable {
         if (this.zone == null || this.zone.mobs == null || this.zone.mobs.isEmpty()) {
             return null;
         }
+        Skill pointed = getPointedSkill();
+        int maxRange = (pointed != null && pointed.dx > 0) ? Math.max(100, pointed.dx * 2) : 250;
         if (this.lastAttackMobId >= 0) {
             for (Mob m : this.zone.mobs) {
                 if (m != null && m.id == this.lastAttackMobId && !m.isDie() && m.status != 0 && m.status != 1) {
-                    if (Util.getDistance(this, m) <= 380) {
+                    if (Util.getDistance(this, m) <= maxRange) {
                         return m;
                     }
                 }
             }
         }
-        if (!this.isManualServerAutoAttack && !this.isAutoCleanBag && (this.itemTime == null || !this.itemTime.isUseTDLT)) {
+        if (!this.isAutoCleanBag) {
             return null;
         }
         Mob nearest = null;
@@ -3235,7 +3253,7 @@ public class Player implements Runnable {
         for (Mob m : this.zone.mobs) {
             if (m != null && !m.isDie() && m.status != 0 && m.status != 1) {
                 int d = Util.getDistance(this, m);
-                if (d <= 300 && d < minDist) {
+                if (d <= maxRange && d < minDist) {
                     minDist = d;
                     nearest = m;
                 }
@@ -3245,41 +3263,6 @@ public class Player implements Runnable {
             this.lastAttackMobId = nearest.id;
         }
         return nearest;
-    }
-
-    private Skill chooseServerAutoAttackSkill() {
-        if (this.playerSkill == null || this.playerSkill.skills == null) {
-            return null;
-        }
-        byte pointedId = this.lastPointedSkillTemplateId;
-        if (pointedId != -1 && !isSupportOrSpecialPointedSkill(pointedId)) {
-            Skill pointedAttack = this.playerSkill.getSkillbyId(pointedId);
-            if (isAutoSkillReady(pointedAttack)) {
-                return pointedAttack;
-            }
-        }
-        List<Skill> active = getActiveAutoHuntSkills();
-        for (Skill s : active) {
-            if (s != null && s.template != null && isAutoSkillReady(s)) {
-                switch (s.template.id) {
-                    case Skill.KAMEJOKO, Skill.MASENKO, Skill.ANTOMIC,
-                         Skill.LIEN_HOAN, Skill.DRAGON, Skill.DEMON, Skill.GALICK, Skill.KAIOKEN -> {
-                        return s;
-                    }
-                }
-            }
-        }
-        for (Skill s : this.playerSkill.skills) {
-            if (s != null && s.template != null && isAutoSkillReady(s)) {
-                switch (s.template.id) {
-                    case Skill.KAMEJOKO, Skill.MASENKO, Skill.ANTOMIC,
-                         Skill.LIEN_HOAN, Skill.DRAGON, Skill.DEMON, Skill.GALICK, Skill.KAIOKEN -> {
-                        return s;
-                    }
-                }
-            }
-        }
-        return null;
     }
 
     public void updateServerAutoAttack() {
@@ -3304,7 +3287,9 @@ public class Player implements Runnable {
                         this.lastTimeServerAutoAttack = System.currentTimeMillis();
                         this.playerSkill.skillSelect = qckk;
                         nro.models.services.SkillService.gI().useSkill(this, targetPl, targetMob, -1, null);
-                        EffectSkillService.gI().sendAutoSkillPaintToPlayer(this, qckk.skillId);
+                        if (targetMob == null || !targetMob.isDie()) {
+                            EffectSkillService.gI().sendAutoSkillPaintToPlayer(this, qckk.skillId);
+                        }
                         Service.gI().sendTimeSkill(this, qckk);
                     } else {
                         this.playerSkill.prepareQCKK = false;
@@ -3321,7 +3306,9 @@ public class Player implements Runnable {
                         this.lastTimeServerAutoAttack = System.currentTimeMillis();
                         this.playerSkill.skillSelect = laze;
                         nro.models.services.SkillService.gI().useSkill(this, targetPl, targetMob, -1, null);
-                        EffectSkillService.gI().sendAutoSkillPaintToPlayer(this, laze.skillId);
+                        if (targetMob == null || !targetMob.isDie()) {
+                            EffectSkillService.gI().sendAutoSkillPaintToPlayer(this, laze.skillId);
+                        }
                         Service.gI().sendTimeSkill(this, laze);
                     } else {
                         this.playerSkill.prepareLaze = false;
@@ -3344,25 +3331,28 @@ public class Player implements Runnable {
                 return;
             }
 
-            // 2. Nếu người chơi đang trỏ vào ô kỹ năng thụ động/hỗ trợ/đặc biệt (TTNL, TDHS, Khiên, Huýt Sáo, Biến Khỉ, Đẻ Trứng...)
-            // thì tự động thi triển ngay khi chiêu đó hồi xong!
-            if (tryUsePointedSupportOrSpecialSkill()) {
+            // 2. Chỉ sử dụng DUY NHẤT chiêu thức mà người chơi đang trỏ vào (getPointedSkill)
+            Skill pointedSkill = getPointedSkill();
+            if (pointedSkill == null || pointedSkill.template == null) {
+                return;
+            }
+            byte pointedId = pointedSkill.template.id;
+
+            // Nếu đang trỏ vào kỹ năng thụ động/hỗ trợ/đặc biệt (TTNL, TDHS, Khiên, Huýt Sáo, Biến Khỉ, Đẻ Trứng...)
+            // thì chỉ tự động dùng đúng chiêu đó khi hết hồi chiêu, tuyệt đối không đổi sang chiêu đánh khác!
+            if (isSupportOrSpecialPointedSkill(pointedId)) {
+                tryUsePointedSupportOrSpecialSkill();
                 return;
             }
 
-            // 3. Nếu người chơi không bật Auto Server (td / treoquai) và không đang trỏ vào chiêu hỗ trợ/đặc biệt (TTNL, TDHS...),
-            // mà Client đã ngừng gửi gói đánh (do người chơi tắt Tự Đánh / ngừng bấm đánh trên Android), thì dừng ngay!
-            boolean isPointingSupportOrSpecial = isSupportOrSpecialPointedSkill(this.lastPointedSkillTemplateId);
-            if (!this.isManualServerAutoAttack && !this.isAutoCleanBag && !isPointingSupportOrSpecial) {
-                if (Util.canDoWithTime(this.lastTimeClientAttack, 1200)) {
-                    this.isServerAutoAttack = false;
-                    this.clientAutoAttackStreak = 0;
-                }
+            // 3. Nếu đang trỏ vào chiêu đánh thường (type == 1) nhưng Client đang mở Tab Hành Trang
+            // (khiến Client bị kẹt paintCanNotUseSkill), Server tiếp tục tự đánh đúng chiêu đang trỏ vào mục tiêu đang khóa!
+            int waitClientMs = Math.max(520, pointedSkill.coolDown + 80);
+            if (!Util.canDoWithTime(this.lastTimeClientAttack, waitClientMs)
+                    || !Util.canDoWithTime(this.lastTimeServerAutoAttack, Math.max(420, pointedSkill.coolDown))) {
                 return;
             }
-
-            if (!Util.canDoWithTime(this.lastTimeClientAttack, 520)
-                    || !Util.canDoWithTime(this.lastTimeServerAutoAttack, 420)) {
+            if (!isAutoSkillReady(pointedSkill)) {
                 return;
             }
 
@@ -3372,21 +3362,14 @@ public class Player implements Runnable {
                 return;
             }
 
-            Skill attackSkill = chooseServerAutoAttackSkill();
-            if (attackSkill != null) {
-                this.lastTimeServerAutoAttack = System.currentTimeMillis();
-                this.playerSkill.skillSelect = attackSkill;
-                boolean ok = nro.models.services.SkillService.gI().useSkill(this, targetPl, targetMob, -1, null);
-                if (ok) {
-                    EffectSkillService.gI().sendAutoSkillPaintToPlayer(this, attackSkill.skillId);
-                    Service.gI().sendTimeSkill(this, attackSkill);
+            this.lastTimeServerAutoAttack = System.currentTimeMillis();
+            this.playerSkill.skillSelect = pointedSkill;
+            boolean ok = nro.models.services.SkillService.gI().useSkill(this, targetPl, targetMob, -1, null);
+            if (ok) {
+                if (targetMob == null || !targetMob.isDie()) {
+                    EffectSkillService.gI().sendAutoSkillPaintToPlayer(this, pointedSkill.skillId);
                 }
-                if (this.lastPointedSkillTemplateId != -1) {
-                    Skill pointed = this.playerSkill.getSkillbyId(this.lastPointedSkillTemplateId);
-                    if (pointed != null) {
-                        this.playerSkill.skillSelect = pointed;
-                    }
-                }
+                Service.gI().sendTimeSkill(this, pointedSkill);
             }
         } catch (Exception ignored) {
         }

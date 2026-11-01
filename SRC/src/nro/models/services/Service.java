@@ -1993,8 +1993,8 @@ public class Service {
             msg.reader().readBoolean();//is_gprs
             msg.reader().readInt();//width
             msg.reader().readInt();//height
-            msg.reader().readBoolean();//is_qwerty
-            msg.reader().readBoolean();//is_touch
+            session.isQwerty = msg.reader().readBoolean();//is_qwerty
+            session.isTouch = msg.reader().readBoolean();//is_touch
             String platform = msg.reader().readUTF();
             String[] arrPlatform = platform.split("\\|");
             session.version = Integer.parseInt(arrPlatform[1].replaceAll("\\.", ""));

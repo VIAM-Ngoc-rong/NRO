@@ -39,6 +39,8 @@ public class MySession extends Session {
 
     public int typeClient;
     public byte zoomLevel;
+    public boolean isQwerty;
+    public boolean isTouch;
 
     public long lastTimeLogout;
     public boolean joinedGame;
