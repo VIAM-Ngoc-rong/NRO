@@ -1079,14 +1079,6 @@ public class NPoint {
             hpMax += (hpMax * RewardBlackBall.R2S_1 / 100L);
         }
 
-        // Xử lý khỉ
-        if (this.player.effectSkill.isMonkey) {
-            if (!this.player.isPet || (this.player.isPet && ((Pet) this.player).status != Pet.FUSION)) {
-                int percent = SkillUtil.getPercentHpMonkey(player.effectSkill.levelMonkey);
-                hpMax += (hpMax * percent / 100L);
-            }
-        }
-
         // Xử lý phù
         if (this.player.zone != null && MapService.gI().isMapBlackBallWar(this.player.zone.map.mapId)) {
             hpMax *= this.player.effectSkin.xHPKI;
@@ -1174,6 +1166,13 @@ public class NPoint {
         for (Item.ItemOption opt : options) {
             if (opt.optionTemplate.id == 77) {
                 hpMax += (hpMax * opt.param / 100L);
+            }
+        }
+
+        // Xử lý khỉ: x2 tổng HP hiện tại (bao gồm cả hợp thể, bổ huyết, huýt sáo, danh hiệu)
+        if (this.player.effectSkill != null && this.player.effectSkill.isMonkey) {
+            if (!this.player.isPet || (this.player.isPet && ((Pet) this.player).status != Pet.FUSION)) {
+                hpMax *= 2L;
             }
         }
 

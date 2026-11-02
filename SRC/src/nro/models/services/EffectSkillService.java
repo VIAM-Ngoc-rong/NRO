@@ -264,16 +264,18 @@ public class EffectSkillService {
         if (player.setClothes.cadic == 5) {
             timeMonkey *= 5;
         }
+        long hpBefore = player.nPoint.hp;
         player.effectSkill.isMonkey = true;
         player.effectSkill.timeMonkey = timeMonkey;
         player.effectSkill.lastTimeUpMonkey = System.currentTimeMillis();
         player.effectSkill.levelMonkey = (byte) point;
-        player.nPoint.setHp(((int) player.nPoint.hp * 2));
+        player.nPoint.calPoint();
+        player.nPoint.setHp(Math.min((long) player.nPoint.hpMax, hpBefore * 2L));
         Service.gI().Send_Caitrang(player);
+        Service.gI().point(player);
         if (!player.isPet) {
             PlayerService.gI().sendInfoHpMp(player);
         }
-        Service.gI().point(player);
         Service.gI().Send_Info_NV(player);
         Service.gI().sendInfoPlayerEatPea(player);
     }
@@ -281,6 +283,7 @@ public class EffectSkillService {
     public void monkeyDown(Player player) {
         player.effectSkill.isMonkey = false;
         player.effectSkill.levelMonkey = 0;
+        player.nPoint.calPoint();
         if (player.nPoint.hp > player.nPoint.hpMax) {
             player.nPoint.setHp(player.nPoint.hpMax);
         }
