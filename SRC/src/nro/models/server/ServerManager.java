@@ -335,11 +335,6 @@ public class ServerManager {
                     }
                 }
             }
-            Runtime rt = Runtime.getRuntime();
-            long usedMb = (rt.totalMemory() - rt.freeMemory()) / (1024 * 1024);
-            if (usedMb > 380) {
-                System.gc();
-            }
         } catch (Exception ignored) {
         }
     }
@@ -361,21 +356,19 @@ public class ServerManager {
                 } catch (Exception ignored) {
                 }
             }
-            try (Connection con = LocalManager.getConnection();
-                 PreparedStatement ps = con.prepareStatement(
-                         "DELETE FROM boss_kill_history WHERE id < (SELECT min_id FROM (SELECT MIN(id) AS min_id FROM (SELECT id FROM boss_kill_history ORDER BY id DESC LIMIT 300) t) t2)")) {
-                ps.executeUpdate();
-            } catch (Exception ignored) {
-            }
             String os = System.getProperty("os.name").toLowerCase();
             if (!os.contains("win")) {
-                new ProcessBuilder("/bin/bash", "-c",
+                Process p = new ProcessBuilder("/bin/bash", "-c",
                         "truncate -s 0 /var/log/btmp /var/log/wtmp /var/log/syslog /var/log/auth.log /var/log/kern.log /var/log/dpkg.log /var/log/ufw.log /var/log/mysql/*.log 2>/dev/null || true; "
                         + "find /var/log -type f \\( -name '*.gz' -o -name '*.1' -o -name '*.old' \\) -delete 2>/dev/null || true; "
                         + "journalctl --vacuum-size=10M >/dev/null 2>&1 || true; "
-                        + "rm -rf /tmp/*.tmp /var/tmp/* /var/crash/* /root/.cache/* /root/NRO/backups/.git 2>/dev/null || true; "
-                        + "mysql -e 'PURGE BINARY LOGS BEFORE NOW(); SET GLOBAL binlog_expire_logs_seconds = 600;' >/dev/null 2>&1 || true")
+                        + "rm -rf /tmp/*.tmp /var/tmp/* /var/crash/* /root/.cache/* /root/NRO/backups/.git 2>/dev/null || true")
+                        .redirectErrorStream(true)
                         .start();
+                p.getInputStream().close();
+                if (!p.waitFor(10, TimeUnit.SECONDS)) {
+                    p.destroyForcibly();
+                }
             }
         } catch (Exception ignored) {
         }
@@ -529,17 +522,6 @@ public class ServerManager {
         } catch (Exception e) {
             Logger.error("Lỗi save player!\n");
         }
-        try {
-            String os = System.getProperty("os.name").toLowerCase();
-            if (!os.contains("win") && new java.io.File("backup_db.sh").exists()) {
-                Process p = new ProcessBuilder("/bin/bash", "./backup_db.sh")
-                        .directory(new java.io.File("."))
-                        .start();
-                p.waitFor(15, TimeUnit.SECONDS);
-            }
-        } catch (Exception e) {
-            Logger.error("Lỗi backup database khi đóng server: " + e.getMessage() + "\n");
-        }
         Logger.success("SUCCESSFULLY SAVED ALL DATA!\n");
     }
 
@@ -552,7 +534,7 @@ public class ServerManager {
             if (os.contains("win")) {
                 Runtime.getRuntime().exec("cmd /c start restart_server.bat");
             } else {
-                new ProcessBuilder("/bin/bash", "-c", "sleep 2 && nohup ./run.sh --fg > server.log 2>&1 &")
+                new ProcessBuilder("/bin/bash", "-c", "sleep 2 && nohup /bin/bash ./run.sh > /dev/null 2>&1 < /dev/null &")
                         .directory(new java.io.File("."))
                         .start();
             }

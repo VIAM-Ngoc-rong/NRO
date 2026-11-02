@@ -61,12 +61,37 @@ public class Network implements INetwork, Runnable {
         }
         try {
             this.port = port;
-            this.serverSocketChannel = ServerSocketChannel.open();
-            this.serverSocketChannel.configureBlocking(false);
-            this.serverSocketChannel.socket().bind(new InetSocketAddress(port));
-            this.serverSocketChannel.register(this.selector, 16);
+            IOException lastEx = null;
+            boolean bound = false;
+            for (int attempt = 1; attempt <= 10; attempt++) {
+                try {
+                    this.serverSocketChannel = ServerSocketChannel.open();
+                    this.serverSocketChannel.configureBlocking(false);
+                    this.serverSocketChannel.socket().setReuseAddress(true);
+                    this.serverSocketChannel.socket().bind(new InetSocketAddress(port));
+                    this.serverSocketChannel.register(this.selector, 16);
+                    bound = true;
+                    break;
+                } catch (IOException bindEx) {
+                    lastEx = bindEx;
+                    try {
+                        if (this.serverSocketChannel != null) {
+                            this.serverSocketChannel.close();
+                        }
+                    } catch (Exception ignored) {
+                    }
+                    Logger.warning("Port " + port + " đang bận, thử lại lần " + attempt + "/10 sau 1s...\n");
+                    try {
+                        Thread.sleep(1000L);
+                    } catch (InterruptedException ignored) {
+                    }
+                }
+            }
+            if (!bound && lastEx != null) {
+                throw lastEx;
+            }
         } catch (IOException ex) {
-            Logger.error("Error initializing server at port " + port + "\n");
+            Logger.error("Error initializing server at port " + port + ": " + ex.getMessage() + "\n");
             System.exit(0);
         }
         this.start = true;

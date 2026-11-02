@@ -105,7 +105,12 @@ public class AdminWebServer {
         }
     }
 
-    private static void ensureBossKillTable(Connection con) throws Exception {
+    private static volatile boolean bossKillTableEnsured = false;
+
+    private static synchronized void ensureBossKillTable(Connection con) throws Exception {
+        if (bossKillTableEnsured) {
+            return;
+        }
         try (PreparedStatement ps = con.prepareStatement(
                 "CREATE TABLE IF NOT EXISTS boss_kill_history ("
                 + "id INT AUTO_INCREMENT PRIMARY KEY, "
@@ -139,6 +144,7 @@ public class AdminWebServer {
             ps.executeUpdate();
         } catch (Exception ignored) {
         }
+        bossKillTableEnsured = true;
     }
 
     public static void loadBossKillHistoryFromDb() {
@@ -381,12 +387,6 @@ public class AdminWebServer {
         }
 
         Runtime rt = Runtime.getRuntime();
-        long nowGcCheck = System.currentTimeMillis();
-        long rawUsedMb = (rt.totalMemory() - rt.freeMemory()) / (1024 * 1024);
-        if (rawUsedMb > 400 && (nowGcCheck - lastAutoGcTimeMs) > 20000L) {
-            lastAutoGcTimeMs = nowGcCheck;
-            System.gc();
-        }
         long usedRamMb = (rt.totalMemory() - rt.freeMemory()) / (1024 * 1024);
         long maxRamMb = rt.maxMemory() / (1024 * 1024);
         int cpuCores = rt.availableProcessors();
@@ -958,6 +958,9 @@ public class AdminWebServer {
         sendJson(exchange, 200, sb.toString());
     }
 
+    private static volatile String cachedTopPlayersJson = null;
+    private static volatile long lastTopPlayersCacheMs = 0L;
+
     /**
      * Returns Server Rankings, Bot list, and Backup files / logs.
      */
@@ -982,84 +985,92 @@ public class AdminWebServer {
         sb.append(",\"maintSkippedToday\":").append(AutoMaintenance.isSkippedToday());
         sb.append(",\"lastMaintDate\":").append(jsonStr(AutoMaintenance.lastMaintOrUpdateDate != null ? AutoMaintenance.lastMaintOrUpdateDate : ""));
 
-        // Top players by power
-        List<Map<String, Object>> rankList = new ArrayList<>();
-        try (Connection con = LocalManager.getConnection();
-             PreparedStatement ps = con.prepareStatement("SELECT p.id, p.account_id, p.name, p.gender, p.data_point, p.data_inventory, a.vnd, a.tongnap, a.total_play_sec FROM player p LEFT JOIN account a ON a.id = p.account_id LIMIT 300");
-             ResultSet rs = ps.executeQuery()) {
-            while (rs.next()) {
-                long power = 0, gold = 0, gem = 0, ruby = 0;
-                try {
-                    JSONArray pt = (JSONArray) JSONValue.parse(rs.getString("data_point"));
-                    if (pt != null && pt.size() >= 2) {
-                        power = Long.parseLong(String.valueOf(pt.get(1)));
+        // Top players by power (cached for 15s to prevent DB & GC pressure)
+        long nowSys = System.currentTimeMillis();
+        String topJson = cachedTopPlayersJson;
+        if (topJson == null || (nowSys - lastTopPlayersCacheMs) > 15000L) {
+            List<Map<String, Object>> rankList = new ArrayList<>();
+            try (Connection con = LocalManager.getConnection();
+                 PreparedStatement ps = con.prepareStatement("SELECT p.id, p.account_id, p.name, p.gender, p.data_point, p.data_inventory, a.vnd, a.tongnap, a.total_play_sec FROM player p LEFT JOIN account a ON a.id = p.account_id LIMIT 300");
+                 ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    long power = 0, gold = 0, gem = 0, ruby = 0;
+                    try {
+                        JSONArray pt = (JSONArray) JSONValue.parse(rs.getString("data_point"));
+                        if (pt != null && pt.size() >= 2) {
+                            power = Long.parseLong(String.valueOf(pt.get(1)));
+                        }
+                    } catch (Exception ignored) {
                     }
-                } catch (Exception ignored) {
-                }
-                try {
-                    JSONArray inv = (JSONArray) JSONValue.parse(rs.getString("data_inventory"));
-                    if (inv != null && inv.size() >= 3) {
-                        gold = Long.parseLong(String.valueOf(inv.get(0)));
-                        gem = Long.parseLong(String.valueOf(inv.get(1)));
-                        ruby = Long.parseLong(String.valueOf(inv.get(2)));
+                    try {
+                        JSONArray inv = (JSONArray) JSONValue.parse(rs.getString("data_inventory"));
+                        if (inv != null && inv.size() >= 3) {
+                            gold = Long.parseLong(String.valueOf(inv.get(0)));
+                            gem = Long.parseLong(String.valueOf(inv.get(1)));
+                            ruby = Long.parseLong(String.valueOf(inv.get(2)));
+                        }
+                    } catch (Exception ignored) {
                     }
-                } catch (Exception ignored) {
-                }
-                int accId = rs.getInt("account_id");
-                long totalPlaySec = 0L;
-                try {
-                    totalPlaySec = rs.getLong("total_play_sec");
-                } catch (Exception ignored) {
-                }
-                Player livePl = Client.gI().getPlayerByUser(accId);
-                if (livePl != null && livePl.getSession() != null) {
-                    totalPlaySec = Math.max(totalPlaySec, livePl.getSession().getLiveTotalPlaySec());
-                    if (livePl.nPoint != null) {
-                        power = Math.max(power, livePl.nPoint.power);
+                    int accId = rs.getInt("account_id");
+                    long totalPlaySec = 0L;
+                    try {
+                        totalPlaySec = rs.getLong("total_play_sec");
+                    } catch (Exception ignored) {
                     }
+                    Player livePl = Client.gI().getPlayerByUser(accId);
+                    if (livePl != null && livePl.getSession() != null) {
+                        totalPlaySec = Math.max(totalPlaySec, livePl.getSession().getLiveTotalPlaySec());
+                        if (livePl.nPoint != null) {
+                            power = Math.max(power, livePl.nPoint.power);
+                        }
+                    }
+                    double playHours = Math.round((totalPlaySec / 3600.0) * 100.0) / 100.0;
+                    Map<String, Object> row = new HashMap<>();
+                    row.put("id", rs.getLong("id"));
+                    row.put("name", rs.getString("name"));
+                    int g = rs.getInt("gender");
+                    row.put("gender", g == 0 ? "Trái Đất" : (g == 1 ? "Namek" : "Xayda"));
+                    row.put("power", power);
+                    row.put("gold", gold);
+                    row.put("gem", gem);
+                    row.put("ruby", ruby);
+                    row.put("vnd", rs.getInt("vnd"));
+                    row.put("tongnap", rs.getInt("tongnap"));
+                    row.put("totalPlaySec", totalPlaySec);
+                    row.put("playHours", playHours);
+                    rankList.add(row);
                 }
-                double playHours = Math.round((totalPlaySec / 3600.0) * 100.0) / 100.0;
-                Map<String, Object> row = new HashMap<>();
-                row.put("id", rs.getLong("id"));
-                row.put("name", rs.getString("name"));
-                int g = rs.getInt("gender");
-                row.put("gender", g == 0 ? "Trái Đất" : (g == 1 ? "Namek" : "Xayda"));
-                row.put("power", power);
-                row.put("gold", gold);
-                row.put("gem", gem);
-                row.put("ruby", ruby);
-                row.put("vnd", rs.getInt("vnd"));
-                row.put("tongnap", rs.getInt("tongnap"));
-                row.put("totalPlaySec", totalPlaySec);
-                row.put("playHours", playHours);
-                rankList.add(row);
+            } catch (Exception ignored) {
             }
-        } catch (Exception ignored) {
-        }
 
-        rankList.sort((a, b) -> Long.compare((Long) b.get("power"), (Long) a.get("power")));
-        sb.append(",\"topPlayers\":[");
-        for (int i = 0; i < Math.min(20, rankList.size()); i++) {
-            if (i > 0) {
-                sb.append(",");
+            rankList.sort((a, b) -> Long.compare((Long) b.get("power"), (Long) a.get("power")));
+            StringBuilder topSb = new StringBuilder("[");
+            for (int i = 0; i < Math.min(20, rankList.size()); i++) {
+                if (i > 0) {
+                    topSb.append(",");
+                }
+                Map<String, Object> r = rankList.get(i);
+                topSb.append("{");
+                topSb.append("\"rank\":").append(i + 1);
+                topSb.append(",\"id\":").append(r.get("id"));
+                topSb.append(",\"name\":").append(jsonStr((String) r.get("name")));
+                topSb.append(",\"gender\":").append(jsonStr((String) r.get("gender")));
+                topSb.append(",\"power\":").append(r.get("power"));
+                topSb.append(",\"gold\":").append(r.get("gold"));
+                topSb.append(",\"gem\":").append(r.get("gem"));
+                topSb.append(",\"ruby\":").append(r.get("ruby"));
+                topSb.append(",\"vnd\":").append(r.get("vnd"));
+                topSb.append(",\"tongnap\":").append(r.get("tongnap"));
+                topSb.append(",\"totalPlaySec\":").append(r.get("totalPlaySec"));
+                topSb.append(",\"playHours\":").append(r.get("playHours"));
+                topSb.append("}");
             }
-            Map<String, Object> r = rankList.get(i);
-            sb.append("{");
-            sb.append("\"rank\":").append(i + 1);
-            sb.append(",\"id\":").append(r.get("id"));
-            sb.append(",\"name\":").append(jsonStr((String) r.get("name")));
-            sb.append(",\"gender\":").append(jsonStr((String) r.get("gender")));
-            sb.append(",\"power\":").append(r.get("power"));
-            sb.append(",\"gold\":").append(r.get("gold"));
-            sb.append(",\"gem\":").append(r.get("gem"));
-            sb.append(",\"ruby\":").append(r.get("ruby"));
-            sb.append(",\"vnd\":").append(r.get("vnd"));
-            sb.append(",\"tongnap\":").append(r.get("tongnap"));
-            sb.append(",\"totalPlaySec\":").append(r.get("totalPlaySec"));
-            sb.append(",\"playHours\":").append(r.get("playHours"));
-            sb.append("}");
+            topSb.append("]");
+            topJson = topSb.toString();
+            cachedTopPlayersJson = topJson;
+            lastTopPlayersCacheMs = nowSys;
         }
-        sb.append("]");
+        sb.append(",\"topPlayers\":").append(topJson);
 
         // Backup files & log
         sb.append(",\"backups\":[");
@@ -2471,7 +2482,7 @@ public class AdminWebServer {
                         try {
                             Thread.sleep(800);
                             new ProcessBuilder("/bin/bash", "-c",
-                                    "nohup /bin/bash -c 'apt-get clean >/dev/null 2>&1; truncate -s 0 /var/log/btmp /var/log/wtmp /var/log/syslog /var/log/auth.log /var/log/kern.log /var/log/mysql/*.log 2>/dev/null; rm -rf /var/cache/apt/archives/*.deb /var/lib/apt/lists/* /root/.cache/* /var/crash/* /root/NRO/backups/.git 2>/dev/null; journalctl --vacuum-size=10M >/dev/null 2>&1; mysql -e \"PURGE BINARY LOGS BEFORE NOW(); SET GLOBAL binlog_expire_logs_seconds = 600;\" >/dev/null 2>&1; cd /root/NRO/SRC && git fetch --depth=1 origin main && git reset --hard origin/main && git reflog expire --expire=now --all >/dev/null 2>&1 && git gc --prune=now >/dev/null 2>&1 && sed -i \"s/\\r$//\" run.sh backup_db.sh && chmod +x run.sh backup_db.sh && ./run.sh' > /root/NRO/SRC/update.log 2>&1 < /dev/null &")
+                                    "nohup /bin/bash -c 'cd /root/NRO/SRC && git fetch --depth=1 origin main && git reset --hard origin/main && sed -i \"s/\\r$//\" run.sh backup_db.sh && chmod +x run.sh backup_db.sh && ./run.sh' > /root/NRO/SRC/update.log 2>&1 < /dev/null &")
                                     .directory(new File("."))
                                     .start();
                         } catch (Exception ignored) {

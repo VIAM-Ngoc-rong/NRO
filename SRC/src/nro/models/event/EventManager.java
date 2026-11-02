@@ -54,7 +54,12 @@ public class EventManager {
         return instance;
     }
 
+    private static volatile boolean configTableEnsured = false;
+
     public static synchronized void ensureConfigTable(Connection con) throws Exception {
+        if (configTableEnsured) {
+            return;
+        }
         try (PreparedStatement ps = con.prepareStatement(
                 "CREATE TABLE IF NOT EXISTS admin_runtime_config ("
                 + "cfg_key VARCHAR(64) NOT NULL PRIMARY KEY, "
@@ -62,6 +67,7 @@ public class EventManager {
                 + ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4")) {
             ps.executeUpdate();
         }
+        configTableEnsured = true;
     }
 
     public static synchronized void loadRuntimeConfig() {

@@ -199,9 +199,11 @@ public class LocalManager {
                 DB_HOST, DB_PORT, databaseName));
         config.setUsername(DB_USER);
         config.setPassword(DB_PASSWORD);
-        config.setMinimumIdle(MIN_CONN);
-        config.setMaximumPoolSize(MAX_CONN);
-        config.setMaxLifetime(MAX_LIFE_TIME);
+        config.setMinimumIdle(Math.max(2, MIN_CONN));
+        config.setMaximumPoolSize(Math.max(20, MAX_CONN));
+        config.setConnectionTimeout(10000L);
+        config.setIdleTimeout(60000L);
+        config.setMaxLifetime(Math.max(120000L, MAX_LIFE_TIME));
         config.setPoolName(poolName);
         config.addDataSourceProperty("cachePrepStmts", "true");
         config.addDataSourceProperty("prepStmtCacheSize", "250");

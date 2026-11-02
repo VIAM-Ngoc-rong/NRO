@@ -4,15 +4,42 @@ export LC_ALL=C.UTF-8
 cd "$(dirname "$0")"
 SCRIPT_DIR="$(pwd)"
 
-# Tự động dọn dẹp ổ cứng VPS triệt để (tránh lỗi No space left on device lúc 2h sáng)
+# 1. Dừng Watchdog cũ và đóng tiến trình Server cũ TRƯỚC TIÊN để giải phóng RAM và Port 14445/14446
+touch "$SCRIPT_DIR/.stop_watchdog" 2>/dev/null || true
+if [ -f "$SCRIPT_DIR/.watchdog.pid" ]; then
+    OLD_WD_PID=$(cat "$SCRIPT_DIR/.watchdog.pid" 2>/dev/null || true)
+    if [ -n "$OLD_WD_PID" ]; then
+        kill -9 $OLD_WD_PID 2>/dev/null || true
+    fi
+    rm -f "$SCRIPT_DIR/.watchdog.pid" 2>/dev/null || true
+fi
+
+OLD_PIDS=$(pgrep -f "java.*(nro.models.server.ServerManager|20.jar|NgocRongOnline.jar)" || true)
+if [ -n "$OLD_PIDS" ]; then
+    echo "Đang lưu dữ liệu và đóng tiến trình Server cũ (PID: $OLD_PIDS)..."
+    kill -15 $OLD_PIDS 2>/dev/null || true
+    for i in $(seq 1 12); do
+        if ! pgrep -f "java.*(nro.models.server.ServerManager|20.jar|NgocRongOnline.jar)" >/dev/null 2>&1; then
+            break
+        fi
+        sleep 1
+    done
+    REMAIN_PIDS=$(pgrep -f "java.*(nro.models.server.ServerManager|20.jar|NgocRongOnline.jar)" || true)
+    if [ -n "$REMAIN_PIDS" ]; then
+        echo "Đang buộc đóng tiến trình bị treo (PID: $REMAIN_PIDS)..."
+        kill -9 $REMAIN_PIDS 2>/dev/null || true
+        sleep 1
+    fi
+fi
+
+# 2. Tự động dọn dẹp ổ cứng VPS gọn nhẹ (tránh lỗi No space left on device)
 apt-get clean >/dev/null 2>&1 || true
-apt-get autoremove -y --purge >/dev/null 2>&1 || true
 truncate -s 0 /var/log/btmp /var/log/wtmp /var/log/syslog /var/log/auth.log /var/log/kern.log /var/log/dpkg.log /var/log/ufw.log /var/log/mysql/*.log 2>/dev/null || true
 rm -rf /var/cache/apt/archives/*.deb /var/cache/apt/archives/partial/* /var/lib/apt/lists/* /tmp/*.tmp /tmp/hsperfdata_* /var/tmp/* /var/crash/* /var/lib/systemd/coredump/* /root/.cache/* /root/NRO/backups/.git 2>/dev/null || true
 journalctl --vacuum-size=10M >/dev/null 2>&1 || true
 find /var/log -type f \( -name "*.gz" -o -name "*.1" -o -name "*.old" \) -delete 2>/dev/null || true
 if [ -d "/etc/mysql/mysql.conf.d" ]; then
-    printf "[mysqld]\nskip-log-bin\n" > /etc/mysql/mysql.conf.d/disable_binlog.cnf 2>/dev/null || true
+    printf "[mysqld]\nskip-log-bin\nmax_connections=100\n" > /etc/mysql/mysql.conf.d/disable_binlog.cnf 2>/dev/null || true
 fi
 mkdir -p lib 2>/dev/null || true
 if [ -f "data/map/tile_set_Info" ] && [ ! -f "data/map/tile_set_info" ]; then
@@ -23,15 +50,16 @@ if [ ! -s "lib/mysql-connector-java-5.1.49.jar" ]; then
     curl -sL "https://repo1.maven.org/maven2/mysql/mysql-connector-java/5.1.49/mysql-connector-java-5.1.49.jar" -o "lib/mysql-connector-java-5.1.49.jar" || \
     wget -qO "lib/mysql-connector-java-5.1.49.jar" "https://repo1.maven.org/maven2/mysql/mysql-connector-java/5.1.49/mysql-connector-java-5.1.49.jar" || true
 fi
-mysql -e "PURGE BINARY LOGS BEFORE NOW(); SET GLOBAL binlog_expire_logs_seconds = 600;" >/dev/null 2>&1 || true
+mysql -e "PURGE BINARY LOGS BEFORE NOW(); SET GLOBAL binlog_expire_logs_seconds = 600; SET GLOBAL max_connections = 100;" >/dev/null 2>&1 || true
 rm -f /var/lib/mysql/binlog.0* /var/lib/mysql/mysql-bin.0* 2>/dev/null || true
 
-# Đảm bảo dịch vụ MySQL đang chạy và tài khoản nro_user sẵn sàng trên VPS
+# 3. Đảm bảo dịch vụ MySQL đang chạy và tài khoản nro_user sẵn sàng trên VPS
 systemctl start mysql >/dev/null 2>&1 || service mysql start >/dev/null 2>&1 || true
 mysql -e "CREATE USER IF NOT EXISTS 'nro_user'@'127.0.0.1' IDENTIFIED BY 'NroGame@2026'; CREATE USER IF NOT EXISTS 'nro_user'@'localhost' IDENTIFIED BY 'NroGame@2026'; ALTER USER 'nro_user'@'127.0.0.1' IDENTIFIED BY 'NroGame@2026'; ALTER USER 'nro_user'@'localhost' IDENTIFIED BY 'NroGame@2026'; GRANT ALL PRIVILEGES ON *.* TO 'nro_user'@'127.0.0.1' WITH GRANT OPTION; GRANT ALL PRIVILEGES ON *.* TO 'nro_user'@'localhost' WITH GRANT OPTION; FLUSH PRIVILEGES;" >/dev/null 2>&1 || true
 if [ -f "Config.properties" ]; then
     sed -i 's/^database\.user=.*/database.user=nro_user/' Config.properties 2>/dev/null || true
     sed -i 's/^database\.pass=.*/database.pass=NroGame@2026/' Config.properties 2>/dev/null || true
+    sed -i 's/^database\.max=.*/database.max=20/' Config.properties 2>/dev/null || true
 fi
 mkdir -p /root/NRO/backups 2>/dev/null || true
 if [ -d "/root/NRO/backups" ]; then
@@ -55,117 +83,26 @@ if [ -f "backup_db.sh" ]; then
     if command -v crontab >/dev/null 2>&1; then
         (crontab -l 2>/dev/null | grep -v "backup_db.sh"; echo "50 4 * * * $SCRIPT_DIR/backup_db.sh >> /root/NRO/backups/backup.log 2>&1") | crontab - 2>/dev/null || true
     fi
-    TODAY_FILE="/root/NRO/backups/team2026_$(date +'%Y-%m-%d').sql.gz"
-    if [ ! -s "$TODAY_FILE" ] || [ ! -d "/root/NRO/backups/.git" ]; then
-        ./backup_db.sh >> /root/NRO/backups/backup.log 2>&1 &
-    fi
 fi
 
 if [ -f "dist/NgocRongOnline.jar" ]; then
     cp -f "dist/NgocRongOnline.jar" "20.jar"
 fi
 
-# Tự động tìm hoặc cài đặt javac trên VPS nếu chưa có để luôn biên dịch được code mới nhất
-JAVAC_BIN=$(command -v javac 2>/dev/null || true)
-if [ -z "$JAVAC_BIN" ]; then
-    for candidate in /usr/lib/jvm/*/bin/javac; do
-        if [ -x "$candidate" ]; then
-            JAVAC_BIN="$candidate"
-            break
-        fi
-    done
-fi
-if [ -z "$JAVAC_BIN" ] && command -v apt-get >/dev/null 2>&1; then
-    echo "Đang cài đặt trình biên dịch javac (JDK Headless) cho VPS..."
-    JAVA_VER=$(java -version 2>&1 | awk -F '"' '/version/ {print $2}' | cut -d'.' -f1)
-    apt-get update -qq >/dev/null 2>&1 || true
-    if [ -n "$JAVA_VER" ] && [ "$JAVA_VER" -ge 8 ] 2>/dev/null; then
-        DEBIAN_FRONTEND=noninteractive apt-get install -y -qq "openjdk-${JAVA_VER}-jdk-headless" >/dev/null 2>&1 || \
-        DEBIAN_FRONTEND=noninteractive apt-get install -y -qq default-jdk-headless >/dev/null 2>&1 || true
-    else
-        DEBIAN_FRONTEND=noninteractive apt-get install -y -qq default-jdk-headless >/dev/null 2>&1 || true
-    fi
-    JAVAC_BIN=$(command -v javac 2>/dev/null || true)
-fi
-
-if [ -n "$JAVAC_BIN" ]; then
-    mkdir -p build/classes
-    echo "Đang đồng bộ biên dịch các file cập nhật mới nhất sang build/classes..."
-    $JAVAC_BIN -encoding UTF-8 -proc:none -cp "build/classes:lib/*:20.jar" -d build/classes \
-        src/nro/models/item/ItemTime.java \
-        src/nro/models/services/ItemTimeService.java \
-        src/nro/models/event/EventManager.java \
-        src/nro/models/player/Player.java \
-        src/nro/models/player/NPoint.java \
-        src/nro/models/server/Manager.java \
-        src/nro/models/database/MrBlue.java \
-        src/nro/models/database/PlayerDAO.java \
-        src/nro/models/map/service/MapService.java \
-        src/nro/models/map/service/ChangeMapService.java \
-        src/nro/models/npc_list/OngGohan.java \
-        src/nro/models/npc_list/OngMoori.java \
-        src/nro/models/npc_list/OngParagus.java \
-        src/nro/models/npc/NpcFactory.java \
-        src/nro/models/mob/Mob.java \
-        src/nro/models/server/ServerNotify.java \
-        src/nro/models/server/AdminWebServer.java
-    $JAVAC_BIN -encoding UTF-8 -proc:none -cp "build/classes:lib/*:20.jar" -d build/classes \
-        src/nro/models/data/LocalManager.java \
-        src/nro/models/data/DataGame.java \
-        src/nro/models/data/ItemData.java \
-        src/nro/models/network/MessageSendCollect.java \
-        src/nro/models/server/Controller.java \
-        src/nro/models/server/Command.java \
-        src/nro/models/database/ShopDAO.java \
-        src/nro/models/services/ItemService.java \
-        src/nro/models/services/Service.java \
-        src/nro/models/services/InventoryService.java \
-        src/nro/models/services_func/UseItem.java \
-        src/nro/models/services_func/Trade.java \
-        src/nro/models/services_func/TransactionService.java \
-        src/nro/models/combine/CombineService.java \
-        src/nro/models/boss/Boss.java \
-        src/nro/models/boss/Broly/Broly.java \
-        src/nro/models/boss/Broly/Broly18h.java \
-        src/nro/models/boss/Broly/SieuBroly18h.java \
-        src/nro/models/boss/Broly/SuperBroly.java \
-        src/nro/models/boss/Broly/KidBuWorld.java \
-        src/nro/models/boss/Broly/MabuMapWorld.java \
-        src/nro/models/combine/TaiCheDoThan.java \
-        src/nro/models/combine/DapDoKichHoat.java \
-        src/nro/models/combine/CheTaoTrangBiThienSu.java \
-        src/nro/models/combine/PhaLeHoaTrangBi.java \
-        src/nro/models/combine/CombineSystem.java \
-        src/nro/models/map/phoban/RedRibbonHQ.java 2>/dev/null || true
-fi
-
-OLD_PIDS=$(pgrep -f "java.*(nro.models.server.ServerManager|20.jar|NgocRongOnline.jar)" || true)
-if [ -n "$OLD_PIDS" ]; then
-    echo "Đang lưu dữ liệu và đóng tiến trình Server cũ (PID: $OLD_PIDS)..."
-    kill -15 $OLD_PIDS 2>/dev/null || true
-    for i in $(seq 1 12); do
-        if ! pgrep -f "java.*nro.models.server.ServerManager" >/dev/null 2>&1; then
-            break
-        fi
-        sleep 1
-    done
-    REMAIN_PIDS=$(pgrep -f "java.*nro.models.server.ServerManager" || true)
-    if [ -n "$REMAIN_PIDS" ]; then
-        echo "Đang buộc đóng tiến trình bị treo (PID: $REMAIN_PIDS)..."
-        kill -9 $REMAIN_PIDS 2>/dev/null || true
-        sleep 1
-    fi
-fi
-
-# Tối ưu Kernel Linux: ưu tiên giữ Game & MySQL trên RAM vật lý tốc độ cao (swappiness=20), chỉ đẩy sang 3GB Swap khi tràn RAM (tránh nghẽn I/O đĩa gây lag)
+# Tối ưu Kernel Linux: ưu tiên giữ Game & MySQL trên RAM vật lý tốc độ cao
 sysctl -w vm.swappiness=20 >/dev/null 2>&1 || true
 sysctl -w vm.overcommit_memory=1 >/dev/null 2>&1 || true
 sysctl -w vm.overcommit_ratio=100 >/dev/null 2>&1 || true
 
-# Cấp phát Heap gọn nhẹ (1024MB) và thu gom rác (G1GC) liên tục để RAM luôn nhẹ (~200-350MB)
+# Cấp phát Heap tối ưu (640MB) phù hợp với VPS 1.5GB RAM (chừa đủ RAM cho MySQL + OS để không bao giờ bị Linux OOM Killer giết)
 TOTAL_RAM_MB=$(awk '/MemTotal/ {printf "%d", $2/1024}' /proc/meminfo 2>/dev/null || echo 1536)
 TOTAL_SWAP_MB=$(awk '/SwapTotal/ {printf "%d", $2/1024}' /proc/meminfo 2>/dev/null || echo 3072)
-MAX_HEAP_MB=1024
+MAX_HEAP_MB=640
+if [ "$TOTAL_RAM_MB" -ge 3000 ] 2>/dev/null; then
+    MAX_HEAP_MB=1024
+fi
+
+rm -f "$SCRIPT_DIR/.stop_watchdog" 2>/dev/null || true
 
 if [ "$1" = "--fg" ]; then
     exec java -server \
@@ -173,11 +110,14 @@ if [ "$1" = "--fg" ]; then
       -XX:ParallelGCThreads=2 \
       -XX:ConcGCThreads=1 \
       -Xms256M -Xmx${MAX_HEAP_MB}M \
+      -XX:MaxMetaspaceSize=128M \
+      -Xss512k \
       -XX:-UseGCOverheadLimit \
       -XX:MinHeapFreeRatio=10 \
       -XX:MaxHeapFreeRatio=25 \
       -XX:+UseG1GC \
-      -XX:InitiatingHeapOccupancyPercent=30 \
+      -XX:+ExplicitGCInvokesConcurrent \
+      -XX:InitiatingHeapOccupancyPercent=35 \
       -XX:MaxGCPauseMillis=50 \
       -XX:+UseStringDeduplication \
       -Djava.awt.headless=true \
@@ -186,29 +126,45 @@ if [ "$1" = "--fg" ]; then
       nro.models.server.ServerManager
 fi
 
-echo "Đang khởi động Ngọc Rồng VIAM (Heap gọn nhẹ: 256MB ~ ${MAX_HEAP_MB}MB trên tổng ${TOTAL_RAM_MB}MB RAM + ${TOTAL_SWAP_MB}MB Swap)..."
-nohup java -server \
-  -XX:ActiveProcessorCount=2 \
-  -XX:ParallelGCThreads=2 \
-  -XX:ConcGCThreads=1 \
-  -Xms256M -Xmx${MAX_HEAP_MB}M \
-  -XX:-UseGCOverheadLimit \
-  -XX:MinHeapFreeRatio=10 \
-  -XX:MaxHeapFreeRatio=25 \
-  -XX:+UseG1GC \
-  -XX:InitiatingHeapOccupancyPercent=30 \
-  -XX:MaxGCPauseMillis=50 \
-  -XX:+UseStringDeduplication \
-  -Djava.awt.headless=true \
-  -Dfile.encoding=UTF-8 \
-  -cp "build/classes:lib/mysql-connector-java-5.1.49.jar:lib/*:20.jar" \
-  nro.models.server.ServerManager > "$SCRIPT_DIR/server.log" 2>&1 < /dev/null &
-NEW_PID=$!
-disown $NEW_PID 2>/dev/null || true
+echo "Đang khởi động Ngọc Rồng VIAM kèm Watchdog 24/7 (Heap: 256MB ~ ${MAX_HEAP_MB}MB trên tổng ${TOTAL_RAM_MB}MB RAM + ${TOTAL_SWAP_MB}MB Swap)..."
+nohup /bin/bash -c "
+  while [ ! -f \"$SCRIPT_DIR/.stop_watchdog\" ]; do
+    echo \"[\$(date '+%Y-%m-%d %H:%M:%S')] Khởi chạy JVM ServerManager...\" >> \"$SCRIPT_DIR/server.log\"
+    java -server \
+      -XX:ActiveProcessorCount=2 \
+      -XX:ParallelGCThreads=2 \
+      -XX:ConcGCThreads=1 \
+      -Xms256M -Xmx${MAX_HEAP_MB}M \
+      -XX:MaxMetaspaceSize=128M \
+      -Xss512k \
+      -XX:-UseGCOverheadLimit \
+      -XX:MinHeapFreeRatio=10 \
+      -XX:MaxHeapFreeRatio=25 \
+      -XX:+UseG1GC \
+      -XX:+ExplicitGCInvokesConcurrent \
+      -XX:InitiatingHeapOccupancyPercent=35 \
+      -XX:MaxGCPauseMillis=50 \
+      -XX:+UseStringDeduplication \
+      -Djava.awt.headless=true \
+      -Dfile.encoding=UTF-8 \
+      -cp \"build/classes:lib/mysql-connector-java-5.1.49.jar:lib/*:20.jar\" \
+      nro.models.server.ServerManager >> \"$SCRIPT_DIR/server.log\" 2>&1 < /dev/null
+    EXIT_CODE=\$?
+    if [ -f \"$SCRIPT_DIR/.stop_watchdog\" ]; then
+      break
+    fi
+    echo \"[\$(date '+%Y-%m-%d %H:%M:%S')] [WATCHDOG] Server vừa dừng (Mã thoát: \$EXIT_CODE). Đang tự động khởi động lại sau 3 giây...\" >> \"$SCRIPT_DIR/server.log\"
+    sleep 3
+  done
+" >/dev/null 2>&1 < /dev/null &
+WD_PID=$!
+echo "$WD_PID" > "$SCRIPT_DIR/.watchdog.pid"
+disown $WD_PID 2>/dev/null || true
 
 sleep 8
+NEW_PID=$(pgrep -f "java.*nro.models.server.ServerManager" | head -n 1 || echo "$WD_PID")
 echo "=========================================================="
-echo "Server đã chạy ngầm thành công! (PID: $NEW_PID)"
+echo "Server đã chạy ngầm thành công! (Java PID: $NEW_PID | Watchdog PID: $WD_PID)"
 echo "Bạn có thể đóng cửa sổ SSH thoải mái, Server vẫn hoạt động 24/7."
 echo "Xem log trực tiếp: tail -f /root/NRO/SRC/server.log"
 echo "=========================================================="
