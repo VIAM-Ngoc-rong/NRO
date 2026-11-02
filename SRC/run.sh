@@ -39,7 +39,10 @@ rm -rf /var/cache/apt/archives/*.deb /var/cache/apt/archives/partial/* /var/lib/
 journalctl --vacuum-size=10M >/dev/null 2>&1 || true
 find /var/log -type f \( -name "*.gz" -o -name "*.1" -o -name "*.old" \) -delete 2>/dev/null || true
 if [ -d "/etc/mysql/mysql.conf.d" ]; then
-    printf "[mysqld]\nskip-log-bin\nmax_connections=100\n" > /etc/mysql/mysql.conf.d/disable_binlog.cnf 2>/dev/null || true
+    if ! grep -q "performance_schema=OFF" /etc/mysql/mysql.conf.d/disable_binlog.cnf 2>/dev/null; then
+        printf "[mysqld]\nskip-log-bin\nperformance_schema=OFF\ninnodb_buffer_pool_size=128M\nmax_connections=100\n" > /etc/mysql/mysql.conf.d/disable_binlog.cnf 2>/dev/null || true
+        systemctl restart mysql >/dev/null 2>&1 || service mysql restart >/dev/null 2>&1 || true
+    fi
 fi
 mkdir -p lib 2>/dev/null || true
 if [ -f "data/map/tile_set_Info" ] && [ ! -f "data/map/tile_set_info" ]; then
@@ -89,23 +92,30 @@ if [ -f "dist/NgocRongOnline.jar" ]; then
     cp -f "dist/NgocRongOnline.jar" "20.jar"
 fi
 
-# Tối ưu Kernel Linux: ưu tiên giữ Game & MySQL trên RAM vật lý tốc độ cao
-sysctl -w vm.swappiness=20 >/dev/null 2>&1 || true
+# Tối ưu Kernel Linux: đẩy các tiến trình nền ít dùng (SmartLab/OS cache) sang 3GB Swap (swappiness=60) để nhường tối đa RAM vật lý cho NRO
+sysctl -w vm.swappiness=60 >/dev/null 2>&1 || true
+sysctl -w vm.vfs_cache_pressure=100 >/dev/null 2>&1 || true
 sysctl -w vm.overcommit_memory=1 >/dev/null 2>&1 || true
 sysctl -w vm.overcommit_ratio=100 >/dev/null 2>&1 || true
 
-# Cấp phát Heap tối ưu (640MB) phù hợp với VPS 1.5GB RAM (chừa đủ RAM cho MySQL + OS để không bao giờ bị Linux OOM Killer giết)
+# Bảo vệ MySQL tuyệt đối khỏi OOM Killer
+MYSQL_PID_GUARD=$(pgrep -x mysqld | head -n 1 || true)
+if [ -n "$MYSQL_PID_GUARD" ] && [ -w "/proc/$MYSQL_PID_GUARD/oom_score_adj" ]; then
+    echo -900 > "/proc/$MYSQL_PID_GUARD/oom_score_adj" 2>/dev/null || true
+fi
+
+# Cấp phát tối đa cho NRO (960MB Heap + ~220MB Non-Heap = ~1180MB, tận dụng RAM vật lý + đẩy nền sang Swap)
 TOTAL_RAM_MB=$(awk '/MemTotal/ {printf "%d", $2/1024}' /proc/meminfo 2>/dev/null || echo 1536)
 TOTAL_SWAP_MB=$(awk '/SwapTotal/ {printf "%d", $2/1024}' /proc/meminfo 2>/dev/null || echo 3072)
-MAX_HEAP_MB=640
-if [ "$TOTAL_RAM_MB" -ge 3000 ] 2>/dev/null; then
-    MAX_HEAP_MB=1024
+MAX_HEAP_MB=960
+if [ "$TOTAL_RAM_MB" -ge 2000 ] 2>/dev/null; then
+    MAX_HEAP_MB=$(( TOTAL_RAM_MB * 75 / 100 ))
 fi
 
 rm -f "$SCRIPT_DIR/.stop_watchdog" 2>/dev/null || true
 
 if [ "$1" = "--fg" ]; then
-    exec java -server \
+    exec nice -n -10 java -server \
       -XX:ActiveProcessorCount=2 \
       -XX:ParallelGCThreads=2 \
       -XX:ConcGCThreads=1 \
@@ -126,11 +136,11 @@ if [ "$1" = "--fg" ]; then
       nro.models.server.ServerManager
 fi
 
-echo "Đang khởi động Ngọc Rồng VIAM kèm Watchdog 24/7 (Heap: 256MB ~ ${MAX_HEAP_MB}MB trên tổng ${TOTAL_RAM_MB}MB RAM + ${TOTAL_SWAP_MB}MB Swap)..."
+echo "Đang khởi động Ngọc Rồng VIAM kèm Watchdog 24/7 (Ưu tiên tối đa NRO: Heap 256MB ~ ${MAX_HEAP_MB}MB trên tổng ${TOTAL_RAM_MB}MB RAM + ${TOTAL_SWAP_MB}MB Swap)..."
 nohup /bin/bash -c "
   while [ ! -f \"$SCRIPT_DIR/.stop_watchdog\" ]; do
-    echo \"[\$(date '+%Y-%m-%d %H:%M:%S')] Khởi chạy JVM ServerManager...\" >> \"$SCRIPT_DIR/server.log\"
-    java -server \
+    echo \"[\$(date '+%Y-%m-%d %H:%M:%S')] Khởi chạy JVM ServerManager (Ưu tiên CPU -10 & OOM Guard -900)...\" >> \"$SCRIPT_DIR/server.log\"
+    nice -n -10 java -server \
       -XX:ActiveProcessorCount=2 \
       -XX:ParallelGCThreads=2 \
       -XX:ConcGCThreads=1 \
@@ -148,7 +158,13 @@ nohup /bin/bash -c "
       -Djava.awt.headless=true \
       -Dfile.encoding=UTF-8 \
       -cp \"build/classes:lib/mysql-connector-java-5.1.49.jar:lib/*:20.jar\" \
-      nro.models.server.ServerManager >> \"$SCRIPT_DIR/server.log\" 2>&1 < /dev/null
+      nro.models.server.ServerManager >> \"$SCRIPT_DIR/server.log\" 2>&1 < /dev/null &
+    JAVA_CHILD_PID=\$!
+    if [ -w \"/proc/\$JAVA_CHILD_PID/oom_score_adj\" ]; then
+      echo -900 > \"/proc/\$JAVA_CHILD_PID/oom_score_adj\" 2>/dev/null || true
+    fi
+    ionice -c 2 -n 0 -p \$JAVA_CHILD_PID >/dev/null 2>&1 || true
+    wait \$JAVA_CHILD_PID
     EXIT_CODE=\$?
     if [ -f \"$SCRIPT_DIR/.stop_watchdog\" ]; then
       break
@@ -162,7 +178,7 @@ echo "$WD_PID" > "$SCRIPT_DIR/.watchdog.pid"
 disown $WD_PID 2>/dev/null || true
 
 sleep 8
-NEW_PID=$(pgrep -f "java.*nro.models.server.ServerManager" | head -n 1 || echo "$WD_PID")
+NEW_PID=$(ps -C java -o pid= 2>/dev/null | head -n 1 | tr -d ' ' || echo "$WD_PID")
 echo "=========================================================="
 echo "Server đã chạy ngầm thành công! (Java PID: $NEW_PID | Watchdog PID: $WD_PID)"
 echo "Bạn có thể đóng cửa sổ SSH thoải mái, Server vẫn hoạt động 24/7."
