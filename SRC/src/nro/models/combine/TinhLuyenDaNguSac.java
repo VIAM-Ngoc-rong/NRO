@@ -96,7 +96,7 @@ public class TinhLuyenDaNguSac {
                         .append("- Đá Ngũ Sắc: ").append(daNguSac.quantity).append(" / ").append(COST_UPGRADE_DNS).append(" viên\n");
                 npcSay.append(player.inventory.gold >= GOLD_UPGRADE ? "|1|" : "|7|")
                         .append("- Chi phí: ").append(Util.numberToMoney(GOLD_UPGRADE)).append(" vàng\n");
-                npcSay.append("|2|Tỉ lệ thành công: 70% (Thất bại không mất Cải trang)");
+                npcSay.append("|2|Tỉ lệ thành công: 60% (Thất bại không mất Cải trang)");
 
                 if (daNguSac.quantity < COST_UPGRADE_DNS || player.inventory.gold < GOLD_UPGRADE) {
                     CombineService.gI().baHatMit.createOtherMenu(player, ConstNpc.IGNORE_MENU,
@@ -212,7 +212,7 @@ public class TinhLuyenDaNguSac {
             player.inventory.gold -= GOLD_UPGRADE;
             InventoryService.gI().subQuantityItemsBag(player, daNguSac, COST_UPGRADE_DNS);
 
-            if (Util.isTrue(70, 100)) {
+            if (Util.isTrue(60, 100)) {
                 int bonus = Util.nextInt(1, 2);
                 addOrUpdateOption(caiTrang, 50, Math.max(sd, Math.min(MAX_STAT_PERCENT, sd + bonus)));
                 addOrUpdateOption(caiTrang, 77, Math.max(hp, Math.min(MAX_STAT_PERCENT, hp + bonus)));

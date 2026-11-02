@@ -59,7 +59,7 @@ public class CheTaoTrangBiThienSu {
                     }
                     player.inventory.gold -= 500_000_000;
 
-                    int tilemacdinh = 55;
+                    int tilemacdinh = 45;
                     int tileLucky = 5;
                     if (daNC != null) {
                         tilemacdinh += Math.max(0, (daNC.template.id - 1073) * 3);

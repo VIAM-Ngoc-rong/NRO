@@ -19,7 +19,7 @@ import nro.models.utils.Util;
 public class DapDoKichHoat {
 
     private static final int GOLD_DAP_DO = 200_000_000;
-    private static final int RATIO_DAP_DO = 65;
+    private static final int RATIO_DAP_DO = 55;
 
     private static long getGoldCostForPhoi(Item phoiItem) {
         if (phoiItem == null || phoiItem.template == null) {
