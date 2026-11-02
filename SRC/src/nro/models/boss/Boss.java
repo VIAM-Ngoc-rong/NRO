@@ -1317,7 +1317,9 @@ public class Boss extends Player implements IBoss {
                 reward(plKill);
                 dropExtraBossReward(plKill);
             }
-            ServerNotify.gI().notify(plKill.name + ": Đã tiêu diệt được " + this.name + " mọi người đều ngưỡng mộ.");
+            String killerName = (plOwner != null && plOwner.name != null && !plOwner.name.isEmpty())
+                    ? plOwner.name : plKill.name;
+            ServerNotify.gI().notify(killerName + ": Đã tiêu diệt được " + this.name + " mọi người đều ngưỡng mộ.");
             this.changeStatus(BossStatus.DIE);
         } else {
             if (plKill != null && !plKill.isBot) {

@@ -92,8 +92,11 @@ public class NangCapSaoPhaLe {
                     newItem.itemOptions.clear();
                     
                     for (Item.ItemOption option : saoPhaLe.itemOptions) {
-                        newItem.itemOptions.add(new Item.ItemOption(option.optionTemplate.id, option.param));
+                        if (option != null && option.optionTemplate != null && option.optionTemplate.id != 30 && option.optionTemplate.id != 73) {
+                            newItem.itemOptions.add(new Item.ItemOption(option.optionTemplate.id, option.param));
+                        }
                     }
+                    InventoryService.ensureDefaultItemOptions(newItem);
 
                     InventoryService.gI().addItemBag(player, newItem);
                     

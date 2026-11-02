@@ -84,20 +84,24 @@ public class CombineSystem {
                 94;
             case 14, 1827 ->
                 108;
-            case 441 ->
+            case 441, 1416, 1426 ->
                 95;
-            case 442 ->
+            case 442, 1417, 1427 ->
                 96;
-            case 443 ->
+            case 443, 1418, 1428 ->
                 97;
-            case 444 ->
+            case 444, 1419, 1429 ->
                 98;
-            case 445 ->
+            case 445, 1420, 1430 ->
                 99;
-            case 446 ->
+            case 446, 1421, 1431 ->
                 100;
-            case 447 ->
+            case 447, 1422, 1432 ->
                 101;
+            case 1433 ->
+                153;
+            case 1434 ->
+                160;
             default ->
                 -1;
         };
@@ -140,19 +144,25 @@ public class CombineSystem {
                 3;
             case 1827 ->
                 3;
-            case 441 ->
+            case 441, 1416 ->
                 5;
-            case 442 ->
+            case 442, 1417 ->
                 5;
-            case 443 ->
+            case 443, 1418 ->
                 5;
-            case 444 ->
+            case 444, 1419 ->
                 3;
-            case 445 ->
+            case 445, 1420 ->
                 3;
-            case 446 ->
+            case 446, 1421 ->
                 5;
-            case 447 ->
+            case 447, 1422 ->
+                5;
+            case 1426, 1427, 1428, 1431, 1432 ->
+                6;
+            case 1429, 1430 ->
+                4;
+            case 1433, 1434 ->
                 5;
             default ->
                 -1;

@@ -29,7 +29,12 @@ public class EpSaoTrangBi {
             int star = 0;
             int starEmpty = 0;
             if (trangBi != null && daPhaLe != null) {
+                InventoryService.sanitizeStarOptions(trangBi);
+                InventoryService.ensureDefaultItemOptions(daPhaLe);
                 for (ItemOption io : trangBi.itemOptions) {
+                    if (io == null || io.optionTemplate == null) {
+                        continue;
+                    }
                     if (io.optionTemplate.id == 102) {
                         star = io.param;
                     } else if (io.optionTemplate.id == 107) {
@@ -37,29 +42,40 @@ public class EpSaoTrangBi {
                     }
                 }
 
+                if (star >= starEmpty) {
+                    CombineService.gI().baHatMit.createOtherMenu(player, ConstNpc.IGNORE_MENU,
+                            "Cần đục thêm lỗ sao pha lê để ép tiếp", "Đóng");
+                    return;
+                }
+
                 if (starEmpty <= 9) {
+                    int nextSlot = star + 1;
                     boolean isNgocRongTim = daPhaLe.template.id >= 1827 && daPhaLe.template.id <= 1833;
-                    if (!isNgocRongTim && star >= 7 && starEmpty >= 8 && !CombineService.gI().CheckSlot(trangBi, starEmpty)) {
+                    if (!isNgocRongTim && nextSlot >= 8 && !CombineService.gI().CheckSlot(trangBi, nextSlot)) {
                         CombineService.gI().baHatMit.createOtherMenu(player, ConstNpc.IGNORE_MENU,
-                                "Cần cường hóa lỗ sao pha lê này trước", "Đóng");
+                                "Cần cường hóa lỗ sao pha lê thứ " + nextSlot + " này trước", "Đóng");
                         return;
                     }
 
                     player.combineNew.goldCombine = CombineSystem.getGemEpSao(star) * 1_000_000;
                     String npcSay = trangBi.template.name + "\n|2|";
                     for (ItemOption io : trangBi.itemOptions) {
-                        if (io.optionTemplate.id != 102) {
+                        if (io != null && io.optionTemplate != null && io.optionTemplate.id != 102 && io.optionTemplate.id != 73) {
                             npcSay += io.getOptionString() + "\n";
                         }
                     }
 
-                    if (daPhaLe.template.type == 30) {
+                    int optId = CombineSystem.getOptionDaPhaLe(daPhaLe);
+                    int optParam = CombineSystem.getParamDaPhaLe(daPhaLe);
+                    if (optId >= 0 && optParam > 0 && ItemService.gI().getItemOptionTemplate(optId) != null) {
+                        npcSay += "|7|" + ItemService.gI().getItemOptionTemplate(optId).name
+                                .replaceAll("#", optParam + "") + "\n";
+                    } else if (daPhaLe.template.type == 30) {
                         for (ItemOption io : daPhaLe.itemOptions) {
-                            npcSay += "|7|" + io.getOptionString() + "\n";
+                            if (io != null && io.optionTemplate != null && io.optionTemplate.id != 30 && io.optionTemplate.id != 73) {
+                                npcSay += "|7|" + io.getOptionString() + "\n";
+                            }
                         }
-                    } else {
-                        npcSay += "|7|" + ItemService.gI().getItemOptionTemplate(CombineSystem.getOptionDaPhaLe(daPhaLe)).name
-                                .replaceAll("#", CombineSystem.getParamDaPhaLe(daPhaLe) + "") + "\n";
                     }
                     npcSay += "|1|Cần " + Util.numberToMoney(player.combineNew.goldCombine) + " vàng";
                     CombineService.gI().baHatMit.createOtherMenu(player, ConstNpc.MENU_START_COMBINE, npcSay,
@@ -97,6 +113,9 @@ public class EpSaoTrangBi {
                 return;
             }
 
+            InventoryService.sanitizeStarOptions(trangBi);
+            InventoryService.ensureDefaultItemOptions(daPhaLe);
+
             int epCount = 0;
             for (int attempt = 0; attempt < maxAttempts; attempt++) {
                 if (!daPhaLe.isNotNullItem() || daPhaLe.quantity < 1) {
@@ -107,6 +126,9 @@ public class EpSaoTrangBi {
                 ItemOption optionStar = null;
 
                 for (ItemOption io : trangBi.itemOptions) {
+                    if (io == null || io.optionTemplate == null) {
+                        continue;
+                    }
                     if (io.optionTemplate.id == 102) {
                         star = io.param;
                         optionStar = io;
@@ -122,10 +144,20 @@ public class EpSaoTrangBi {
                     break;
                 }
 
+                int currentSlot = star + 1;
                 boolean isNgocRongTim = daPhaLe.template.id >= 1827 && daPhaLe.template.id <= 1833;
-                if (!isNgocRongTim && star >= 7 && starEmpty >= 8 && !CombineService.gI().CheckSlot(trangBi, starEmpty)) {
+                if (!isNgocRongTim && currentSlot >= 8 && !CombineService.gI().CheckSlot(trangBi, currentSlot)) {
                     if (epCount == 0) {
-                        Service.gI().sendThongBao(player, "Cần cường hóa lỗ sao pha lê này trước");
+                        Service.gI().sendThongBao(player, "Cần cường hóa lỗ sao pha lê thứ " + currentSlot + " này trước");
+                    }
+                    break;
+                }
+
+                int optionId = CombineSystem.getOptionDaPhaLe(daPhaLe);
+                int param = CombineSystem.getParamDaPhaLe(daPhaLe);
+                if (optionId < 0 || param <= 0 || ItemService.gI().getItemOptionTemplate(optionId) == null) {
+                    if (epCount == 0) {
+                        Service.gI().sendThongBao(player, "Đá pha lê này không có chỉ số hợp lệ");
                     }
                     break;
                 }
@@ -140,16 +172,32 @@ public class EpSaoTrangBi {
 
                 player.inventory.subGold(gold);
 
-                int optionId = CombineSystem.getOptionDaPhaLe(daPhaLe);
-                int param = CombineSystem.getParamDaPhaLe(daPhaLe);
-                int currentSlot = star + 1;
                 boolean shouldSplitOption = (currentSlot == 8 || currentSlot == 9);
 
                 if (shouldSplitOption) {
+                    boolean hasSeparator = false;
+                    for (ItemOption io : trangBi.itemOptions) {
+                        if (io != null && io.optionTemplate != null && (io.optionTemplate.id == 218 || io.optionTemplate.id == 228)) {
+                            hasSeparator = true;
+                            break;
+                        }
+                    }
+                    if (!hasSeparator) {
+                        trangBi.itemOptions.add(new ItemOption(218, 0));
+                    }
                     trangBi.itemOptions.add(new ItemOption(optionId, param));
                 } else {
                     boolean merged = false;
-                    for (ItemOption io : trangBi.itemOptions) {
+                    int separatorIdx = -1;
+                    for (int idx = 0; idx < trangBi.itemOptions.size(); idx++) {
+                        ItemOption io = trangBi.itemOptions.get(idx);
+                        if (io == null || io.optionTemplate == null) {
+                            continue;
+                        }
+                        if (io.optionTemplate.id == 218 || io.optionTemplate.id == 228) {
+                            separatorIdx = idx;
+                            break;
+                        }
                         if (io.optionTemplate.id == optionId) {
                             io.param += param;
                             merged = true;
@@ -157,7 +205,11 @@ public class EpSaoTrangBi {
                         }
                     }
                     if (!merged) {
-                        trangBi.itemOptions.add(new ItemOption(optionId, param));
+                        if (separatorIdx >= 0) {
+                            trangBi.itemOptions.add(separatorIdx, new ItemOption(optionId, param));
+                        } else {
+                            trangBi.itemOptions.add(new ItemOption(optionId, param));
+                        }
                     }
                 }
 

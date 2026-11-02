@@ -33,25 +33,39 @@ public class CuongHoaLoSaoPhaLe {
                 }
 
                 if (item != null && Hematite != null && DuiDuc != null && Hematite.quantity >= 1 && DuiDuc.quantity >= 1) {
+                    InventoryService.sanitizeStarOptions(item);
                     int star = 0;
+                    int cuongHoaSlot = 0;
                     for (ItemOption io : item.itemOptions) {
+                        if (io == null || io.optionTemplate == null) {
+                            continue;
+                        }
                         if (io.optionTemplate.id == 107) {
                             star = io.param;
-                            break;
+                        } else if (io.optionTemplate.id == 228) {
+                            cuongHoaSlot = io.param;
                         }
                     }
 
-                    if (star < 7) {
+                    if (star < 8) {
                         CombineService.gI().baHatMit.createOtherMenu(player, ConstNpc.IGNORE_MENU,
-                                "Trang bị phải có ít nhất 7 sao pha lê mới có thể cường hóa!", "Đóng");
+                                "Trang bị phải đục lên 8 hoặc 9 lỗ sao pha lê mới có thể cường hóa!", "Đóng");
+                        return;
+                    }
+                    if (cuongHoaSlot >= star || cuongHoaSlot >= 9) {
+                        CombineService.gI().baHatMit.createOtherMenu(player, ConstNpc.IGNORE_MENU,
+                                "Trang bị đã cường hóa tối đa số lỗ sao hiện có!", "Đóng");
                         return;
                     }
 
+                    int targetSlot = cuongHoaSlot < 8 ? 8 : 9;
                     String npcSay = item.template.name + "\n|2|";
                     for (ItemOption io : Hematite.itemOptions) {
-                        npcSay += io.getOptionString() + "\n";
+                        if (io != null && io.optionTemplate != null && io.optionTemplate.id != 73) {
+                            npcSay += io.getOptionString() + "\n";
+                        }
                     }
-                    npcSay += "Cường hóa\n" + " Ô sao pha lê thứ 8 hoặc 9\n" + item.template.name
+                    npcSay += "Cường hóa\nÔ sao pha lê thứ " + targetSlot + "\n" + item.template.name
                             + "\nTỉ lệ thành công: 40%\n"
                             + "|7| Cần 1 " + Hematite.template.name
                             + "\n|7| Cần 1 " + DuiDuc.template.name
@@ -107,26 +121,22 @@ public class CuongHoaLoSaoPhaLe {
             return;
         }
 
+        InventoryService.sanitizeStarOptions(item);
         int star = 0;
         ItemOption opt228 = null;
         boolean hasOption218 = false;
-        boolean hasOption102With7 = false;
 
         for (ItemOption io : item.itemOptions) {
+            if (io == null || io.optionTemplate == null) {
+                continue;
+            }
             if (io.optionTemplate.id == 107) {
                 star = io.param;
             } else if (io.optionTemplate.id == 228) {
                 opt228 = io;
             } else if (io.optionTemplate.id == 218) {
                 hasOption218 = true;
-            } else if (io.optionTemplate.id == 102 && io.param == 7) {
-                hasOption102With7 = true;
             }
-        }
-
-        if ((opt228 == null || opt228.param < 8) && !hasOption102With7) {
-            Service.gI().sendThongBao(player, "Trang bị cần có đủ 7 lỗ để cường hóa.");
-            return;
         }
 
         if (star < 8) {
@@ -134,59 +144,42 @@ public class CuongHoaLoSaoPhaLe {
             return;
         }
 
+        if (opt228 != null && (opt228.param >= star || opt228.param >= 9)) {
+            Service.gI().sendThongBao(player, "Trang bị đã cường hóa tối đa số lỗ sao hiện có.");
+            return;
+        }
+
         boolean success = Util.isTrue(40, 100);
         player.inventory.gold -= COST;
 
-        if (star == 8) {
-            if (opt228 == null) {
+        if (opt228 == null || opt228.param < 8) {
+            if (success) {
                 if (!hasOption218) {
                     item.itemOptions.add(new ItemOption(218, 0));
                 }
-                item.itemOptions.add(new ItemOption(228, 8));
-                CombineService.gI().sendEffectSuccessCombine(player);
-                CombineService.gI().baHatMit.npcChat(player, "Chúc mừng con nhé");
-            } else if (opt228.param >= 8) {
-                Service.gI().sendThongBao(player, "Trang bị đã có lỗ thứ 8.");
-                return;
-            } else {
-                opt228.param = 8;
-                if (!hasOption218) {
-                    item.itemOptions.add(new ItemOption(218, 0));
-                }
-                CombineService.gI().sendEffectSuccessCombine(player);
-                CombineService.gI().baHatMit.npcChat(player, "Chúc mừng con nhé");
-            }
-
-        } else if (star == 9) {
-            if (opt228 == null) {
-                if (hasOption102With7) {
-                    if (!hasOption218) {
-                        item.itemOptions.add(new ItemOption(218, 0));
-                    }
+                if (opt228 == null) {
                     item.itemOptions.add(new ItemOption(228, 8));
-                    CombineService.gI().sendEffectSuccessCombine(player);
-                    CombineService.gI().baHatMit.npcChat(player, "Chúc mừng con nhé");
                 } else {
-                 //   Service.gI().sendThongBao(player, "Trang bị cần có lỗ thứ 8 trước khi nâng lên lỗ thứ 9.");
+                    opt228.param = 8;
                 }
-            } else if (opt228.param == 8) {
-                if (success) {
-                    opt228.param = 9;
-                    CombineService.gI().sendEffectSuccessCombine(player);
-                    CombineService.gI().baHatMit.npcChat(player, "Chúc mừng con nhé");
-                } else {
-                    CombineService.gI().sendEffectFailCombine(player);
-                }
-            } else if (opt228.param == 9) {
-                Service.gI().sendThongBao(player, "Không thể cường hóa thêm.");
-                return;
+                CombineService.gI().sendEffectSuccessCombine(player);
+                CombineService.gI().baHatMit.npcChat(player, "Chúc mừng con nhé");
             } else {
-                Service.gI().sendThongBao(player, "Trang bị không đủ điều kiện để cường hóa lên lỗ tiếp theo.");
-                return;
+                CombineService.gI().sendEffectFailCombine(player);
             }
-
+        } else if (opt228.param == 8 && star >= 9) {
+            if (success) {
+                if (!hasOption218) {
+                    item.itemOptions.add(new ItemOption(218, 0));
+                }
+                opt228.param = 9;
+                CombineService.gI().sendEffectSuccessCombine(player);
+                CombineService.gI().baHatMit.npcChat(player, "Chúc mừng con nhé");
+            } else {
+                CombineService.gI().sendEffectFailCombine(player);
+            }
         } else {
-            Service.gI().sendThongBao(player, "Chỉ có thể cường hóa khi trang bị đạt 8 hoặc 9 sao.");
+            Service.gI().sendThongBao(player, "Không thể cường hóa thêm.");
             return;
         }
 

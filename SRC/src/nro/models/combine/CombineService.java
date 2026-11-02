@@ -894,20 +894,23 @@ public class CombineService {
      *
      * @param player
      */
-    public boolean CheckSlot(Item trangBi, int starEmpty) {
-        if (starEmpty < 8) {
+    public boolean CheckSlot(Item trangBi, int targetSlot) {
+        if (targetSlot < 8) {
             return true;
         }
         for (ItemOption io : trangBi.itemOptions) {
-            if (starEmpty == 8 && io.optionTemplate.id == 228) {
+            if (io == null || io.optionTemplate == null) {
+                continue;
+            }
+            if (targetSlot == 8 && io.optionTemplate.id == 228) {
                 return io.param >= 8;
-            } else if (starEmpty == 9 && io.optionTemplate.id == 228) {
+            } else if (targetSlot == 9 && io.optionTemplate.id == 228) {
                 return io.param >= 9;
             }
         }
-        
+
         return false;
-        
+
     }
     
     public void sendEffSuccessVip(Player player, int iconID) {

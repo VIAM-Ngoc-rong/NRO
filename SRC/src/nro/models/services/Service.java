@@ -1210,7 +1210,11 @@ public class Service {
             if (!isMobMe) {
                 for (Mob mob : pl.zone.mobs) {
                     if (mob.id == mobId) {
-                        SkillService.gI().useSkill(pl, null, mob, -1, null);
+                        if (pl.isPl() && !pl.isBot && pl.shouldUseAutoShortCutSkill()) {
+                            pl.useAutoShortCutSkillOnTarget(null, mob);
+                        } else {
+                            SkillService.gI().useSkill(pl, null, mob, -1, null);
+                        }
                         break;
                     }
                 }
@@ -1522,7 +1526,11 @@ public class Service {
             } else {
                 player = pl.zone.getPlayerInMap(idPlAnPem);
             }
-            SkillService.gI().useSkill(pl, player, null, -1, null);
+            if (pl.isPl() && !pl.isBot && pl.shouldUseAutoShortCutSkill()) {
+                pl.useAutoShortCutSkillOnTarget(player, null);
+            } else {
+                SkillService.gI().useSkill(pl, player, null, -1, null);
+            }
         }
     }
 

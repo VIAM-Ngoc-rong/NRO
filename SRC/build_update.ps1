@@ -54,7 +54,11 @@ javac -proc:none -encoding UTF-8 -d build/classes -cp "build/classes;lib/*" `
     src/nro/models/combine/Combine.java `
     src/nro/models/combine/CombineSystem.java `
     src/nro/models/combine/CombineService.java `
+    src/nro/models/combine/EpSaoTrangBi.java `
     src/nro/models/combine/PhaLeHoaTrangBi.java `
+    src/nro/models/combine/CuongHoaLoSaoPhaLe.java `
+    src/nro/models/combine/NangCapSaoPhaLe.java `
+    src/nro/models/combine/DanhBongSaoPhaLe.java `
     src/nro/models/combine/NangCapVatPham.java `
     src/nro/models/combine/ChuyenHoaTrangBi_Vang.java `
     src/nro/models/combine/ChuyenHoaTrangBi_Ngoc.java `
@@ -130,6 +134,7 @@ javac -proc:none -encoding UTF-8 -d build/classes -cp "build/classes;lib/*" `
     src/nro/models/boss/MajinBuu_12h/Goku.java `
     src/nro/models/boss/MajinBuu_12h/Mabu.java `
     src/nro/models/boss/MajinBuu_12h/Yacon.java `
+    src/nro/models/boss/MajinBuu_14h/SuperBu.java `
     src/nro/models/map/phoban/RedRibbonHQ.java `
     src/nro/models/boss/doanh_trai/TrungUyTrang.java `
     src/nro/models/boss/doanh_trai/TrungUyXanhLo.java `
@@ -186,6 +191,7 @@ $pkgs = @(
     "nro\models\boss\Boss_mini",
     "nro\models\boss\cumber",
     "nro\models\boss\MajinBuu_12h",
+    "nro\models\boss\MajinBuu_14h",
     "nro\models\boss\doanh_trai",
     "nro\models\boss\Boss_Manager"
 )

@@ -118,7 +118,7 @@ public class SkillUtil {
     }
 
     public static int getPercentDameMonkey(int level) { //tỉ lệ dam khỉ cộng thêm v
-        return (level + 3);
+        return (level + 3) * 5;
     }
 
     public static int getTimeStun(int level) { //thời gian choáng thái dương hạ san v

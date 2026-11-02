@@ -43,14 +43,31 @@ public class EffectSkillService {
         return instance;
     }
 
+    private short normalizeAutoSkillPaintId(Player player, short skillId) {
+        if ((player != null && player.effectSkill != null && player.effectSkill.isMonkey && skillId >= 35 && skillId <= 41)
+                || skillId == 165) {
+            return 106;
+        }
+        if (skillId >= 128 && skillId <= 134) {
+            return (short) (skillId - 65);
+        }
+        if (skillId >= 107 && skillId <= 113) {
+            return (short) (skillId - 44);
+        }
+        return skillId;
+    }
+
     public void sendEffectUseSkill(Player player, byte skillId) {
         Skill skill = SkillUtil.getSkillbyId(player, skillId);
+        if (skill == null) {
+            return;
+        }
         Message msg;
         try {
             msg = new Message(-45);
             msg.writer().writeByte(8);
             msg.writer().writeInt((int) player.id);
-            msg.writer().writeShort(skill.skillId);
+            msg.writer().writeShort(normalizeAutoSkillPaintId(player, skill.skillId));
             Service.gI().sendMessAllPlayerInMap(player, msg);
             msg.cleanup();
         } catch (Exception e) {
@@ -67,7 +84,7 @@ public class EffectSkillService {
             msg = new Message(-45);
             msg.writer().writeByte(6);
             msg.writer().writeInt((int) player.id);
-            msg.writer().writeShort(skillId);
+            msg.writer().writeShort(normalizeAutoSkillPaintId(player, skillId));
             player.sendMessage(msg);
             msg.cleanup();
         } catch (Exception e) {

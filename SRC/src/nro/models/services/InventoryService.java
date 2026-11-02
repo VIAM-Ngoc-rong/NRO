@@ -1243,16 +1243,26 @@ public class InventoryService {
         }
         int id = item.template.id;
         int type = item.template.type;
-        if (id >= 441 && id <= 447 && hasOnlyPlaceholderOptions(item.itemOptions)) {
+        if (((id >= 441 && id <= 447) || (id >= 1416 && id <= 1422) || (id >= 1426 && id <= 1434))
+                && hasOnlyPlaceholderOptions(item.itemOptions)) {
             item.itemOptions.clear();
             switch (id) {
-                case 441 -> item.itemOptions.add(new Item.ItemOption(95, 5));
-                case 442 -> item.itemOptions.add(new Item.ItemOption(96, 5));
-                case 443 -> item.itemOptions.add(new Item.ItemOption(97, 5));
-                case 444 -> item.itemOptions.add(new Item.ItemOption(98, 3));
-                case 445 -> item.itemOptions.add(new Item.ItemOption(99, 3));
-                case 446 -> item.itemOptions.add(new Item.ItemOption(100, 5));
-                case 447 -> item.itemOptions.add(new Item.ItemOption(101, 5));
+                case 441, 1416 -> item.itemOptions.add(new Item.ItemOption(95, 5));
+                case 442, 1417 -> item.itemOptions.add(new Item.ItemOption(96, 5));
+                case 443, 1418 -> item.itemOptions.add(new Item.ItemOption(97, 5));
+                case 444, 1419 -> item.itemOptions.add(new Item.ItemOption(98, 3));
+                case 445, 1420 -> item.itemOptions.add(new Item.ItemOption(99, 3));
+                case 446, 1421 -> item.itemOptions.add(new Item.ItemOption(100, 5));
+                case 447, 1422 -> item.itemOptions.add(new Item.ItemOption(101, 5));
+                case 1426 -> item.itemOptions.add(new Item.ItemOption(95, 6));
+                case 1427 -> item.itemOptions.add(new Item.ItemOption(96, 6));
+                case 1428 -> item.itemOptions.add(new Item.ItemOption(97, 6));
+                case 1429 -> item.itemOptions.add(new Item.ItemOption(98, 4));
+                case 1430 -> item.itemOptions.add(new Item.ItemOption(99, 4));
+                case 1431 -> item.itemOptions.add(new Item.ItemOption(100, 6));
+                case 1432 -> item.itemOptions.add(new Item.ItemOption(101, 6));
+                case 1433 -> item.itemOptions.add(new Item.ItemOption(153, 5));
+                case 1434 -> item.itemOptions.add(new Item.ItemOption(160, 5));
             }
             return;
         }
@@ -1319,6 +1329,29 @@ public class InventoryService {
     public static void sanitizeStarOptions(Item item) {
         if (item == null || !item.isNotNullItem() || item.template == null) {
             return;
+        }
+        if (item.itemOptions != null && !item.itemOptions.isEmpty()) {
+            int removedInvalid = 0;
+            java.util.Iterator<Item.ItemOption> it = item.itemOptions.iterator();
+            while (it.hasNext()) {
+                Item.ItemOption io = it.next();
+                if (io == null || io.optionTemplate == null || io.optionTemplate.id < 0) {
+                    it.remove();
+                    removedInvalid++;
+                }
+            }
+            if (removedInvalid > 0) {
+                for (java.util.Iterator<Item.ItemOption> starIt = item.itemOptions.iterator(); starIt.hasNext();) {
+                    Item.ItemOption io = starIt.next();
+                    if (io != null && io.optionTemplate != null && io.optionTemplate.id == 102) {
+                        io.param -= removedInvalid;
+                        if (io.param <= 0) {
+                            starIt.remove();
+                        }
+                        break;
+                    }
+                }
+            }
         }
         ensureDefaultItemOptions(item);
         if (item.itemOptions.isEmpty()) {

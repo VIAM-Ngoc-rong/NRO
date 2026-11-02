@@ -76,6 +76,7 @@ public class DanhBongSaoPhaLe {
             }
 
             if (saoPhaLe != null && daMai != null && saoPhaLe.quantity >= 2) {
+                InventoryService.ensureDefaultItemOptions(saoPhaLe);
                 player.inventory.gold -= gold;
 
                 if (Util.isTrue(player.combineNew.ratioCombine, 100)) {
@@ -85,9 +86,12 @@ public class DanhBongSaoPhaLe {
                     newItem.template = newTemplate;
                     newItem.quantity = 1;
                     for (Item.ItemOption option : saoPhaLe.itemOptions) {
-                        Item.ItemOption newOption = new Item.ItemOption(option.optionTemplate.id, option.param + 1);
-                        newItem.itemOptions.add(newOption);
+                        if (option != null && option.optionTemplate != null && option.optionTemplate.id != 30 && option.optionTemplate.id != 73) {
+                            Item.ItemOption newOption = new Item.ItemOption(option.optionTemplate.id, option.param + 1);
+                            newItem.itemOptions.add(newOption);
+                        }
                     }
+                    InventoryService.ensureDefaultItemOptions(newItem);
                     InventoryService.gI().addItemBag(player, newItem);
                     InventoryService.gI().subQuantityItemsBag(player, saoPhaLe, 2);
                     CombineService.gI().sendEffectSuccessCombine(player);

@@ -424,6 +424,9 @@ public class PlayerDAO {
                         dataItem.add(item.quantity);
                         JSONArray options = new JSONArray();
                         for (Item.ItemOption io : item.itemOptions) {
+                            if (io == null || io.optionTemplate == null) {
+                                continue;
+                            }
                             opt.add(io.optionTemplate.id);
                             opt.add(io.param);
                             options.add(opt.toJSONString());
@@ -451,6 +454,9 @@ public class PlayerDAO {
                         dataItem.add(item.quantity);
                         JSONArray options = new JSONArray();
                         for (Item.ItemOption io : item.itemOptions) {
+                            if (io == null || io.optionTemplate == null) {
+                                continue;
+                            }
                             opt.add(io.optionTemplate.id);
                             opt.add(io.param);
                             options.add(opt.toJSONString());
@@ -477,6 +483,9 @@ public class PlayerDAO {
                         dataItem.add(item.quantity);
                         JSONArray options = new JSONArray();
                         for (Item.ItemOption io : item.itemOptions) {
+                            if (io == null || io.optionTemplate == null) {
+                                continue;
+                            }
                             opt.add(io.optionTemplate.id);
                             opt.add(io.param);
                             options.add(opt.toJSONString());
@@ -503,6 +512,9 @@ public class PlayerDAO {
                         dataItem.add(item.quantity);
                         JSONArray options = new JSONArray();
                         for (Item.ItemOption io : item.itemOptions) {
+                            if (io == null || io.optionTemplate == null) {
+                                continue;
+                            }
                             opt.add(io.optionTemplate.id);
                             opt.add(io.param);
                             options.add(opt.toJSONString());
@@ -529,6 +541,9 @@ public class PlayerDAO {
                         dataItem.add(item.quantity);
                         JSONArray options = new JSONArray();
                         for (Item.ItemOption io : item.itemOptions) {
+                            if (io == null || io.optionTemplate == null) {
+                                continue;
+                            }
                             opt.add(io.optionTemplate.id);
                             opt.add(io.param);
                             options.add(opt.toJSONString());
@@ -744,9 +759,13 @@ public class PlayerDAO {
                     JSONArray opt = new JSONArray();
                     for (Item item : player.pet.inventory.itemsBody) {
                         if (item.isNotNullItem()) {
+                            nro.models.services.InventoryService.sanitizeStarOptions(item);
                             dataItem.add(item.template.id);
                             dataItem.add(item.quantity);
                             for (Item.ItemOption io : item.itemOptions) {
+                                if (io == null || io.optionTemplate == null) {
+                                    continue;
+                                }
                                 opt.add(io.optionTemplate.id);
                                 opt.add(io.param);
                                 options.add(opt.toJSONString());
