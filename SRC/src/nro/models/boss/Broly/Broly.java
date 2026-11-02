@@ -139,10 +139,10 @@ public class Broly extends Boss {
                 this.setDie(plAtt);
                 die(plAtt);
             } else if (this.nPoint.hp < this.nPoint.hpMax / 2) {
-                if (this.effectSkill == null || !this.effectSkill.isCharging || Util.isTrue(1, 3)) {
+                if (Util.isTrue(1, 5)) {
                     this.useTTNL();
                 }
-            } else if (Util.isTrue(1, 10)) {
+            } else if (Util.isTrue(1, 25)) {
                 this.useTTNL();
             }
             return (int) damage;
@@ -151,14 +151,16 @@ public class Broly extends Boss {
         }
     }
 
+    private long lastTimeUseTTNL;
+
     @Override
     public void attack() {
         if (this.typePk == ConstPlayer.PK_ALL) {
-            if (this.nPoint.hp < this.nPoint.hpMax / 2) {
-                this.useTTNL();
+            if (this.effectSkill != null && this.effectSkill.isCharging) {
                 return;
             }
-            if (this.effectSkill != null && this.effectSkill.isCharging) {
+            if (this.nPoint.hp < this.nPoint.hpMax / 2 && Util.isTrue(1, 5)) {
+                this.useTTNL();
                 return;
             }
         }
@@ -208,9 +210,13 @@ public class Broly extends Boss {
         if (this.isDie() || this.zone == null || this.effectSkill == null) {
             return;
         }
+        if (!Util.canDoWithTime(this.lastTimeUseTTNL, 3000)) {
+            return;
+        }
         if (this.effectSkill.anTroi || this.effectSkill.isHaveEffectSkill() || this.effectSkill.isBinh || this.effectSkill.isSocola) {
             return;
         }
+        this.lastTimeUseTTNL = System.currentTimeMillis();
         this.playerSkill.skillSelect = this.playerSkill.skills.get(Util.nextInt(0, 6));
         this.tangChiSo();
         if (!this.effectSkill.isCharging) {
@@ -227,7 +233,7 @@ public class Broly extends Boss {
 
     public void tangChiSo() {
         long hpMax = this.nPoint.hpMax;
-        int rand = this.nPoint.hp < this.nPoint.hpMax / 2 ? Util.nextInt(10, 20) : Util.nextInt(10, 100);
+        int rand = this.nPoint.hp < this.nPoint.hpMax / 2 ? Util.nextInt(30, 60) : Util.nextInt(50, 100);
         long add = Math.max(10L, hpMax / rand);
         hpMax = hpMax + add < 16_070_777L ? hpMax + add : 16_070_777L;
         this.nPoint.hpg = (int) hpMax;

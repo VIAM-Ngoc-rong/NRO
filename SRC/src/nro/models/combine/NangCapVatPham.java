@@ -233,17 +233,6 @@ public class NangCapVatPham {
                                 option2.param -= (option2.param * 11 / 100) < 1 ? 1 : (option2.param * 11 / 100);
                             }
                             optionLevel.param--;
-
-                            Item.ItemOption downgradeOption = itemDo.itemOptions.stream()
-                                    .filter(io -> io.optionTemplate.id == 209)
-                                    .findFirst()
-                                    .orElse(null);
-
-                            if (downgradeOption == null) {
-                                itemDo.itemOptions.add(new Item.ItemOption(209, 1));
-                            } else {
-                                downgradeOption.param++;
-                            }
                             break;
                         }
                     }

@@ -781,6 +781,16 @@ public final class Manager {
             } catch (Exception ignored) {
             }
 
+            try (PreparedStatement psFixCostumeParts = ConnectionDatabase.prepareStatement(
+                    "UPDATE item_template SET "
+                    + "head = CASE id WHEN 1593 THEN 1467 WHEN 1040 THEN 1092 WHEN 1596 THEN 1470 WHEN 1597 THEN 1473 ELSE head END, "
+                    + "body = CASE id WHEN 1593 THEN 1450 WHEN 1040 THEN 1093 WHEN 1596 THEN 1471 WHEN 1597 THEN 1474 ELSE body END, "
+                    + "leg  = CASE id WHEN 1593 THEN 1451 WHEN 1040 THEN 1094 WHEN 1596 THEN 1472 WHEN 1597 THEN 1475 ELSE leg  END "
+                    + "WHERE id IN (1040, 1593, 1596, 1597)")) {
+                psFixCostumeParts.executeUpdate();
+            } catch (Exception ignored) {
+            }
+
             ensurePurpleDragonBallIcons();
             for (int star = 1; star <= 7; star++) {
                 int itemId = 1826 + star; // 1827..1833
@@ -845,6 +855,23 @@ public final class Manager {
                         itemTemp.head = rs.getInt("head");
                         itemTemp.body = rs.getInt("body");
                         itemTemp.leg = rs.getInt("leg");
+                        if (itemTemp.id == 1593) {
+                            itemTemp.head = 1467;
+                            itemTemp.body = 1450;
+                            itemTemp.leg = 1451;
+                        } else if (itemTemp.id == 1040) {
+                            itemTemp.head = 1092;
+                            itemTemp.body = 1093;
+                            itemTemp.leg = 1094;
+                        } else if (itemTemp.id == 1596) {
+                            itemTemp.head = 1470;
+                            itemTemp.body = 1471;
+                            itemTemp.leg = 1472;
+                        } else if (itemTemp.id == 1597) {
+                            itemTemp.head = 1473;
+                            itemTemp.body = 1474;
+                            itemTemp.leg = 1475;
+                        }
 
                         ITEM_TEMPLATES.add(itemTemp);
                     } while (rs.next());

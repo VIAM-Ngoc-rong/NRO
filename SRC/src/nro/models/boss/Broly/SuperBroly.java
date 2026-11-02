@@ -105,7 +105,8 @@ public class SuperBroly extends Boss {
                 this.chat("Xí hụt");
                 return 0;
             }
-            if (Util.isTrue(1, 30)) {
+            if (Util.isTrue(1, 30) && Util.canDoWithTime(this.lastTimeUseTTNL, 3000)) {
+                this.lastTimeUseTTNL = System.currentTimeMillis();
                 this.playerSkill.skillSelect = this.playerSkill.skills.get(Util.nextInt(0, 6));
                 this.tangChiSo();
                 SkillService.gI().useSkill(this, null, null, -1, null);
@@ -134,6 +135,7 @@ public class SuperBroly extends Boss {
     }
 
     private long lastTimeAttack;
+    private long lastTimeUseTTNL;
 
     @Override
     public void attack() {

@@ -97,7 +97,8 @@ public class SieuBroly18h extends Boss {
             if (plAtt != null && plAtt.idNRNM != -1) {
                 return 1;
             }
-            if (Util.isTrue(1, 30)) {
+            if (Util.isTrue(1, 30) && Util.canDoWithTime(this.lastTimeUseTTNL, 3000)) {
+                this.lastTimeUseTTNL = System.currentTimeMillis();
                 this.playerSkill.skillSelect = this.playerSkill.skills.get(Util.nextInt(0, 6));
                 this.tangChiSo();
                 SkillService.gI().useSkill(this, null, null, -1, null);
@@ -123,6 +124,8 @@ public class SieuBroly18h extends Boss {
         }
         return 0;
     }
+
+    private long lastTimeUseTTNL;
 
     @Override
     public void attack() {

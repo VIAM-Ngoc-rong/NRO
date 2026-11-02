@@ -187,31 +187,31 @@ public class CombineSystem {
     public static float getRatioPhaLeHoa(int star) {
         switch (star) {
             case 0:
-                return 50f;
+                return 80f;
             case 1:
-                return 20f;
+                return 55f;
             case 2:
-                return 10f;
+                return 40f;
             case 3:
-                return 5f;
+                return 30f;
             case 4:
-                return 0.8f;
+                return 20f;
             case 5:
-                return 0.3f;
+                return 12f;
             case 6:
-                return 0.1f;
+                return 6f;
             case 7:
-                return 0.03f;
+                return 3f;
             case 8:
-                return 0.01f;
+                return 1.5f;
             case 9:
-                return 0.5f;
+                return 1f;
             case 10:
-                return 0.2f;
+                return 0.5f;
             case 11:
-                return 0.1f;
+                return 0.3f;
             case 12:
-                return 0.1f;
+                return 0.2f;
         }
 
         return 0;
@@ -318,31 +318,31 @@ public class CombineSystem {
     public static double getTileNangCapDo(int level) {
         switch (level) {
             case 0:
-                return 80;
+                return 90;
             case 1:
-                return 50;
+                return 70;
             case 2:
-                return 20;
+                return 50;
             case 3:
-                return 10;
+                return 35;
             case 4:
-                return 7;
+                return 25;
             case 5:
-                return 5;
+                return 15;
             case 6:
-                return 1;
+                return 8;
             case 7: // 7 sao
-                return 0.3;
+                return 4;
             case 8:
-                return 5;
+                return 10;
             case 9:
-                return 1;
+                return 5;
             case 10: // 7 sao
-                return 0.3;
+                return 2;
             case 11: // 7 sao
-                return 0.3;
+                return 2;
             case 12: // 7 sao
-                return 0.3;
+                return 2;
         }
         return 0;
     }

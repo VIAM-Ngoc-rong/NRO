@@ -49,7 +49,7 @@ public class NewPet extends Player {
         if (master == null || master.zone == null) {
             return;
         }
-        this.location.x = master.location.x + Util.nextInt(-10, 10);
+        this.location.x = master.location.x + (Util.isTrue(1, 2) ? Util.nextInt(-45, -25) : Util.nextInt(25, 45));
         this.location.y = master.location.y;
         if (isPl()) {
             this.dispose();
@@ -61,13 +61,13 @@ public class NewPet extends Player {
 
     private long lastTimeMoveIdle;
     private int timeMoveIdle;
-    public boolean idle;
+    public boolean idle = true;
 
     private void moveIdle() {
         if (idle && Util.canDoWithTime(lastTimeMoveIdle, timeMoveIdle)) {
             int dir = this.location.x - master.location.x <= 0 ? -1 : 1;
             PlayerService.gI().playerMove(this, master.location.x
-                    + Util.nextInt(dir == -1 ? 30 : -50, dir == -1 ? 50 : 30), master.location.y);
+                    + Util.nextInt(dir == -1 ? 30 : -50, dir == -1 ? 50 : -30), master.location.y);
             lastTimeMoveIdle = System.currentTimeMillis();
             timeMoveIdle = Util.nextInt(5000, 8000);
         }
@@ -85,6 +85,9 @@ public class NewPet extends Player {
         if (master != null && master.isDie()) {
             return;
         }
+        if (master != null) {
+            followMaster();
+        }
         moveIdle();
     }
 
@@ -93,14 +96,19 @@ public class NewPet extends Player {
     }
 
     private void followMaster(int dis) {
+        if (master == null) {
+            return;
+        }
         int mX = master.location.x;
         int mY = master.location.y;
         int disX = this.location.x - mX;
-        if (Math.sqrt(Math.pow(mX - this.location.x, 2) + Math.pow(mY - this.location.y, 2)) >= dis) {
+        double dist = Math.sqrt(Math.pow(mX - this.location.x, 2) + Math.pow(mY - this.location.y, 2));
+        if (dist >= dis || Math.abs(disX) < 20) {
+            int minOffset = Math.min(25, Math.max(15, dis - 10));
             if (disX < 0) {
-                this.location.x = mX - Util.nextInt(0, dis);
+                this.location.x = mX - Util.nextInt(minOffset, Math.max(minOffset + 5, dis));
             } else {
-                this.location.x = mX + Util.nextInt(0, dis);
+                this.location.x = mX + Util.nextInt(minOffset, Math.max(minOffset + 5, dis));
             }
             this.location.y = mY;
             PlayerService.gI().playerMove(this, this.location.x, this.location.y);
