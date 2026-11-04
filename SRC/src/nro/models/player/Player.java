@@ -3099,12 +3099,29 @@ public class Player implements Runnable {
     }
 
     public long lastTimeClientMove = 0L;
+    public long lastTimePickMobTeleport = 0L;
+    public int pickMobTeleportStreak = 0;
+    public int lastPickMobTeleportId = -1;
     public short pendingAutoSkillPaintId = -1;
     public long pendingAutoSkillPaintTime = 0L;
 
+    public boolean isClientPickMobActive() {
+        if (this.pickMobTeleportStreak < 1 || this.lastTimePickMobTeleport <= 0) {
+            return false;
+        }
+        long now = System.currentTimeMillis();
+        if (now - this.lastTimePickMobTeleport > 6000L) {
+            return false;
+        }
+        if (this.lastTimeClientAttack > 0 && now - this.lastTimeClientAttack > 3500L) {
+            return false;
+        }
+        return true;
+    }
+
     public void recordClientAttack(int mobId, int playerId) {
         long now = System.currentTimeMillis();
-        if (this.lastTimeClientAttack > 0 && now - this.lastTimeClientAttack <= 8000L) {
+        if (this.lastTimeClientAttack > 0 && now - this.lastTimeClientAttack <= 3500L) {
             this.clientAutoAttackStreak++;
         } else {
             this.clientAutoAttackStreak = 1;
@@ -3113,6 +3130,18 @@ public class Player implements Runnable {
         if (mobId >= 0) {
             this.lastAttackMobId = mobId;
             this.lastAttackPlayerId = -1;
+            if (this.zone != null && this.zone.mobs != null && this.location != null) {
+                for (Mob m : this.zone.mobs) {
+                    if (m != null && m.id == mobId && !m.isDie()
+                            && Math.abs(this.location.x - m.location.x) <= 16
+                            && Math.abs(this.location.y - m.location.y) <= 24
+                            && this.lastTimePickMobTeleport > 0
+                            && now - this.lastTimePickMobTeleport <= 3500L) {
+                        this.lastTimePickMobTeleport = now;
+                        break;
+                    }
+                }
+            }
         }
         if (playerId != -1) {
             this.lastAttackPlayerId = playerId;
@@ -3122,10 +3151,13 @@ public class Player implements Runnable {
                 && this.playerSkill.skillSelect != null && this.playerSkill.skillSelect.template != null) {
             this.lastPointedSkillTemplateId = this.playerSkill.skillSelect.template.id;
         }
-        if (this.isManualServerAutoAttack || this.isAutoCleanBag) {
+        if (this.isManualServerAutoAttack || this.isAutoCleanBag
+                || (this.itemTime != null && this.itemTime.isUseTDLT)) {
             this.isServerAutoAttack = true;
-        } else if (isPcClient() && this.clientAutoAttackStreak >= 2) {
+        } else if (isClientPickMobActive()) {
             this.isServerAutoAttack = true;
+        } else {
+            this.isServerAutoAttack = false;
         }
     }
 
@@ -3143,6 +3175,9 @@ public class Player implements Runnable {
                 || this.playerSkill.skillSelect.template == null) {
             return false;
         }
+        if (!this.isAutoPlayActive()) {
+            return false;
+        }
         if (this.playerSkill.prepareQCKK || this.playerSkill.prepareLaze || this.playerSkill.prepareTuSat) {
             return false;
         }
@@ -3150,16 +3185,7 @@ public class Player implements Runnable {
         if (isExcludedFromAutoTanSat(curSkillId)) {
             return false;
         }
-        if (isPickMobDefaultSkill(curSkillId)) {
-            return true;
-        }
-        long now = System.currentTimeMillis();
-        return this.isAutoPlayActive()
-                || (this.itemTime != null && this.itemTime.isUseTDLT)
-                || this.clientAutoAttackStreak >= 2
-                || (this.lastTimeClientMove > 0 && now - this.lastTimeClientMove <= 1500L)
-                || !isAutoSkillReady(this.playerSkill.skillSelect)
-                || !isSkillInShortCut(curSkillId);
+        return !getShortCutAutoSkills().isEmpty();
     }
 
     private void triggerAutoSkillVisualAndCooldown(Skill skill, Mob targetMob) {
@@ -3229,10 +3255,12 @@ public class Player implements Runnable {
                 && this.playerSkill.skillSelect != null && this.playerSkill.skillSelect.template != null) {
             this.lastPointedSkillTemplateId = this.playerSkill.skillSelect.template.id;
         }
-        if (this.isManualServerAutoAttack || this.isAutoCleanBag) {
+        if (this.isManualServerAutoAttack || this.isAutoCleanBag
+                || (this.itemTime != null && this.itemTime.isUseTDLT)
+                || isClientPickMobActive()) {
             this.isServerAutoAttack = true;
-        } else if (isPcClient() && this.clientAutoAttackStreak >= 2 && now - this.lastTimeClientAttack <= 5000L) {
-            this.isServerAutoAttack = true;
+        } else {
+            this.isServerAutoAttack = false;
         }
         this.lastTimeClientSkillNotFocus = now;
     }
@@ -3244,8 +3272,27 @@ public class Player implements Runnable {
         long now = System.currentTimeMillis();
         this.lastTimeClientMove = now;
         int dist = Util.getDistance(this.location.x, this.location.y, toX, toY);
-        if (dist >= 1 && !this.isAutoHuntBoss && !this.isManualServerAutoAttack && !this.isAutoCleanBag) {
-            if (this.lastTimeClientAttack <= 0 || now - this.lastTimeClientAttack > 4000L) {
+        Mob landedMob = null;
+        if (this.zone != null && this.zone.mobs != null) {
+            for (Mob m : this.zone.mobs) {
+                if (m != null && !m.isDie() && m.status != 0 && m.status != 1
+                        && Math.abs(toX - m.location.x) <= 16
+                        && Math.abs(toY - m.location.y) <= 24) {
+                    landedMob = m;
+                    break;
+                }
+            }
+        }
+        if (landedMob != null && (dist >= 36 || landedMob.id != this.lastPickMobTeleportId)) {
+            this.lastTimePickMobTeleport = now;
+            this.pickMobTeleportStreak++;
+            this.lastPickMobTeleportId = landedMob.id;
+        } else if (landedMob == null && dist >= 18) {
+            this.pickMobTeleportStreak = 0;
+            this.lastTimePickMobTeleport = 0L;
+            this.lastPickMobTeleportId = -1;
+            if (!this.isAutoHuntBoss && !this.isManualServerAutoAttack && !this.isAutoCleanBag
+                    && (this.itemTime == null || !this.itemTime.isUseTDLT)) {
                 this.isServerAutoAttack = false;
                 this.clientAutoAttackStreak = 0;
                 this.lastAttackMobId = -1;
@@ -3268,10 +3315,15 @@ public class Player implements Runnable {
         if (!this.isPl() || this.isBot || this.isDie() || this.zone == null) {
             return false;
         }
-        if (this.isAutoHuntBoss) {
+        if (this.isAutoHuntBoss || this.isManualServerAutoAttack || this.isAutoCleanBag
+                || (this.itemTime != null && this.itemTime.isUseTDLT)) {
             return true;
         }
-        return this.isServerAutoAttack;
+        if (isClientPickMobActive()) {
+            return true;
+        }
+        this.isServerAutoAttack = false;
+        return false;
     }
 
     private Skill getPointedSkill() {

@@ -470,10 +470,14 @@ public class Command {
                 Service.gI().sendThongBao(player, "Up treo quái (Chống đầy hành trang & Tự bán đồ rác): " + (player.isAutoCleanBag ? "[Bật]" : "[Tắt]"));
                 return true;
             }
-            case "tudanh", "td", "ak", "autokill" -> {
+            case "tudanh", "td", "ak", "autokill", "ts", "tansat" -> {
                 player.isManualServerAutoAttack = !player.isManualServerAutoAttack;
                 player.isServerAutoAttack = player.isManualServerAutoAttack;
-                Service.gI().sendThongBao(player, "Tự Đánh Server (Mở Hành Trang & Tự Dùng Chiêu Đang Trỏ): " + (player.isManualServerAutoAttack ? "[Bật]" : "[Tắt]"));
+                if (!player.isManualServerAutoAttack) {
+                    player.pickMobTeleportStreak = 0;
+                    player.lastTimePickMobTeleport = 0L;
+                }
+                Service.gI().sendThongBao(player, "Tàn Sát / Tự Đánh Server (Dùng đa chiêu trên Ô Kỹ Năng): " + (player.isManualServerAutoAttack ? "[Bật]" : "[Tắt]"));
                 return true;
             }
             case "boss", "dsboss", "sanboss" -> {

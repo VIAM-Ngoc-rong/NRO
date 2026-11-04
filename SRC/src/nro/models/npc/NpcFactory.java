@@ -816,6 +816,7 @@ public class NpcFactory {
                             case 1 -> {
                                 player.isAutoCleanBag = !player.isAutoCleanBag;
                                 if (player.isAutoCleanBag) {
+                                    player.isServerAutoAttack = true;
                                     player.autoCleanTrashAndSellItems();
                                 } else if (!player.isManualServerAutoAttack) {
                                     player.isServerAutoAttack = false;
@@ -828,6 +829,7 @@ public class NpcFactory {
                                 player.isAutoBuffPea = enableBoth;
                                 player.isAutoCleanBag = enableBoth;
                                 if (enableBoth) {
+                                    player.isServerAutoAttack = true;
                                     player.autoCleanTrashAndSellItems();
                                 } else if (!player.isManualServerAutoAttack) {
                                     player.isServerAutoAttack = false;

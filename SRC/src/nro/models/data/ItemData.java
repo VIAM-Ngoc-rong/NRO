@@ -26,10 +26,10 @@ public class ItemData {
     private static final Map<Integer, short[]> EQUIP_ALIAS_MAP = new HashMap<>();
 
     private static String safeTrimDesc(String desc, int currentBytes) {
-        if (desc == null || desc.isEmpty() || currentBytes > 50000) {
+        if (desc == null || desc.isEmpty() || currentBytes > 54000) {
             return "";
         }
-        int maxDesc = currentBytes > 40000 ? 12 : (currentBytes > 28000 ? 24 : 36);
+        int maxDesc = currentBytes > 46000 ? 36 : (currentBytes > 36000 ? 64 : 80);
         if (desc.length() <= maxDesc) {
             return desc;
         }

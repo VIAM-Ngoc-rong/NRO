@@ -746,8 +746,8 @@ public final class Manager {
 
             try (PreparedStatement psUpdateHitEgg = ConnectionDatabase.prepareStatement(
                     "UPDATE item_template SET TYPE = 27, gender = 3, NAME = 'Quả Trứng Hit', "
-                    + "description = 'Sử dụng để ấp Đệ tử Cấp 4 Sát Thủ Hit tại nhà (Yêu cầu Đệ tử Broly, Hợp thể +45% chỉ số)', "
-                    + "level = 1, icon_id = 4969, part = -1, is_up_to_up = 0 WHERE id = 1834")) {
+                    + "description = 'Ấp tại nhà nở Đệ tử Cấp 4 Sát Thủ Hit (Hợp thể +45% chỉ số)', "
+                    + "level = 1, icon_id = 25008, part = -1, is_up_to_up = 0 WHERE id = 1834")) {
                 psUpdateHitEgg.executeUpdate();
             } catch (Exception ignored) {
             }
@@ -841,6 +841,34 @@ public final class Manager {
                             itemTemp.iconID = 12834;
                             itemTemp.part = -1;
                             itemTemp.isUpToUp = true;
+                        } else if (itemTemp.id == 1826) {
+                            itemTemp.type = 27;
+                            itemTemp.gender = 3;
+                            itemTemp.name = "Quả Trứng Broly";
+                            itemTemp.description = "Ấp tại nhà nở Đệ tử Cấp 3 Broly (Hợp thể +30% chỉ số)";
+                            itemTemp.level = 1;
+                            itemTemp.iconID = 15128;
+                            itemTemp.part = -1;
+                            itemTemp.isUpToUp = false;
+                        } else if (itemTemp.id >= 1827 && itemTemp.id <= 1833) {
+                            int star = itemTemp.id - 1826;
+                            itemTemp.type = 12;
+                            itemTemp.gender = 3;
+                            itemTemp.name = "Ngọc Rồng Tím " + star + " sao";
+                            itemTemp.description = "Thu thập đủ 7 viên để gọi Rồng Thần Tím hoặc ép vào trang bị";
+                            itemTemp.level = 0;
+                            itemTemp.iconID = (short) (25000 + star);
+                            itemTemp.part = -1;
+                            itemTemp.isUpToUp = true;
+                        } else if (itemTemp.id == 1834) {
+                            itemTemp.type = 27;
+                            itemTemp.gender = 3;
+                            itemTemp.name = "Quả Trứng Hit";
+                            itemTemp.description = "Ấp tại nhà nở Đệ tử Cấp 4 Sát Thủ Hit (Hợp thể +45% chỉ số)";
+                            itemTemp.level = 1;
+                            itemTemp.iconID = 25008;
+                            itemTemp.part = -1;
+                            itemTemp.isUpToUp = false;
                         }
                         if (itemTemp.id == 1655 || itemTemp.id == 1664 || itemTemp.id == 1665 || itemTemp.id == 1666
                                 || itemTemp.id == 1671 || itemTemp.id == 1672 || itemTemp.id == 1775 || itemTemp.id == 1823
@@ -910,7 +938,9 @@ public final class Manager {
                 // vào HEAD_AVATARS để client không bao giờ nhận getAvatar(headId) == -1 gây IndexOutOfRangeException ở Panel.paintTopInfo
                 java.util.Set<Integer> registeredHeads = new java.util.HashSet<>();
                 for (HeadAvatar ha : HEAD_AVATARS) {
-                    if (ha.avatarId <= 0 || ha.avatarId >= 32767) {
+                    if (ha.headId == 520) {
+                        ha.avatarId = 8127;
+                    } else if (ha.avatarId <= 0 || ha.avatarId >= 32767) {
                         ha.avatarId = 522;
                     }
                     registeredHeads.add(ha.headId);
@@ -932,7 +962,7 @@ public final class Manager {
                     }
                 }
                 if (registeredHeads.add(520)) {
-                    HEAD_AVATARS.add(new HeadAvatar(520, 5112));
+                    HEAD_AVATARS.add(new HeadAvatar(520, 8127));
                 }
                 int[] specialHeads = {
                     192, 195, 196, 197, 198, 199, 200,
@@ -1557,7 +1587,7 @@ public final class Manager {
                  PreparedStatement psNpc154 = con.prepareStatement(
                     "UPDATE map_template SET npcs = '[[44,810,312],[55,645,312],[56,725,312],[58,560,312]]' WHERE id = 154");
                  PreparedStatement psHeadHit = con.prepareStatement(
-                    "INSERT INTO head_avatar (head_id, avatar_id) VALUES (520, 5112), (2099, 25010) ON DUPLICATE KEY UPDATE avatar_id = VALUES(avatar_id)")) {
+                    "INSERT INTO head_avatar (head_id, avatar_id) VALUES (520, 8127), (2099, 25010) ON DUPLICATE KEY UPDATE avatar_id = VALUES(avatar_id)")) {
                 psNpc14.executeUpdate();
                 psNpc154.executeUpdate();
                 psHeadHit.executeUpdate();
@@ -1793,9 +1823,9 @@ public final class Manager {
     }
 
     private void ensurePurpleDragonBallIcons() {
-        int[] baseIcons = {419, 420, 421, 422, 423, 424, 425};
+        int[] baseIcons = {419, 420, 421, 422, 423, 424, 425, 15128};
         for (int zoom = 1; zoom <= 4; zoom++) {
-            for (int i = 0; i < 7; i++) {
+            for (int i = 0; i < baseIcons.length; i++) {
                 int srcIcon = baseIcons[i];
                 int dstIcon = 25001 + i;
                 File dstFile = new File("data/icon/x" + zoom + "/" + dstIcon + ".png");
