@@ -388,9 +388,6 @@ public class Controller implements IMessageHandler {
                             }
                         } catch (IOException e) {
                         }
-                        if (player.isPl() && !player.isBot) {
-                            player.notifyManualMove(toX, toY);
-                        }
                         PlayerService.gI().playerMove(player, toX, toY);
                     }
                     break;

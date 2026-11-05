@@ -1204,17 +1204,10 @@ public class Service {
 
     public void attackMob(Player pl, int mobId, boolean isMobMe, int masterId) {
         if (pl != null && pl.zone != null) {
-            if (pl.isPl() && !pl.isBot && !isMobMe) {
-                pl.recordClientAttack(mobId, -1);
-            }
             if (!isMobMe) {
                 for (Mob mob : pl.zone.mobs) {
                     if (mob.id == mobId) {
-                        if (pl.isPl() && !pl.isBot && pl.shouldUseAutoShortCutSkill()) {
-                            pl.useAutoShortCutSkillOnTarget(null, mob);
-                        } else {
-                            SkillService.gI().useSkill(pl, null, mob, -1, null);
-                        }
+                        SkillService.gI().useSkill(pl, null, mob, -1, null);
                         break;
                     }
                 }
@@ -1516,21 +1509,14 @@ public class Service {
     }
 
     public void attackPlayer(Player pl, int idPlAnPem) {
-        if (pl != null && pl.zone != null) {
-            if (pl.isPl() && !pl.isBot) {
-                pl.recordClientAttack(-1, idPlAnPem);
-            }
+        if (pl.zone != null) {
             Player player;
             if (MapService.gI().isMapOffline(pl.zone.map.mapId)) {
                 player = pl.zone.getPlayerInMapOffline(pl, idPlAnPem);
             } else {
                 player = pl.zone.getPlayerInMap(idPlAnPem);
             }
-            if (pl.isPl() && !pl.isBot && pl.shouldUseAutoShortCutSkill()) {
-                pl.useAutoShortCutSkillOnTarget(player, null);
-            } else {
-                SkillService.gI().useSkill(pl, player, null, -1, null);
-            }
+            SkillService.gI().useSkill(pl, player, null, -1, null);
         }
     }
 
@@ -1564,9 +1550,6 @@ public class Service {
                 if (timeLeft < 0) {
                     timeLeft = 0;
                 }
-                if (timeLeft >= skill.coolDown && skill.coolDown > 0) {
-                    timeLeft = skill.coolDown - 1;
-                }
                 msg.writer().writeInt(timeLeft);
             }
             pl.sendMessage(msg);
@@ -1584,9 +1567,6 @@ public class Service {
             int timeLeft = (int) (skill.lastTimeUseThisSkill + skill.coolDown - System.currentTimeMillis());
             if (timeLeft < 0) {
                 timeLeft = 0;
-            }
-            if (timeLeft >= skill.coolDown && skill.coolDown > 0) {
-                timeLeft = skill.coolDown - 1;
             }
             msg.writer().writeInt(timeLeft);
             pl.sendMessage(msg);
@@ -2001,8 +1981,8 @@ public class Service {
             msg.reader().readBoolean();//is_gprs
             msg.reader().readInt();//width
             msg.reader().readInt();//height
-            session.isQwerty = msg.reader().readBoolean();//is_qwerty
-            session.isTouch = msg.reader().readBoolean();//is_touch
+            msg.reader().readBoolean();//is_qwerty
+            msg.reader().readBoolean();//is_touch
             String platform = msg.reader().readUTF();
             String[] arrPlatform = platform.split("\\|");
             session.version = Integer.parseInt(arrPlatform[1].replaceAll("\\.", ""));

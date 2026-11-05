@@ -125,6 +125,10 @@ javac -proc:none -encoding UTF-8 -d build/classes -cp "build/classes;lib/*" `
     src/nro/models/boss/event/Halloween/MaTroi.java `
     src/nro/models/boss/Boss_mini/Odo.java `
     src/nro/models/boss/cumber/Cumber.java `
+    src/nro/models/boss/BadiWolves/Basil.java `
+    src/nro/models/boss/BadiWolves/Bergamo.java `
+    src/nro/models/boss/BadiWolves/Lavender.java `
+    src/nro/models/boss/Black_Goku/Zamasu.java `
     src/nro/models/boss/MajinBuu_12h/BuiBui.java `
     src/nro/models/boss/MajinBuu_12h/BuiBui2.java `
     src/nro/models/boss/MajinBuu_12h/Cadic.java `
@@ -134,6 +138,7 @@ javac -proc:none -encoding UTF-8 -d build/classes -cp "build/classes;lib/*" `
     src/nro/models/boss/MajinBuu_12h/Goku.java `
     src/nro/models/boss/MajinBuu_12h/Mabu.java `
     src/nro/models/boss/MajinBuu_12h/Yacon.java `
+    src/nro/models/boss/MajinBuu_14h/Mabu14h.java `
     src/nro/models/boss/MajinBuu_14h/SuperBu.java `
     src/nro/models/map/phoban/RedRibbonHQ.java `
     src/nro/models/boss/doanh_trai/TrungUyTrang.java `
@@ -190,6 +195,8 @@ $pkgs = @(
     "nro\models\boss\event\Halloween",
     "nro\models\boss\Boss_mini",
     "nro\models\boss\cumber",
+    "nro\models\boss\BadiWolves",
+    "nro\models\boss\Black_Goku",
     "nro\models\boss\MajinBuu_12h",
     "nro\models\boss\MajinBuu_14h",
     "nro\models\boss\doanh_trai",
@@ -224,13 +231,4 @@ if (Test-Path "E:\NRO\Server_Local\20.jar") {
 }
 
 Write-Host "HOAN TAT! Da cap nhat dist/NgocRongOnline.jar va 20.jar thanh cong!" -ForegroundColor Green
-
-Write-Host "3. Dang day code len GitHub..." -ForegroundColor Cyan
-Set-Location "E:\NRO"
-git add -A
-git commit -m "Update"
-git push origin main
-Set-Location $PSScriptRoot
-Write-Host "DA DAY LEN GITHUB THANH CONG!" -ForegroundColor Green
-
 

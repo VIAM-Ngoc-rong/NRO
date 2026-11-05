@@ -253,6 +253,12 @@ public class Hit extends Boss {
 
     @Override
     public synchronized int injured(Player plAtt, long damage, boolean piercing, boolean isMobAttack) {
+        if (this.isPendingIdleDespawn()) {
+            return 0;
+        }
+        if (plAtt != null && !plAtt.equals(this)) {
+            this.recordBossAttacked();
+        }
         if (!this.isDie()) {
             if (!piercing && Util.isTrue(this.nPoint.tlNeDon, 1000)) {
                 this.chat("Bước Nhảy Thời Gian — Xí hụt!");

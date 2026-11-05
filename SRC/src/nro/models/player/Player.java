@@ -392,17 +392,6 @@ public class Player implements Runnable {
     public long lastChallengeGauTuopCuopTime;
     public LocalDateTime lastCheckIn;
 
-    // Trạng thái Tự Đánh phía Server (duy trì tự đánh khi mở Tab Hành Trang & tự dùng chiêu đang trỏ như TTNL, TDHS...)
-    public boolean isServerAutoAttack = false;
-    public boolean isManualServerAutoAttack = false;
-    public int clientAutoAttackStreak = 0;
-    public long lastTimeClientAttack = 0L;
-    public long lastTimeServerAutoAttack = 0L;
-    public long lastTimeClientSkillNotFocus = 0L;
-    public int lastAttackMobId = -1;
-    public int lastAttackPlayerId = -1;
-    public byte lastPointedSkillTemplateId = -1;
-
     public Player() {
         LearnSkill = new LearnSkill();
         lastUseOptionTime = System.currentTimeMillis();
@@ -688,9 +677,6 @@ public class Player implements Runnable {
                     }
                     if (this.isPl() && !this.isBot && this.isAutoHuntBoss) {
                         this.updateAutoHuntBoss();
-                    }
-                    if (this.isPl() && !this.isBot) {
-                        this.updateServerAutoAttack();
                     }
                     if (event != null) {
                         event.update();
@@ -1537,7 +1523,6 @@ public class Player implements Runnable {
         this.playerSkill.prepareQCKK = false;
         this.playerSkill.prepareLaze = false;
         this.playerSkill.prepareTuSat = false;
-        this.resetServerAutoAttackState();
         this.effectSkill.removeSkillEffectWhenDie();
         nPoint.setHp(0);
         nPoint.setMp(0);
@@ -2204,23 +2189,34 @@ public class Player implements Runnable {
         return "Đang Bật: " + this.autoHuntBossNames.size() + " mục tiêu (" + joined + ")";
     }
 
-    public static boolean isExcludedFromAutoTanSat(int tempId) {
-        return tempId == Skill.QUA_CAU_KENH_KHI
-                || tempId == Skill.MAKANKOSAPPO
-                || tempId == Skill.TU_SAT;
-    }
-
-    public List<Skill> getShortCutAutoSkills() {
+    public List<Skill> getActiveAutoHuntSkills() {
         List<Skill> result = new ArrayList<>();
         if (this.playerSkill == null || this.playerSkill.skills == null) {
             return result;
         }
+        // 1. Nếu người chơi đã tự chọn chiêu trong Menu
+        if (!this.autoHuntCustomSkillIds.isEmpty()) {
+            for (int tempId : this.autoHuntCustomSkillIds) {
+                Skill s = this.playerSkill.getSkillbyId(tempId);
+                if (s != null && s.skillId != -1 && s.point > 0 && s.template != null
+                        && s.template.id != Skill.TRI_THUONG && s.template.id != Skill.TAI_TAO_NANG_LUONG
+                        && !result.contains(s)) {
+                    result.add(s);
+                }
+            }
+            if (!result.isEmpty()) {
+                return result;
+            }
+        }
+        // 2. Mặc định: Dùng tất cả chiêu đang gán trên Ô Kỹ Năng (skillShortCut)
         boolean hasAttackSkill = false;
         if (this.playerSkill.skillShortCut != null) {
             for (byte scId : this.playerSkill.skillShortCut) {
-                if (scId != -1 && !isExcludedFromAutoTanSat(scId)) {
+                if (scId != -1) {
                     Skill s = this.playerSkill.getSkillbyId(scId);
-                    if (s != null && s.skillId != -1 && s.point > 0 && s.template != null && !result.contains(s)) {
+                    if (s != null && s.skillId != -1 && s.point > 0 && s.template != null
+                            && s.template.id != Skill.TRI_THUONG && s.template.id != Skill.TAI_TAO_NANG_LUONG
+                            && !result.contains(s)) {
                         result.add(s);
                         if (s.template.type == 1 || s.template.type == 4) {
                             hasAttackSkill = true;
@@ -2229,50 +2225,17 @@ public class Player implements Runnable {
                 }
             }
         }
+        // 3. Nếu trên Ô Kỹ Năng chưa có chiêu tấn công nào thì bổ sung các chiêu đã học
         if (!hasAttackSkill) {
             for (Skill s : this.playerSkill.skills) {
                 if (s != null && s.skillId != -1 && s.point > 0 && s.template != null
-                        && !isExcludedFromAutoTanSat(s.template.id) && !result.contains(s)) {
+                        && s.template.id != Skill.TRI_THUONG && s.template.id != Skill.TAI_TAO_NANG_LUONG
+                        && !result.contains(s)) {
                     result.add(s);
                 }
             }
         }
         return result;
-    }
-
-    public boolean isSkillInShortCut(int tempId) {
-        if (this.playerSkill == null || this.playerSkill.skillShortCut == null) {
-            return false;
-        }
-        for (byte scId : this.playerSkill.skillShortCut) {
-            if (scId == tempId) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public List<Skill> getActiveAutoHuntSkills() {
-        List<Skill> result = new ArrayList<>();
-        if (this.playerSkill == null || this.playerSkill.skills == null) {
-            return result;
-        }
-        // 1. Nếu người chơi đã tự chọn chiêu săn Boss riêng trong Menu
-        if (!this.autoHuntCustomSkillIds.isEmpty()) {
-            for (int tempId : this.autoHuntCustomSkillIds) {
-                if (isExcludedFromAutoTanSat(tempId)) {
-                    continue;
-                }
-                Skill s = this.playerSkill.getSkillbyId(tempId);
-                if (s != null && s.skillId != -1 && s.point > 0 && s.template != null && !result.contains(s)) {
-                    result.add(s);
-                }
-            }
-            if (!result.isEmpty()) {
-                return result;
-            }
-        }
-        return getShortCutAutoSkills();
     }
 
     public boolean isSkillSelectedForAutoHunt(int skillTempId) {
@@ -2347,24 +2310,14 @@ public class Player implements Runnable {
     }
 
     private Skill chooseNextAutoHuntSkill(nro.models.boss.Boss targetBoss) {
-        return chooseNextAutoSkill(targetBoss, null, getActiveAutoHuntSkills());
-    }
-
-    public Skill chooseNextAutoSkill(Player targetPl, Mob targetMob, List<Skill> activeSkills) {
-        return chooseNextAutoSkill(targetPl, targetMob, activeSkills, true);
-    }
-
-    public Skill chooseNextAutoSkill(Player targetPl, Mob targetMob, List<Skill> activeSkills, boolean allowSupportSkills) {
-        if (activeSkills == null || activeSkills.isEmpty()) {
+        List<Skill> activeSkills = getActiveAutoHuntSkills();
+        if (activeSkills.isEmpty()) {
             return null;
         }
 
-        // 1. Ưu tiên các chiêu Buff / Khống chế đang gán trên Ô Kỹ Năng khi cần thiết
+        // 1. Ưu tiên các chiêu Buff / Khống chế đang có trong danh sách khi cần thiết
         for (Skill s : activeSkills) {
-            if (s == null || s.template == null || isExcludedFromAutoTanSat(s.template.id) || !isAutoSkillReady(s)) {
-                continue;
-            }
-            if (!allowSupportSkills && (s.template.type == 2 || s.template.type == 3)) {
+            if (!isAutoSkillReady(s)) {
                 continue;
             }
             switch (s.template.id) {
@@ -2388,99 +2341,73 @@ public class Player implements Runnable {
                         return s;
                     }
                 }
-                case Skill.TRI_THUONG -> {
-                    if (this.nPoint.getHpLong() < this.nPoint.getHpMaxLong() * 50L / 100L
-                            || this.nPoint.mp < this.nPoint.mpMax * 30L / 100L) {
-                        return s;
-                    }
-                }
                 case Skill.DICH_CHUYEN_TUC_THOI -> {
-                    if ((targetPl != null && targetPl.effectSkill != null && !targetPl.effectSkill.isBlindDCTT)
-                            || (targetMob != null && targetMob.effectSkill != null && !targetMob.effectSkill.isBlindDCTT)) {
+                    if (targetBoss != null && targetBoss.effectSkill != null && !targetBoss.effectSkill.isBlindDCTT) {
                         return s;
                     }
                 }
                 case Skill.THAI_DUONG_HA_SAN -> {
-                    if ((targetPl != null && targetPl.effectSkill != null && !targetPl.effectSkill.isStun
-                            && !targetPl.effectSkill.isBlindDCTT && !targetPl.effectSkill.isThoiMien)
-                            || (targetMob != null && targetMob.effectSkill != null && !targetMob.effectSkill.isStun
-                            && !targetMob.effectSkill.isBlindDCTT && !targetMob.effectSkill.isThoiMien)) {
+                    if (targetBoss != null && targetBoss.effectSkill != null && !targetBoss.effectSkill.isStun
+                            && !targetBoss.effectSkill.isBlindDCTT && !targetBoss.effectSkill.isThoiMien) {
                         return s;
                     }
                 }
                 case Skill.THOI_MIEN -> {
-                    if ((targetPl != null && targetPl.effectSkill != null && !targetPl.effectSkill.isThoiMien && !targetPl.effectSkill.isStun)
-                            || (targetMob != null && targetMob.effectSkill != null && !targetMob.effectSkill.isThoiMien && !targetMob.effectSkill.isStun)) {
+                    if (targetBoss != null && targetBoss.effectSkill != null && !targetBoss.effectSkill.isThoiMien
+                            && !targetBoss.effectSkill.isStun) {
                         return s;
                     }
                 }
                 case Skill.SOCOLA -> {
-                    if ((targetPl != null && targetPl.effectSkill != null && !targetPl.effectSkill.isSocola)
-                            || (targetMob != null && targetMob.effectSkill != null && !targetMob.effectSkill.isSocola)) {
+                    if (targetBoss != null && targetBoss.effectSkill != null && !targetBoss.effectSkill.isSocola) {
                         return s;
                     }
                 }
                 case Skill.TROI -> {
                     if (this.effectSkill != null && !this.effectSkill.useTroi
-                            && ((targetPl != null && targetPl.effectSkill != null && !targetPl.effectSkill.anTroi)
-                            || (targetMob != null && targetMob.effectSkill != null && !targetMob.effectSkill.isAnTroi))) {
-                        return s;
-                    }
-                }
-                case Skill.TAI_TAO_NANG_LUONG -> {
-                    if (this.effectSkill != null && !this.effectSkill.isCharging
-                            && (this.nPoint.getHpLong() < this.nPoint.getHpMaxLong() * 40L / 100L
-                            || this.nPoint.mp < this.nPoint.mpMax * 25L / 100L)) {
+                            && targetBoss != null && targetBoss.effectSkill != null && !targetBoss.effectSkill.anTroi) {
                         return s;
                     }
                 }
             }
         }
 
-        // 2. Ưu tiên Tuyệt Kỹ nếu người chơi có gán trên Ô Kỹ Năng (không dùng QCKK, Laze, Tự phát nổ)
+        // 2. Ưu tiên các chiêu Đặc Biệt / Tuyệt Kỹ nếu người chơi gán trên Ô Kỹ Năng (hoặc bật trong menu)
         for (Skill s : activeSkills) {
-            if (s == null || s.template == null || isExcludedFromAutoTanSat(s.template.id) || !isAutoSkillReady(s)) {
+            if (!isAutoSkillReady(s)) {
                 continue;
             }
             switch (s.template.id) {
-                case Skill.SUPER_KAME, Skill.LIEN_HOAN_CHUONG, Skill.MA_PHONG_BA -> {
+                case Skill.SUPER_KAME, Skill.LIEN_HOAN_CHUONG, Skill.MA_PHONG_BA,
+                     Skill.QUA_CAU_KENH_KHI, Skill.MAKANKOSAPPO -> {
                     return s;
                 }
-            }
-        }
-
-        // 3. Ưu tiên các chiêu Chưởng / Liên hoàn / Kaioken người chơi gán trên Ô Kỹ Năng trước chiêu đấm thường
-        List<Skill> readyPrimarySkills = new ArrayList<>();
-        for (Skill s : activeSkills) {
-            if (s == null || s.template == null || isExcludedFromAutoTanSat(s.template.id) || !isAutoSkillReady(s)) {
-                continue;
-            }
-            switch (s.template.id) {
-                case Skill.KAMEJOKO, Skill.MASENKO, Skill.ANTOMIC, Skill.KAIOKEN, Skill.LIEN_HOAN -> {
-                    readyPrimarySkills.add(s);
+                case Skill.TU_SAT -> {
+                    // Chỉ dùng Tự Sát nếu người chơi chủ động bật riêng hoặc còn trên 50% HP
+                    if (!this.autoHuntCustomSkillIds.isEmpty() && this.autoHuntCustomSkillIds.contains((int) Skill.TU_SAT)) {
+                        return s;
+                    }
                 }
             }
         }
-        if (!readyPrimarySkills.isEmpty()) {
-            this.autoHuntSkillRotateIndex = (this.autoHuntSkillRotateIndex + 1) % readyPrimarySkills.size();
-            return readyPrimarySkills.get(this.autoHuntSkillRotateIndex);
-        }
 
-        // 4. Khi các chiêu trên đang hồi (hoặc chỉ gán chiêu đấm), dùng chiêu đấm thường có trong Ô Kỹ Năng
-        List<Skill> readyBasicSkills = new ArrayList<>();
+        // 3. Xoay vòng tất cả các chiêu Tấn Công Thường (Đấm, Chưởng, Liên hoàn, Kaioken) đang sẵn sàng trong danh sách
+        List<Skill> readyAttackSkills = new ArrayList<>();
         for (Skill s : activeSkills) {
-            if (s == null || s.template == null || isExcludedFromAutoTanSat(s.template.id) || !isAutoSkillReady(s)) {
+            if (!isAutoSkillReady(s)) {
                 continue;
             }
             switch (s.template.id) {
-                case Skill.DRAGON, Skill.DEMON, Skill.GALICK -> {
-                    readyBasicSkills.add(s);
+                case Skill.DRAGON, Skill.DEMON, Skill.GALICK,
+                     Skill.KAMEJOKO, Skill.MASENKO, Skill.ANTOMIC,
+                     Skill.KAIOKEN, Skill.LIEN_HOAN -> {
+                    readyAttackSkills.add(s);
                 }
             }
         }
-        if (!readyBasicSkills.isEmpty()) {
-            this.autoHuntSkillRotateIndex = (this.autoHuntSkillRotateIndex + 1) % readyBasicSkills.size();
-            return readyBasicSkills.get(this.autoHuntSkillRotateIndex);
+        if (!readyAttackSkills.isEmpty()) {
+            this.autoHuntSkillRotateIndex = (this.autoHuntSkillRotateIndex + 1) % readyAttackSkills.size();
+            return readyAttackSkills.get(this.autoHuntSkillRotateIndex);
         }
         return null;
     }
@@ -3073,474 +3000,10 @@ public class Player implements Runnable {
                     if (chosenSkill != null) {
                         this.lastTimeAutoHuntAttack = System.currentTimeMillis();
                         this.playerSkill.skillSelect = chosenSkill;
-                        boolean ok = nro.models.services.SkillService.gI().useSkill(this, targetBoss, null, -1, null);
-                        if (ok) {
-                            if (chosenSkill.template.id != Skill.TAI_TAO_NANG_LUONG) {
-                                EffectSkillService.gI().sendAutoSkillPaintToPlayer(this, chosenSkill.skillId);
-                            }
-                            Service.gI().sendTimeSkill(this, chosenSkill);
-                        }
+                        nro.models.services.SkillService.gI().useSkill(this, targetBoss, null, -1, null);
                     }
                 }
             }
-        } catch (Exception ignored) {
-        }
-    }
-
-    public boolean isPcClient() {
-        return this.session != null && this.session.isQwerty;
-    }
-
-    public void resetServerAutoAttackState() {
-        this.isServerAutoAttack = false;
-        this.clientAutoAttackStreak = 0;
-        this.lastAttackMobId = -1;
-        this.lastAttackPlayerId = -1;
-    }
-
-    public long lastTimeClientMove = 0L;
-    public short pendingAutoSkillPaintId = -1;
-    public long pendingAutoSkillPaintTime = 0L;
-
-    public void recordClientAttack(int mobId, int playerId) {
-        long now = System.currentTimeMillis();
-        if (this.lastTimeClientAttack > 0 && now - this.lastTimeClientAttack <= 8000L) {
-            this.clientAutoAttackStreak++;
-        } else {
-            this.clientAutoAttackStreak = 1;
-        }
-        this.lastTimeClientAttack = now;
-        if (mobId >= 0) {
-            this.lastAttackMobId = mobId;
-            this.lastAttackPlayerId = -1;
-        }
-        if (playerId != -1) {
-            this.lastAttackPlayerId = playerId;
-            this.lastAttackMobId = -1;
-        }
-        if (this.lastPointedSkillTemplateId == -1 && this.playerSkill != null
-                && this.playerSkill.skillSelect != null && this.playerSkill.skillSelect.template != null) {
-            this.lastPointedSkillTemplateId = this.playerSkill.skillSelect.template.id;
-        }
-        if (this.isManualServerAutoAttack || this.isAutoCleanBag) {
-            this.isServerAutoAttack = true;
-        } else if (isPcClient() && this.clientAutoAttackStreak >= 2) {
-            this.isServerAutoAttack = true;
-        }
-    }
-
-    public static boolean isPickMobDefaultSkill(int tempId) {
-        return tempId == Skill.DRAGON
-                || tempId == Skill.DEMON
-                || tempId == Skill.GALICK
-                || tempId == Skill.LIEN_HOAN
-                || tempId == Skill.DE_TRUNG
-                || tempId == Skill.BIEN_KHI;
-    }
-
-    public boolean shouldUseAutoShortCutSkill() {
-        if (!this.isPl() || this.isBot || this.playerSkill == null || this.playerSkill.skillSelect == null
-                || this.playerSkill.skillSelect.template == null) {
-            return false;
-        }
-        if (this.playerSkill.prepareQCKK || this.playerSkill.prepareLaze || this.playerSkill.prepareTuSat) {
-            return false;
-        }
-        int curSkillId = this.playerSkill.skillSelect.template.id;
-        if (isExcludedFromAutoTanSat(curSkillId)) {
-            return false;
-        }
-        if (isPickMobDefaultSkill(curSkillId)) {
-            return true;
-        }
-        long now = System.currentTimeMillis();
-        return this.isAutoPlayActive()
-                || (this.itemTime != null && this.itemTime.isUseTDLT)
-                || this.clientAutoAttackStreak >= 2
-                || (this.lastTimeClientMove > 0 && now - this.lastTimeClientMove <= 1500L)
-                || !isAutoSkillReady(this.playerSkill.skillSelect)
-                || !isSkillInShortCut(curSkillId);
-    }
-
-    private void triggerAutoSkillVisualAndCooldown(Skill skill, Mob targetMob) {
-        if (skill == null) {
-            return;
-        }
-        if (skill.template == null || skill.template.id != Skill.TAI_TAO_NANG_LUONG) {
-            EffectSkillService.gI().sendAutoSkillPaintToPlayer(this, skill.skillId);
-            if (targetMob != null && targetMob.isDie()) {
-                this.pendingAutoSkillPaintId = skill.skillId;
-                this.pendingAutoSkillPaintTime = System.currentTimeMillis();
-            }
-        }
-        Service.gI().sendTimeSkill(this, skill);
-    }
-
-    public void useAutoShortCutSkillOnTarget(Player targetPl, Mob targetMob) {
-        if (this.playerSkill == null) {
-            return;
-        }
-        List<Skill> shortCutSkills = getShortCutAutoSkills();
-        if (shortCutSkills.isEmpty()) {
-            nro.models.services.SkillService.gI().useSkill(this, targetPl, targetMob, -1, null);
-            return;
-        }
-        Skill prevSkill = this.playerSkill.skillSelect;
-        try {
-            Skill chosenSkill = chooseNextAutoSkill(targetPl, targetMob, shortCutSkills, true);
-            if (chosenSkill == null || chosenSkill.template == null) {
-                return;
-            }
-            this.playerSkill.skillSelect = chosenSkill;
-            Player skillTargetPl = (chosenSkill.template.type == 2) ? this : targetPl;
-            boolean ok = nro.models.services.SkillService.gI().useSkill(this, skillTargetPl, targetMob, -1, null);
-            if (ok) {
-                triggerAutoSkillVisualAndCooldown(chosenSkill, targetMob);
-                this.lastTimeServerAutoAttack = System.currentTimeMillis();
-                if ((chosenSkill.template.type == 2 || chosenSkill.template.type == 3)
-                        && chosenSkill.template.id != Skill.TAI_TAO_NANG_LUONG
-                        && ((targetMob != null && !targetMob.isDie()) || (targetPl != null && !targetPl.isDie()))) {
-                    Skill attackSkill = chooseNextAutoSkill(targetPl, targetMob, shortCutSkills, false);
-                    if (attackSkill != null && attackSkill.template != null && attackSkill != chosenSkill) {
-                        this.playerSkill.skillSelect = attackSkill;
-                        if (nro.models.services.SkillService.gI().useSkill(this, targetPl, targetMob, -1, null)) {
-                            triggerAutoSkillVisualAndCooldown(attackSkill, targetMob);
-                        }
-                    }
-                }
-            } else {
-                Skill fallbackAttack = chooseNextAutoSkill(targetPl, targetMob, shortCutSkills, false);
-                if (fallbackAttack != null && fallbackAttack != chosenSkill) {
-                    this.playerSkill.skillSelect = fallbackAttack;
-                    if (nro.models.services.SkillService.gI().useSkill(this, targetPl, targetMob, -1, null)) {
-                        triggerAutoSkillVisualAndCooldown(fallbackAttack, targetMob);
-                        this.lastTimeServerAutoAttack = System.currentTimeMillis();
-                    }
-                }
-            }
-        } finally {
-            this.playerSkill.skillSelect = prevSkill;
-        }
-    }
-
-    public void recordClientSkillNotFocus() {
-        long now = System.currentTimeMillis();
-        if (this.lastPointedSkillTemplateId == -1 && this.playerSkill != null
-                && this.playerSkill.skillSelect != null && this.playerSkill.skillSelect.template != null) {
-            this.lastPointedSkillTemplateId = this.playerSkill.skillSelect.template.id;
-        }
-        if (this.isManualServerAutoAttack || this.isAutoCleanBag) {
-            this.isServerAutoAttack = true;
-        } else if (isPcClient() && this.clientAutoAttackStreak >= 2 && now - this.lastTimeClientAttack <= 5000L) {
-            this.isServerAutoAttack = true;
-        }
-        this.lastTimeClientSkillNotFocus = now;
-    }
-
-    public void notifyManualMove(int toX, int toY) {
-        if (this.location == null) {
-            return;
-        }
-        long now = System.currentTimeMillis();
-        this.lastTimeClientMove = now;
-        int dist = Util.getDistance(this.location.x, this.location.y, toX, toY);
-        if (dist >= 1 && !this.isAutoHuntBoss && !this.isManualServerAutoAttack && !this.isAutoCleanBag) {
-            if (this.lastTimeClientAttack <= 0 || now - this.lastTimeClientAttack > 4000L) {
-                this.isServerAutoAttack = false;
-                this.clientAutoAttackStreak = 0;
-                this.lastAttackMobId = -1;
-                this.lastAttackPlayerId = -1;
-            }
-        }
-    }
-
-    public void onClientSelectSkill(Skill skill) {
-        if (skill == null || skill.template == null) {
-            return;
-        }
-        this.lastPointedSkillTemplateId = skill.template.id;
-        if (isAutoPlayActive()) {
-            tryUsePointedSupportOrSpecialSkill();
-        }
-    }
-
-    public boolean isAutoPlayActive() {
-        if (!this.isPl() || this.isBot || this.isDie() || this.zone == null) {
-            return false;
-        }
-        if (this.isAutoHuntBoss) {
-            return true;
-        }
-        return this.isServerAutoAttack;
-    }
-
-    private Skill getPointedSkill() {
-        if (this.playerSkill == null) {
-            return null;
-        }
-        if (this.lastPointedSkillTemplateId != -1) {
-            Skill s = this.playerSkill.getSkillbyId(this.lastPointedSkillTemplateId);
-            if (s != null && s.skillId != -1 && s.point > 0 && s.template != null) {
-                return s;
-            }
-        }
-        Skill sel = this.playerSkill.skillSelect;
-        if (sel != null && sel.skillId != -1 && sel.point > 0 && sel.template != null) {
-            this.lastPointedSkillTemplateId = sel.template.id;
-            return sel;
-        }
-        return null;
-    }
-
-    public static boolean isSupportOrSpecialPointedSkill(byte tempId) {
-        return switch (tempId) {
-            case Skill.TAI_TAO_NANG_LUONG,
-                 Skill.THAI_DUONG_HA_SAN,
-                 Skill.KHIEN_NANG_LUONG,
-                 Skill.HUYT_SAO,
-                 Skill.BIEN_KHI,
-                 Skill.DE_TRUNG,
-                 Skill.TU_SAT,
-                 Skill.TRI_THUONG,
-                 Skill.QUA_CAU_KENH_KHI,
-                 Skill.MAKANKOSAPPO,
-                 Skill.DICH_CHUYEN_TUC_THOI,
-                 Skill.THOI_MIEN,
-                 Skill.TROI,
-                 Skill.SOCOLA,
-                 Skill.SUPER_KAME,
-                 Skill.LIEN_HOAN_CHUONG,
-                 Skill.MA_PHONG_BA -> true;
-            default -> false;
-        };
-    }
-
-    public boolean tryUsePointedSupportOrSpecialSkill() {
-        if (!isAutoPlayActive() || this.playerSkill == null || this.nPoint == null) {
-            return false;
-        }
-        if (this.effectSkill != null && (this.effectSkill.isHaveEffectSkill() || this.effectSkill.isCharging)) {
-            return false;
-        }
-        if (this.newSkill != null && this.newSkill.isStartSkillSpecial) {
-            return false;
-        }
-        Skill pointedSkill = getPointedSkill();
-        if (pointedSkill == null || pointedSkill.template == null) {
-            return false;
-        }
-        byte pointedId = pointedSkill.template.id;
-        if (!isSupportOrSpecialPointedSkill(pointedId)) {
-            return false;
-        }
-        if (!Util.canDoWithTime(pointedSkill.lastTimeUseThisSkill, pointedSkill.coolDown)) {
-            return false;
-        }
-        long manaNeed = switch (pointedSkill.template.manaUseType) {
-            case 2 -> 1L;
-            case 1 -> (long) this.nPoint.mpMax * pointedSkill.manaUse / 100L;
-            default -> pointedSkill.manaUse;
-        };
-        if (this.nPoint.mp < manaNeed) {
-            return false;
-        }
-
-        Skill prevSkill = this.playerSkill.skillSelect;
-        try {
-            this.playerSkill.skillSelect = pointedSkill;
-
-            if (pointedId == Skill.TRI_THUONG) {
-                if (this.nPoint.getHpLong() >= this.nPoint.getHpMaxLong() && this.nPoint.mp >= this.nPoint.mpMax) {
-                    return false;
-                }
-                boolean ok = nro.models.services.SkillService.gI().useSkill(this, this, null, -1, null);
-                if (ok) {
-                    triggerAutoSkillVisualAndCooldown(pointedSkill, null);
-                    this.lastTimeServerAutoAttack = System.currentTimeMillis();
-                }
-                return ok;
-            }
-
-            if (pointedSkill.template.type == 3) {
-                if (pointedId == Skill.BIEN_KHI && this.effectSkill != null && this.effectSkill.isMonkey) {
-                    return false;
-                }
-                if (pointedId == Skill.KHIEN_NANG_LUONG && this.effectSkill != null && this.effectSkill.isShielding) {
-                    return false;
-                }
-                boolean ok = nro.models.services.SkillService.gI().useSkill(this, null, null, -1, null);
-                if (ok) {
-                    triggerAutoSkillVisualAndCooldown(pointedSkill, null);
-                    this.lastTimeServerAutoAttack = System.currentTimeMillis();
-                }
-                return ok;
-            }
-
-            Player targetPl = findServerAutoAttackPlayer();
-            Mob targetMob = (targetPl == null) ? findServerAutoAttackMob() : null;
-            if (targetPl == null && targetMob == null) {
-                return false;
-            }
-            boolean ok = nro.models.services.SkillService.gI().useSkill(this, targetPl, targetMob, -1, null);
-            if (ok) {
-                triggerAutoSkillVisualAndCooldown(pointedSkill, targetMob);
-                this.lastTimeServerAutoAttack = System.currentTimeMillis();
-            }
-            return ok;
-        } finally {
-            this.playerSkill.skillSelect = prevSkill;
-        }
-    }
-
-    private Player findServerAutoAttackPlayer() {
-        if (this.zone == null || this.lastAttackPlayerId == -1) {
-            return null;
-        }
-        Player target;
-        if (MapService.gI().isMapOffline(this.zone.map.mapId)) {
-            target = this.zone.getPlayerInMapOffline(this, this.lastAttackPlayerId);
-        } else {
-            target = this.zone.getPlayerInMap(this.lastAttackPlayerId);
-        }
-        if (target != null && !target.isDie() && nro.models.services.SkillService.gI().canAttackPlayer(this, target)
-                && Util.getDistance(this, target) <= 350) {
-            return target;
-        }
-        this.lastAttackPlayerId = -1;
-        return null;
-    }
-
-    private Mob findServerAutoAttackMob() {
-        if (this.zone == null || this.zone.mobs == null || this.zone.mobs.isEmpty()) {
-            return null;
-        }
-        Skill pointed = getPointedSkill();
-        int maxRange = (pointed != null && pointed.dx > 0) ? Math.max(100, pointed.dx * 2) : 250;
-        if (this.lastAttackMobId >= 0) {
-            for (Mob m : this.zone.mobs) {
-                if (m != null && m.id == this.lastAttackMobId && !m.isDie() && m.status != 0 && m.status != 1) {
-                    if (Util.getDistance(this, m) <= maxRange) {
-                        return m;
-                    }
-                }
-            }
-        }
-        if (!this.isAutoCleanBag) {
-            return null;
-        }
-        Mob nearest = null;
-        int minDist = Integer.MAX_VALUE;
-        for (Mob m : this.zone.mobs) {
-            if (m != null && !m.isDie() && m.status != 0 && m.status != 1) {
-                int d = Util.getDistance(this, m);
-                if (d <= maxRange && d < minDist) {
-                    minDist = d;
-                    nearest = m;
-                }
-            }
-        }
-        if (nearest != null) {
-            this.lastAttackMobId = nearest.id;
-        }
-        return nearest;
-    }
-
-    public void updateServerAutoAttack() {
-        try {
-            if (this.pendingAutoSkillPaintId != -1 && this.pendingAutoSkillPaintTime > 0
-                    && System.currentTimeMillis() - this.pendingAutoSkillPaintTime >= 35L) {
-                short paintSkillId = this.pendingAutoSkillPaintId;
-                this.pendingAutoSkillPaintId = -1;
-                this.pendingAutoSkillPaintTime = 0L;
-                if (!this.isDie() && this.zone != null) {
-                    EffectSkillService.gI().sendAutoSkillPaintToPlayer(this, paintSkillId);
-                }
-            }
-            if (!isAutoPlayActive() || this.isAutoHuntBoss || this.playerSkill == null || this.zone == null) {
-                return;
-            }
-            if (this.effectSkill != null && (this.effectSkill.isHaveEffectSkill() || this.effectSkill.isCharging)) {
-                return;
-            }
-            if (this.newSkill != null && this.newSkill.isStartSkillSpecial) {
-                return;
-            }
-
-            // 1. Hoàn tất bước 2 của các chiêu gồng (Quả Cầu Kênh Khí / Laze / Tự Sát) nếu đang gồng dở
-            if (this.playerSkill.prepareQCKK) {
-                if (Util.canDoWithTime(this.playerSkill.lastTimePrepareQCKK, 1600)) {
-                    Skill qckk = this.playerSkill.getSkillbyId(Skill.QUA_CAU_KENH_KHI);
-                    Player targetPl = findServerAutoAttackPlayer();
-                    Mob targetMob = (targetPl == null) ? findServerAutoAttackMob() : null;
-                    if (qckk != null && (targetPl != null || targetMob != null)) {
-                        this.lastTimeServerAutoAttack = System.currentTimeMillis();
-                        this.playerSkill.skillSelect = qckk;
-                        nro.models.services.SkillService.gI().useSkill(this, targetPl, targetMob, -1, null);
-                        triggerAutoSkillVisualAndCooldown(qckk, targetMob);
-                    } else {
-                        this.playerSkill.prepareQCKK = false;
-                    }
-                }
-                return;
-            }
-            if (this.playerSkill.prepareLaze) {
-                if (Util.canDoWithTime(this.playerSkill.lastTimePrepareLaze, 1600)) {
-                    Skill laze = this.playerSkill.getSkillbyId(Skill.MAKANKOSAPPO);
-                    Player targetPl = findServerAutoAttackPlayer();
-                    Mob targetMob = (targetPl == null) ? findServerAutoAttackMob() : null;
-                    if (laze != null && (targetPl != null || targetMob != null)) {
-                        this.lastTimeServerAutoAttack = System.currentTimeMillis();
-                        this.playerSkill.skillSelect = laze;
-                        nro.models.services.SkillService.gI().useSkill(this, targetPl, targetMob, -1, null);
-                        triggerAutoSkillVisualAndCooldown(laze, targetMob);
-                    } else {
-                        this.playerSkill.prepareLaze = false;
-                    }
-                }
-                return;
-            }
-            if (this.playerSkill.prepareTuSat) {
-                if (Util.canDoWithTime(this.playerSkill.lastTimePrepareTuSat, 1600)) {
-                    Skill bom = this.playerSkill.getSkillbyId(Skill.TU_SAT);
-                    if (bom != null) {
-                        this.lastTimeServerAutoAttack = System.currentTimeMillis();
-                        this.playerSkill.skillSelect = bom;
-                        nro.models.services.SkillService.gI().useSkill(this, null, null, -1, null);
-                        Service.gI().sendTimeSkill(this, bom);
-                    } else {
-                        this.playerSkill.prepareTuSat = false;
-                    }
-                }
-                return;
-            }
-
-            // 2. Nếu người chơi đang trỏ vào các chiêu bị loại khỏi Tàn Sát (QCKK, Laze, Tự Sát) hoặc TTNL
-            Skill pointedSkill = getPointedSkill();
-            if (pointedSkill != null && pointedSkill.template != null) {
-                byte pointedId = pointedSkill.template.id;
-                if (isExcludedFromAutoTanSat(pointedId) || pointedId == Skill.TAI_TAO_NANG_LUONG) {
-                    tryUsePointedSupportOrSpecialSkill();
-                    return;
-                }
-            }
-
-            // 3. Tự động sử dụng các chiêu người chơi đã gán trên Ô Kỹ Năng (trừ QCKK, Laze, Tự phát nổ)
-            if (!Util.canDoWithTime(this.lastTimeClientAttack, 550)
-                    || !Util.canDoWithTime(this.lastTimeServerAutoAttack, 450)) {
-                return;
-            }
-
-            Player targetPl = findServerAutoAttackPlayer();
-            Mob targetMob = (targetPl == null) ? findServerAutoAttackMob() : null;
-            if (targetPl == null && targetMob == null) {
-                if (pointedSkill != null && pointedSkill.template != null
-                        && isSupportOrSpecialPointedSkill(pointedSkill.template.id)) {
-                    tryUsePointedSupportOrSpecialSkill();
-                }
-                return;
-            }
-
-            useAutoShortCutSkillOnTarget(targetPl, targetMob);
         } catch (Exception ignored) {
         }
     }

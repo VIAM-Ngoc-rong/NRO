@@ -77,15 +77,6 @@ public class SkillService {
         if (player.playerSkill == null) {
             return false;
         }
-        if (status == 3) {
-            if (player.effectSkill != null && player.effectSkill.isCharging) {
-                EffectSkillService.gI().stopCharge(player);
-            }
-            return true;
-        }
-        if (player.isPl() && !player.isBot && status >= 0) {
-            player.recordClientSkillNotFocus();
-        }
         if (status == 20 && skillId != -1 && (player.playerSkill.skillSelect == null || player.playerSkill.skillSelect.template.id != skillId)) {
             selectSkill(player, skillId);
         }
@@ -1419,9 +1410,6 @@ public class SkillService {
         for (Skill skill : player.playerSkill.skills) {
             if (skill.skillId != -1 && skill.template.id == skillId) {
                 player.playerSkill.skillSelect = skill;
-                if (player.isPl() && !player.isBot) {
-                    player.onClientSelectSkill(skill);
-                }
                 break;
             }
         }

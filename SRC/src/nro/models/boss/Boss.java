@@ -466,7 +466,7 @@ public class Boss extends Player implements IBoss {
             if (MapService.gI().isMapOffline(mapId)
                     || MapService.gI().isMapPhoBan(mapId)
                     || MapService.gI().isMapMaBu(mapId)
-                    || MapService.gI().isMapMabu2H(mapId)
+                    || (MapService.gI().isMapMabu2H(mapId) && this.id != BossID.MABU_14H)
                     || MapService.gI().isMapYardart(mapId)
                     || MapService.gI().isMapBossFinal(mapId)
                     || mapId == 113 || mapId == 112 || mapId == 129) {

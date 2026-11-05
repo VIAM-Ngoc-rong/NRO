@@ -2781,10 +2781,9 @@ public class NPoint {
                         || (player instanceof nro.models.boss.Broly.KidBuWorld)
                         || (player instanceof nro.models.boss.Broly.Broly18h);
                 player.effectSkill.countCharging++;
-                int maxChargeTicks = (player.isPl() && player.isAutoPlayActive()) ? 3 : 10;
                 if (isContinuousTTNLBoss && getHpLong() < getHpMaxLong() / 2L && player.effectSkill.countCharging >= 8) {
                     player.effectSkill.countCharging = 0;
-                } else if (player.effectSkill.countCharging >= maxChargeTicks) {
+                } else if (player.effectSkill.countCharging >= 10) {
                     EffectSkillService.gI().stopCharge(player);
                 }
             }

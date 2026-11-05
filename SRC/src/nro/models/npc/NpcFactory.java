@@ -817,8 +817,6 @@ public class NpcFactory {
                                 player.isAutoCleanBag = !player.isAutoCleanBag;
                                 if (player.isAutoCleanBag) {
                                     player.autoCleanTrashAndSellItems();
-                                } else if (!player.isManualServerAutoAttack) {
-                                    player.isServerAutoAttack = false;
                                 }
                                 Service.gI().sendThongBao(player, "Auto Treo Quái (Chống đầy túi & tự bán đồ rác): " + (player.isAutoCleanBag ? "[Bật]" : "[Tắt]"));
                                 openMenuAutoTreoMay(player);
@@ -829,8 +827,6 @@ public class NpcFactory {
                                 player.isAutoCleanBag = enableBoth;
                                 if (enableBoth) {
                                     player.autoCleanTrashAndSellItems();
-                                } else if (!player.isManualServerAutoAttack) {
-                                    player.isServerAutoAttack = false;
                                 }
                                 Service.gI().sendThongBao(player, (enableBoth ? "Đã BẬT" : "Đã TẮT") + " cả Auto Buff Đậu & Auto Treo Quái!");
                                 openMenuAutoTreoMay(player);
