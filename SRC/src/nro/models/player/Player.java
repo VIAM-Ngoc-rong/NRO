@@ -2945,7 +2945,7 @@ public class Player implements Runnable {
                     bx = this.zone.map.mapWidth - 50;
                 }
                 int by = this.zone.map.yPhysicInTop(bx, targetBoss.location.y);
-                Service.gI().setPos(this, bx, by);
+                Service.gI().setPosWithoutHidePanel(this, bx, by);
             }
 
             if (this.newSkill != null && this.newSkill.isStartSkillSpecial) {
@@ -3007,5 +3007,7 @@ public class Player implements Runnable {
         } catch (Exception ignored) {
         }
     }
+
+    public int buyItemShopTempId = -1;
 
 }

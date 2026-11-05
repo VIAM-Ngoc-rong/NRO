@@ -31,12 +31,16 @@ public class Android13 extends Boss {
         if (this.parentBoss == null) {
             return;
         }
-        if (this.parentBoss.bossAppearTogether == null
-                || this.parentBoss.bossAppearTogether[this.parentBoss.currentLevel] == null) {
+        if (this.parentBoss.bossAppearTogether == null) {
             return;
         }
-        for (Boss boss : this.parentBoss.bossAppearTogether[this.parentBoss.currentLevel]) {
-            if (boss.id == BossID.ANDROID_15 && !boss.isDie()) {
+        int lv = (this.parentBoss.currentLevel >= 0 && this.parentBoss.currentLevel < this.parentBoss.bossAppearTogether.length)
+                ? this.parentBoss.currentLevel : 0;
+        if (this.parentBoss.bossAppearTogether[lv] == null) {
+            return;
+        }
+        for (Boss boss : this.parentBoss.bossAppearTogether[lv]) {
+            if (boss != null && boss.id == BossID.ANDROID_15 && !boss.isDie()) {
                 boss.changeToTypePK();
                 break;
             }
@@ -49,11 +53,16 @@ public class Android13 extends Boss {
         if (damage >= this.nPoint.hp) {
             boolean flag = true;
             if (this.parentBoss != null) {
-                if (this.parentBoss.bossAppearTogether != null && this.parentBoss.bossAppearTogether[this.parentBoss.currentLevel] != null) {
-                    for (Boss boss : this.parentBoss.bossAppearTogether[this.parentBoss.currentLevel]) {
-                        if (boss.id == BossID.ANDROID_15 && !boss.isDie()) {
-                            flag = false;
-                            break;
+                if (this.parentBoss.bossAppearTogether != null) {
+                    for (Boss[] group : this.parentBoss.bossAppearTogether) {
+                        if (group == null) {
+                            continue;
+                        }
+                        for (Boss boss : group) {
+                            if (boss != null && boss.id == BossID.ANDROID_15 && !boss.isDie()) {
+                                flag = false;
+                                break;
+                            }
                         }
                     }
                 }

@@ -64,6 +64,7 @@ public class Input {
     public static final int DISSOLUTION_CLAN = 513;
     public static final int TANG_NGOC_HONG = 514;
     public static final int SELECT_LUCKYNUMBER = 514;
+    public static final int BUY_ITEM_SHOP_SLL = 515;
     public static final byte NUMERIC = 0;
     public static final byte ANY = 1;
     public static final byte NUMBER = 81;
@@ -579,6 +580,23 @@ public class Input {
                         }
                     }
                 }
+                case BUY_ITEM_SHOP_SLL -> {
+                    try {
+                        int qty = Integer.parseInt(text[0].trim());
+                        if (qty <= 0 || qty > 999) {
+                            Service.gI().sendThongBao(player, "Số lượng mua phải từ 1 đến 999!");
+                            break;
+                        }
+                        int buyTempId = player.buyItemShopTempId;
+                        if (buyTempId < 0) {
+                            Service.gI().sendThongBao(player, "Không thể thực hiện");
+                            break;
+                        }
+                        nro.models.shop.ShopService.gI().buyItemWithQuantity(player, buyTempId, qty);
+                    } catch (NumberFormatException e) {
+                        Service.gI().sendThongBao(player, "Vui lòng nhập số lượng hợp lệ (1 - 999)!");
+                    }
+                }
             }
         } catch (Exception e) {
         }
@@ -708,6 +726,12 @@ public class Input {
 
     public void createFormBanSLL(Player pl) {
         createForm(pl, BANSLL, "Bạn muốn bán bao nhiêu [Thỏi vàng] ?", new SubInput("Số lượng", NUMERIC));
+    }
+
+    public void createFormBuyItemShop(Player pl, String itemName, String priceDesc) {
+        createForm(pl, BUY_ITEM_SHOP_SLL,
+                "Mua [" + itemName + "]\nGiá: " + priceDesc + " / 1 lần mua\nNhập số lượng muốn mua (1 - 999):",
+                new SubInput("Số lượng (1 - 999)", NUMERIC));
     }
 
     public void createFormGiaiTanBangHoi(Player pl) {

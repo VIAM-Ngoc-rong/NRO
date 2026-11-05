@@ -1130,18 +1130,13 @@ public class NPoint {
             }
         }
 
-        // Xử lý +HP đệ tử khi hợp thể (sau khi đã tính xong trang bị & set đồ của bản thân):
-        // HP hợp thể = HP sư phụ + (HP đệ tử * hệ số cấp đệ)
+        // Xử lý +HP đệ tử khi hợp thể:
+        // Công thức: (Sư phụ [hành trang] + Đệ tử * [loại đệ tử + item đệ tử]) * (item sư phụ)
         if (this.player.fusion.typeFusion != ConstPlayer.NON_FUSION && this.player.pet != null) {
             hpMax += applyPetFusionBonus(this.player.pet.nPoint.hpMax);
         }
         if (this.tlHpBT > 0) {
             hpMax += (hpMax * this.tlHpBT / 100L);
-        }
-
-        // Xử lý gogeta
-        if (this.isGogeta) {
-            hpMax += (hpMax * 10 / 100L);
         }
 
         // Xử lý rồng xương
@@ -1189,6 +1184,11 @@ public class NPoint {
         // Xử lý item sieu cap
         if (this.player.itemTime != null && this.player.itemTime.isUseBoHuyet2) {
             hpMax *= 2.2;
+        }
+
+        // Xử lý gogeta
+        if (this.isGogeta) {
+            hpMax += (hpMax * 10 / 100L);
         }
 
         // Xử lý huýt sáo
@@ -1290,18 +1290,13 @@ public class NPoint {
             }
         }
 
-        // Xử lý +KI đệ tử khi hợp thể (sau khi đã tính xong trang bị & set đồ của bản thân):
-        // KI hợp thể = KI sư phụ + (KI đệ tử * hệ số cấp đệ)
+        // Xử lý +KI đệ tử khi hợp thể:
+        // Công thức: (Sư phụ [hành trang] + Đệ tử * [loại đệ tử + item đệ tử]) * (item sư phụ)
         if (this.player.fusion.typeFusion != ConstPlayer.NON_FUSION && this.player.pet != null) {
             mpMax += applyPetFusionBonus(this.player.pet.nPoint.mpMax);
         }
         if (this.tlMpBT > 0) {
             mpMax += (mpMax * this.tlMpBT / 100L);
-        }
-
-        // Xử lý gogeta
-        if (this.isGogeta) {
-            mpMax += (mpMax * 10 / 100L);
         }
 
         // Xử lý ngọc rồng đen 6 sao
@@ -1344,6 +1339,11 @@ public class NPoint {
         // Xử lý item sieu cap
         if (this.player.itemTime != null && this.player.itemTime.isUseBoKhi2) {
             mpMax *= 2.2;
+        }
+
+        // Xử lý gogeta
+        if (this.isGogeta) {
+            mpMax += (mpMax * 10 / 100L);
         }
 
         // Cường hóa Đại Hội Võ Thuật Bang Hội (map 134): x100 KI
@@ -1489,25 +1489,20 @@ public class NPoint {
             }
         }
 
-        // Xử lý +SĐ đệ tử khi hợp thể (sau khi đã tính xong trang bị & set đồ của bản thân):
-        // SĐ hợp thể = SĐ sư phụ + (SĐ đệ tử * hệ số cấp đệ)
+        // Xử lý thức ăn cho đệ tử (+10% SĐ) và sư phụ (trước hợp thể để không nhân chồng 2 lần lên đệ tử)
+        if ((!this.player.isPet && this.player.itemTime != null && this.player.itemTime.isEatMeal)
+                || (this.player.isPet && ((Pet) this.player).master != null
+                && ((Pet) this.player).master.itemTime != null && ((Pet) this.player).master.itemTime.isEatMeal)) {
+            dame += (dame * 10 / 100L);
+        }
+
+        // Xử lý +SĐ đệ tử khi hợp thể:
+        // Công thức: (Sư phụ [hành trang + CN gốc] + Đệ tử * [loại đệ tử + item đệ tử]) * (item sư phụ)
         if (this.player.fusion.typeFusion != ConstPlayer.NON_FUSION && this.player.pet != null) {
             dame += applyPetFusionBonus(this.player.pet.nPoint.dame);
         }
         if (this.tlDameBT > 0) {
             dame += (dame * this.tlDameBT / 100L);
-        }
-
-        // Xử lý gogeta
-        if (this.isGogeta) {
-            dame += (dame * 10 / 100L);
-        }
-
-        // Xử lý thức ăn
-        if ((!this.player.isPet && this.player.itemTime != null && this.player.itemTime.isEatMeal)
-                || (this.player.isPet && ((Pet) this.player).status != Pet.FUSION && ((Pet) this.player).master != null
-                && ((Pet) this.player).master.itemTime != null && ((Pet) this.player).master.itemTime.isEatMeal)) {
-            dame += (dame * 10 / 100L);
         }
 
         // Xử lý thức ăn 2
@@ -1547,6 +1542,11 @@ public class NPoint {
         // Xử lý nước mía (tăng 10% trên tổng SĐ cuối)
         if (this.player.itemTime != null && this.player.itemTime.isUseNuocMia3) {
             dame += dame / 10; // tăng 10%
+        }
+
+        // Xử lý gogeta
+        if (this.isGogeta) {
+            dame += (dame * 10 / 100L);
         }
 
         // Xử lý khỉ

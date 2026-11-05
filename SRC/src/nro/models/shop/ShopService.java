@@ -891,6 +891,13 @@ public class ShopService {
             return;
         }
 
+        // Nếu vật phẩm hỗ trợ cộng dồn (nguyên liệu, đá, sao pha lê, item hỗ trợ...) -> mở bảng nhập số lượng mua
+        if (isEligibleForBulkBuy(shop, is)) {
+            player.buyItemShopTempId = itemTempId;
+            Input.gI().createFormBuyItemShop(player, is.temp.name, getPriceDescription(shop, is));
+            return;
+        }
+
         // Shop thường
         if (shop.typeShop == ShopService.NORMAL_SHOP) {
             if (!subMoneyByItemShop(player, is)) {
@@ -947,6 +954,283 @@ public class ShopService {
         if (itemTempId == 1523 || itemTempId == 1524 || itemTempId == 521) {
             updateAutoTrainPurchase(player, itemTempId);
             Service.gI().sendThongBao(player, "Mua thành công " + is.temp.name);
+        }
+    }
+
+    public boolean isEligibleForBulkBuy(Shop shop, ItemShop is) {
+        if (shop == null || is == null || is.temp == null) {
+            return false;
+        }
+        if (shop.typeShop != NORMAL_SHOP && shop.typeShop != SPEC_SHOP) {
+            return false;
+        }
+        String tag = shop.tagName != null ? shop.tagName : "";
+        if ("SHOP_DOI_DIEM".equals(tag) || "SHOP_DEO_LUNG_RUBY".equals(tag)
+                || "BILL".equals(tag) || "SANTA_HEAD".equals(tag)
+                || "BUA_1H".equals(tag) || "BUA_8H".equals(tag) || "BUA_1M".equals(tag)) {
+            return false;
+        }
+        if (is.tabShop != null) {
+            int tabId = is.tabShop.id;
+            if (tabId == 30 || tabId == 44 || tabId == 45 || tabId == 49
+                    || tabId == 59 || tabId == 590 || tabId == 60 || tabId == 61 || tabId == 62) {
+                return false;
+            }
+        }
+        int id = is.temp.id;
+        // Các vật phẩm mua 1 lần / giới hạn / đặc biệt
+        if (id == 517 || id == 518 || id == 1523 || id == 1524 || id == 521
+                || id == 453 || id == 74 || id == 454 || id == 921 || id == 1819
+                || id == 193 || id == 194 || id == 361 || id == 379 || id == 992 || id == 570
+                || (id == 380 && is.cost == 50_000_000)
+                || (id >= 293 && id <= 299) || id == 596 || id == 597) {
+            return false;
+        }
+        int type = is.temp.type;
+        // Loại trừ toàn bộ trang bị, cải trang, đeo lưng, bùa, pet, thú cưỡi, giáp tập luyện, sách, danh hiệu, linh thú
+        switch (type) {
+            case 0, 1, 2, 3, 4, 5, 11, 13, 21, 23, 24, 25, 32, 35, 36, 72 -> {
+                return false;
+            }
+        }
+        // Nếu vật phẩm có các dòng chỉ số chiến đấu hoặc HSD ngày (như Linh thú type 27, vật phẩm random chỉ số) -> mua 1 món
+        if (is.options != null) {
+            for (ItemOption io : is.options) {
+                if (io != null && io.optionTemplate != null) {
+                    int opId = io.optionTemplate.id;
+                    if (opId == 50 || opId == 77 || opId == 103 || opId == 0 || opId == 6 || opId == 7
+                            || opId == 14 || opId == 22 || opId == 23 || opId == 27 || opId == 28 || opId == 47
+                            || opId == 5 || opId == 94 || opId == 108 || opId == 159 || opId == 153 || opId == 66
+                            || opId == 93 || opId == 210) {
+                        return false;
+                    }
+                    if (type != 30 && (opId >= 95 && opId <= 101)) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    private String getPriceDescription(Shop shop, ItemShop is) {
+        if (shop == null || is == null) {
+            return "";
+        }
+        if (shop.typeShop == NORMAL_SHOP || "SANTA".equals(shop.tagName) || "SANTA_CAITRANG".equals(shop.tagName)) {
+            return switch (is.typeSell) {
+                case COST_GOLD -> Util.numberToMoney(is.cost) + " vàng";
+                case COST_GEM -> Util.numberToMoney(is.cost) + " ngọc xanh";
+                case COST_RUBY -> Util.numberToMoney(is.cost) + " Hồng ngọc";
+                case COST_COUPON -> Util.numberToMoney(is.cost) + " điểm";
+                default -> Util.numberToMoney(is.cost);
+            };
+        }
+        if (shop.typeShop == SPEC_SHOP) {
+            short itSpec = ItemService.gI().getItemIdByIcon((short) is.iconSpec);
+            Item itS = ItemService.gI().createNewItem(itSpec);
+            if (itS != null && itS.template != null) {
+                return switch (itS.template.id) {
+                    case 76, 188, 189, 190 -> Util.numberToMoney(is.cost) + " vàng";
+                    case 77 -> Util.numberToMoney(is.cost) + " ngọc xanh";
+                    case 861 -> Util.numberToMoney(is.cost) + " Hồng ngọc";
+                    default -> Util.numberToMoney(is.cost) + " " + itS.template.name;
+                };
+            }
+        }
+        return Util.numberToMoney(is.cost);
+    }
+
+    public void buyItemWithQuantity(Player player, int itemTempId, int quantity) {
+        if (player == null || quantity <= 0 || quantity > 999) {
+            return;
+        }
+        Shop shop = player.idMark.getShopOpen();
+        if (shop == null) {
+            Service.gI().sendThongBao(player, "Không thể thực hiện");
+            return;
+        }
+        ItemShop is = shop.getItemShop(itemTempId);
+        if (is == null || is.temp == null) {
+            Service.gI().sendThongBao(player, "Không thể thực hiện");
+            return;
+        }
+        if (InventoryService.gI().getCountEmptyBag(player) == 0) {
+            Service.gI().sendThongBao(player, "Hành trang đã đầy");
+            return;
+        }
+
+        if (shop.typeShop == ShopService.NORMAL_SHOP) {
+            if (!subMoneyByItemShop(player, is, quantity)) {
+                return;
+            }
+        } else if (shop.typeShop == ShopService.SPEC_SHOP) {
+            if ("SANTA".equals(shop.tagName) || "SANTA_CAITRANG".equals(shop.tagName)) {
+                if (!subMoneyByItemShop(player, is, quantity)) {
+                    return;
+                }
+            } else if (!this.subIemByItemShop(player, is, quantity)) {
+                return;
+            }
+        } else {
+            return;
+        }
+
+        Item item = ItemService.gI().createItemFromItemShop(is);
+        int totalAdded = quantity;
+        boolean hasIncrementalOpt = false;
+        if (item.itemOptions != null) {
+            for (ItemOption io : item.itemOptions) {
+                if (io != null && io.optionTemplate != null && (io.optionTemplate.id == 31 || io.optionTemplate.id == 1)) {
+                    int baseParam = Math.max(1, io.param);
+                    totalAdded = baseParam * quantity;
+                    io.param = totalAdded;
+                    item.quantity = (io.optionTemplate.id == 31) ? 1 : item.quantity;
+                    hasIncrementalOpt = true;
+                    break;
+                }
+            }
+        }
+        if (!hasIncrementalOpt) {
+            int baseQty = Math.max(1, item.quantity);
+            totalAdded = baseQty * quantity;
+            item.quantity = totalAdded;
+        }
+
+        InventoryService.gI().addItemBag(player, item);
+        InventoryService.gI().sendItemBags(player);
+        Service.gI().sendMoney(player);
+        Service.gI().sendThongBao(player, "Mua thành công x" + totalAdded + " " + is.temp.name);
+    }
+
+    private boolean subMoneyByItemShop(Player player, ItemShop is, int quantity) {
+        long gold = 0;
+        long gem = 0;
+        long ruby = 0;
+        long coupon = 0;
+        switch (is.typeSell) {
+            case COST_GOLD -> gold = (long) is.cost * quantity;
+            case COST_GEM -> gem = (long) is.cost * quantity;
+            case COST_RUBY -> ruby = (long) is.cost * quantity;
+            case COST_COUPON -> coupon = (long) is.cost * quantity;
+        }
+        Item pGG = ruby > 0 ? InventoryService.gI().findItem(player.inventory.itemsBag, 459) : null;
+        int discountCount = (pGG != null && pGG.isNotNullItem() && pGG.quantity > 0) ? Math.min(quantity, pGG.quantity) : 0;
+        long originalRuby = ruby;
+        if (discountCount > 0) {
+            long discountedUnit = Math.max(1, is.cost / 2);
+            ruby = (long) discountCount * discountedUnit + (long) (quantity - discountCount) * is.cost;
+        }
+        if (player.inventory.gold < gold) {
+            Service.gI().sendThongBao(player, "Bạn không có đủ vàng (cần " + Util.numberToMoney(gold) + " vàng)");
+            return false;
+        } else if (player.inventory.gem < gem) {
+            Service.gI().sendThongBao(player, "Bạn không có đủ ngọc xanh (cần " + Util.numberToMoney(gem) + " ngọc xanh)");
+            return false;
+        } else if (player.inventory.ruby < ruby) {
+            if (discountCount > 0) {
+                Service.gI().sendThongBao(player, "Bạn không có đủ Hồng ngọc (Đã dùng " + discountCount + " Phiếu giảm giá 50% còn " + ruby + " Hồng ngọc, hiện có " + player.inventory.ruby + ")");
+            } else {
+                Service.gI().sendThongBao(player, "Bạn không có đủ Hồng ngọc (cần " + ruby + " Hồng ngọc, hiện có " + player.inventory.ruby + ")");
+            }
+            return false;
+        } else if (player.inventory.coupon < coupon) {
+            Service.gI().sendThongBao(player, "Bạn không có đủ điểm (cần " + coupon + " điểm)");
+            return false;
+        }
+        player.inventory.gold -= gold;
+        player.inventory.gem -= (int) gem;
+        player.inventory.ruby -= (int) ruby;
+        player.inventory.coupon -= (int) coupon;
+        if (discountCount > 0) {
+            InventoryService.gI().subQuantityItemsBag(player, pGG, discountCount);
+            InventoryService.gI().sendItemBags(player);
+            Service.gI().sendThongBao(player, "Đã dùng " + discountCount + " Phiếu giảm giá (-50%): chỉ tốn " + ruby + " Hồng ngọc (Giá gốc: " + originalRuby + ")");
+        }
+        Service.gI().sendMoney(player);
+        return true;
+    }
+
+    private boolean subIemByItemShop(Player pl, ItemShop itemShop, int quantity) {
+        short itSpec = ItemService.gI().getItemIdByIcon((short) itemShop.iconSpec);
+        long buySpec = (long) itemShop.cost * quantity;
+        Item itS = ItemService.gI().createNewItem(itSpec);
+        switch (itS.template.id) {
+            case 76:
+            case 188:
+            case 189:
+            case 190:
+                if (pl.inventory.gold >= buySpec) {
+                    pl.inventory.gold -= buySpec;
+                    Service.gI().sendMoney(pl);
+                    return true;
+                } else {
+                    Service.gI().sendThongBao(pl, "Bạn không đủ vàng để mua vật phẩm (cần " + Util.numberToMoney(buySpec) + " vàng)");
+                    return false;
+                }
+            case 77:
+                if (pl.inventory.gem >= buySpec) {
+                    pl.inventory.gem -= (int) buySpec;
+                    Service.gI().sendMoney(pl);
+                    return true;
+                } else {
+                    Service.gI().sendThongBao(pl, "Bạn không đủ ngọc để mua vật phẩm (cần " + Util.numberToMoney(buySpec) + " ngọc)");
+                    return false;
+                }
+            case 861: {
+                Item pGG = InventoryService.gI().findItem(pl.inventory.itemsBag, 459);
+                int discountCount = (pGG != null && pGG.isNotNullItem() && pGG.quantity > 0) ? Math.min(quantity, pGG.quantity) : 0;
+                long originalRuby = buySpec;
+                if (discountCount > 0) {
+                    long discountedUnit = Math.max(1, itemShop.cost / 2);
+                    buySpec = (long) discountCount * discountedUnit + (long) (quantity - discountCount) * itemShop.cost;
+                }
+                if (pl.inventory.ruby >= buySpec) {
+                    pl.inventory.ruby -= (int) buySpec;
+                    if (discountCount > 0) {
+                        InventoryService.gI().subQuantityItemsBag(pl, pGG, discountCount);
+                        InventoryService.gI().sendItemBags(pl);
+                        Service.gI().sendThongBao(pl, "Đã dùng " + discountCount + " Phiếu giảm giá (-50%): chỉ tốn " + buySpec + " Hồng ngọc (Giá gốc: " + originalRuby + ")");
+                    }
+                    Service.gI().sendMoney(pl);
+                    return true;
+                } else {
+                    if (discountCount > 0) {
+                        Service.gI().sendThongBao(pl, "Bạn không có đủ Hồng ngọc (Đã giảm 50% còn " + buySpec + " Hồng ngọc, hiện có " + pl.inventory.ruby + ")");
+                    } else {
+                        Service.gI().sendThongBao(pl, "Bạn không có đủ Hồng ngọc (cần " + buySpec + " Hồng ngọc, hiện có " + pl.inventory.ruby + ")");
+                    }
+                    return false;
+                }
+            }
+            default: {
+                long totalHave = 0;
+                for (Item bagItem : pl.inventory.itemsBag) {
+                    if (bagItem != null && bagItem.isNotNullItem() && bagItem.template.id == itSpec) {
+                        totalHave += bagItem.quantity;
+                    }
+                }
+                if (totalHave <= 0) {
+                    Service.gI().sendThongBao(pl, "Không tìm thấy " + itS.template.name);
+                    return false;
+                }
+                if (totalHave < buySpec) {
+                    Service.gI().sendThongBao(pl, "Bạn không có đủ " + buySpec + " " + itS.template.name + " (hiện có " + totalHave + ")");
+                    return false;
+                }
+                int remaining = (int) buySpec;
+                for (Item bagItem : new ArrayList<>(pl.inventory.itemsBag)) {
+                    if (remaining <= 0) {
+                        break;
+                    }
+                    if (bagItem != null && bagItem.isNotNullItem() && bagItem.template.id == itSpec) {
+                        int take = Math.min(remaining, bagItem.quantity);
+                        InventoryService.gI().subQuantityItemsBag(pl, bagItem, take);
+                        remaining -= take;
+                    }
+                }
+                return true;
+            }
         }
     }
 

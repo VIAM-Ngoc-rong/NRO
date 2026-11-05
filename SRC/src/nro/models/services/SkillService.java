@@ -603,7 +603,7 @@ public class SkillService {
                     if (player.isBoss) {
                         Service.gI().chat(player, "Dịch chuyển tức thời");
                     }
-                    Service.gI().setPos(player, plTarget.location.x, plTarget.location.y);
+                    Service.gI().setPosWithoutHidePanel(player, plTarget.location.x, plTarget.location.y);
                     playerAttackPlayer(player, plTarget, miss);
                     EffectSkillService.gI().setBlindDCTT(plTarget, System.currentTimeMillis(), timeChoangDCTT);
                     EffectSkillService.gI().sendEffectPlayer(player, plTarget, EffectSkillService.TURN_ON_EFFECT, EffectSkillService.BLIND_EFFECT);
@@ -611,7 +611,7 @@ public class SkillService {
                     ItemTimeService.gI().sendItemTime(plTarget, 3779, timeChoangDCTT / 1000);
                 }
                 if (mobTarget != null) {
-                    Service.gI().setPos(player, mobTarget.location.x, mobTarget.location.y);
+                    Service.gI().setPosWithoutHidePanel(player, mobTarget.location.x, mobTarget.location.y);
                     playerAttackMob(player, mobTarget, false, false);
                     mobTarget.effectSkill.setStartBlindDCTT(System.currentTimeMillis(), timeChoangDCTT);
                     EffectSkillService.gI().sendEffectMob(player, mobTarget, EffectSkillService.TURN_ON_EFFECT, EffectSkillService.BLIND_EFFECT);

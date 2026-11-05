@@ -48,6 +48,8 @@ javac -proc:none -encoding UTF-8 -d build/classes -cp "build/classes;lib/*" `
     src/nro/models/services/PetService.java `
     src/nro/models/services/Service.java `
     src/nro/models/services/SkillService.java `
+    src/nro/models/services/shenron/Shenron_Event.java `
+    src/nro/models/services_func/Input.java `
     src/nro/models/services_func/UseItem.java `
     src/nro/models/services_func/Trade.java `
     src/nro/models/services_func/TransactionService.java `
@@ -96,6 +98,7 @@ javac -proc:none -encoding UTF-8 -d build/classes -cp "build/classes;lib/*" `
     src/nro/models/boss/BossData.java `
     src/nro/models/boss/BossesData.java `
     src/nro/models/boss/Boss.java `
+    src/nro/models/boss/Android/Android13.java `
     src/nro/models/boss/Baby/Baby.java `
     src/nro/models/boss/VuTru6/Kefla.java `
     src/nro/models/boss/VuTru6/Champa.java `
@@ -178,6 +181,7 @@ $pkgs = @(
     "nro\models\map\service",
     "nro\models\map\phoban",
     "nro\models\services",
+    "nro\models\services\shenron",
     "nro\models\services_func",
     "nro\models\combine",
     "nro\models\npc",
@@ -188,6 +192,7 @@ $pkgs = @(
     "nro\models\shop_ky_gui",
     "nro\models\task",
     "nro\models\boss",
+    "nro\models\boss\Android",
     "nro\models\boss\Baby",
     "nro\models\boss\VuTru6",
     "nro\models\boss\Broly",

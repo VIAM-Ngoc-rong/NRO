@@ -85,7 +85,7 @@ public class Shenron_Event {
     public static final String SHENRON_BANG_SAY
             = "Ta là Rồng Thần Băng Giáng Sinh! Ta sẽ ban cho ngươi 1 điều ước lễ hội, hãy chọn đi:\n"
             + "1) Cải trang Noel VIP (35% SĐ/HP/KI, Kháng lạnh, HSD 30-90 ngày).\n"
-            + "2) Lễ hội Hồng Ngọc: +20.000 Hồng Ngọc & +10 Điểm Sự Kiện.\n"
+            + "2) Lễ hội Hồng Ngọc: +2.000 Hồng Ngọc & +10 Điểm Sự Kiện.\n"
             + "3) Phú quý Giáng Sinh: +1.000 Ngọc Xanh & 10 Thỏi Vàng.\n"
             + "4) Đổi ngẫu nhiên Chiêu 2, 3, 4 Đệ tử.\n"
             + "5) Quần đang mặc lên 1 cấp (Tối đa cấp 7) & +10% HP, KI, SĐ (30 phút).";
@@ -278,12 +278,12 @@ public class Shenron_Event {
                             return;
                         }
                         break;
-                    case 1: // +20.000 Hồng Ngọc & +10 Điểm Sự Kiện
-                        this.player.inventory.ruby += 20000;
+                    case 1: // +2.000 Hồng Ngọc & +10 Điểm Sự Kiện
+                        this.player.inventory.ruby += 2000;
                         this.player.point_sukien += 10;
                         this.player.event.addEventPoint(10);
                         PlayerService.gI().sendInfoHpMpMoney(this.player);
-                        Service.gI().sendThongBao(player, "Bạn nhận được 20.000 Hồng Ngọc và +10 Điểm Sự Kiện!");
+                        Service.gI().sendThongBao(player, "Bạn nhận được 2.000 Hồng Ngọc và +10 Điểm Sự Kiện!");
                         break;
                     case 2: // +1.000 Ngọc Xanh & 10 Thỏi Vàng
                         if (InventoryService.gI().getCountEmptyBag(player) > 0) {

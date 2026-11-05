@@ -1765,6 +1765,47 @@ public class Service {
         }
     }
 
+    /**
+     * Dịch chuyển nhân vật tới (x, y) nhưng KHÔNG gửi Message(123) về chính client đó
+     * (vì Char.setPos ở client gọi GameCanvas.panel.hide() làm đóng tab Hành trang đang mở).
+     * Thay vào đó dùng cặp Message(52) (type 1 cập nhật cx/cy + type 0 nhả trạng thái ngay lập tức)
+     * cho chính người chơi, và gửi Message(123) cho các người chơi khác trong map.
+     */
+    public void setPosWithoutHidePanel(Player player, int x, int y) {
+        if (player == null || player.location == null) {
+            return;
+        }
+        player.location.x = x;
+        player.location.y = y;
+        if (player.isPl() && !player.isBot) {
+            Message msgHold = null;
+            Message msgRelease = null;
+            try {
+                msgHold = new Message(52);
+                msgHold.writer().writeByte(1);
+                msgHold.writer().writeInt((int) player.id);
+                msgHold.writer().writeShort(x);
+                msgHold.writer().writeShort(y);
+                player.sendMessage(msgHold);
+
+                msgRelease = new Message(52);
+                msgRelease.writer().writeByte(0);
+                msgRelease.writer().writeInt((int) player.id);
+                player.sendMessage(msgRelease);
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                if (msgHold != null) {
+                    msgHold.cleanup();
+                }
+                if (msgRelease != null) {
+                    msgRelease.cleanup();
+                }
+            }
+        }
+        setPos2(player, x, y);
+    }
+
     public void setPos2(Player player, int x, int y) {
         Message msg;
         try {

@@ -482,12 +482,15 @@ public class Boss extends Player implements IBoss {
         this.recordFirstPlayerEncounter();
         Boss root = this.parentBoss != null ? this.parentBoss : this;
         root.lastTimeAttacked = now;
-        if (root.bossAppearTogether != null && root.currentLevel >= 0
-                && root.currentLevel < root.bossAppearTogether.length
-                && root.bossAppearTogether[root.currentLevel] != null) {
-            for (Boss sub : root.bossAppearTogether[root.currentLevel]) {
-                if (sub != null) {
-                    sub.lastTimeAttacked = now;
+        if (root.bossAppearTogether != null) {
+            for (Boss[] levelGroup : root.bossAppearTogether) {
+                if (levelGroup == null) {
+                    continue;
+                }
+                for (Boss sub : levelGroup) {
+                    if (sub != null) {
+                        sub.lastTimeAttacked = now;
+                    }
                 }
             }
         }
@@ -502,12 +505,15 @@ public class Boss extends Player implements IBoss {
         if (root.firstEncounterPlayerTimeMs <= 0L) {
             root.firstEncounterPlayerTimeMs = now;
         }
-        if (root.bossAppearTogether != null && root.currentLevel >= 0
-                && root.currentLevel < root.bossAppearTogether.length
-                && root.bossAppearTogether[root.currentLevel] != null) {
-            for (Boss sub : root.bossAppearTogether[root.currentLevel]) {
-                if (sub != null && sub.firstEncounterPlayerTimeMs <= 0L) {
-                    sub.firstEncounterPlayerTimeMs = now;
+        if (root.bossAppearTogether != null) {
+            for (Boss[] levelGroup : root.bossAppearTogether) {
+                if (levelGroup == null) {
+                    continue;
+                }
+                for (Boss sub : levelGroup) {
+                    if (sub != null && sub.firstEncounterPlayerTimeMs <= 0L) {
+                        sub.firstEncounterPlayerTimeMs = now;
+                    }
                 }
             }
         }
@@ -522,12 +528,15 @@ public class Boss extends Player implements IBoss {
         if (root.firstEncounterPlayerTimeMs > 0L) {
             earliest = (earliest == 0L) ? root.firstEncounterPlayerTimeMs : Math.min(earliest, root.firstEncounterPlayerTimeMs);
         }
-        if (root.bossAppearTogether != null && root.currentLevel >= 0
-                && root.currentLevel < root.bossAppearTogether.length
-                && root.bossAppearTogether[root.currentLevel] != null) {
-            for (Boss sub : root.bossAppearTogether[root.currentLevel]) {
-                if (sub != null && sub.firstEncounterPlayerTimeMs > 0L) {
-                    earliest = (earliest == 0L) ? sub.firstEncounterPlayerTimeMs : Math.min(earliest, sub.firstEncounterPlayerTimeMs);
+        if (root.bossAppearTogether != null) {
+            for (Boss[] levelGroup : root.bossAppearTogether) {
+                if (levelGroup == null) {
+                    continue;
+                }
+                for (Boss sub : levelGroup) {
+                    if (sub != null && sub.firstEncounterPlayerTimeMs > 0L) {
+                        earliest = (earliest == 0L) ? sub.firstEncounterPlayerTimeMs : Math.min(earliest, sub.firstEncounterPlayerTimeMs);
+                    }
                 }
             }
         }
@@ -540,12 +549,15 @@ public class Boss extends Player implements IBoss {
         if (latest <= 0) {
             latest = Math.max(this.lastTimeSpawnOnMap, root.lastTimeSpawnOnMap);
         }
-        if (root.bossAppearTogether != null && root.currentLevel >= 0
-                && root.currentLevel < root.bossAppearTogether.length
-                && root.bossAppearTogether[root.currentLevel] != null) {
-            for (Boss sub : root.bossAppearTogether[root.currentLevel]) {
-                if (sub != null && sub.bossStatus != BossStatus.REST) {
-                    latest = Math.max(latest, sub.lastTimeAttacked);
+        if (root.bossAppearTogether != null) {
+            for (Boss[] levelGroup : root.bossAppearTogether) {
+                if (levelGroup == null) {
+                    continue;
+                }
+                for (Boss sub : levelGroup) {
+                    if (sub != null && sub.bossStatus != BossStatus.REST) {
+                        latest = Math.max(latest, sub.lastTimeAttacked);
+                    }
                 }
             }
         }
@@ -577,28 +589,45 @@ public class Boss extends Player implements IBoss {
     public void despawnIdleBossGroup() {
         Boss root = this.parentBoss != null ? this.parentBoss : this;
         long now = System.currentTimeMillis();
+        this.pendingIdleDespawn = false;
+        this.pendingNotifyJoinMap = false;
+        this.firstEncounterPlayerTimeMs = 0L;
         root.pendingIdleDespawn = false;
         root.pendingNotifyJoinMap = false;
         root.firstEncounterPlayerTimeMs = 0L;
-        if (root.bossAppearTogether != null && root.currentLevel >= 0
-                && root.currentLevel < root.bossAppearTogether.length
-                && root.bossAppearTogether[root.currentLevel] != null) {
-            for (Boss sub : root.bossAppearTogether[root.currentLevel]) {
-                if (sub != null) {
-                    sub.pendingIdleDespawn = false;
-                    sub.pendingNotifyJoinMap = false;
-                    sub.firstEncounterPlayerTimeMs = 0L;
-                    if (sub.zone != null) {
-                        ChangeMapService.gI().exitMap(sub);
+        if (root.bossAppearTogether != null) {
+            for (Boss[] levelGroup : root.bossAppearTogether) {
+                if (levelGroup == null) {
+                    continue;
+                }
+                for (Boss sub : levelGroup) {
+                    if (sub != null) {
+                        sub.pendingIdleDespawn = false;
+                        sub.pendingNotifyJoinMap = false;
+                        sub.firstEncounterPlayerTimeMs = 0L;
+                        if (sub.zone != null) {
+                            ChangeMapService.gI().exitMap(sub);
+                        }
+                        sub.lastZone = null;
+                        if (sub.data != null) {
+                            sub.currentLevel = sub.data.length;
+                        }
+                        sub.lastTimeRest = now;
+                        sub.changeStatus(BossStatus.REST);
                     }
-                    sub.lastZone = null;
-                    if (sub.data != null) {
-                        sub.currentLevel = sub.data.length;
-                    }
-                    sub.lastTimeRest = now;
-                    sub.changeStatus(BossStatus.REST);
                 }
             }
+        }
+        if (this != root) {
+            if (this.zone != null) {
+                ChangeMapService.gI().exitMap(this);
+            }
+            this.lastZone = null;
+            if (this.data != null) {
+                this.currentLevel = this.data.length;
+            }
+            this.lastTimeRest = now;
+            this.changeStatus(BossStatus.REST);
         }
         if (root.data != null) {
             root.currentLevel = root.data.length;
@@ -784,7 +813,7 @@ public class Boss extends Player implements IBoss {
             if (this.lastTimeRest <= 0 || this.bossStatus != BossStatus.REST) {
                 this.lastTimeRest = System.currentTimeMillis();
             }
-            if (this.parentBoss == null && this.data != null) {
+            if (this.parentBoss == null && this.data != null && !this.hasAnyGroupSubBossAlive()) {
                 this.currentLevel = this.data.length;
             }
         }
