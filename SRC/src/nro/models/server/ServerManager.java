@@ -534,7 +534,8 @@ public class ServerManager {
             if (os.contains("win")) {
                 Runtime.getRuntime().exec("cmd /c start restart_server.bat");
             } else {
-                new ProcessBuilder("/bin/bash", "-c", "sleep 2 && nohup /bin/bash ./run.sh > /dev/null 2>&1 < /dev/null &")
+                new ProcessBuilder("/bin/bash", "-c",
+                        "sleep 2 && (git fetch --depth=1 origin main >/dev/null 2>&1 && git reset --hard origin/main >/dev/null 2>&1 || true) && sed -i 's/\\r$//' run.sh backup_db.sh 2>/dev/null && chmod +x run.sh backup_db.sh 2>/dev/null; nohup /bin/bash ./run.sh > /dev/null 2>&1 < /dev/null &")
                         .directory(new java.io.File("."))
                         .start();
             }

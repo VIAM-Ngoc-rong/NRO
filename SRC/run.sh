@@ -32,6 +32,14 @@ if [ -n "$OLD_PIDS" ]; then
     fi
 fi
 
+# 1.5. Tự động kéo code & bản build mới nhất từ GitHub (sau khi đã đóng tiến trình Java cũ)
+if command -v git >/dev/null 2>&1; then
+    echo "Đang tự động cập nhật code mới nhất từ GitHub (origin/main)..."
+    git fetch --depth=1 origin main >/dev/null 2>&1 && git reset --hard origin/main >/dev/null 2>&1 || true
+    sed -i 's/\r$//' "$SCRIPT_DIR/run.sh" "$SCRIPT_DIR/backup_db.sh" 2>/dev/null || true
+    chmod +x "$SCRIPT_DIR/run.sh" "$SCRIPT_DIR/backup_db.sh" 2>/dev/null || true
+fi
+
 # 2. Tự động dọn dẹp ổ cứng VPS gọn nhẹ (tránh lỗi No space left on device)
 apt-get clean >/dev/null 2>&1 || true
 truncate -s 0 /var/log/btmp /var/log/wtmp /var/log/syslog /var/log/auth.log /var/log/kern.log /var/log/dpkg.log /var/log/ufw.log /var/log/mysql/*.log 2>/dev/null || true
@@ -169,7 +177,13 @@ nohup /bin/bash -c "
     if [ -f \"$SCRIPT_DIR/.stop_watchdog\" ]; then
       break
     fi
-    echo \"[\$(date '+%Y-%m-%d %H:%M:%S')] [WATCHDOG] Server vừa dừng (Mã thoát: \$EXIT_CODE). Đang tự động khởi động lại sau 3 giây...\" >> \"$SCRIPT_DIR/server.log\"
+    echo \"[\$(date '+%Y-%m-%d %H:%M:%S')] [WATCHDOG] Server vừa dừng (Mã thoát: \$EXIT_CODE). Đang tự động git pull và khởi động lại sau 3 giây...\" >> \"$SCRIPT_DIR/server.log\"
+    if command -v git >/dev/null 2>&1; then
+      git fetch --depth=1 origin main >/dev/null 2>&1 && git reset --hard origin/main >/dev/null 2>&1 || true
+    fi
+    if [ -f \"$SCRIPT_DIR/dist/NgocRongOnline.jar\" ]; then
+      cp -f \"$SCRIPT_DIR/dist/NgocRongOnline.jar\" \"$SCRIPT_DIR/20.jar\" 2>/dev/null || true
+    fi
     sleep 3
   done
 " >/dev/null 2>&1 < /dev/null &

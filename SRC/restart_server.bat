@@ -1,4 +1,5 @@
 @ECHO OFF
-echo Sever Se Tu Khoi Dong Lai Sau 5 Phut Nua...
-timeout /t 300
+echo Server se tu dong cap nhat code moi va khoi dong lai sau 10 giay...
+timeout /t 10
+git pull origin main
 call run.bat
