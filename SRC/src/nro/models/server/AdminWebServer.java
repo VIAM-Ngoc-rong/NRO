@@ -523,8 +523,8 @@ public class AdminWebServer {
             }
             int lv = (b.currentLevel >= 0 && b.currentLevel < b.data.length) ? b.currentLevel : 0;
             String bName = b.name != null ? b.name : b.data[lv].getName();
-            long hp = (b.nPoint != null && alive) ? b.nPoint.hp : 0;
-            long hpMax = (b.nPoint != null) ? b.nPoint.hpMax : 0;
+            long hp = (b.nPoint != null && alive) ? b.nPoint.getHpLong() : 0;
+            long hpMax = (b.nPoint != null) ? b.nPoint.getHpMaxLong() : 0;
             String mapName = (alive && b.zone.map != null) ? b.zone.map.mapName : "Chưa xuất hiện";
             int mapId = (alive && b.zone.map != null) ? b.zone.map.mapId : -1;
             int zoneId = alive ? b.zone.zoneId : -1;
@@ -532,11 +532,11 @@ public class AdminWebServer {
             long nowMs = System.currentTimeMillis();
             long spawnTimeMs = (alive && b.lastTimeSpawnOnMap > 0) ? b.lastTimeSpawnOnMap : 0L;
             long aliveSec = spawnTimeMs > 0 ? Math.max(0L, (nowMs - spawnTimeMs) / 1000L) : 0L;
-            Boss restRef = (b.parentBoss != null && b.secondsRest <= 0) ? b.parentBoss : b;
-            int secondsRest = restRef.secondsRest;
-            long lastRestMs = restRef.lastTimeRest;
-            long respawnRemainSec = (!alive && secondsRest > 0 && lastRestMs > 0)
-                    ? Math.max(0L, (lastRestMs + secondsRest * 1000L - nowMs) / 1000L) : 0L;
+            int secondsRest = b.getEffectiveSecondsRest();
+            long respawnRemainSec = !alive ? b.getRemainingRestSeconds() : 0L;
+            String waitingParentMap = (!alive && b.isWaitingCallByAliveParent() && b.parentBoss != null && b.parentBoss.zone != null && b.parentBoss.zone.map != null)
+                    ? (b.parentBoss.zone.map.mapName + " (Khu " + b.parentBoss.zone.zoneId + ")")
+                    : "";
 
             sb.append("{");
             sb.append("\"index\":").append(i);
@@ -554,6 +554,7 @@ public class AdminWebServer {
             sb.append(",\"respawnRemainSec\":").append(respawnRemainSec);
             sb.append(",\"secondsRest\":").append(secondsRest);
             sb.append(",\"hasParent\":").append(b.parentBoss != null);
+            sb.append(",\"waitingParentMap\":").append(jsonStr(waitingParentMap));
             sb.append(",\"lastKilledTimeMs\":").append(b.lastKilledTimeMs);
             sb.append(",\"lastKillerName\":").append(jsonStr(b.lastKillerName != null ? b.lastKillerName : ""));
             sb.append(",\"lastKilledMapName\":").append(jsonStr(b.lastKilledMapName != null ? b.lastKilledMapName : ""));
@@ -1665,7 +1666,12 @@ public class AdminWebServer {
                         sendJson(exchange, 200, "{\"ok\":true,\"message\":" + jsonStr("Boss " + boss.name + " hiện đang sống tại " + boss.zone.map.mapName + " khu " + boss.zone.zoneId) + "}");
                         return;
                     }
-                    boss.changeStatus(BossStatus.RESPAWN);
+                    Boss targetSpawn = (boss.parentBoss != null && (boss.parentBoss.zone == null || boss.parentBoss.isDie()))
+                            ? boss.parentBoss : boss;
+                    if (targetSpawn.data != null) {
+                        targetSpawn.currentLevel = targetSpawn.data.length;
+                    }
+                    targetSpawn.changeStatus(BossStatus.RESPAWN);
                     sendJson(exchange, 200, "{\"ok\":true,\"message\":" + jsonStr("Đã gọi hồi sinh Boss #" + bossIndex + " ngay lập tức!") + "}");
                 }
                 case "kill_boss" -> {
@@ -1680,13 +1686,16 @@ public class AdminWebServer {
                         return;
                     }
                     String bName = boss.name;
-                    boss.leaveMap();
-                    sendJson(exchange, 200, "{\"ok\":true,\"message\":" + jsonStr("Đã thu hồi / tiêu diệt Boss " + bName + " khỏi bản đồ!") + "}");
+                    boss.despawnIdleBossGroup();
+                    sendJson(exchange, 200, "{\"ok\":true,\"message\":" + jsonStr("Đã thu hồi Boss " + bName + " khỏi bản đồ (Hồi sinh lại sau 5 phút)!") + "}");
                 }
                 case "spawn_all_bosses" -> {
                     int count = 0;
                     for (Boss b : new ArrayList<>(BossManager.gI().getBosses())) {
-                        if (b != null && (b.zone == null || b.isDie())) {
+                        if (b != null && b.parentBoss == null && (b.zone == null || b.isDie())) {
+                            if (b.data != null) {
+                                b.currentLevel = b.data.length;
+                            }
                             b.changeStatus(BossStatus.RESPAWN);
                             count++;
                         }

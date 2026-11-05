@@ -112,7 +112,9 @@ public class Basil extends Boss {
                 return;
             }
         }
-        this.parentBoss.changeStatus(BossStatus.ACTIVE);
+        if (this.parentBoss.zone != null && !this.parentBoss.isDie() && this.parentBoss.bossStatus == BossStatus.AFK) {
+            this.parentBoss.changeStatus(BossStatus.ACTIVE);
+        }
     }
 }
 

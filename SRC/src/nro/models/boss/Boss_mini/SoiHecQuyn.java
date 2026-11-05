@@ -79,7 +79,7 @@ public class SoiHecQuyn extends Boss {
                 }
             } catch (Exception e) {
                 Logger.error(this.data[0].getName() + ": Lỗi đang tiến hành REST\n");
-                this.changeStatus(BossStatus.REST);
+                this.leaveMap();
             }
         } else {
             Logger.error(this.data[0].getName() + ": Lỗi map đang tiến hành RESPAWN\n");
@@ -119,6 +119,7 @@ public class SoiHecQuyn extends Boss {
     public void leaveMap() {
         ChangeMapService.gI().exitMap(this);
         this.lastZone = null;
+        this.secondsRest = 300;
         this.lastTimeRest = System.currentTimeMillis();
         this.changeStatus(BossStatus.REST);
 

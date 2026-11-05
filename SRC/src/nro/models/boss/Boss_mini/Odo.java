@@ -230,7 +230,7 @@ public class Odo extends Boss {
 
                 this.changeStatus(BossStatus.CHAT_S);
             } catch (Exception e) {
-                this.changeStatus(BossStatus.REST);
+                this.leaveMap();
             }
         } else {
             this.changeStatus(BossStatus.RESPAWN);
@@ -241,6 +241,7 @@ public class Odo extends Boss {
     public void leaveMap() {
         ChangeMapService.gI().exitMap(this);
         this.lastZone = null;
+        this.secondsRest = 300;
         this.lastTimeRest = System.currentTimeMillis();
         this.changeStatus(BossStatus.REST);
     }

@@ -2191,9 +2191,12 @@
         if (!b.alive) {
           if (b.respawnRemainSec > 0) {
             const etaStr = new Date(Date.now() + b.respawnRemainSec * 1000).toLocaleTimeString('vi-VN');
-            respawnInfoHtml = `<span class="badge badge-dead">Còn ${formatDurationShort(b.respawnRemainSec)}</span><br/><span style="font-size:11px;color:var(--muted);">Dự kiến: ${etaStr} (${cycleLabel})</span>`;
+            const subNote = b.hasParent ? ` • Ra cùng Boss chính` : '';
+            respawnInfoHtml = `<span class="badge badge-dead">Còn ${formatDurationShort(b.respawnRemainSec)}</span><br/><span style="font-size:11px;color:var(--muted);">Dự kiến: ${etaStr} (${cycleLabel}${subNote})</span>`;
+          } else if (b.waitingParentMap) {
+            respawnInfoHtml = `<span class="badge" style="background:rgba(245,158,11,0.15);color:#f59e0b;">Chờ gọi ra</span><br/><span style="font-size:11px;color:var(--muted);">Tại ${escapeHtml(b.waitingParentMap)}</span>`;
           } else if (b.hasParent) {
-            respawnInfoHtml = `<span style="font-size:12px;color:var(--text-secondary);">Ra cùng Boss chính</span>`;
+            respawnInfoHtml = `<span style="font-size:12px;color:var(--text-secondary);">Ra cùng Boss chính</span><br/><span style="font-size:11px;color:var(--muted);">${cycleLabel}</span>`;
           } else if (b.secondsRest > 0) {
             respawnInfoHtml = `<span style="font-size:12px;color:var(--text);font-weight:600;">Sắp xuất hiện</span><br/><span style="font-size:11px;color:var(--muted);">${cycleLabel}</span>`;
           } else {

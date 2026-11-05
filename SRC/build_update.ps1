@@ -123,7 +123,9 @@ javac -proc:none -encoding UTF-8 -d build/classes -cp "build/classes;lib/*" `
     src/nro/models/boss/event/Halloween/BiMa.java `
     src/nro/models/boss/event/Halloween/Doi.java `
     src/nro/models/boss/event/Halloween/MaTroi.java `
+    src/nro/models/boss/Boss_mini/AnTrom.java `
     src/nro/models/boss/Boss_mini/Odo.java `
+    src/nro/models/boss/Boss_mini/SoiHecQuyn.java `
     src/nro/models/boss/cumber/Cumber.java `
     src/nro/models/boss/BadiWolves/Basil.java `
     src/nro/models/boss/BadiWolves/Bergamo.java `

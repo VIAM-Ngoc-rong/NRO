@@ -132,8 +132,15 @@ public class AnTrom extends Boss {
 
     @Override
     public void die(Player plKill) {
-        BadgesTaskService.updateCountBagesTask(plKill, ConstTaskBadges.BI_MOC_SACH_TUI, 1);
-        this.reward(plKill);
+        try {
+            Player plOwner = (plKill != null && plKill.isPet && ((nro.models.player.Pet) plKill).master != null)
+                    ? ((nro.models.player.Pet) plKill).master : plKill;
+            if (plOwner != null) {
+                BadgesTaskService.updateCountBagesTask(plOwner, ConstTaskBadges.BI_MOC_SACH_TUI, 1);
+                this.reward(plOwner);
+            }
+        } catch (Exception ignored) {
+        }
         this.changeStatus(BossStatus.DIE);
     }
 
@@ -176,9 +183,11 @@ public class AnTrom extends Boss {
     @Override
     public void joinMap() {
         this.name = "Ăn Trộm " + Util.nextInt(1, 49);
-        this.nPoint.hpMax = Util.nextInt(100);
+        this.nPoint.hpMax = Util.nextInt(50, 100);
         this.nPoint.hp = this.nPoint.hpMax;
-        this.nPoint.dameg = this.nPoint.hpMax / 10;
+        this.nPoint.hpMaxLong = this.nPoint.hpMax;
+        this.nPoint.hpLong = this.nPoint.hp;
+        this.nPoint.dameg = Math.max(1, this.nPoint.hpMax / 10);
         goldAnTrom = 0;
         this.joinMap2();
         st = System.currentTimeMillis();
@@ -203,7 +212,7 @@ public class AnTrom extends Boss {
 
                 this.changeStatus(BossStatus.CHAT_S);
             } catch (Exception e) {
-                this.changeStatus(BossStatus.REST);
+                this.leaveMap();
             }
         } else {
             this.changeStatus(BossStatus.RESPAWN);
@@ -214,6 +223,7 @@ public class AnTrom extends Boss {
     public void leaveMap() {
         ChangeMapService.gI().exitMap(this);
         this.lastZone = null;
+        this.secondsRest = 300;
         this.lastTimeRest = System.currentTimeMillis();
         this.changeStatus(BossStatus.REST);
     }

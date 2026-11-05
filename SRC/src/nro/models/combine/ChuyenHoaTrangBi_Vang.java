@@ -58,9 +58,11 @@ public class ChuyenHoaTrangBi_Vang {
             return;
         }
 
-        if (XoaThuocTinhSKH.hasSkhOption(trangBiGoc) && isDoHuyDiet(trangBiCanChuyenHoa)) {
+        if (XoaThuocTinhSKH.hasSkhOption(trangBiGoc) && isDoThanLinhTroLen(trangBiCanChuyenHoa)) {
             CombineService.gI().baHatMit.createOtherMenu(player, ConstNpc.IGNORE_MENU,
-                    "Thuộc tính SKH chỉ được chuyển hóa từ đồ Thần Linh trở xuống, không thể chuyển lên đồ Hủy Diệt!",
+                    "Không thể chuyển hóa trang bị Kích Hoạt (SKH) lên đồ Thần Linh, Hủy Diệt hoặc Thiên Sứ!\n"
+                    + "|7|(Để chế tạo đồ Thần Linh / Hủy Diệt / Thiên Sứ có SKH, hãy dùng chức năng Đập đồ Kích Hoạt.\n"
+                    + "Nếu chỉ muốn chuyển Sao Pha Lê / Cấp [+], hãy Xóa dòng SKH trước)",
                     "Đóng");
             return;
         }
@@ -132,8 +134,8 @@ public class ChuyenHoaTrangBi_Vang {
             return;
         }
 
-        if (XoaThuocTinhSKH.hasSkhOption(trangBiGoc) && isDoHuyDiet(trangBiCanChuyenHoa)) {
-            Service.gI().sendThongBao(player, "SKH chỉ được chuyển hóa từ đồ Thần Linh trở xuống, không thể chuyển lên đồ Hủy Diệt!");
+        if (XoaThuocTinhSKH.hasSkhOption(trangBiGoc) && isDoThanLinhTroLen(trangBiCanChuyenHoa)) {
+            Service.gI().sendThongBao(player, "Không thể chuyển hóa đồ Kích Hoạt (SKH) lên đồ Thần Linh, Hủy Diệt hoặc Thiên Sứ!");
             return;
         }
 
@@ -252,6 +254,9 @@ public class ChuyenHoaTrangBi_Vang {
             if (!useGocImbuedSplStats && isSplStatOption(id)) {
                 continue;
             }
+            if (isDoThanLinhTroLen(phoiMoi) && XoaThuocTinhSKH.isSkhOption(id)) {
+                continue;
+            }
             if ((id == 30 || id == 73) && hasOptionList(result, id)) {
                 continue;
             }
@@ -274,6 +279,11 @@ public class ChuyenHoaTrangBi_Vang {
 
     public static boolean isDoHuyDiet(Item item) {
         return item != null && item.template != null && item.template.id >= 650 && item.template.id <= 662;
+    }
+
+    public static boolean isDoThanLinhTroLen(Item item) {
+        return item != null && item.template != null
+                && (item.isDTL() || item.isDHD() || item.isDTS() || item.template.level >= 13);
     }
 
     public static boolean isEquipItem(Item item) {

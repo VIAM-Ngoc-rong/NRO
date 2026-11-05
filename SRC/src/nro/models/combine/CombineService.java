@@ -185,6 +185,8 @@ public class CombineService {
                         if (candidate != null && candidate != first && candidate.isNotNullItem()
                                 && candidate.template != null && candidate.template.id == first.template.id
                                 && ChuyenHoaTrangBi_Vang.isCheckTrungTypevsGender(first, candidate)
+                                && !((XoaThuocTinhSKH.hasSkhOption(first) && ChuyenHoaTrangBi_Vang.isDoThanLinhTroLen(candidate))
+                                || (XoaThuocTinhSKH.hasSkhOption(candidate) && ChuyenHoaTrangBi_Vang.isDoThanLinhTroLen(first)))
                                 && (ChuyenHoaTrangBi_Vang.hasTransferableAttributes(first) || ChuyenHoaTrangBi_Vang.hasTransferableAttributes(candidate))) {
                             player.combineNew.itemsCombine.add(candidate);
                             hadDuplicateOrInvalid = true;
@@ -588,8 +590,56 @@ public class CombineService {
                         player.combineNew.itemsCombine.add(it);
                     }
                 } else if (ChuyenHoaTrangBi_Vang.isCheckTrungTypevsGender(first, it)) {
+                    if ((XoaThuocTinhSKH.hasSkhOption(first) && ChuyenHoaTrangBi_Vang.isDoThanLinhTroLen(it))
+                            || (XoaThuocTinhSKH.hasSkhOption(it) && ChuyenHoaTrangBi_Vang.isDoThanLinhTroLen(first))) {
+                        continue;
+                    }
                     player.combineNew.itemsCombine.add(it);
                     break;
+                }
+            }
+            return;
+        }
+
+        if (type == DAP_DO_KICH_HOAT) {
+            boolean hasPhoiSkh = false;
+            int targetTier = 0;
+            for (Item ex : player.combineNew.itemsCombine) {
+                if (DapDoKichHoat.isItemKichHoat(ex) && !hasPhoiSkh) {
+                    hasPhoiSkh = true;
+                } else {
+                    int t = DapDoKichHoat.getMaterialTier(ex);
+                    if (t > 0 && targetTier == 0) {
+                        targetTier = t;
+                    }
+                }
+            }
+            if (targetTier == 0) {
+                targetTier = DapDoKichHoat.TIER_THAN_LINH;
+            }
+            if (!hasPhoiSkh && player.combineNew.itemsCombine.size() < 4) {
+                for (int i = tabStart; i < tabEnd; i++) {
+                    Item it = player.inventory.itemsBag.get(i);
+                    if (!DapDoKichHoat.isValidSkhPhoiForBulkSelect(it)) {
+                        continue;
+                    }
+                    if (!player.combineNew.itemsCombine.contains(it)) {
+                        player.combineNew.itemsCombine.add(it);
+                        hasPhoiSkh = true;
+                        break;
+                    }
+                }
+            }
+            for (int i = tabStart; i < tabEnd; i++) {
+                if (player.combineNew.itemsCombine.size() >= 4) {
+                    break;
+                }
+                Item it = player.inventory.itemsBag.get(i);
+                if (!DapDoKichHoat.isValidMaterialForBulkSelect(it, targetTier)) {
+                    continue;
+                }
+                if (!player.combineNew.itemsCombine.contains(it)) {
+                    player.combineNew.itemsCombine.add(it);
                 }
             }
             return;
@@ -608,17 +658,6 @@ public class CombineService {
                 }
             }
             if (!exists) {
-                if (type == DAP_DO_KICH_HOAT) {
-                    int skhCount = 0;
-                    for (Item ex : player.combineNew.itemsCombine) {
-                        if (DapDoKichHoat.isItemKichHoat(ex)) {
-                            skhCount++;
-                        }
-                    }
-                    if (skhCount >= 3 || player.combineNew.itemsCombine.size() >= 4) {
-                        break;
-                    }
-                }
                 player.combineNew.itemsCombine.add(it);
             }
         }
@@ -1060,7 +1099,7 @@ public class CombineService {
             case TAI_TAO_CAPSULE_KH:
                 return "Ta sẽ phù phép\ntái tạo thành 1 viên\nCapsule kích hoạt tự chọn";
             case DAP_DO_KICH_HOAT:
-                return "Ta sẽ phù phép\n3 món đồ Kích Hoạt + 1 Đồ Phôi\nthành 1 món đồ Kích Hoạt theo Phôi";
+                return "Ta sẽ phù phép\n3 Đồ Thần (hoặc Hủy Diệt/Thiên Sứ)\n+ 1 Phôi KH thành Đồ KH ngẫu nhiên";
             case PHAN_RA_DO_SAO:
                 return "Ta sẽ phù phép\nphân rã Đồ Sao nhận Đá Ngũ Sắc,\nVàng, Hồng Ngọc, SPL & Hematite";
             case TINH_LUYEN_DA_NGU_SAC:
@@ -1126,7 +1165,7 @@ public class CombineService {
             case TAI_TAO_CAPSULE_KH:
                 return "Vào hành trang\nChọn 3 khoáng tái chế\nChọn 1 Capsule vỡ\nSau đó chọn 'Tái tạo'";
             case DAP_DO_KICH_HOAT:
-                return "Vào hành trang\nChọn 3 món đồ Kích Hoạt bất kỳ\nChọn thêm 1 món Đồ Phôi (VD: Găng Thần Linh)\nCần 100 triệu vàng -> Ra đúng món Đồ Phôi có SKH bất kỳ";
+                return "Vào hành trang\nChọn 1 món Đồ Kích Hoạt làm Phôi (Áo, Quần, Găng, Giày, Rada)\nChọn 3 món Đồ Thần Linh (hoặc 3 Đồ Hủy Diệt / 3 Đồ Thiên Sứ)\nRa 1 món Đồ Kích Hoạt mới theo loại Phôi, ngẫu nhiên Cấp sức mạnh (Đồ Thần: 5%)";
             case PHAN_RA_DO_SAO:
                 return "Vào hành trang\nChọn 1 hoặc nhiều trang bị có Sao Pha Lê (1s - 9s)\nPhân rã miễn phí nhận Đá Ngũ Sắc, Vàng, Hồng Ngọc, Sao Pha Lê, Đá Hematite và Capsule Kích Hoạt";
             case TINH_LUYEN_DA_NGU_SAC:
@@ -1134,7 +1173,7 @@ public class CombineService {
                         + "Cách 2 (Tinh luyện): Chọn 1 Cải trang vĩnh viễn + x5 Đá Ngũ Sắc + 200Tr Vàng -> +1~2% SĐ/HP/KI (Tối đa 45%)";
             case CHUYEN_HOA_TRANG_BI_NGOC:
             case CHUYEN_HOA_TRANG_BI_VANG:
-                return "Vào hành trang\nChọn 1 Trang bị gốc (có SPL, Cấp [+] hoặc SKH)\nChọn tiếp 1 Phôi trang bị mới cùng loại & cùng hành tinh\nCần 2 tỷ vàng -> Chuyển toàn bộ SPL, Cấp [+] và SKH sang Phôi mới";
+                return "Vào hành trang\nChọn 1 Trang bị gốc (có SPL, Cấp [+] hoặc SKH)\nChọn tiếp 1 Phôi trang bị mới cùng loại & cùng hành tinh\nCần 2 tỷ vàng -> Chuyển SPL, Cấp [+] và SKH sang Phôi mới (Không chuyển SKH lên Đồ Thần Linh+)";
             case NHAP_NGOC_RONG:
                 return "Vào hành trang\nChọn 7 viên ngọc cùng sao\nSau đó chọn 'Làm phép'";
             case NANG_CAP_VAT_PHAM:

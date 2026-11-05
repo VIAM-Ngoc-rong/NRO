@@ -528,11 +528,14 @@ public class BossManager implements Runnable {
                         msg.writer().writeUTF("Đang ở " + boss.zone.map.mapName + " (" + boss.zone.map.mapId + ")" + hpTag + despawnTag
                                 + (isHuntingThis ? " [ĐANG TỰ SĂN]" : "\nBấm Chọn để Đến Khu 0 hoặc Bật Tự Động Săn!"));
                     }
+                } else if (boss.isWaitingCallByAliveParent() && boss.parentBoss != null && boss.parentBoss.zone != null && boss.parentBoss.zone.map != null) {
+                    String parentMap = boss.parentBoss.zone.map.mapName;
+                    msg.writer().writeUTF(isHuntingThis ? ("Chờ gọi (" + parentMap + ") [Tự Săn]") : ("Chờ gọi (" + parentMap + ")"));
+                    msg.writer().writeUTF(isHuntingThis
+                            ? ("Đang hẹn Tự Động Săn - Sẽ xuất hiện tại " + parentMap + " khi hạ " + boss.parentBoss.name)
+                            : ("Chờ " + boss.parentBoss.name + " gọi ra tại " + parentMap + " - Bấm Chọn để Hẹn Tự Động Săn!"));
                 } else {
-                    Boss restRef = (boss.parentBoss != null && boss.secondsRest <= 0) ? boss.parentBoss : boss;
-                    long remRestSec = (restRef.secondsRest > 0 && restRef.lastTimeRest > 0)
-                            ? Math.max(0L, (restRef.lastTimeRest + restRef.secondsRest * 1000L - System.currentTimeMillis()) / 1000L)
-                            : 0L;
+                    long remRestSec = boss.getRemainingRestSeconds();
                     String restStr = remRestSec > 0
                             ? (" (" + (remRestSec / 60) + "p" + (remRestSec % 60) + "s)")
                             : "";
