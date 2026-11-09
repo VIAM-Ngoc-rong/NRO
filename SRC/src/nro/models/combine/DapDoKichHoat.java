@@ -215,7 +215,7 @@ public class DapDoKichHoat {
                 continue;
             }
             int id = io.optionTemplate.id;
-            if ((id == 72 && io.param > 0) || (id == 102 && io.param > 0) || (id == 107 && io.param >= 5)) {
+            if ((id == 72 && io.param > 0) || (id == 102 && io.param > 0)) {
                 return true;
             }
         }
@@ -357,17 +357,6 @@ public class DapDoKichHoat {
             return;
         }
 
-        for (Item item : player.combineNew.itemsCombine) {
-            if (hasUpgradedStarOrLevel(item)) {
-                CombineService.gI().baHatMit.createOtherMenu(player, ConstNpc.IGNORE_MENU,
-                        "CẢNH BÁO BẢO VỆ ĐỒ:\n"
-                        + "Vật phẩm [" + item.template.name + "] đã ép Sao Pha Lê hoặc đã nâng cấp [+].\n"
-                        + "Hệ thống tự động chặn để tránh mất đồ quý! Vui lòng dùng trang bị chưa ép sao / chưa đập [+].",
-                        "Đóng");
-                return;
-            }
-        }
-
         Item phoiItem = recipe.phoiSkh;
         StringBuilder matList = new StringBuilder();
         for (Item mat : recipe.materialItems) {
@@ -423,13 +412,6 @@ public class DapDoKichHoat {
         if (recipe == null) {
             Service.gI().sendThongBao(player, "Cần đúng 3 món Thần Linh (hoặc 3 Hủy Diệt / 3 Thiên Sứ) + 1 món Đồ Kích Hoạt làm phôi!");
             return;
-        }
-
-        for (Item item : player.combineNew.itemsCombine) {
-            if (hasUpgradedStarOrLevel(item)) {
-                Service.gI().sendThongBao(player, "Không thể dùng " + item.template.name + " (đã ép sao / nâng cấp [+]) làm nguyên liệu!");
-                return;
-            }
         }
 
         long goldCost = getGoldCostForTier(recipe.materialTier);

@@ -1169,6 +1169,13 @@ public class SkillService {
             }
             if (player.playerSkill.skillSelect.template.id == Skill.KAIOKEN) {
                 long hpUse = player.nPoint.hpMax / 100 * 10;
+                if (player.setClothes != null) {
+                    if (player.setClothes.thanVuTruKaio == 4) {
+                        hpUse = player.nPoint.hpMax / 100 * 5;
+                    } else if (player.setClothes.thanVuTruKaio >= 5) {
+                        hpUse = player.nPoint.hpMax / 100 * 3;
+                    }
+                }
                 if (player.isBoss && player instanceof Rival) {
                     hpUse = 0;
                 }
@@ -1176,12 +1183,25 @@ public class SkillService {
                     return false;
                 }
             }
+            boolean isKaioken = player.playerSkill.skillSelect.template.id == Skill.KAIOKEN;
+            int kaioPieces = (player.setClothes != null) ? player.setClothes.thanVuTruKaio : 0;
             switch (player.playerSkill.skillSelect.template.manaUseType) {
                 case 0 -> {
-                    return player.nPoint.mp >= player.playerSkill.skillSelect.manaUse;
+                    int mpUse = player.playerSkill.skillSelect.manaUse;
+                    if (isKaioken && kaioPieces >= 5) {
+                        mpUse = mpUse * 30 / 100;
+                    } else if (isKaioken && kaioPieces == 4) {
+                        mpUse = mpUse * 50 / 100;
+                    }
+                    return player.nPoint.mp >= mpUse;
                 }
                 case 1 -> {
                     int mpUse = (player.nPoint.mpMax * player.playerSkill.skillSelect.manaUse / 100);
+                    if (isKaioken && kaioPieces >= 5) {
+                        mpUse = mpUse * 30 / 100;
+                    } else if (isKaioken && kaioPieces == 4) {
+                        mpUse = mpUse * 50 / 100;
+                    }
                     return player.nPoint.mp >= mpUse;
                 }
                 case 2 -> {
@@ -1234,14 +1254,27 @@ public class SkillService {
             if (player.playerSkill.skillSelect.template.id == Skill.TAI_TAO_NANG_LUONG) {
                 return;
             }
+            boolean isKaioken = player.playerSkill.skillSelect.template.id == Skill.KAIOKEN;
+            int kaioPieces = (player.setClothes != null) ? player.setClothes.thanVuTruKaio : 0;
             switch (player.playerSkill.skillSelect.template.manaUseType) {
                 case 0 -> {
-                    if (player.nPoint.mp >= player.playerSkill.skillSelect.manaUse) {
-                        player.nPoint.setMp(player.nPoint.mp - player.playerSkill.skillSelect.manaUse);
+                    int mpUse = player.playerSkill.skillSelect.manaUse;
+                    if (isKaioken && kaioPieces >= 5) {
+                        mpUse = mpUse * 30 / 100;
+                    } else if (isKaioken && kaioPieces == 4) {
+                        mpUse = mpUse * 50 / 100;
+                    }
+                    if (player.nPoint.mp >= mpUse) {
+                        player.nPoint.setMp(player.nPoint.mp - mpUse);
                     }
                 }
                 case 1 -> {
-                    int mpUse = (int) (player.nPoint.mpMax * player.playerSkill.skillSelect.manaUse / 100);
+                    int mpUse = (int) ((long) player.nPoint.mpMax * player.playerSkill.skillSelect.manaUse / 100L);
+                    if (isKaioken && kaioPieces >= 5) {
+                        mpUse = mpUse * 30 / 100;
+                    } else if (isKaioken && kaioPieces == 4) {
+                        mpUse = mpUse * 50 / 100;
+                    }
                     if (player.nPoint.mp >= mpUse) {
                         player.nPoint.setMp(player.nPoint.mp - mpUse);
                     }

@@ -255,13 +255,7 @@ public class Boss extends Player implements IBoss {
     }
 
     public long getPreRebalanceBossHp(long rawHp) {
-        if (rawHp > 2_000_000_000L) {
-            return rawHp;
-        }
-        if (isWorldBossForHpBoost() && rawHp >= 500_000L) {
-            return Math.min(2_000_000_000L, rawHp * 3L);
-        }
-        return Math.min(2_000_000_000L, rawHp);
+        return Math.max(1L, rawHp * 2L);
     }
 
     public boolean isHighTierBossPreRebalance() {
@@ -271,13 +265,13 @@ public class Boss extends Player implements IBoss {
         int lvl = getSafeLevelIndex();
         long[] hpLongArr = this.data[lvl].getHpLong();
         if (hpLongArr != null && hpLongArr.length > 0) {
-            return getPreRebalanceBossHp(hpLongArr[0]) > 400_000_000L;
+            return hpLongArr[0] >= 200_000_000L;
         }
         int[] hpArr = this.data[lvl].getHp();
         if (hpArr == null || hpArr.length == 0) {
             return false;
         }
-        return getPreRebalanceBossHp(hpArr[0]) > 400_000_000L;
+        return hpArr[0] >= 200_000_000L;
     }
 
     @Override
@@ -291,17 +285,8 @@ public class Boss extends Player implements IBoss {
         long rawHp = (hpLongArr != null && hpLongArr.length > 0)
                 ? hpLongArr[Util.nextInt(0, hpLongArr.length - 1)]
                 : data.getHp()[Util.nextInt(0, data.getHp().length - 1)];
-        long finalHp;
-        if (data.isUseExactLongHp() || rawHp > 2_000_000_000L) {
-            finalHp = rawHp;
-        } else {
-            long prevHp = getPreRebalanceBossHp(rawHp);
-            if (prevHp > 400_000_000L) {
-                finalHp = Math.min(2_000_000_000L, (prevHp * 3L) / 2L);
-            } else {
-                finalHp = Math.min(2_000_000_000L, prevHp * 4L);
-            }
-        }
+        // Sử dụng trực tiếp 100% số HP cấu hình trong BossesData.java
+        long finalHp = Math.max(1L, rawHp);
         this.nPoint.hpgLong = finalHp;
         this.nPoint.hpMaxLong = finalHp;
         this.nPoint.hpLong = finalHp;
@@ -1568,7 +1553,8 @@ public class Boss extends Player implements IBoss {
         int y = safeDropLoc[1];
 
         // Rớt Hồng Ngọc (ID 861) khi tiêu diệt Boss (phục vụ mua Cải trang tối ưu hành tinh >1000 Hồng ngọc)
-        long bossHpForRuby = this.nPoint != null ? Math.max(1L, this.nPoint.getHpMaxLong()) : 1L;
+        // Nhân 2 lại mốc HP khi tính thưởng để giảm 50% máu Boss không làm giảm phần thưởng & tỷ lệ rớt đồ
+        long bossHpForRuby = this.nPoint != null ? Math.max(1L, this.nPoint.getHpMaxLong() * 2L) : 1L;
         int rubyDrop;
         if (this.isDailyEarlyBoss()) {
             // Tiểu đội Bojack & TDST Namek: giảm 75% lượng ngọc nhận (từ 20-30 xuống 5-8 Hồng Ngọc / 1 Boss)
@@ -1584,7 +1570,7 @@ public class Boss extends Player implements IBoss {
         Service.gI().dropItemMap(this.zone, rubyMap);
 
         // 0. Đánh Boss rớt 5 cục vàng
-        long bossHp = this.nPoint != null ? Math.max(1L, this.nPoint.getHpMaxLong()) : 1L;
+        long bossHp = this.nPoint != null ? Math.max(1L, this.nPoint.getHpMaxLong() * 2L) : 1L;
         int piles = 5;
         long baseGoldPerPile;
         if (this.id == BossID.SO_4 || this.id == BossID.SO_3 || this.id == BossID.SO_2 || this.id == BossID.SO_1) {
