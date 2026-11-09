@@ -428,18 +428,7 @@ public class Player implements Runnable {
 
     //--------------------------------------------------------------------------
     public boolean isDie() {
-        if (this.nPoint != null && this.nPoint.hp <= 0) {
-            if (this.zone != null && MapService.gI().isMapTuongLai(this.zone.map.mapId) && !this.hasReducedPower) {
-                if (this.originalPower == -1) {
-                    this.originalPower = this.nPoint.power;
-                }
-                long reducedPower = (long) (this.originalPower * 0.99);
-                this.nPoint.power = reducedPower;
-                this.hasReducedPower = true;
-            }
-            return true;
-        }
-        return false;
+        return this.nPoint != null && this.nPoint.hp <= 0;
     }
 
     public void sendMessage(Message msg) {
@@ -1500,12 +1489,15 @@ public class Player implements Runnable {
         int mapid = this.zone.map.mapId;
         double PhanTramSucManhBiTru = 0.0;
         if (MapService.gI().isMapTuongLai(mapid)) {
-            PhanTramSucManhBiTru = 0.001;
+            PhanTramSucManhBiTru = 0.0001;
         } else if (MapService.gI().isMapCold(mapid)) {
             PhanTramSucManhBiTru = 0.001;
         }
-        if (PhanTramSucManhBiTru > 0) {
-            int dieukien = (int) (this.nPoint.power * PhanTramSucManhBiTru);
+        if (PhanTramSucManhBiTru > 0 && this.isPl()) {
+            long dieukien = (long) (this.nPoint.power * PhanTramSucManhBiTru);
+            if (MapService.gI().isMapTuongLai(mapid) && dieukien > 1_000_000L) {
+                dieukien = 1_000_000L;
+            }
             dieukien = dieukien < 1 ? 1 : dieukien;
             if (this.nPoint.power >= dieukien) {
                 this.nPoint.power -= dieukien;

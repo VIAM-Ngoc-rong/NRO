@@ -2101,24 +2101,6 @@ public class NPoint {
             if (this.intrinsic != null && this.intrinsic.id == 24) {
                 tiemNang += ((long) tiemNang * this.intrinsic.param1 / 100);
             }
-            if (!this.player.isPet) {
-                if (this.power >= 80_000_000_000L) {
-                    tiemNang -= ((long) tiemNang * 90 / 100);
-                } else if (this.power >= 60_000_000_000L) {
-                    tiemNang -= ((long) tiemNang * 75 / 100);
-                } else if (this.power >= 40_000_000_000L) {
-                    tiemNang -= ((long) tiemNang * 50 / 100);
-                }
-            } else {
-                // Đệ tử sau 40 tỷ cũng giảm TNSM nhưng nhẹ hơn Sư phụ
-                if (this.power >= 80_000_000_000L) {
-                    tiemNang -= ((long) tiemNang * 70 / 100);
-                } else if (this.power >= 60_000_000_000L) {
-                    tiemNang -= ((long) tiemNang * 50 / 100);
-                } else if (this.power >= 40_000_000_000L) {
-                    tiemNang -= ((long) tiemNang * 30 / 100);
-                }
-            }
             if (this.player.isPet) {
                 if (((Pet) this.player).master.charms != null && ((Pet) this.player).master.charms.tdDeTu > System.currentTimeMillis()) {
                     tiemNang += tn;
@@ -2167,36 +2149,32 @@ public class NPoint {
     public int getSubTNSMDivisor() {
         if (this.player != null && this.player.isPet) {
             if (power >= 120_000_000_000L) {
-                return 70;
+                return 25;
             } else if (power >= 100_000_000_000L) {
-                return 60;
-            } else if (power >= 90_000_000_000L) {
-                return 50;
-            } else if (power >= 80_000_000_000L) {
-                return 35;
-            } else if (power >= 60_000_000_000L) {
-                return 20;
-            } else if (power >= 50_000_000_000L) {
                 return 15;
-            } else if (power >= 40_000_000_000L) {
+            } else if (power >= 80_000_000_000L) {
                 return 10;
+            } else if (power >= 60_000_000_000L) {
+                return 5;
+            } else if (power >= 50_000_000_000L) {
+                return 3;
+            } else if (power >= 40_000_000_000L) {
+                return 2;
             }
             return 1;
         }
         if (power >= 120_000_000_000L) {
-            return 120;
-        } else if (power >= 100_000_000_000L) {
-            return 110;
-        } else if (power >= 90_000_000_000L) {
-            return 100;
-        } else if (power >= 80_000_000_000L) {
-            return 90;
-        } else if (power >= 60_000_000_000L) {
-            return 50;
-        } else if (power >= 50_000_000_000L) {
             return 40;
+        } else if (power >= 100_000_000_000L) {
+            return 25;
+        } else if (power >= 80_000_000_000L) {
+            return 15;
+        } else if (power >= 60_000_000_000L) {
+            return 8;
+        } else if (power >= 50_000_000_000L) {
+            return 4;
         } else if (power >= 40_000_000_000L) {
-            return 30;
+            return 2;
         }
         return 1;
     }
