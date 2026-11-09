@@ -540,6 +540,10 @@ public class UseItem {
                                 Service.gI().Transport(pl);
                                 break;
                             case 361:
+                                if (!NgocRongNamecService.IS_ENABLED) {
+                                    Service.gI().sendThongBao(pl, "Chức năng Ngọc Rồng Namek hiện đang tạm đóng!");
+                                    break;
+                                }
                                 pl.idGo = (short) Util.nextInt(0, 6);
                                 NgocRongNamecService.gI().menuCheckTeleNamekBall(pl);
                                 InventoryService.gI().subQuantityItemsBag(pl, item, 1);

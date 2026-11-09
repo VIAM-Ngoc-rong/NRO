@@ -725,6 +725,12 @@ public class Pet extends Player {
                         return true;
                     }
                     return false;
+                case Skill.HUYT_SAO:
+                    if (this.effectSkill.tiLeHPHuytSao <= 0 && SkillService.gI().canUseSkillWithCooldown(this) && SkillService.gI().canUseSkillWithMana(this)) {
+                        SkillService.gI().useSkill(this, null, null, -1, null);
+                        return true;
+                    }
+                    return false;
                 default:
                     return false;
             }

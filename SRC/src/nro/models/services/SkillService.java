@@ -603,7 +603,7 @@ public class SkillService {
                     if (player.isBoss) {
                         Service.gI().chat(player, "Dịch chuyển tức thời");
                     }
-                    Service.gI().setPosWithoutHidePanel(player, plTarget.location.x, plTarget.location.y);
+                    Service.gI().setPos(player, plTarget.location.x, plTarget.location.y);
                     playerAttackPlayer(player, plTarget, miss);
                     EffectSkillService.gI().setBlindDCTT(plTarget, System.currentTimeMillis(), timeChoangDCTT);
                     EffectSkillService.gI().sendEffectPlayer(player, plTarget, EffectSkillService.TURN_ON_EFFECT, EffectSkillService.BLIND_EFFECT);
@@ -611,7 +611,7 @@ public class SkillService {
                     ItemTimeService.gI().sendItemTime(plTarget, 3779, timeChoangDCTT / 1000);
                 }
                 if (mobTarget != null) {
-                    Service.gI().setPosWithoutHidePanel(player, mobTarget.location.x, mobTarget.location.y);
+                    Service.gI().setPos(player, mobTarget.location.x, mobTarget.location.y);
                     playerAttackMob(player, mobTarget, false, false);
                     mobTarget.effectSkill.setStartBlindDCTT(System.currentTimeMillis(), timeChoangDCTT);
                     EffectSkillService.gI().sendEffectMob(player, mobTarget, EffectSkillService.TURN_ON_EFFECT, EffectSkillService.BLIND_EFFECT);
@@ -758,18 +758,23 @@ public class SkillService {
                                 }
                                 if (!pl.isBoss && pl.gender != ConstPlayer.NAMEC
                                         && player.cFlag == pl.cFlag) {
+                                    long hpBefore = pl.nPoint.getHpLong();
                                     EffectSkillService.gI().setStartHuytSao(pl, tileHP);
                                     EffectSkillService.gI().sendEffectPlayer(pl, pl, EffectSkillService.TURN_ON_EFFECT, EffectSkillService.HUYT_SAO_EFFECT);
+                                    pl.nPoint.isCrit100 = true;
                                     pl.nPoint.calPoint();
-                                    pl.nPoint.setHp((int) pl.nPoint.hp + ((int) pl.nPoint.hp * tileHP / 100));
+                                    pl.nPoint.setHp(hpBefore + (hpBefore * tileHP / 100L));
                                     Service.gI().point(pl);
                                     Service.gI().Send_Info_NV(pl);
                                     ItemTimeService.gI().sendItemTime(pl, 3781, 30);
                                     PlayerService.gI().sendInfoHpMp(pl);
                                 } else if (!pl.isBoss && pl.gender == ConstPlayer.NAMEC && player.cFlag == pl.cFlag) {
-                                    pl.nPoint.setHP((int) pl.nPoint.hp - (((int) pl.nPoint.hpMax * 10 / 100) < pl.nPoint.hp ? ((int) pl.nPoint.hpMax * 10 / 100) : 0));
+                                    long subHp = pl.nPoint.getHpMaxLong() * 10L / 100L;
+                                    long curHp = pl.nPoint.getHpLong();
+                                    pl.nPoint.setHP(curHp - (subHp < curHp ? subHp : 0L));
                                     Service.gI().point(pl);
                                     Service.gI().Send_Info_NV(pl);
+                                    PlayerService.gI().sendInfoHpMp(pl);
                                 }
                             }
                         } else {
@@ -778,10 +783,12 @@ public class SkillService {
                                 if (pl.effectSkill.useTroi) {
                                     EffectSkillService.gI().removeUseTroi(pl);
                                 }
+                                long hpBefore = pl.nPoint.getHpLong();
                                 EffectSkillService.gI().setStartHuytSao(pl, tileHP);
                                 EffectSkillService.gI().sendEffectPlayer(pl, pl, EffectSkillService.TURN_ON_EFFECT, EffectSkillService.HUYT_SAO_EFFECT);
+                                pl.nPoint.isCrit100 = true;
                                 pl.nPoint.calPoint();
-                                pl.nPoint.setHp((int) pl.nPoint.hp + ((int) pl.nPoint.hp * tileHP / 100));
+                                pl.nPoint.setHp(hpBefore + (hpBefore * tileHP / 100L));
                                 Service.gI().point(pl);
                                 Service.gI().Send_Info_NV(pl);
                                 ItemTimeService.gI().sendItemTime(pl, 3781, 30);
@@ -789,10 +796,12 @@ public class SkillService {
                             }
                         }
                     } else {
+                        long hpBefore = player.nPoint.getHpLong();
                         EffectSkillService.gI().setStartHuytSao(player, tileHP);
                         EffectSkillService.gI().sendEffectPlayer(player, player, EffectSkillService.TURN_ON_EFFECT, EffectSkillService.HUYT_SAO_EFFECT);
+                        player.nPoint.isCrit100 = true;
                         player.nPoint.calPoint();
-                        player.nPoint.setHp((int) player.nPoint.hp + ((int) player.nPoint.hp * tileHP / 100));
+                        player.nPoint.setHp(hpBefore + (hpBefore * tileHP / 100L));
                         Service.gI().point(player);
                         Service.gI().Send_Info_NV(player);
                         ItemTimeService.gI().sendItemTime(player, 3781, 30);

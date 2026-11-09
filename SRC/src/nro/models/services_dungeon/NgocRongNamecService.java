@@ -27,12 +27,16 @@ import java.util.List;
 
 public class NgocRongNamecService implements Runnable {
 
+    public static boolean IS_ENABLED = false;
+
     private static NgocRongNamecService instance;
 
     public static NgocRongNamecService gI() {
         if (instance == null) {
             instance = new NgocRongNamecService();
-            instance.initNgocRongNamec((byte) 0);
+            if (IS_ENABLED) {
+                instance.initNgocRongNamec((byte) 0);
+            }
         }
         return instance;
     }
@@ -56,6 +60,9 @@ public class NgocRongNamecService implements Runnable {
     }
 
     public void initNgocRongNamec(byte type) { //type 0: INIT NGOC RONG, type 1: INIT HOA THACH NGOC RONG
+        if (!IS_ENABLED) {
+            return;
+        }
         ArrayList<Integer> listMap = new ArrayList<>();
         listMap.add(7);
         listMap.add(8);
@@ -91,6 +98,9 @@ public class NgocRongNamecService implements Runnable {
     }
 
     public void reInitNgocRongNamec() {
+        if (!IS_ENABLED) {
+            return;
+        }
         ArrayList<Integer> listMap = new ArrayList<>();
         listMap.add(7);
         listMap.add(8);
@@ -129,6 +139,9 @@ public class NgocRongNamecService implements Runnable {
 
     public void removeStoneNrNamec() {
         for (byte i = 0; i < (byte) 7; i++) {
+            if (mapNrNamec[i] < 0 || mapNrNamec[i] >= Manager.MAPS.size() || zoneNrNamec[i] < 0) {
+                continue;
+            }
             Zone zone = Manager.MAPS.get(mapNrNamec[i]).zones.get(zoneNrNamec[i]);
             int idItem = (int) (i + 353);
             int idItem2 = 362;
@@ -187,11 +200,18 @@ public class NgocRongNamecService implements Runnable {
     }
 
     public void teleportToNrNamec(Player p) {
+        if (!IS_ENABLED) {
+            Service.gI().sendThongBao(p, "Chức năng Ngọc Rồng Namek hiện đang tạm đóng!");
+            return;
+        }
         if (p.idNRNM != -1) {
             return;
         }
         int idMAP = mapNrNamec[p.idGo];
         int idZone = zoneNrNamec[p.idGo];
+        if (idMAP < 0 || idMAP >= Manager.MAPS.size() || idZone < 0) {
+            return;
+        }
         Zone z = Manager.MAPS.get(idMAP).zones.get(idZone);
         if (z != null && !z.items.isEmpty()) {
             for (int i = 0; i < z.items.size(); i++) {
@@ -363,6 +383,10 @@ public class NgocRongNamecService implements Runnable {
     }
 
     public boolean pickNamekBall(Player player, Item item) {
+        if (!IS_ENABLED) {
+            Service.gI().sendThongBao(player, "Chức năng Ngọc Rồng Namek hiện đang tạm đóng!");
+            return false;
+        }
         try {
             switch (item.template.id) {
                 case 362:
@@ -408,7 +432,7 @@ public class NgocRongNamecService implements Runnable {
 
     @Override
     public void run() {
-        while (ServerManager.isRunning) {
+        while (ServerManager.isRunning && IS_ENABLED) {
             try {
                 if (this.isReinit && this.lastTimeReinit - System.currentTimeMillis() <= 0) {
                     removeStoneNrNamec();
@@ -447,6 +471,10 @@ public class NgocRongNamecService implements Runnable {
 
     //Rồng Thần đã xuất hiện, không thể nhặt ngọc được nữa
     public void menuCheckTeleNamekBall(Player pl) {
+        if (!IS_ENABLED) {
+            Service.gI().sendThongBao(pl, "Chức năng Ngọc Rồng Namek hiện đang tạm đóng!");
+            return;
+        }
         String nrnm = "";
         for (int i = 0; i < 7; i++) {
             nrnm += NgocRongNamecService.gI().getDis(pl, i, (short) (353 + i)) + "\n";

@@ -260,7 +260,9 @@ public class ServerManager {
             AdminWebServer.start();
 
             // Gửi các nhiệm vụ cập nhật theo từng dịch vụ
-            new Thread(NgocRongNamecService.gI(), "Update NRNM").start();
+            if (NgocRongNamecService.IS_ENABLED) {
+                new Thread(NgocRongNamecService.gI(), "Update NRNM").start();
+            }
             new Thread(SuperRankManager.gI(), "Update Super Rank").start();
             new Thread(The23rdMartialArtCongressManager.gI(), "Update DHVT23").start();
             new Thread(DeathOrAliveArenaManager.gI(), "Update Võ Đài Sinh Tử").start();

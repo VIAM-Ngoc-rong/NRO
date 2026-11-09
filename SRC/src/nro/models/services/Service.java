@@ -1778,30 +1778,7 @@ public class Service {
         player.location.x = x;
         player.location.y = y;
         if (player.isPl() && !player.isBot) {
-            Message msgHold = null;
-            Message msgRelease = null;
-            try {
-                msgHold = new Message(52);
-                msgHold.writer().writeByte(1);
-                msgHold.writer().writeInt((int) player.id);
-                msgHold.writer().writeShort(x);
-                msgHold.writer().writeShort(y);
-                player.sendMessage(msgHold);
-
-                msgRelease = new Message(52);
-                msgRelease.writer().writeByte(0);
-                msgRelease.writer().writeInt((int) player.id);
-                player.sendMessage(msgRelease);
-            } catch (Exception e) {
-                e.printStackTrace();
-            } finally {
-                if (msgHold != null) {
-                    msgHold.cleanup();
-                }
-                if (msgRelease != null) {
-                    msgRelease.cleanup();
-                }
-            }
+            resetPoint(player, x, y);
         }
         setPos2(player, x, y);
     }

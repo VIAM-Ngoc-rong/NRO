@@ -1165,7 +1165,7 @@ public class CombineService {
             case TAI_TAO_CAPSULE_KH:
                 return "Vào hành trang\nChọn 3 khoáng tái chế\nChọn 1 Capsule vỡ\nSau đó chọn 'Tái tạo'";
             case DAP_DO_KICH_HOAT:
-                return "Vào hành trang\nChọn 1 món Đồ Kích Hoạt làm Phôi (Áo, Quần, Găng, Giày, Rada)\nChọn 3 món Đồ Thần Linh (hoặc 3 Đồ Hủy Diệt / 3 Đồ Thiên Sứ)\nRa 1 món Đồ Kích Hoạt mới theo loại Phôi, ngẫu nhiên Cấp sức mạnh (Đồ Thần: 5%)";
+                return "Vào hành trang\nChọn 1 món Đồ Kích Hoạt làm Phôi (Áo, Quần, Găng, Giày, Rada)\nChọn 3 món Đồ Thần Linh (hoặc 3 Đồ Hủy Diệt / 3 Đồ Thiên Sứ)\nRa 1 món Đồ Kích Hoạt mới theo loại Phôi, ngẫu nhiên Cấp sức mạnh (Đồ Thần: 5%) & chỉ số tăng từ 0-15%";
             case PHAN_RA_DO_SAO:
                 return "Vào hành trang\nChọn 1 hoặc nhiều trang bị có Sao Pha Lê (1s - 9s)\nPhân rã miễn phí nhận Đá Ngũ Sắc, Vàng, Hồng Ngọc, Sao Pha Lê, Đá Hematite và Capsule Kích Hoạt";
             case TINH_LUYEN_DA_NGU_SAC:

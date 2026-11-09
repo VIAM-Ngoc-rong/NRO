@@ -206,14 +206,23 @@ public class EffectSkillService {
     }
 
     public void setStartHuytSao(Player player, int tiLeHP) {
-        player.effectSkill.tiLeHPHuytSao = tiLeHP;
+        if (player.effectSkill.tiLeHPHuytSao < tiLeHP) {
+            player.effectSkill.tiLeHPHuytSao = tiLeHP;
+        }
         player.effectSkill.lastTimeHuytSao = System.currentTimeMillis();
     }
 
     public void removeHuytSao(Player player) {
         player.effectSkill.tiLeHPHuytSao = 0;
+        player.nPoint.calPoint();
+        if (player.nPoint.getHpLong() > player.nPoint.getHpMaxLong()) {
+            player.nPoint.setHp(player.nPoint.getHpMaxLong());
+        }
         sendEffectPlayer(player, player, TURN_OFF_EFFECT, HUYT_SAO_EFFECT);
         Service.gI().point(player);
+        if (!player.isPet) {
+            PlayerService.gI().sendInfoHpMp(player);
+        }
         Service.gI().Send_Info_NV(player);
     }
 
@@ -250,13 +259,13 @@ public class EffectSkillService {
         if (player.setClothes.cadic == 5) {
             timeMonkey *= 5;
         }
-        long hpBefore = player.nPoint.hp;
+        long hpBefore = player.nPoint.getHpLong();
         player.effectSkill.isMonkey = true;
         player.effectSkill.timeMonkey = timeMonkey;
         player.effectSkill.lastTimeUpMonkey = System.currentTimeMillis();
         player.effectSkill.levelMonkey = (byte) point;
         player.nPoint.calPoint();
-        player.nPoint.setHp(Math.min((long) player.nPoint.hpMax, hpBefore * 2L));
+        player.nPoint.setHp(Math.min(player.nPoint.getHpMaxLong(), hpBefore * 2L));
         Service.gI().Send_Caitrang(player);
         Service.gI().point(player);
         if (!player.isPet) {

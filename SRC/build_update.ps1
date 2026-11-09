@@ -26,6 +26,7 @@ javac -proc:none -encoding UTF-8 -d build/classes -cp "build/classes;lib/*" `
     src/nro/models/server/Command.java `
     src/nro/models/server/Controller.java `
     src/nro/models/player/Inventory.java `
+    src/nro/models/player/EffectSkill.java `
     src/nro/models/player/NPoint.java `
     src/nro/models/player/SetClothes.java `
     src/nro/models/player/Player.java `
@@ -46,9 +47,11 @@ javac -proc:none -encoding UTF-8 -d build/classes -cp "build/classes;lib/*" `
     src/nro/models/services/ItemService.java `
     src/nro/models/services/OpenPowerService.java `
     src/nro/models/services/PetService.java `
+    src/nro/models/services/RewardService.java `
     src/nro/models/services/Service.java `
     src/nro/models/services/SkillService.java `
     src/nro/models/services/shenron/Shenron_Event.java `
+    src/nro/models/services_dungeon/NgocRongNamecService.java `
     src/nro/models/services_func/Input.java `
     src/nro/models/services_func/UseItem.java `
     src/nro/models/services_func/Trade.java `
@@ -182,6 +185,7 @@ $pkgs = @(
     "nro\models\map\phoban",
     "nro\models\services",
     "nro\models\services\shenron",
+    "nro\models\services_dungeon",
     "nro\models\services_func",
     "nro\models\combine",
     "nro\models\npc",

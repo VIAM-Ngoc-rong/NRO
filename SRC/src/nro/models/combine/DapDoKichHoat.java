@@ -296,26 +296,47 @@ public class DapDoKichHoat {
         return 0;
     }
 
-    private static Item createRandomSkhProduct(int gender, int type, int tierIndex) {
+    private static boolean isBaseCombatStatOption(int optId) {
+        return optId == 0 || optId == 6 || optId == 7 || optId == 14
+                || optId == 22 || optId == 23 || optId == 27 || optId == 28
+                || optId == 47 || optId == 48;
+    }
+
+    private static Item createRandomSkhProduct(int gender, int type, int tierIndex, int bonusPercent) {
         int safeGender = (gender >= 0 && gender <= 2) ? gender : 0;
         int safeType = (type >= 0 && type <= 4) ? type : 0;
         int[] tierTable = EQUIP_BY_GENDER_TYPE_TIER[safeGender][safeType];
         int safeTierIdx = Math.max(0, Math.min(tierIndex, tierTable.length - 1));
         int targetTempId = tierTable[safeTierIdx];
+        int safeBonus = Math.max(0, Math.min(15, bonusPercent));
 
         Item newItem;
         if (safeTierIdx == 14) {
-            // Đồ Thiên Sứ
+            // Đồ Thiên Sứ: tăng thêm 0-15% chỉ số gốc
             newItem = ItemService.gI().DoThienSu(targetTempId, safeGender);
+            if (safeBonus > 0 && newItem.itemOptions != null) {
+                for (ItemOption io : newItem.itemOptions) {
+                    if (io != null && io.optionTemplate != null && isBaseCombatStatOption(io.optionTemplate.id)) {
+                        io.param += (io.param * safeBonus) / 100;
+                    }
+                }
+            }
         } else {
             newItem = ItemService.gI().createNewItem((short) targetTempId, 1);
             newItem.itemOptions.clear();
-            RewardService.gI().initBaseOptionClothes(newItem, newItem.template.id, newItem.template.type, newItem.itemOptions);
+            RewardService.gI().initBaseOptionClothes(newItem, newItem.template.id, newItem.template.type, newItem.itemOptions, safeBonus);
             if (newItem.itemOptions.isEmpty()) {
                 List<ItemOption> shopOpts = ItemService.gI().getListOptionItemShop((short) targetTempId);
                 if (shopOpts != null && !shopOpts.isEmpty()) {
                     for (ItemOption io : shopOpts) {
-                        newItem.itemOptions.add(new ItemOption(io));
+                        if (io == null || io.optionTemplate == null || io.optionTemplate.id == 164) {
+                            continue;
+                        }
+                        int param = io.param;
+                        if (safeBonus > 0 && isBaseCombatStatOption(io.optionTemplate.id)) {
+                            param += (param * safeBonus) / 100;
+                        }
+                        newItem.itemOptions.add(new ItemOption(io.optionTemplate.id, param));
                     }
                 }
             }
@@ -341,7 +362,7 @@ public class DapDoKichHoat {
                     "Cần đặt đúng 4 vật phẩm gồm:\n"
                     + "- 1 món Đồ Kích Hoạt làm Phôi (Áo, Quần, Găng, Giày, Rada)\n"
                     + "- 3 món Đồ Thần Linh (hoặc 3 Đồ Hủy Diệt / 3 Đồ Thiên Sứ)\n"
-                    + "|6|Sản phẩm sẽ theo loại của Phôi KH và ngẫu nhiên Cấp sức mạnh (Đồ Thần: 5%)!\n"
+                    + "|6|Sản phẩm sẽ theo loại của Phôi KH, ngẫu nhiên Cấp sức mạnh (Đồ Thần: 5%) & chỉ số tăng từ 0-15%!\n"
                     + "|7|(Mẹo: Bấm 'Chọn nhanh Nguyên liệu' bên dưới để tự chọn 1 Phôi KH + 3 Đồ Thần)",
                     "Đóng", "Chọn nhanh\nNguyên liệu", "Đổi sang\nTrang kế");
             return;
@@ -382,6 +403,7 @@ public class DapDoKichHoat {
                 + "|6|Phôi định hình loại trang bị: " + phoiItem.template.name + " (" + equipTypeName + " " + planetName + ")\n"
                 + "|2|3 Món " + tierName + " nguyên liệu:\n" + matList
                 + "|1|Sản phẩm nhận được: 1 " + equipTypeName + " Kích Hoạt (" + planetName + ") ngẫu nhiên Cấp sức mạnh!\n"
+                + "|6|Chỉ số trang bị tăng ngẫu nhiên từ 0% - 15%!\n"
                 + "|7|Tỷ lệ ra Cấp sức mạnh: " + rateSummary + "\n"
                 + "|2|Chi phí: " + Util.numberToMoney(goldCost) + " vàng\n";
 
@@ -424,8 +446,9 @@ public class DapDoKichHoat {
         int targetType = phoiItem.template.type;
         int targetGender = resolveTargetGender(phoiItem, player.gender);
         int rolledTierIndex = rollRandomTierIndex(recipe.materialTier);
+        int bonusPercent = Util.nextInt(0, 15);
 
-        Item productItem = createRandomSkhProduct(targetGender, targetType, rolledTierIndex);
+        Item productItem = createRandomSkhProduct(targetGender, targetType, rolledTierIndex, bonusPercent);
 
         player.inventory.gold -= goldCost;
         InventoryService.gI().subQuantityItemsBag(player, phoiItem, 1);
@@ -435,7 +458,8 @@ public class DapDoKichHoat {
 
         InventoryService.gI().addItemBag(player, productItem);
         CombineService.gI().sendEffectSuccessCombine(player);
-        Service.gI().sendThongBao(player, "Chúc mừng! Bạn nhận được " + productItem.template.name + " Kích Hoạt (" + productItem.getContent() + ")!");
+        Service.gI().sendThongBao(player, "Chúc mừng! Bạn nhận được " + productItem.template.name
+                + " Kích Hoạt (+" + bonusPercent + "% chỉ số - " + productItem.getContent() + ")!");
 
         player.combineNew.itemsCombine.clear();
         InventoryService.gI().sendItemBags(player);

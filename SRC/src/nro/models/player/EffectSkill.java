@@ -155,6 +155,10 @@ public class EffectSkill {
             EffectSkillService.gI().removeShield(player);
             ItemTimeService.gI().removeItemTime(player, 3784);
         }
+        if (tiLeHPHuytSao != 0) {
+            EffectSkillService.gI().removeHuytSao(this.player);
+            ItemTimeService.gI().removeItemTime(player, 3781);
+        }
         if (useTroi) {
             EffectSkillService.gI().removeUseTroi(this.player);
         }

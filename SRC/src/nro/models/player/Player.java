@@ -609,12 +609,6 @@ public class Player implements Runnable {
                             this.DuaHauEgg.sendDuaHauEgg();
                         }
                     }
-                }
-                if ((this.zone != null && !MapService.gI().isHome(this.zone.map.mapId)) || (!this.isPl() && this.zone == null)) {
-                    if (isPl() && idMark != null && idMark.isBan() && Util.canDoWithTime(idMark.getLastTimeBan(), 5000)) {
-                        Client.gI().kickSession(session);
-                        return;
-                    }
                     if (nPoint != null) {
                         nPoint.update();
                     }
@@ -632,6 +626,12 @@ public class Player implements Runnable {
                     }
                     if (pet != null) {
                         pet.update();
+                    }
+                }
+                if ((this.zone != null && !MapService.gI().isHome(this.zone.map.mapId)) || (!this.isPl() && this.zone == null)) {
+                    if (isPl() && idMark != null && idMark.isBan() && Util.canDoWithTime(idMark.getLastTimeBan(), 5000)) {
+                        Client.gI().kickSession(session);
+                        return;
                     }
                     if (this.isPl() && !this.isBot && !this.isDie()) {
                         if (!this.hasSentInitialBossNotify && this.zone != null && this.session != null) {

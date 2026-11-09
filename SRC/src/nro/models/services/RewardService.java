@@ -1009,6 +1009,10 @@ public class RewardService {
 
     //chỉ số cơ bản: hp, ki, hồi phục, sđ, crit
     public void initBaseOptionClothes(Item itemid, int tempId, int type, List<ItemOption> list) {
+        initBaseOptionClothes(itemid, tempId, type, list, Util.nextInt(1, 10));
+    }
+
+    public void initBaseOptionClothes(Item itemid, int tempId, int type, List<ItemOption> list, int bonusPercent) {
         int[][] option_param = {{-1, -1}, {-1, -1}, {-1, -1}, {-1, -1}, {-1, -1}};
         switch (type) {
             case 0: //áo
@@ -1129,13 +1133,28 @@ public class RewardService {
                         break;
                     case 557: //áo thần namếc
                         option_param[2][0] = 21; //yêu cầu sức mạnh
-                        option_param[0][1] = 800;
+                        option_param[0][1] = 850;
                         option_param[2][1] = 15;
                         break;
                     case 559: //áo thần xayda
                         option_param[2][0] = 21; //yêu cầu sức mạnh
-                        option_param[0][1] = 800;
+                        option_param[0][1] = 900;
                         option_param[2][1] = 15;
+                        break;
+                    case 650: //áo huỷ diệt trái đất
+                        option_param[2][0] = 21; //yêu cầu sức mạnh
+                        option_param[0][1] = 1600;
+                        option_param[2][1] = 40;
+                        break;
+                    case 652: //áo huỷ diệt namếc
+                        option_param[2][0] = 21; //yêu cầu sức mạnh
+                        option_param[0][1] = 1700;
+                        option_param[2][1] = 40;
+                        break;
+                    case 654: //áo huỷ diệt xayda
+                        option_param[2][0] = 21; //yêu cầu sức mạnh
+                        option_param[0][1] = 1800;
+                        option_param[2][1] = 40;
                         break;
                 }
                 break;
@@ -1308,6 +1327,30 @@ public class RewardService {
                         option_param[1][1] = 10000;
                         option_param[2][1] = 15;
                         break;
+                    case 651: //quần huỷ diệt trái đất
+                        option_param[0][0] = 22; //hp
+                        option_param[2][0] = 21; //yêu cầu sức mạnh
+
+                        option_param[0][1] = 104;
+                        option_param[1][1] = 25000;
+                        option_param[2][1] = 40;
+                        break;
+                    case 653: //quần huỷ diệt namếc
+                        option_param[0][0] = 22; //hp
+                        option_param[2][0] = 21; //yêu cầu sức mạnh
+
+                        option_param[0][1] = 100;
+                        option_param[1][1] = 22000;
+                        option_param[2][1] = 40;
+                        break;
+                    case 655: //quần huỷ diệt xayda
+                        option_param[0][0] = 22; //hp
+                        option_param[2][0] = 21; //yêu cầu sức mạnh
+
+                        option_param[0][1] = 96;
+                        option_param[1][1] = 24000;
+                        option_param[2][1] = 40;
+                        break;
                 }
                 break;
             case 2: //găng
@@ -1424,19 +1467,34 @@ public class RewardService {
                     case 562: //găng thần trái đất
                         option_param[2][0] = 21; //yêu cầu sức mạnh
 
-                        option_param[0][1] = 3700;
+                        option_param[0][1] = 4400;
                         option_param[2][1] = 17;
                         break;
                     case 564: //găng thần namếc
                         option_param[2][0] = 21; //yêu cầu sức mạnh
 
-                        option_param[0][1] = 3500;
+                        option_param[0][1] = 4300;
                         option_param[2][1] = 17;
                         break;
                     case 566: //găng thần xayda
                         option_param[2][0] = 21; //yêu cầu sức mạnh
-                        option_param[0][1] = 3800;
+                        option_param[0][1] = 4500;
                         option_param[2][1] = 17;
+                        break;
+                    case 657: //găng huỷ diệt trái đất
+                        option_param[2][0] = 21; //yêu cầu sức mạnh
+                        option_param[0][1] = 8800;
+                        option_param[2][1] = 40;
+                        break;
+                    case 659: //găng huỷ diệt namếc
+                        option_param[2][0] = 21; //yêu cầu sức mạnh
+                        option_param[0][1] = 8600;
+                        option_param[2][1] = 40;
+                        break;
+                    case 661: //găng huỷ diệt xayda
+                        option_param[2][0] = 21; //yêu cầu sức mạnh
+                        option_param[0][1] = 9000;
+                        option_param[2][1] = 40;
                         break;
                 }
                 break;
@@ -1597,7 +1655,7 @@ public class RewardService {
                         option_param[0][0] = 23;
                         option_param[2][0] = 21; //yêu cầu sức mạnh
 
-                        option_param[0][1] = 48;
+                        option_param[0][1] = 50;
                         option_param[1][1] = 10000;
                         option_param[2][1] = 14;
                         break;
@@ -1608,6 +1666,30 @@ public class RewardService {
                         option_param[0][1] = 46;
                         option_param[1][1] = 10000;
                         option_param[2][1] = 14;
+                        break;
+                    case 658: //giày huỷ diệt trái đất
+                        option_param[0][0] = 23;
+                        option_param[2][0] = 21; //yêu cầu sức mạnh
+
+                        option_param[0][1] = 96;
+                        option_param[1][1] = 22000;
+                        option_param[2][1] = 40;
+                        break;
+                    case 660: //giày huỷ diệt namếc
+                        option_param[0][0] = 23;
+                        option_param[2][0] = 21; //yêu cầu sức mạnh
+
+                        option_param[0][1] = 100;
+                        option_param[1][1] = 25000;
+                        option_param[2][1] = 40;
+                        break;
+                    case 662: //giày huỷ diệt xayda
+                        option_param[0][0] = 23;
+                        option_param[2][0] = 21; //yêu cầu sức mạnh
+
+                        option_param[0][1] = 92;
+                        option_param[1][1] = 20000;
+                        option_param[2][1] = 40;
                         break;
                 }
                 break;
@@ -1655,15 +1737,23 @@ public class RewardService {
                         option_param[0][1] = 15;
                         option_param[2][1] = 18;
                         break;
+                    case 656: //nhẫn huỷ diệt
+                        option_param[2][0] = 21; //yêu cầu sức mạnh
+                        option_param[0][1] = 16;
+                        option_param[2][1] = 40;
+                        break;
                 }
                 break;
         }
+        int safeBonus = Math.max(0, bonusPercent);
         for (int i = 0; i < option_param.length; i++) {
             if (option_param[i][0] != -1 && option_param[i][1] != -1) {
-
-                int randomPercent = Util.nextInt(101, 110);
-                int value = (int) (option_param[i][1] * (randomPercent / 100.0));
-                list.add(new ItemOption(option_param[i][0], value));
+                if (option_param[i][0] == 21) {
+                    list.add(new ItemOption(option_param[i][0], option_param[i][1]));
+                } else {
+                    int value = option_param[i][1] + (option_param[i][1] * safeBonus / 100);
+                    list.add(new ItemOption(option_param[i][0], value));
+                }
             }
         }
 
