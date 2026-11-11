@@ -1,183 +1,203 @@
 $ErrorActionPreference = "Stop"
 Set-Location $PSScriptRoot
 
-Write-Host "1. Dang bien dich cac file Java..." -ForegroundColor Cyan
-javac -proc:none -encoding UTF-8 -d build/classes -cp "build/classes;lib/*" `
-    src/nro/models/data/LocalManager.java `
-    src/nro/models/data/ResultSetImpl.java `
-    src/nro/models/item/ItemTime.java `
-    src/nro/models/services/ItemTimeService.java `
-    src/nro/models/consts/ConstTask.java `
-    src/nro/models/data/DataGame.java `
-    src/nro/models/data/ItemData.java `
-    src/nro/models/network/Message.java `
-    src/nro/models/network/Session.java `
-    src/nro/models/network/Network.java `
-    src/nro/models/network/MySession.java `
-    src/nro/models/network/MessageSendCollect.java `
-    src/nro/models/database/ShopDAO.java `
-    src/nro/models/database/MrBlue.java `
-    src/nro/models/database/PlayerDAO.java `
-    src/nro/models/database/SuperRankDAO.java `
-    src/nro/models/event/EventManager.java `
-    src/nro/models/event/VuaHung.java `
-    src/nro/models/server/ServerManager.java `
-    src/nro/models/server/AutoMaintenance.java `
-    src/nro/models/server/Maintenance.java `
-    src/nro/models/server/AdminWebServer.java `
-    src/nro/models/server/ServerNotify.java `
-    src/nro/models/server/Manager.java `
-    src/nro/models/server/Command.java `
-    src/nro/models/server/Controller.java `
-    src/nro/models/player/Inventory.java `
-    src/nro/models/player/EffectSkill.java `
-    src/nro/models/player/EffectSkin.java `
-    src/nro/models/player/NPoint.java `
-    src/nro/models/player/SetClothes.java `
-    src/nro/models/player/Player.java `
-    src/nro/models/player/Pet.java `
-    src/nro/models/player_badges/Badges.java `
-    src/nro/models/player_badges/BadgesData.java `
-    src/nro/models/player_badges/BagesTemplate.java `
-    src/nro/models/player_badges/BadgesService.java `
-    src/nro/models/task/BadgesTaskService.java `
-    src/nro/models/mob/Mob.java `
-    src/nro/models/mob/MobMe.java `
-    src/nro/models/mob_bigboss/MayDoSucManh.java `
-    src/nro/models/map/Zone.java `
-    src/nro/models/map/service/ChangeMapService.java `
-    src/nro/models/map/service/MapService.java `
-    src/nro/models/services/EffectSkillService.java `
-    src/nro/models/services/InventoryService.java `
-    src/nro/models/services/ItemService.java `
-    src/nro/models/services/OpenPowerService.java `
-    src/nro/models/services/PetService.java `
-    src/nro/models/services/RewardService.java `
-    src/nro/models/services/Service.java `
-    src/nro/models/services/SkillService.java `
-    src/nro/models/services/shenron/Shenron_Event.java `
-    src/nro/models/services_dungeon/NgocRongNamecService.java `
-    src/nro/models/services_func/Input.java `
-    src/nro/models/services_func/UseItem.java `
-    src/nro/models/services_func/Trade.java `
-    src/nro/models/services_func/TransactionService.java `
-    src/nro/models/combine/Combine.java `
-    src/nro/models/combine/CombineSystem.java `
-    src/nro/models/combine/CombineService.java `
-    src/nro/models/combine/EpSaoTrangBi.java `
-    src/nro/models/combine/PhaLeHoaTrangBi.java `
-    src/nro/models/combine/CuongHoaLoSaoPhaLe.java `
-    src/nro/models/combine/NangCapSaoPhaLe.java `
-    src/nro/models/combine/DanhBongSaoPhaLe.java `
-    src/nro/models/combine/NangCapVatPham.java `
-    src/nro/models/combine/ChuyenHoaTrangBi_Vang.java `
-    src/nro/models/combine/ChuyenHoaTrangBi_Ngoc.java `
-    src/nro/models/combine/TaiCheDoThan.java `
-    src/nro/models/combine/PhanRaTrangBiKichHoat.java `
-    src/nro/models/combine/PhanRaDoSao.java `
-    src/nro/models/combine/DapDoKichHoat.java `
-    src/nro/models/combine/CheTaoTrangBiThienSu.java `
-    src/nro/models/combine/TinhLuyenDaNguSac.java `
-    src/nro/models/npc/MabuEgg.java `
-    src/nro/models/npc/NonInteractiveNPC.java `
-    src/nro/models/npc/NpcFactory.java `
-    src/nro/models/npc_list/BaHatMit.java `
-    src/nro/models/npc_list/Bill.java `
-    src/nro/models/npc_list/BoMong.java `
-    src/nro/models/npc_list/DrMyuu.java `
-    src/nro/models/npc_list/KyGui.java `
-    src/nro/models/npc_list/QuaTrung.java `
-    src/nro/models/npc_list/QuyLaoKame.java `
-    src/nro/models/npc_list/TruongLaoGuru.java `
-    src/nro/models/npc_list/QuocVuong.java `
-    src/nro/models/npc_list/ToSuKaio.java `
-    src/nro/models/npc_list/OngGohan.java `
-    src/nro/models/npc_list/OngMoori.java `
-    src/nro/models/npc_list/OngParagus.java `
-    src/nro/models/npc_list/Osin.java `
-    src/nro/models/npc_list/Vados.java `
-    src/nro/models/npc_list/Whis.java `
-    src/nro/models/utils/FileIO.java `
-    src/nro/models/utils/SkillUtil.java `
-    src/nro/models/managers/ShenronEventManager.java `
-    src/nro/models/Bot/BotManager.java `
-    src/nro/models/minigame/ConSoMayManGold.java `
-    src/nro/models/minigame/ConSoMayManGem.java `
-    src/nro/models/shop/ShopService.java `
-    src/nro/models/matches/dai_hoi_vo_thuat/ClanMartialArtsService.java `
-    src/nro/models/shop_ky_gui/ConsignShopService.java `
-    src/nro/models/task/SideTask.java `
-    src/nro/models/services/TaskService.java `
-    src/nro/models/boss/BossID.java `
-    src/nro/models/boss/BossData.java `
-    src/nro/models/boss/BossesData.java `
-    src/nro/models/boss/Boss.java `
-    src/nro/models/boss/Android/Android13.java `
-    src/nro/models/boss/Baby/Baby.java `
-    src/nro/models/boss/VuTru6/Kefla.java `
-    src/nro/models/boss/VuTru6/Champa.java `
-    src/nro/models/boss/VuTru6/Hit.java `
-    src/nro/models/boss/VuTru6/Toppo.java `
-    src/nro/models/boss/Broly/Broly.java `
-    src/nro/models/boss/Broly/SuperBroly.java `
-    src/nro/models/boss/Broly/Broly18h.java `
-    src/nro/models/boss/Broly/SieuBroly18h.java `
-    src/nro/models/boss/Broly/KidBuWorld.java `
-    src/nro/models/boss/Broly/MabuMapWorld.java `
-    src/nro/models/boss/yardrat/Yardart.java `
-    src/nro/models/boss/vo_dai_hat_mit/DeathOrAliveArena.java `
-    src/nro/models/boss/vo_dai_hat_mit/BongBang.java `
-    src/nro/models/boss/vo_dai_hat_mit/Dracula.java `
-    src/nro/models/boss/vo_dai_hat_mit/NguoiVoHinh.java `
-    src/nro/models/boss/vo_dai_hat_mit/ThoDauBac.java `
-    src/nro/models/boss/vo_dai_hat_mit/VuaQuySaTang.java `
-    src/nro/models/boss/trai_dat/BIDO.java `
-    src/nro/models/boss/trai_dat/BOJACK.java `
-    src/nro/models/boss/trai_dat/BUJIN.java `
-    src/nro/models/boss/trai_dat/KOGU.java `
-    src/nro/models/boss/trai_dat/SUPER_BOJACK.java `
-    src/nro/models/boss/trai_dat/ZANGYA.java `
-    src/nro/models/boss/event/Halloween/BiMa.java `
-    src/nro/models/boss/event/Halloween/Doi.java `
-    src/nro/models/boss/event/Halloween/MaTroi.java `
-    src/nro/models/boss/Boss_mini/AnTrom.java `
-    src/nro/models/boss/Boss_mini/Odo.java `
-    src/nro/models/boss/Boss_mini/SoiHecQuyn.java `
-    src/nro/models/boss/cumber/Cumber.java `
-    src/nro/models/boss/BadiWolves/Basil.java `
-    src/nro/models/boss/BadiWolves/Bergamo.java `
-    src/nro/models/boss/BadiWolves/Lavender.java `
-    src/nro/models/boss/Black_Goku/Zamasu.java `
-    src/nro/models/boss/MajinBuu_12h/BuiBui.java `
-    src/nro/models/boss/MajinBuu_12h/BuiBui2.java `
-    src/nro/models/boss/MajinBuu_12h/Cadic.java `
-    src/nro/models/boss/MajinBuu_12h/Drabura.java `
-    src/nro/models/boss/MajinBuu_12h/Drabura2.java `
-    src/nro/models/boss/MajinBuu_12h/Drabura3.java `
-    src/nro/models/boss/MajinBuu_12h/Goku.java `
-    src/nro/models/boss/MajinBuu_12h/Mabu.java `
-    src/nro/models/boss/MajinBuu_12h/Yacon.java `
-    src/nro/models/boss/MajinBuu_14h/Mabu14h.java `
-    src/nro/models/boss/MajinBuu_14h/SuperBu.java `
-    src/nro/models/map/phoban/RedRibbonHQ.java `
-    src/nro/models/boss/doanh_trai/TrungUyTrang.java `
-    src/nro/models/boss/doanh_trai/TrungUyXanhLo.java `
-    src/nro/models/boss/doanh_trai/TrungUyThep.java `
-    src/nro/models/boss/doanh_trai/NinjaAoTim.java `
-    src/nro/models/boss/doanh_trai/NinjaClone.java `
-    src/nro/models/boss/doanh_trai/RobotVeSi.java `
-    src/nro/models/boss/Boss_Manager/BossManager.java
+$jarPath = Join-Path $PSScriptRoot "dist\NgocRongOnline.jar"
+$classRoot = Join-Path $PSScriptRoot "build\classes"
 
-if ($LASTEXITCODE -ne 0) {
-    throw "Loi bien dich javac!"
+$javaFiles = @(
+    "src/nro/models/data/LocalManager.java",
+    "src/nro/models/data/ResultSetImpl.java",
+    "src/nro/models/item/ItemTime.java",
+    "src/nro/models/services/ItemTimeService.java",
+    "src/nro/models/consts/ConstTask.java",
+    "src/nro/models/data/DataGame.java",
+    "src/nro/models/data/ItemData.java",
+    "src/nro/models/network/Message.java",
+    "src/nro/models/network/Session.java",
+    "src/nro/models/network/Network.java",
+    "src/nro/models/network/MySession.java",
+    "src/nro/models/network/MessageSendCollect.java",
+    "src/nro/models/database/ShopDAO.java",
+    "src/nro/models/database/MrBlue.java",
+    "src/nro/models/database/PlayerDAO.java",
+    "src/nro/models/database/SuperRankDAO.java",
+    "src/nro/models/event/EventManager.java",
+    "src/nro/models/event/VuaHung.java",
+    "src/nro/models/server/ServerManager.java",
+    "src/nro/models/server/AutoMaintenance.java",
+    "src/nro/models/server/Maintenance.java",
+    "src/nro/models/server/AdminWebServer.java",
+    "src/nro/models/server/ServerNotify.java",
+    "src/nro/models/server/Manager.java",
+    "src/nro/models/server/Command.java",
+    "src/nro/models/server/Controller.java",
+    "src/nro/models/player/Inventory.java",
+    "src/nro/models/player/EffectSkill.java",
+    "src/nro/models/player/EffectSkin.java",
+    "src/nro/models/player/NPoint.java",
+    "src/nro/models/player/SetClothes.java",
+    "src/nro/models/player/Player.java",
+    "src/nro/models/player/Pet.java",
+    "src/nro/models/player_badges/Badges.java",
+    "src/nro/models/player_badges/BadgesData.java",
+    "src/nro/models/player_badges/BagesTemplate.java",
+    "src/nro/models/player_badges/BadgesService.java",
+    "src/nro/models/task/BadgesTaskService.java",
+    "src/nro/models/mob/Mob.java",
+    "src/nro/models/mob/MobMe.java",
+    "src/nro/models/mob_bigboss/MayDoSucManh.java",
+    "src/nro/models/map/Zone.java",
+    "src/nro/models/map/service/ChangeMapService.java",
+    "src/nro/models/map/service/MapService.java",
+    "src/nro/models/services/EffectSkillService.java",
+    "src/nro/models/services/InventoryService.java",
+    "src/nro/models/services/ItemService.java",
+    "src/nro/models/services/OpenPowerService.java",
+    "src/nro/models/services/PetService.java",
+    "src/nro/models/services/RewardService.java",
+    "src/nro/models/services/Service.java",
+    "src/nro/models/services/SkillService.java",
+    "src/nro/models/services/shenron/Shenron_Event.java",
+    "src/nro/models/services_dungeon/NgocRongNamecService.java",
+    "src/nro/models/services_func/Input.java",
+    "src/nro/models/services_func/UseItem.java",
+    "src/nro/models/services_func/Trade.java",
+    "src/nro/models/services_func/TransactionService.java",
+    "src/nro/models/combine/Combine.java",
+    "src/nro/models/combine/CombineSystem.java",
+    "src/nro/models/combine/CombineService.java",
+    "src/nro/models/combine/EpSaoTrangBi.java",
+    "src/nro/models/combine/PhaLeHoaTrangBi.java",
+    "src/nro/models/combine/CuongHoaLoSaoPhaLe.java",
+    "src/nro/models/combine/NangCapSaoPhaLe.java",
+    "src/nro/models/combine/DanhBongSaoPhaLe.java",
+    "src/nro/models/combine/NangCapVatPham.java",
+    "src/nro/models/combine/ChuyenHoaTrangBi_Vang.java",
+    "src/nro/models/combine/ChuyenHoaTrangBi_Ngoc.java",
+    "src/nro/models/combine/TaiCheDoThan.java",
+    "src/nro/models/combine/PhanRaTrangBiKichHoat.java",
+    "src/nro/models/combine/PhanRaDoSao.java",
+    "src/nro/models/combine/DapDoKichHoat.java",
+    "src/nro/models/combine/CheTaoTrangBiThienSu.java",
+    "src/nro/models/combine/TinhLuyenDaNguSac.java",
+    "src/nro/models/npc/MabuEgg.java",
+    "src/nro/models/npc/NonInteractiveNPC.java",
+    "src/nro/models/npc/NpcFactory.java",
+    "src/nro/models/npc_list/BaHatMit.java",
+    "src/nro/models/npc_list/Bill.java",
+    "src/nro/models/npc_list/BoMong.java",
+    "src/nro/models/npc_list/DrMyuu.java",
+    "src/nro/models/npc_list/KyGui.java",
+    "src/nro/models/npc_list/QuaTrung.java",
+    "src/nro/models/npc_list/QuyLaoKame.java",
+    "src/nro/models/npc_list/TruongLaoGuru.java",
+    "src/nro/models/npc_list/QuocVuong.java",
+    "src/nro/models/npc_list/ToSuKaio.java",
+    "src/nro/models/npc_list/OngGohan.java",
+    "src/nro/models/npc_list/OngMoori.java",
+    "src/nro/models/npc_list/OngParagus.java",
+    "src/nro/models/npc_list/Osin.java",
+    "src/nro/models/npc_list/Vados.java",
+    "src/nro/models/npc_list/Whis.java",
+    "src/nro/models/utils/FileIO.java",
+    "src/nro/models/utils/SkillUtil.java",
+    "src/nro/models/managers/ShenronEventManager.java",
+    "src/nro/models/Bot/BotManager.java",
+    "src/nro/models/minigame/ConSoMayManGold.java",
+    "src/nro/models/minigame/ConSoMayManGem.java",
+    "src/nro/models/shop/ShopService.java",
+    "src/nro/models/matches/dai_hoi_vo_thuat/ClanMartialArtsService.java",
+    "src/nro/models/shop_ky_gui/ConsignShopService.java",
+    "src/nro/models/task/SideTask.java",
+    "src/nro/models/services/TaskService.java",
+    "src/nro/models/boss/BossID.java",
+    "src/nro/models/boss/BossData.java",
+    "src/nro/models/boss/BossesData.java",
+    "src/nro/models/boss/Boss.java",
+    "src/nro/models/boss/Android/Android13.java",
+    "src/nro/models/boss/Baby/Baby.java",
+    "src/nro/models/boss/VuTru6/Kefla.java",
+    "src/nro/models/boss/VuTru6/Champa.java",
+    "src/nro/models/boss/VuTru6/Hit.java",
+    "src/nro/models/boss/VuTru6/Toppo.java",
+    "src/nro/models/boss/Broly/Broly.java",
+    "src/nro/models/boss/Broly/SuperBroly.java",
+    "src/nro/models/boss/Broly/Broly18h.java",
+    "src/nro/models/boss/Broly/SieuBroly18h.java",
+    "src/nro/models/boss/Broly/KidBuWorld.java",
+    "src/nro/models/boss/Broly/MabuMapWorld.java",
+    "src/nro/models/boss/yardrat/Yardart.java",
+    "src/nro/models/boss/vo_dai_hat_mit/DeathOrAliveArena.java",
+    "src/nro/models/boss/vo_dai_hat_mit/BongBang.java",
+    "src/nro/models/boss/vo_dai_hat_mit/Dracula.java",
+    "src/nro/models/boss/vo_dai_hat_mit/NguoiVoHinh.java",
+    "src/nro/models/boss/vo_dai_hat_mit/ThoDauBac.java",
+    "src/nro/models/boss/vo_dai_hat_mit/VuaQuySaTang.java",
+    "src/nro/models/boss/trai_dat/BIDO.java",
+    "src/nro/models/boss/trai_dat/BOJACK.java",
+    "src/nro/models/boss/trai_dat/BUJIN.java",
+    "src/nro/models/boss/trai_dat/KOGU.java",
+    "src/nro/models/boss/trai_dat/SUPER_BOJACK.java",
+    "src/nro/models/boss/trai_dat/ZANGYA.java",
+    "src/nro/models/boss/event/Halloween/BiMa.java",
+    "src/nro/models/boss/event/Halloween/Doi.java",
+    "src/nro/models/boss/event/Halloween/MaTroi.java",
+    "src/nro/models/boss/event_noel/OngGiaNoel.java",
+    "src/nro/models/boss/Boss_mini/AnTrom.java",
+    "src/nro/models/boss/Boss_mini/Odo.java",
+    "src/nro/models/boss/Boss_mini/SoiHecQuyn.java",
+    "src/nro/models/boss/cumber/Cumber.java",
+    "src/nro/models/boss/BadiWolves/Basil.java",
+    "src/nro/models/boss/BadiWolves/Bergamo.java",
+    "src/nro/models/boss/BadiWolves/Lavender.java",
+    "src/nro/models/boss/Black_Goku/Zamasu.java",
+    "src/nro/models/boss/MajinBuu_12h/BuiBui.java",
+    "src/nro/models/boss/MajinBuu_12h/BuiBui2.java",
+    "src/nro/models/boss/MajinBuu_12h/Cadic.java",
+    "src/nro/models/boss/MajinBuu_12h/Drabura.java",
+    "src/nro/models/boss/MajinBuu_12h/Drabura2.java",
+    "src/nro/models/boss/MajinBuu_12h/Drabura3.java",
+    "src/nro/models/boss/MajinBuu_12h/Goku.java",
+    "src/nro/models/boss/MajinBuu_12h/Mabu.java",
+    "src/nro/models/boss/MajinBuu_12h/Yacon.java",
+    "src/nro/models/boss/MajinBuu_14h/Mabu14h.java",
+    "src/nro/models/boss/MajinBuu_14h/SuperBu.java",
+    "src/nro/models/map/phoban/RedRibbonHQ.java",
+    "src/nro/models/boss/doanh_trai/TrungUyTrang.java",
+    "src/nro/models/boss/doanh_trai/TrungUyXanhLo.java",
+    "src/nro/models/boss/doanh_trai/TrungUyThep.java",
+    "src/nro/models/boss/doanh_trai/NinjaAoTim.java",
+    "src/nro/models/boss/doanh_trai/NinjaClone.java",
+    "src/nro/models/boss/doanh_trai/RobotVeSi.java",
+    "src/nro/models/boss/Boss_Manager/BossManager.java"
+)
+
+$toCompile = @()
+foreach ($jf in $javaFiles) {
+    $jFull = Join-Path $PSScriptRoot ($jf -replace '/', '\')
+    $cRel = ($jf -replace '^src/', '' -replace '\.java$', '.class' -replace '/', '\')
+    $cFull = Join-Path $classRoot $cRel
+    if (!(Test-Path $cFull) -or ((Get-Item $jFull).LastWriteTimeUtc -gt (Get-Item $cFull).LastWriteTimeUtc)) {
+        $toCompile += $jf
+    }
+}
+
+$compileStartTime = (Get-Date).ToUniversalTime().AddSeconds(-2)
+
+if ($toCompile.Count -gt 0) {
+    Write-Host ("1. Dang bien dich " + $toCompile.Count + " file Java thay doi...") -ForegroundColor Cyan
+    & javac -proc:none -encoding UTF-8 -d build/classes -cp "build/classes;lib/*" $toCompile
+    if ($LASTEXITCODE -ne 0) {
+        throw "Loi bien dich javac!"
+    }
+} else {
+    Write-Host "1. Tat ca file Java da duoc bien dich san (khong co file thay doi)." -ForegroundColor Cyan
+    $compileStartTime = (Get-Date).ToUniversalTime().AddMinutes(-10)
 }
 
 Write-Host "2. Dang cap nhat dist/NgocRongOnline.jar va 20.jar..." -ForegroundColor Cyan
 Add-Type -AssemblyName System.IO.Compression
 Add-Type -AssemblyName System.IO.Compression.FileSystem
-
-$jarPath = Join-Path $PSScriptRoot "dist\NgocRongOnline.jar"
-$classRoot = Join-Path $PSScriptRoot "build\classes"
 
 $pkgs = @(
     "nro\models\consts",
@@ -218,6 +238,7 @@ $pkgs = @(
     "nro\models\boss\vo_dai_hat_mit",
     "nro\models\boss\trai_dat",
     "nro\models\boss\event\Halloween",
+    "nro\models\boss\event_noel",
     "nro\models\boss\Boss_mini",
     "nro\models\boss\cumber",
     "nro\models\boss\BadiWolves",
@@ -233,7 +254,7 @@ try {
     foreach ($pkg in $pkgs) {
         $dir = Join-Path $classRoot $pkg
         if (Test-Path $dir) {
-            Get-ChildItem -Path $dir -Filter "*.class" | ForEach-Object {
+            Get-ChildItem -Path $dir -Filter "*.class" | Where-Object { $_.LastWriteTimeUtc -ge $compileStartTime } | ForEach-Object {
                 $entryName = ($pkg -replace '\\', '/') + "/" + $_.Name
                 $existing = $zip.GetEntry($entryName)
                 if ($existing -ne $null) {

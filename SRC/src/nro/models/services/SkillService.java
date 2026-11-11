@@ -45,6 +45,9 @@ public class SkillService {
     }
 
     public boolean useSkill(Player player, Player plTarget, Mob mobTarget, int status, Message msg) {
+        if (plTarget != null && plTarget.id == BossID.ONG_GIA_NOEL) {
+            return false;
+        }
         if (plTarget != null && player.clan != null && plTarget.clan != null && player.clan == plTarget.clan && MapService.gI().isMapBlackBallWar(plTarget.zone.map.mapId)) {
             Service.gI().chatJustForMe(player, plTarget, "Ê cùng bang mà");
             return false;
@@ -1392,7 +1395,8 @@ public class SkillService {
 
     public boolean canAttackPlayer2(Player p1, Player p2) {
 
-        if (p1.isNewPet || p2.isNewPet || (p1 instanceof NonInteractiveNPC) || (p2 instanceof NonInteractiveNPC)) {
+        if (p1.isNewPet || p2.isNewPet || (p1 instanceof NonInteractiveNPC) || (p2 instanceof NonInteractiveNPC)
+                || p1.id == BossID.ONG_GIA_NOEL || p2.id == BossID.ONG_GIA_NOEL) {
             return false;
         }
 

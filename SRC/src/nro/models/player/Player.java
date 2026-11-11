@@ -2675,7 +2675,8 @@ public class Player implements Runnable {
         }
         if (b.id == nro.models.boss.BossID.DEATH_BEAM_1 || b.id == nro.models.boss.BossID.DEATH_BEAM_2
                 || b.id == nro.models.boss.BossID.DEATH_BEAM_3 || b.id == nro.models.boss.BossID.DEATH_BEAM_4
-                || b.id == nro.models.boss.BossID.DEATH_BEAM_5 || "$".equals(b.data[0].getName())) {
+                || b.id == nro.models.boss.BossID.DEATH_BEAM_5 || b.id == nro.models.boss.BossID.ONG_GIA_NOEL
+                || "$".equals(b.data[0].getName())) {
             return false;
         }
         int mapId = (b.zone != null && b.zone.map != null) ? b.zone.map.mapId : b.data[0].getMapJoin()[0];

@@ -5,6 +5,7 @@ import nro.models.boss.Boss;
 import nro.models.boss.BossesData;
 import nro.models.boss.BossID;
 import nro.models.consts.BossStatus;
+import nro.models.consts.ConstPlayer;
 import nro.models.boss.Boss_Manager.BossManager;
 import static nro.models.consts.BossType.CHRISTMAS_EVENT;
 import nro.models.map.ItemMap;
@@ -22,12 +23,22 @@ public class OngGiaNoel extends Boss {
 
     public OngGiaNoel() throws Exception {
         super(CHRISTMAS_EVENT, BossID.ONG_GIA_NOEL, BossesData.ONG_GIA_NOEL);
+        this.typePk = ConstPlayer.NON_PK;
+    }
+
+    @Override
+    public void changeToTypePK() {
+        if (this.typePk != ConstPlayer.NON_PK) {
+            this.changeToTypeNonPK();
+        }
     }
 
     @Override
     public void joinMap() {
+        this.typePk = ConstPlayer.NON_PK;
         if (zoneFinal != null) {
             joinMapByZone(zoneFinal);
+            this.changeToTypeNonPK();
             this.notifyJoinMap();
             this.changeStatus(BossStatus.CHAT_S);
             this.wakeupAnotherBossWhenAppear();
@@ -61,6 +72,7 @@ public class OngGiaNoel extends Boss {
                 }
                 ChangeMapService.gI().changeMap(this, this.zone, Util.nextInt(100, 500), this.zone.map.yPhysicInTop(this.location.x,
                         this.location.y - 24));
+                this.changeToTypeNonPK();
                 this.changeStatus(BossStatus.CHAT_S);
                 st = System.currentTimeMillis();
                 timeLeave = Util.nextInt(100000, 300000);
@@ -114,6 +126,9 @@ public class OngGiaNoel extends Boss {
 
     @Override
     public void active() {
+        if (this.typePk != ConstPlayer.NON_PK) {
+            this.changeToTypeNonPK();
+        }
         this.attack();
     }
 
