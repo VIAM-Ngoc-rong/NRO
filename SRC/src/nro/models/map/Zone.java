@@ -169,15 +169,16 @@ public class Zone {
     }
 
     private void udNonInteractiveNPC() {
-        if (nonInteractiveNPCs.isEmpty()) {
+        if (nonInteractiveNPCs.isEmpty() || this.players.isEmpty()) {
             return;
         }
         try {
-            List<Player> npcList = new ArrayList<>(nonInteractiveNPCs);
-            for (int i = npcList.size() - 1; i >= 0; i--) {
-                Player pl = npcList.get(i);
-                if (pl != null && pl.zone != null) {
-                    pl.update();
+            for (int i = nonInteractiveNPCs.size() - 1; i >= 0; i--) {
+                if (i < nonInteractiveNPCs.size()) {
+                    Player pl = nonInteractiveNPCs.get(i);
+                    if (pl != null && pl.zone != null) {
+                        pl.update();
+                    }
                 }
             }
         } catch (Exception e) {
@@ -774,7 +775,11 @@ public class Zone {
             // bg item
             try {
                 final byte[] bgItem = FileIO.readFile("data/map/item_bg_map_data/" + this.map.mapId);
-                msg.writer().write(bgItem);
+                if (bgItem != null) {
+                    msg.writer().write(bgItem);
+                } else {
+                    msg.writer().writeShort(0);
+                }
             } catch (Exception e) {
                 msg.writer().writeShort(0);
             }
@@ -782,7 +787,11 @@ public class Zone {
             // eff item
             try {
                 final byte[] effItem = FileIO.readFile("data/map/eff_map/" + this.map.mapId);
-                msg.writer().write(effItem);
+                if (effItem != null) {
+                    msg.writer().write(effItem);
+                } else {
+                    msg.writer().writeShort(0);
+                }
             } catch (Exception e) {
                 msg.writer().writeShort(0);
             }

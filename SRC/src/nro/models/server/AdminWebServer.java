@@ -388,6 +388,12 @@ public class AdminWebServer {
 
         Runtime rt = Runtime.getRuntime();
         long usedRamMb = (rt.totalMemory() - rt.freeMemory()) / (1024 * 1024);
+        long nowGcMs = System.currentTimeMillis();
+        if (usedRamMb > 380 && (nowGcMs - lastAutoGcTimeMs) > 10000L) {
+            lastAutoGcTimeMs = nowGcMs;
+            System.gc();
+            usedRamMb = (rt.totalMemory() - rt.freeMemory()) / (1024 * 1024);
+        }
         long maxRamMb = rt.maxMemory() / (1024 * 1024);
         int cpuCores = rt.availableProcessors();
         long sessionUptimeSec = ServerManager.getSessionUptimeSeconds();

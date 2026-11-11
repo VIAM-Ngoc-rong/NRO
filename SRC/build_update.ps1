@@ -4,17 +4,21 @@ Set-Location $PSScriptRoot
 Write-Host "1. Dang bien dich cac file Java..." -ForegroundColor Cyan
 javac -proc:none -encoding UTF-8 -d build/classes -cp "build/classes;lib/*" `
     src/nro/models/data/LocalManager.java `
+    src/nro/models/data/ResultSetImpl.java `
     src/nro/models/item/ItemTime.java `
     src/nro/models/services/ItemTimeService.java `
     src/nro/models/consts/ConstTask.java `
     src/nro/models/data/DataGame.java `
     src/nro/models/data/ItemData.java `
+    src/nro/models/network/Message.java `
+    src/nro/models/network/Session.java `
     src/nro/models/network/Network.java `
     src/nro/models/network/MySession.java `
     src/nro/models/network/MessageSendCollect.java `
     src/nro/models/database/ShopDAO.java `
     src/nro/models/database/MrBlue.java `
     src/nro/models/database/PlayerDAO.java `
+    src/nro/models/database/SuperRankDAO.java `
     src/nro/models/event/EventManager.java `
     src/nro/models/event/VuaHung.java `
     src/nro/models/server/ServerManager.java `
@@ -27,6 +31,7 @@ javac -proc:none -encoding UTF-8 -d build/classes -cp "build/classes;lib/*" `
     src/nro/models/server/Controller.java `
     src/nro/models/player/Inventory.java `
     src/nro/models/player/EffectSkill.java `
+    src/nro/models/player/EffectSkin.java `
     src/nro/models/player/NPoint.java `
     src/nro/models/player/SetClothes.java `
     src/nro/models/player/Player.java `
@@ -74,6 +79,7 @@ javac -proc:none -encoding UTF-8 -d build/classes -cp "build/classes;lib/*" `
     src/nro/models/combine/CheTaoTrangBiThienSu.java `
     src/nro/models/combine/TinhLuyenDaNguSac.java `
     src/nro/models/npc/MabuEgg.java `
+    src/nro/models/npc/NonInteractiveNPC.java `
     src/nro/models/npc/NpcFactory.java `
     src/nro/models/npc_list/BaHatMit.java `
     src/nro/models/npc_list/Bill.java `
@@ -91,7 +97,12 @@ javac -proc:none -encoding UTF-8 -d build/classes -cp "build/classes;lib/*" `
     src/nro/models/npc_list/Osin.java `
     src/nro/models/npc_list/Vados.java `
     src/nro/models/npc_list/Whis.java `
+    src/nro/models/utils/FileIO.java `
     src/nro/models/utils/SkillUtil.java `
+    src/nro/models/managers/ShenronEventManager.java `
+    src/nro/models/Bot/BotManager.java `
+    src/nro/models/minigame/ConSoMayManGold.java `
+    src/nro/models/minigame/ConSoMayManGem.java `
     src/nro/models/shop/ShopService.java `
     src/nro/models/matches/dai_hoi_vo_thuat/ClanMartialArtsService.java `
     src/nro/models/shop_ky_gui/ConsignShopService.java `
@@ -191,6 +202,9 @@ $pkgs = @(
     "nro\models\npc",
     "nro\models\npc_list",
     "nro\models\utils",
+    "nro\models\managers",
+    "nro\models\Bot",
+    "nro\models\minigame",
     "nro\models\shop",
     "nro\models\matches\dai_hoi_vo_thuat",
     "nro\models\shop_ky_gui",

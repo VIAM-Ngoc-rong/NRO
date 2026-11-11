@@ -44,8 +44,13 @@ public class NonInteractiveNPC extends Player {
         z.load_Me_To_Another(player);
     }
 
+    private static final String[] BUBBLES_TEXT = {"ù ù khẹc khẹc", "khẹc khẹc", "éc éc"};
+
     @Override
     public void update() {
+        if (this.zone == null || this.zone.getPlayers().isEmpty()) {
+            return;
+        }
         if (this.isDie()) {
             Service.gI().hsChar(this, nPoint.hpMax, nPoint.mpMax);
         }
@@ -55,8 +60,7 @@ public class NonInteractiveNPC extends Player {
         if (Util.canDoWithTime(lastTimeChat, 5000)) {
             if (this.id == BossID.KHI_BUBBLES) {
                 if (Util.isTrue(2, 3)) {
-                    String[] text = {"ù ù khẹc khẹc", "khẹc khẹc", "éc éc"};
-                    Service.gI().chat(this, text[Util.nextInt(text.length)]);
+                    Service.gI().chat(this, BUBBLES_TEXT[Util.nextInt(BUBBLES_TEXT.length)]);
                 }
             }
             lastTimeChat = System.currentTimeMillis();

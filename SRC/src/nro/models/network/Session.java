@@ -24,7 +24,7 @@ public class Session implements ISession {
 
     private Sender sender;
     private Collector collector;
-    private final Thread tSender;
+    private Thread tSender;
     private final Thread tCollector;
 
     private IKeySessionHandler keyHandler;
@@ -42,8 +42,8 @@ public class Session implements ISession {
 
         try {
             this.socket.setTcpNoDelay(true);
-            this.socket.setSendBufferSize(0x10000);
-            this.socket.setReceiveBufferSize(0x10000);
+            this.socket.setSendBufferSize(0x4000);
+            this.socket.setReceiveBufferSize(0x4000);
         } catch (SocketException ignored) {
         }
 
@@ -52,20 +52,28 @@ public class Session implements ISession {
         this.sender = new Sender(this, socket);
         this.collector = new Collector(this, socket);
 
-        this.tSender = new Thread(this.sender, "Sender - IP : " + ip);
         this.tCollector = new Thread(this.collector, "Collector - IP : " + ip);
     }
 
     @Override
     public ISession start() {
-        this.tSender.start();
-        this.tCollector.start();
+        startSend();
+        if (!this.tCollector.isAlive()) {
+            this.tCollector.start();
+        }
         return this;
     }
 
     @Override
-    public ISession startSend() {
-        this.tSender.start();
+    public synchronized ISession startSend() {
+        if (this.sender != null) {
+            if (this.tSender == null) {
+                this.tSender = new Thread(this.sender, "Sender - IP : " + ip);
+            }
+            if (!this.tSender.isAlive() && this.tSender.getState() == Thread.State.NEW) {
+                this.tSender.start();
+            }
+        }
         return this;
     }
 
@@ -181,10 +189,10 @@ public class Session implements ISession {
             this.collector.dispose();
         }
 
-        if (this.tSender.isAlive()) {
+        if (this.tSender != null && this.tSender.isAlive()) {
             this.tSender.interrupt();
         }
-        if (this.tCollector.isAlive()) {
+        if (this.tCollector != null && this.tCollector.isAlive()) {
             this.tCollector.interrupt();
         }
 

@@ -58,6 +58,8 @@ import nro.models.player.KOLProgressData;
 
 public class MrBlue {
 
+    private static final Gson GSON = new Gson();
+
     public static Player login(MySession session, AntiLogin al) {
         Player player = null;
         LocalResultSet rs = null;
@@ -102,6 +104,9 @@ public class MrBlue {
                     plInGame = Client.gI().getPlayerByUser(session.userId);
                     if (plInGame != null) {
                         Client.gI().kickSession(plInGame.getSession());
+                    }
+                    if (rs != null) {
+                        rs.dispose();
                     }
                     rs = LocalManager.executeQuery("select * from player where account_id = ? limit 1", session.userId);
                     if (!rs.first()) {
@@ -748,11 +753,6 @@ public class MrBlue {
             }
 
             // data nhận ngọc hàng ngày
-            dataArray.add(player.event.luotNhanNgocMienPhi);
-            dataArray.add(player.event.luotNhanCapsuleBang);
-            dataArray.add(player.lastCheckIn != null ? player.lastCheckIn.toString() : null);
-
-            String checkNhanQua = dataArray.toJSONString();
             dataArray.clear();
 
             //data trứng bư
@@ -1323,7 +1323,7 @@ public class MrBlue {
             try {
                 String kolJson = rs.getString("nhiem_vu_kol");
                 if (kolJson != null && !kolJson.isEmpty()) {
-                    KOLProgressData kolData = new Gson().fromJson(kolJson, KOLProgressData.class);
+                    KOLProgressData kolData = GSON.fromJson(kolJson, KOLProgressData.class);
                     if (kolData != null) {
                         player.kolQuestStage = kolData.kolQuestStage;
                         player.kolVIPQuestStage = kolData.kolVIPQuestStage;

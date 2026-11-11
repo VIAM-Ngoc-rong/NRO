@@ -17,6 +17,7 @@ public class Message implements IMessage {
     private DataOutputStream dos;
     private ByteArrayInputStream is;
     private DataInputStream dis;
+    private byte[] rawData;
 
     public Message(int command) {
         this((byte) command);
@@ -24,8 +25,17 @@ public class Message implements IMessage {
 
     public Message(byte command) {
         this.command = command;
-        this.os = new ByteArrayOutputStream();
+        this.os = new ByteArrayOutputStream(64);
         this.dos = new DataOutputStream(this.os);
+    }
+
+    private Message(byte command, byte[] rawPayload, boolean rawOutgoing) {
+        this.command = command;
+        this.rawData = rawPayload != null ? rawPayload : new byte[0];
+    }
+
+    public static Message fromRawPayload(int command, byte[] rawPayload) {
+        return new Message((byte) command, rawPayload, true);
     }
 
     public Message(byte command, byte[] data) {
@@ -46,12 +56,21 @@ public class Message implements IMessage {
 
     @Override
     public byte[] getData() {
-        return this.os.toByteArray();
+        if (this.os != null) {
+            if (this.rawData == null || this.rawData.length != this.os.size()) {
+                this.rawData = this.os.toByteArray();
+            }
+            return this.rawData;
+        }
+        return this.rawData;
     }
 
     @Override
     public void cleanup() {
         try {
+            if (this.os != null && (this.rawData == null || this.rawData.length != this.os.size())) {
+                this.rawData = this.os.toByteArray();
+            }
             if (this.is != null) {
                 this.is.close();
             }
@@ -64,6 +83,8 @@ public class Message implements IMessage {
             if (this.dos != null) {
                 this.dos.close();
             }
+            this.os = null;
+            this.dos = null;
         } catch (IOException iOException) {
         }
     }

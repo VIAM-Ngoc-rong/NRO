@@ -23,9 +23,11 @@ public class BotManager implements Runnable {
             try {
                 long st = System.currentTimeMillis();
 
-                for (Bot bot : new ArrayList<>(this.bot)) {
-                    if (bot != null) {
-                        bot.update();
+                if (!this.bot.isEmpty()) {
+                    for (Bot bot : new ArrayList<>(this.bot)) {
+                        if (bot != null) {
+                            bot.update();
+                        }
                     }
                 }
 

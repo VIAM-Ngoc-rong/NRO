@@ -21,22 +21,32 @@ public class SuperRankDAO {
     public static List<SuperRankBuilder> getPlayerListInRankRange(int rank, int limit) {
 
         List<SuperRankBuilder> list = new ArrayList<>();
+        LocalResultSet rs = null;
         try {
-            LocalResultSet rs = LocalManager.executeQuery("SELECT * FROM super_rank WHERE `rank` <= ? AND `rank` > 0 ORDER BY `rank` DESC LIMIT ?", Math.max(rank, 10), limit);
+            rs = LocalManager.executeQuery("SELECT * FROM super_rank WHERE `rank` <= ? AND `rank` > 0 ORDER BY `rank` DESC LIMIT ?", Math.max(rank, 10), limit);
             while (rs.next()) {
                 list.add(readData(rs));
             }
         } catch (Exception e) {
+        } finally {
+            if (rs != null) {
+                rs.dispose();
+                rs = null;
+            }
         }
         try {
             int rand = random(rank);
             if (rand != -1) {
-                LocalResultSet rs = LocalManager.executeQuery("SELECT * FROM super_rank WHERE `rank` = ? LIMIT 1", rand);
+                rs = LocalManager.executeQuery("SELECT * FROM super_rank WHERE `rank` = ? LIMIT 1", rand);
                 if (rs.first()) {
                     list.add(readData(rs));
                 }
             }
         } catch (Exception e) {
+        } finally {
+            if (rs != null) {
+                rs.dispose();
+            }
         }
         Collections.reverse(list);
         return list;
@@ -44,21 +54,31 @@ public class SuperRankDAO {
 
     public static List<SuperRankBuilder> getPlayerListInRank(int rank, int limit) {
         List<SuperRankBuilder> list = new ArrayList<>();
+        LocalResultSet rs = null;
         try {
-            LocalResultSet rs = LocalManager.executeQuery("SELECT * FROM super_rank WHERE `rank` > 0 ORDER BY `rank` ASC LIMIT ?", limit);
+            rs = LocalManager.executeQuery("SELECT * FROM super_rank WHERE `rank` > 0 ORDER BY `rank` ASC LIMIT ?", limit);
             while (rs.next()) {
                 list.add(readData(rs));
             }
         } catch (Exception e) {
+        } finally {
+            if (rs != null) {
+                rs.dispose();
+                rs = null;
+            }
         }
         try {
             if (rank > 100) {
-                LocalResultSet rs = LocalManager.executeQuery("SELECT * FROM super_rank WHERE `rank` > ? AND `rank` < ? ORDER BY `rank` ASC LIMIT 4", rank - 3, rank + 2);
+                rs = LocalManager.executeQuery("SELECT * FROM super_rank WHERE `rank` > ? AND `rank` < ? ORDER BY `rank` ASC LIMIT 4", rank - 3, rank + 2);
                 while (rs.next()) {
                     list.add(readData(rs));
                 }
             }
         } catch (Exception e) {
+        } finally {
+            if (rs != null) {
+                rs.dispose();
+            }
         }
         return list;
     }
@@ -154,8 +174,9 @@ public class SuperRankDAO {
     }
 
     public static void loadData(Player player) {
+        LocalResultSet rs = null;
         try {
-            LocalResultSet rs = LocalManager.executeQuery("SELECT * FROM super_rank WHERE player_id = " + player.id);
+            rs = LocalManager.executeQuery("SELECT * FROM super_rank WHERE player_id = " + player.id);
             if (rs.first()) {
                 player.superRank.rank = rs.getInt("rank");
                 player.superRank.lastPKTime = rs.getLong("last_pk_time");
@@ -182,28 +203,42 @@ public class SuperRankDAO {
                 player.superRank.lastPKTime = System.currentTimeMillis();
             }
         } catch (Exception e) {
+        } finally {
+            if (rs != null) {
+                rs.dispose();
+            }
         }
     }
 
     public static int getRank(int playerId) {
+        LocalResultSet rs = null;
         try {
-            LocalResultSet rs = LocalManager.executeQuery("SELECT `rank` FROM super_rank WHERE player_id = " + playerId);
+            rs = LocalManager.executeQuery("SELECT `rank` FROM super_rank WHERE player_id = " + playerId);
             if (rs.first()) {
                 return rs.getInt("rank");
             }
         } catch (Exception e) {
+        } finally {
+            if (rs != null) {
+                rs.dispose();
+            }
         }
         return getCurrentHighestRank() + 1;
     }
 
     public static int getCurrentHighestRank() {
+        LocalResultSet rs = null;
         try {
-            LocalResultSet rs = LocalManager.executeQuery("SELECT `rank` FROM super_rank ORDER BY `rank` DESC LIMIT 1");
+            rs = LocalManager.executeQuery("SELECT `rank` FROM super_rank ORDER BY `rank` DESC LIMIT 1");
             if (rs.first()) {
                 return rs.getInt("rank");
             }
         } catch (Exception e) {
             Logger.logException(SuperRankDAO.class, e);
+        } finally {
+            if (rs != null) {
+                rs.dispose();
+            }
         }
         return 0;
     }

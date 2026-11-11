@@ -112,8 +112,13 @@ public class EffectSkin {
     }
 
     public void update() {
-        updateVoHinh();
-        if (!this.player.isDie() && this.player.zone != null && !MapService.gI().isMapOffline(this.player.zone.map.mapId)) {
+        if (this.player == null || this.player.zone == null || this.player instanceof nro.models.npc.NonInteractiveNPC) {
+            return;
+        }
+        if (this.player.isPl()) {
+            updateVoHinh();
+        }
+        if (!this.player.isDie() && !this.player.zone.getPlayers().isEmpty() && !MapService.gI().isMapOffline(this.player.zone.map.mapId)) {
             updateOdo();
             updateXinbato();
             updateThoBulma();
@@ -129,7 +134,7 @@ public class EffectSkin {
             updateLanhXungQuanh();
 //            updateHalloween();
         }
-        if (!this.player.isBoss && !this.player.isPet && !player.isNewPet) {
+        if (this.player.isPl() && !this.player.isBot) {
             updateTrainArmor();
         }
         if (xHPKI != 1 && Util.canDoWithTime(lastTimeXHPKI, 1800000)) {
@@ -140,7 +145,9 @@ public class EffectSkin {
             xDame = 1;
             Service.gI().point(player);
         }
-        updateCTHaiTac();
+        if (!this.player.zone.getPlayers().isEmpty()) {
+            updateCTHaiTac();
+        }
     }
 
     private void updateCTHaiTac() {

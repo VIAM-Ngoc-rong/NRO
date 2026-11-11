@@ -23,6 +23,10 @@ public class ItemData {
     private static volatile int cachedBaseTemplateCount = -1;
     private static volatile byte[] cachedPart2Payload = null;
     private static volatile int cachedPart2EndId = -1;
+    private static volatile byte[] cachedOptionPayload = null;
+    private static volatile byte[] cachedPart1MsgPayload = null;
+    private static volatile byte[] cachedPart2MsgPayload = null;
+    private static volatile byte[] cachedArrHead2FPayload = null;
     private static final Map<Integer, short[]> EQUIP_ALIAS_MAP = new HashMap<>();
 
     private static String safeTrimDesc(String desc, int currentBytes) {
@@ -172,116 +176,139 @@ public class ItemData {
     }
 
     public static void updateItemOptionItemplate(MySession session) {
-        Message msg;
         try {
-            msg = new Message(-28);
-            msg.writer().writeByte(8);
-            msg.writer().writeByte(DataGame.vsItem); //vcitem
-            msg.writer().writeByte(0); //update option
-            msg.writer().writeByte(Manager.ITEM_OPTION_TEMPLATES.size());
-            for (ItemOptionTemplate io : Manager.ITEM_OPTION_TEMPLATES) {
-                String optName = io.name;
-                if (io.id == 39) {
-                    optName = "$[ĐÃ KHÓA BẢO VỆ - Chống vứt/bán/phân rã]";
-                } else if (io.id == 73) {
-                    optName = "";
-                } else if (io.id == 209) {
-                    optName = "$[Set Đồ Nhanh #]";
+            byte[] payload = cachedOptionPayload;
+            if (payload == null && Manager.ITEM_OPTION_TEMPLATES != null && !Manager.ITEM_OPTION_TEMPLATES.isEmpty()) {
+                synchronized (ItemData.class) {
+                    payload = cachedOptionPayload;
+                    if (payload == null) {
+                        Message msg = new Message(-28);
+                        msg.writer().writeByte(8);
+                        msg.writer().writeByte(DataGame.vsItem); //vcitem
+                        msg.writer().writeByte(0); //update option
+                        msg.writer().writeByte(Manager.ITEM_OPTION_TEMPLATES.size());
+                        for (ItemOptionTemplate io : Manager.ITEM_OPTION_TEMPLATES) {
+                            String optName = io.name;
+                            if (io.id == 39) {
+                                optName = "$[ĐÃ KHÓA BẢO VỆ - Chống vứt/bán/phân rã]";
+                            } else if (io.id == 73) {
+                                optName = "";
+                            } else if (io.id == 209) {
+                                optName = "$[Set Đồ Nhanh #]";
+                            }
+                            msg.writer().writeUTF(optName != null ? optName : "");
+                            msg.writer().writeByte(io.type);
+                        }
+                        payload = msg.getData();
+                        msg.cleanup();
+                        cachedOptionPayload = payload;
+                    }
                 }
-                msg.writer().writeUTF(optName != null ? optName : "");
-                msg.writer().writeByte(io.type);
             }
-            session.doSendMessage(msg);
-            msg.cleanup();
+            if (payload != null) {
+                session.doSendMessage(Message.fromRawPayload(-28, payload));
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     private static void updateItemTemplate(MySession session, int count) {
-        Message msg;
         try {
-            msg = new Message(-28);
-            msg.writer().writeByte(8);
-
-            msg.writer().writeByte(DataGame.vsItem); //vcitem
-            msg.writer().writeByte(1); //reload itemtemplate
-            msg.writer().writeShort(count);
-            for (int i = 0; i < count; i++) {
-                Template.ItemTemplate itemTemplate = Manager.ITEM_TEMPLATES.get(i);
-                String name = itemTemplate.name != null ? itemTemplate.name : "";
-                String desc = safeTrimDesc(itemTemplate.description, msg.writer().size());
-                msg.writer().writeByte(itemTemplate.type);
-                msg.writer().writeByte(itemTemplate.gender);
-                msg.writer().writeUTF(name);
-                msg.writer().writeUTF(desc);
-                msg.writer().writeByte(itemTemplate.level);
-                msg.writer().writeInt(itemTemplate.strRequire);
-                msg.writer().writeShort(itemTemplate.iconID);
-                msg.writer().writeShort(itemTemplate.part);
-                msg.writer().writeBoolean(itemTemplate.isUpToUp);
+            byte[] payload = cachedPart1MsgPayload;
+            if (payload == null && Manager.ITEM_TEMPLATES != null && Manager.ITEM_TEMPLATES.size() >= count) {
+                synchronized (ItemData.class) {
+                    payload = cachedPart1MsgPayload;
+                    if (payload == null) {
+                        Message msg = new Message(-28);
+                        msg.writer().writeByte(8);
+                        msg.writer().writeByte(DataGame.vsItem); //vcitem
+                        msg.writer().writeByte(1); //reload itemtemplate
+                        msg.writer().writeShort(count);
+                        for (int i = 0; i < count; i++) {
+                            Template.ItemTemplate itemTemplate = Manager.ITEM_TEMPLATES.get(i);
+                            String name = itemTemplate.name != null ? itemTemplate.name : "";
+                            String desc = safeTrimDesc(itemTemplate.description, msg.writer().size());
+                            msg.writer().writeByte(itemTemplate.type);
+                            msg.writer().writeByte(itemTemplate.gender);
+                            msg.writer().writeUTF(name);
+                            msg.writer().writeUTF(desc);
+                            msg.writer().writeByte(itemTemplate.level);
+                            msg.writer().writeInt(itemTemplate.strRequire);
+                            msg.writer().writeShort(itemTemplate.iconID);
+                            msg.writer().writeShort(itemTemplate.part);
+                            msg.writer().writeBoolean(itemTemplate.isUpToUp);
+                        }
+                        payload = msg.getData();
+                        msg.cleanup();
+                        cachedPart1MsgPayload = payload;
+                    }
+                }
             }
-            session.doSendMessage(msg);
-            msg.cleanup();
+            if (payload != null) {
+                session.doSendMessage(Message.fromRawPayload(-28, payload));
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     private static void updateItemTemplate(MySession session, int start, int end) {
-        Message msg;
         try {
             ensurePart2Built();
-            msg = new Message(-28);
-            msg.writer().writeByte(8);
-
-            msg.writer().writeByte(DataGame.vsItem); //vcitem
-            msg.writer().writeByte(2); //add itemtemplate
-            if (cachedPart2Payload != null && cachedPart2EndId > start) {
-                msg.writer().writeShort(start);
-                msg.writer().writeShort(cachedPart2EndId);
-                msg.writer().write(cachedPart2Payload);
-            } else {
-                msg.writer().writeShort(start);
-                msg.writer().writeShort(end);
-                for (int i = start; i < end; i++) {
-                    Template.ItemTemplate it = Manager.ITEM_TEMPLATES.get(i);
-                    String name = it.name != null ? it.name : "";
-                    String desc = safeTrimDesc(it.description, msg.writer().size());
-                    msg.writer().writeByte(it.type);
-                    msg.writer().writeByte(it.gender);
-                    msg.writer().writeUTF(name);
-                    msg.writer().writeUTF(desc);
-                    msg.writer().writeByte(it.level);
-                    msg.writer().writeInt(it.strRequire);
-                    msg.writer().writeShort(it.iconID);
-                    msg.writer().writeShort(it.part);
-                    msg.writer().writeBoolean(it.isUpToUp);
+            byte[] payload = cachedPart2MsgPayload;
+            if (payload == null && cachedPart2Payload != null && cachedPart2EndId > start) {
+                synchronized (ItemData.class) {
+                    payload = cachedPart2MsgPayload;
+                    if (payload == null) {
+                        Message msg = new Message(-28);
+                        msg.writer().writeByte(8);
+                        msg.writer().writeByte(DataGame.vsItem); //vcitem
+                        msg.writer().writeByte(2); //add itemtemplate
+                        msg.writer().writeShort(start);
+                        msg.writer().writeShort(cachedPart2EndId);
+                        msg.writer().write(cachedPart2Payload);
+                        payload = msg.getData();
+                        msg.cleanup();
+                        cachedPart2MsgPayload = payload;
+                    }
                 }
             }
-            session.doSendMessage(msg);
-            msg.cleanup();
+            if (payload != null) {
+                session.doSendMessage(Message.fromRawPayload(-28, payload));
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     private static void updateItemArrHead2FTemplate(MySession session) {
-        Message msg;
         try {
-            msg = new Message(-28);
-            msg.writer().writeByte(8);
-            msg.writer().writeByte(DataGame.vsItem); //vcitem
-            msg.writer().writeByte(100);
-            msg.writer().writeShort(Manager.ARR_HEAD_2_FRAMES.size());
-            for (ArrHead2Frames io : Manager.ARR_HEAD_2_FRAMES) {
-                msg.writer().writeByte(io.frames.size());
-                for (int i : io.frames) {
-                    msg.writer().writeShort(i);
+            byte[] payload = cachedArrHead2FPayload;
+            if (payload == null && Manager.ARR_HEAD_2_FRAMES != null && !Manager.ARR_HEAD_2_FRAMES.isEmpty()) {
+                synchronized (ItemData.class) {
+                    payload = cachedArrHead2FPayload;
+                    if (payload == null) {
+                        Message msg = new Message(-28);
+                        msg.writer().writeByte(8);
+                        msg.writer().writeByte(DataGame.vsItem); //vcitem
+                        msg.writer().writeByte(100);
+                        msg.writer().writeShort(Manager.ARR_HEAD_2_FRAMES.size());
+                        for (ArrHead2Frames io : Manager.ARR_HEAD_2_FRAMES) {
+                            msg.writer().writeByte(io.frames.size());
+                            for (int i : io.frames) {
+                                msg.writer().writeShort(i);
+                            }
+                        }
+                        payload = msg.getData();
+                        msg.cleanup();
+                        cachedArrHead2FPayload = payload;
+                    }
                 }
             }
-            session.doSendMessage(msg);
-            msg.cleanup();
+            if (payload != null) {
+                session.doSendMessage(Message.fromRawPayload(-28, payload));
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

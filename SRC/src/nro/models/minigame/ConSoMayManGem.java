@@ -223,6 +223,9 @@ public class ConSoMayManGem implements Runnable {
     public void ResetGame(int result) {
         this.result = result;
         dataKQ_CSMM.add(this.result);
+        while (dataKQ_CSMM.size() > 50) {
+            dataKQ_CSMM.remove(0);
+        }
         this.result_name = "";
 
         for (ConSoMayManData g : players) {

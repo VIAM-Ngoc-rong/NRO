@@ -15,7 +15,6 @@ public class ShenronEventManager implements Runnable {
     private long lastUpdate;
     private static final List<ShenronEvent> list = new ArrayList<>();
     private boolean isRunning;
-    private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     public static ShenronEventManager gI() {
         if (instance == null) {
@@ -26,7 +25,6 @@ public class ShenronEventManager implements Runnable {
 
     private ShenronEventManager() {
         isRunning = true;
-        executor.submit(this);
     }
 
     @Override
@@ -46,6 +44,9 @@ public class ShenronEventManager implements Runnable {
     public void update() {
         if (Util.canDoWithTime(lastUpdate, 1000)) {
             lastUpdate = System.currentTimeMillis();
+            if (list.isEmpty()) {
+                return;
+            }
             List<ShenronEvent> listCopy = new ArrayList<>(list);
             for (ShenronEvent se : listCopy) {
                 try {
@@ -68,6 +69,5 @@ public class ShenronEventManager implements Runnable {
 
     public void stop() {
         isRunning = false;
-        executor.shutdownNow();
     }
 }

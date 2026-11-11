@@ -21,19 +21,27 @@ public class ResultSetImpl implements LocalResultSet {
             rs.beforeFirst();
             final ResultSetMetaData rsmd = rs.getMetaData();
             final int nColumn = rsmd.getColumnCount();
+            final String[] colNames = new String[nColumn];
+            final String[] fullColNames = new String[nColumn];
+            for (int j = 1; j <= nColumn; ++j) {
+                String cName = rsmd.getColumnName(j).toLowerCase();
+                String tName = rsmd.getTableName(j);
+                colNames[j - 1] = cName;
+                fullColNames[j - 1] = (tName != null && !tName.isEmpty()) ? (tName.toLowerCase() + "." + cName) : null;
+            }
             this.data = new HashMap[nRow];
             for (int i = 0; i < this.data.length; ++i) {
-                this.data[i] = new HashMap<>();
+                this.data[i] = new HashMap<>(nColumn * 2);
             }
             this.values = new Object[nRow][nColumn];
             int index = 0;
             while (rs.next()) {
                 for (int j = 1; j <= nColumn; ++j) {
-                    final String tableName = rsmd.getTableName(j);
-                    final String columnName = rsmd.getColumnName(j);
                     final Object columnValue = rs.getObject(j);
-                    this.data[index].put(columnName.toLowerCase(), columnValue);
-                    this.data[index].put(tableName.toLowerCase() + "." + columnName.toLowerCase(), columnValue);
+                    this.data[index].put(colNames[j - 1], columnValue);
+                    if (fullColNames[j - 1] != null) {
+                        this.data[index].put(fullColNames[j - 1], columnValue);
+                    }
                     this.values[index][j - 1] = columnValue;
                 }
                 ++index;

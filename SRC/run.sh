@@ -134,6 +134,9 @@ if [ "$1" = "--fg" ]; then
       -XX:MinHeapFreeRatio=10 \
       -XX:MaxHeapFreeRatio=25 \
       -XX:+UseG1GC \
+      -XX:+UnlockExperimentalVMOptions \
+      -XX:G1NewSizePercent=10 \
+      -XX:G1MaxNewSizePercent=25 \
       -XX:+ExplicitGCInvokesConcurrent \
       -XX:InitiatingHeapOccupancyPercent=35 \
       -XX:MaxGCPauseMillis=50 \
@@ -159,6 +162,9 @@ nohup /bin/bash -c "
       -XX:MinHeapFreeRatio=10 \
       -XX:MaxHeapFreeRatio=25 \
       -XX:+UseG1GC \
+      -XX:+UnlockExperimentalVMOptions \
+      -XX:G1NewSizePercent=10 \
+      -XX:G1MaxNewSizePercent=25 \
       -XX:+ExplicitGCInvokesConcurrent \
       -XX:InitiatingHeapOccupancyPercent=35 \
       -XX:MaxGCPauseMillis=50 \

@@ -22,7 +22,14 @@ import java.util.Map;
 
 public class MySession extends Session {
 
-    private static final Map<String, AntiLogin> ANTILOGIN = new HashMap<>();
+    private static final Map<String, AntiLogin> ANTILOGIN = new java.util.concurrent.ConcurrentHashMap<>();
+
+    public static void cleanupAntiLogin() {
+        try {
+            ANTILOGIN.entrySet().removeIf(e -> e.getValue() == null || e.getValue().canLogin());
+        } catch (Exception ignored) {
+        }
+    }
     public Player player;
 
     public byte timeWait = 100;

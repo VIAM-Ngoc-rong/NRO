@@ -60,7 +60,7 @@ public class ServerManager {
     private static volatile long accumulatedUptimeSec = 0L;
     private static volatile long lastUptimeCheckpointMs = System.currentTimeMillis();
     private static final String UPTIME_FILE_PATH = "data/server_uptime.properties";
-    public static final Map<Object, Object> CLIENTS = new HashMap<>();
+    public static final Map<Object, Object> CLIENTS = new java.util.concurrent.ConcurrentHashMap<>();
     public static String NAME_SERVER = "Ngọc Rồng VIAM";
     public static String DOMAIN = "Server 1";
     public static String NAME = "Ngọc Rồng VIAM";
@@ -321,6 +321,7 @@ public class ServerManager {
     private void runPeriodicMemoryCleanup() {
         try {
             SessionManager.gI().cleanupSessions();
+            MySession.cleanupAntiLogin();
             for (nro.models.map.Map map : Manager.MAPS) {
                 if (map == null || map.zones == null) {
                     continue;
@@ -336,6 +337,11 @@ public class ServerManager {
                         }
                     }
                 }
+            }
+            Runtime rt = Runtime.getRuntime();
+            long usedMb = (rt.totalMemory() - rt.freeMemory()) / (1024 * 1024);
+            if (usedMb > 360) {
+                System.gc();
             }
         } catch (Exception ignored) {
         }
@@ -446,7 +452,10 @@ public class ServerManager {
         }
     }
 
-    private boolean canConnectWithIp(String ipAddress) {
+    private synchronized boolean canConnectWithIp(String ipAddress) {
+        if (ipAddress == null) {
+            return true;
+        }
         Object o = CLIENTS.get(ipAddress);
         if (o == null) {
             CLIENTS.put(ipAddress, 1);
@@ -463,15 +472,19 @@ public class ServerManager {
         }
     }
 
-    public void disconnect(MySession session) {
+    public synchronized void disconnect(MySession session) {
+        if (session == null || session.getIP() == null) {
+            return;
+        }
         Object o = CLIENTS.get(session.getIP());
         if (o != null) {
             int n = Integer.parseInt(String.valueOf(o));
             n--;
-            if (n < 0) {
-                n = 0;
+            if (n <= 0) {
+                CLIENTS.remove(session.getIP());
+            } else {
+                CLIENTS.put(session.getIP(), n);
             }
-            CLIENTS.put(session.getIP(), n);
         }
     }
 

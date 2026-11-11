@@ -11,6 +11,7 @@ public class MessageSendCollect implements IMessageSendCollect {
 
     private int curR = 0;
     private int curW = 0;
+    private final byte[] encryptBuf = new byte[8192];
 
     @Override
     public Message readMessage(ISession session, DataInputStream dis) throws Exception {
@@ -76,11 +77,18 @@ public class MessageSendCollect implements IMessageSendCollect {
                     dos.writeShort(size);
                 }
                 if (session.sentKey()) {
-                    for (int i = 0; i < data.length; ++i) {
-                        data[i] = this.writeKey(session, data[i]);
+                    int offset = 0;
+                    while (offset < data.length) {
+                        int chunk = Math.min(this.encryptBuf.length, data.length - offset);
+                        for (int i = 0; i < chunk; ++i) {
+                            this.encryptBuf[i] = this.writeKey(session, data[offset + i]);
+                        }
+                        dos.write(this.encryptBuf, 0, chunk);
+                        offset += chunk;
                     }
+                } else {
+                    dos.write(data);
                 }
-                dos.write(data);
             } else {
                 dos.writeShort(0);
             }

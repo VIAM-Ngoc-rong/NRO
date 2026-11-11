@@ -941,7 +941,9 @@ public class Boss extends Player implements IBoss {
         if (prepareBom) {
             return;
         }
-        super.update();
+        if (this.zone != null && this.bossStatus != BossStatus.REST) {
+            super.update();
+        }
         if (this.pendingNotifyJoinMap) {
             if (this.isDie() || this.zone == null || this.zone.map == null
                     || this.bossStatus == BossStatus.REST || this.bossStatus == BossStatus.DIE
@@ -1214,16 +1216,26 @@ public class Boss extends Player implements IBoss {
                 && this.id != BossID.DEATH_BEAM_5 && !"$".equals(this.name);
     }
 
+    private Zone lastSafeCheckZone;
+    private int lastSafeCheckX = -1;
+    private int lastSafeCheckY = -1;
+
     public void ensureSafeBossLocation() {
         if (!isSubjectToSafeMapBounds() || this.isDie() || this.zone == null || this.zone.map == null || this.location == null) {
             return;
         }
         int curX = this.location.x;
         int curY = this.location.y;
+        if (this.zone == this.lastSafeCheckZone && curX == this.lastSafeCheckX && curY == this.lastSafeCheckY) {
+            return;
+        }
         int[] safeLoc = this.zone.map.getSafeBossLocation(this.zone, curX, curY);
         if (Math.abs(curX - safeLoc[0]) > 4 || Math.abs(curY - safeLoc[1]) > 12) {
             PlayerService.gI().playerMove(this, safeLoc[0], safeLoc[1]);
         }
+        this.lastSafeCheckZone = this.zone;
+        this.lastSafeCheckX = this.location.x;
+        this.lastSafeCheckY = this.location.y;
     }
 
     protected void notifyJoinMap() {
