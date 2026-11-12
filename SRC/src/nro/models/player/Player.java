@@ -2540,6 +2540,10 @@ public class Player implements Runnable {
             Service.gI().sendThongBao(this, "Không tìm thấy thông tin Boss!");
             return;
         }
+        if (boss.id == nro.models.boss.BossID.ONG_GIA_NOEL) {
+            Service.gI().sendThongBao(this, "Ông già Noel là Boss phát quà không thể tấn công! Hãy chọn 'Đến Ngay Khu 0' để tìm và nhặt Hộp Quà.");
+            return;
+        }
         int lv = (boss.currentLevel >= 0 && boss.currentLevel < boss.data.length) ? boss.currentLevel : 0;
         String bossName = boss.data[lv].getName();
         long groupKey = getBossGroupKey(boss.id);
