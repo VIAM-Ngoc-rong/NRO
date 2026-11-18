@@ -549,8 +549,9 @@ public class ServerManager {
             if (os.contains("win")) {
                 Runtime.getRuntime().exec("cmd /c start restart_server.bat");
             } else {
+                // Nếu đã có Watchdog của run.sh đang chạy thì chỉ cần System.exit(0) để Watchdog tự git pull & bật lại, tránh 2 tiến trình run.sh đụng độ nhau lúc bảo trì
                 new ProcessBuilder("/bin/bash", "-c",
-                        "sleep 2 && (git fetch --depth=1 origin main >/dev/null 2>&1 && git reset --hard origin/main >/dev/null 2>&1 || true) && sed -i 's/\\r$//' run.sh backup_db.sh 2>/dev/null && chmod +x run.sh backup_db.sh 2>/dev/null; nohup /bin/bash ./run.sh > /dev/null 2>&1 < /dev/null &")
+                        "nohup /bin/bash -c 'if [ -f .watchdog.pid ] && [ ! -f .stop_watchdog ] && kill -0 $(cat .watchdog.pid 2>/dev/null) 2>/dev/null; then exit 0; fi; sleep 2 && (git fetch --depth=1 origin main >/dev/null 2>&1 && git reset --hard origin/main >/dev/null 2>&1 || true) && sed -i \"s/\\r$//\" run.sh backup_db.sh 2>/dev/null && chmod +x run.sh backup_db.sh 2>/dev/null && ./run.sh' > /dev/null 2>&1 < /dev/null &")
                         .directory(new java.io.File("."))
                         .start();
             }

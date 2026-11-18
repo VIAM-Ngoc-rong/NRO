@@ -208,7 +208,11 @@ public final class Manager {
                     final List<Zone> finalBatch = new ArrayList<>(currentBatch);
                     zoneTasks.add(() -> {
                         for (Zone z : finalBatch) {
-                            z.update();
+                            try {
+                                z.update();
+                            } catch (Throwable t) {
+                                t.printStackTrace();
+                            }
                         }
                         return null;
                     });
@@ -220,7 +224,11 @@ public final class Manager {
             final List<Zone> finalBatch = new ArrayList<>(currentBatch);
             zoneTasks.add(() -> {
                 for (Zone z : finalBatch) {
-                    z.update();
+                    try {
+                        z.update();
+                    } catch (Throwable t) {
+                        t.printStackTrace();
+                    }
                 }
                 return null;
             });
@@ -233,9 +241,12 @@ public final class Manager {
                     completionService.submit(task);
                 }
                 for (int i = 0; i < zoneTasks.size(); i++) {
-                    completionService.take();
+                    java.util.concurrent.Future<Void> f = completionService.poll(5, TimeUnit.SECONDS);
+                    if (f == null) {
+                        break;
+                    }
                 }
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 e.printStackTrace();
             }
         }, 0, 1, TimeUnit.SECONDS);

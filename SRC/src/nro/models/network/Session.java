@@ -44,6 +44,8 @@ public class Session implements ISession {
             this.socket.setTcpNoDelay(true);
             this.socket.setSendBufferSize(0x4000);
             this.socket.setReceiveBufferSize(0x4000);
+            this.socket.setSoTimeout(600_000);
+            this.socket.setKeepAlive(true);
         } catch (SocketException ignored) {
         }
 

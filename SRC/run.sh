@@ -14,17 +14,17 @@ if [ -f "$SCRIPT_DIR/.watchdog.pid" ]; then
     rm -f "$SCRIPT_DIR/.watchdog.pid" 2>/dev/null || true
 fi
 
-OLD_PIDS=$(pgrep -f "java.*(nro.models.server.ServerManager|20.jar|NgocRongOnline.jar)" || true)
+OLD_PIDS=$(ps -C java -o pid= 2>/dev/null | tr -d ' ' || true)
 if [ -n "$OLD_PIDS" ]; then
     echo "Đang lưu dữ liệu và đóng tiến trình Server cũ (PID: $OLD_PIDS)..."
     kill -15 $OLD_PIDS 2>/dev/null || true
     for i in $(seq 1 12); do
-        if ! pgrep -f "java.*(nro.models.server.ServerManager|20.jar|NgocRongOnline.jar)" >/dev/null 2>&1; then
+        if ! ps -C java -o pid= >/dev/null 2>&1; then
             break
         fi
         sleep 1
     done
-    REMAIN_PIDS=$(pgrep -f "java.*(nro.models.server.ServerManager|20.jar|NgocRongOnline.jar)" || true)
+    REMAIN_PIDS=$(ps -C java -o pid= 2>/dev/null | tr -d ' ' || true)
     if [ -n "$REMAIN_PIDS" ]; then
         echo "Đang buộc đóng tiến trình bị treo (PID: $REMAIN_PIDS)..."
         kill -9 $REMAIN_PIDS 2>/dev/null || true
@@ -100,7 +100,22 @@ if [ -f "dist/NgocRongOnline.jar" ]; then
     cp -f "dist/NgocRongOnline.jar" "20.jar"
 fi
 
-# Tối ưu Kernel Linux: đẩy các tiến trình nền ít dùng (SmartLab/OS cache) sang 3GB Swap (swappiness=60) để nhường tối đa RAM vật lý cho NRO
+# Tự động kiểm tra và tạo Swap 2GB nếu VPS chưa có Swap (chống OOM Killer tuyệt đối khi chạy dài ngày)
+TOTAL_SWAP_NOW=$(awk '/SwapTotal/ {printf "%d", $2/1024}' /proc/meminfo 2>/dev/null || echo 0)
+if [ "$TOTAL_SWAP_NOW" -lt 512 ] 2>/dev/null; then
+    if [ ! -f /swapfile ]; then
+        echo "Đang khởi tạo 2GB Swap cho VPS để chống tràn RAM..."
+        fallocate -l 2G /swapfile 2>/dev/null || dd if=/dev/zero of=/swapfile bs=1M count=2048 >/dev/null 2>&1 || true
+        chmod 600 /swapfile 2>/dev/null || true
+        mkswap /swapfile >/dev/null 2>&1 || true
+    fi
+    swapon /swapfile 2>/dev/null || true
+    if ! grep -q "/swapfile" /etc/fstab 2>/dev/null; then
+        echo "/swapfile none swap sw 0 0" >> /etc/fstab 2>/dev/null || true
+    fi
+fi
+
+# Tối ưu Kernel Linux: đẩy các tiến trình nền ít dùng (SmartLab/OS cache) sang Swap (swappiness=60) để nhường tối đa RAM vật lý cho NRO
 sysctl -w vm.swappiness=60 >/dev/null 2>&1 || true
 sysctl -w vm.vfs_cache_pressure=100 >/dev/null 2>&1 || true
 sysctl -w vm.overcommit_memory=1 >/dev/null 2>&1 || true
@@ -112,12 +127,12 @@ if [ -n "$MYSQL_PID_GUARD" ] && [ -w "/proc/$MYSQL_PID_GUARD/oom_score_adj" ]; t
     echo -900 > "/proc/$MYSQL_PID_GUARD/oom_score_adj" 2>/dev/null || true
 fi
 
-# Cấp phát tối đa cho NRO (960MB Heap + ~220MB Non-Heap = ~1180MB, tận dụng RAM vật lý + đẩy nền sang Swap)
+# Cấp phát cân đối cho NRO để không bao giờ vượt quá RAM vật lý của VPS sau nhiều ngày hoạt động
 TOTAL_RAM_MB=$(awk '/MemTotal/ {printf "%d", $2/1024}' /proc/meminfo 2>/dev/null || echo 1536)
-TOTAL_SWAP_MB=$(awk '/SwapTotal/ {printf "%d", $2/1024}' /proc/meminfo 2>/dev/null || echo 3072)
-MAX_HEAP_MB=960
+TOTAL_SWAP_MB=$(awk '/SwapTotal/ {printf "%d", $2/1024}' /proc/meminfo 2>/dev/null || echo 2048)
+MAX_HEAP_MB=768
 if [ "$TOTAL_RAM_MB" -ge 2000 ] 2>/dev/null; then
-    MAX_HEAP_MB=$(( TOTAL_RAM_MB * 75 / 100 ))
+    MAX_HEAP_MB=$(( TOTAL_RAM_MB * 65 / 100 ))
 fi
 
 rm -f "$SCRIPT_DIR/.stop_watchdog" 2>/dev/null || true
@@ -129,8 +144,10 @@ if [ "$1" = "--fg" ]; then
       -XX:ConcGCThreads=1 \
       -Xms256M -Xmx${MAX_HEAP_MB}M \
       -XX:MaxMetaspaceSize=128M \
+      -XX:ReservedCodeCacheSize=64M \
+      -XX:MaxDirectMemorySize=64M \
       -Xss512k \
-      -XX:-UseGCOverheadLimit \
+      -XX:+ExitOnOutOfMemoryError \
       -XX:MinHeapFreeRatio=10 \
       -XX:MaxHeapFreeRatio=25 \
       -XX:+UseG1GC \
@@ -147,7 +164,7 @@ if [ "$1" = "--fg" ]; then
       nro.models.server.ServerManager
 fi
 
-echo "Đang khởi động Ngọc Rồng VIAM kèm Watchdog 24/7 (Ưu tiên tối đa NRO: Heap 256MB ~ ${MAX_HEAP_MB}MB trên tổng ${TOTAL_RAM_MB}MB RAM + ${TOTAL_SWAP_MB}MB Swap)..."
+echo "Đang khởi động Ngọc Rồng VIAM kèm Watchdog 24/7 (Heap 256MB ~ ${MAX_HEAP_MB}MB trên tổng ${TOTAL_RAM_MB}MB RAM + ${TOTAL_SWAP_MB}MB Swap)..."
 nohup /bin/bash -c "
   while [ ! -f \"$SCRIPT_DIR/.stop_watchdog\" ]; do
     echo \"[\$(date '+%Y-%m-%d %H:%M:%S')] Khởi chạy JVM ServerManager (Ưu tiên CPU -10 & OOM Guard -900)...\" >> \"$SCRIPT_DIR/server.log\"
@@ -157,8 +174,10 @@ nohup /bin/bash -c "
       -XX:ConcGCThreads=1 \
       -Xms256M -Xmx${MAX_HEAP_MB}M \
       -XX:MaxMetaspaceSize=128M \
+      -XX:ReservedCodeCacheSize=64M \
+      -XX:MaxDirectMemorySize=64M \
       -Xss512k \
-      -XX:-UseGCOverheadLimit \
+      -XX:+ExitOnOutOfMemoryError \
       -XX:MinHeapFreeRatio=10 \
       -XX:MaxHeapFreeRatio=25 \
       -XX:+UseG1GC \
@@ -178,7 +197,33 @@ nohup /bin/bash -c "
       echo -900 > \"/proc/\$JAVA_CHILD_PID/oom_score_adj\" 2>/dev/null || true
     fi
     ionice -c 2 -n 0 -p \$JAVA_CHILD_PID >/dev/null 2>&1 || true
-    wait \$JAVA_CHILD_PID
+
+    # Giám sát chủ động (Active Healthcheck): nếu tiến trình Java bị treo cứng cổng 14445 quá 90s thì tự động khởi động lại
+    START_SEC=\$(date +%s)
+    FAIL_COUNT=0
+    while kill -0 \$JAVA_CHILD_PID 2>/dev/null; do
+      if [ -f \"$SCRIPT_DIR/.stop_watchdog\" ]; then
+        break
+      fi
+      NOW_SEC=\$(date +%s)
+      if [ \$(( NOW_SEC - START_SEC )) -gt 60 ]; then
+        if timeout 3 bash -c \"</dev/tcp/127.0.0.1/14445\" >/dev/null 2>&1; then
+          FAIL_COUNT=0
+        else
+          FAIL_COUNT=\$(( FAIL_COUNT + 1 ))
+          if [ \$FAIL_COUNT -ge 6 ]; then
+            echo \"[\$(date '+%Y-%m-%d %H:%M:%S')] [WATCHDOG] Phát hiện cổng 14445 không phản hồi trong 90s (JVM treo). Đang tự động khởi động lại...\" >> \"$SCRIPT_DIR/server.log\"
+            kill -15 \$JAVA_CHILD_PID 2>/dev/null || true
+            sleep 5
+            kill -9 \$JAVA_CHILD_PID 2>/dev/null || true
+            break
+          fi
+        fi
+      fi
+      sleep 15
+    done
+
+    wait \$JAVA_CHILD_PID 2>/dev/null
     EXIT_CODE=\$?
     if [ -f \"$SCRIPT_DIR/.stop_watchdog\" ]; then
       break
