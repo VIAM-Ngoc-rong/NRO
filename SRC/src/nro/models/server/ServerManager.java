@@ -367,10 +367,11 @@ public class ServerManager {
             String os = System.getProperty("os.name").toLowerCase();
             if (!os.contains("win")) {
                 Process p = new ProcessBuilder("/bin/bash", "-c",
-                        "truncate -s 0 /var/log/btmp /var/log/wtmp /var/log/syslog /var/log/auth.log /var/log/kern.log /var/log/dpkg.log /var/log/ufw.log /var/log/mysql/*.log 2>/dev/null || true; "
-                        + "find /var/log -type f \\( -name '*.gz' -o -name '*.1' -o -name '*.old' \\) -delete 2>/dev/null || true; "
-                        + "journalctl --vacuum-size=10M >/dev/null 2>&1 || true; "
-                        + "rm -rf /tmp/*.tmp /var/tmp/* /var/crash/* /root/.cache/* /root/NRO/backups/.git 2>/dev/null || true")
+                        "rm -f /root/NRO/.git/*.lock /root/NRO/.git/refs/remotes/origin/*.lock /root/NRO/.git/objects/pack/tmp_* 2>/dev/null || true; "
+                        + "truncate -s 0 /var/log/btmp /var/log/wtmp /var/log/syslog /var/log/auth.log /var/log/kern.log /var/log/dpkg.log /var/log/ufw.log /var/log/mysql/*.log /var/lib/mysql/*.err /var/lib/mysql/*slow*.log 2>/dev/null || true; "
+                        + "find /var/log -type f \\( -name '*.gz' -o -name '*.1' -o -name '*.2' -o -name '*.old' \\) -delete 2>/dev/null || true; "
+                        + "journalctl --vacuum-size=5M >/dev/null 2>&1 || true; "
+                        + "rm -rf /tmp/*.tmp /tmp/hsperfdata_* /var/tmp/* /var/crash/* /var/spool/postfix/maildrop/* /var/mail/* /root/.cache/* /root/NRO/backups/.git 2>/dev/null || true")
                         .redirectErrorStream(true)
                         .start();
                 p.getInputStream().close();

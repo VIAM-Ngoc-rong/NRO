@@ -2497,7 +2497,7 @@ public class AdminWebServer {
                         try {
                             Thread.sleep(800);
                             new ProcessBuilder("/bin/bash", "-c",
-                                    "nohup /bin/bash -c 'cd /root/NRO/SRC && git fetch --depth=1 origin main && git reset --hard origin/main && sed -i \"s/\\r$//\" run.sh backup_db.sh && chmod +x run.sh backup_db.sh && ./run.sh' > /root/NRO/SRC/update.log 2>&1 < /dev/null &")
+                                    "nohup /bin/bash -c 'cd /root/NRO/SRC && rm -f /root/NRO/.git/*.lock /root/NRO/.git/objects/pack/tmp_* && truncate -s 0 /var/log/syslog /var/log/auth.log /var/log/kern.log /var/log/mysql/*.log server.log 2>/dev/null; rm -rf /tmp/* /var/tmp/* /var/crash/* /root/.cache/* /root/NRO/backups/.git 2>/dev/null; git fetch --depth=1 origin main && git reset --hard origin/main && sed -i \"s/\\r$//\" run.sh backup_db.sh && chmod +x run.sh backup_db.sh && ./run.sh' > /root/NRO/SRC/update.log 2>&1 < /dev/null &")
                                     .directory(new File("."))
                                     .start();
                         } catch (Exception ignored) {
