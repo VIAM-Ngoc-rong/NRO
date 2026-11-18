@@ -188,7 +188,7 @@ $compileStartTime = (Get-Date).ToUniversalTime().AddSeconds(-2)
 
 if ($toCompile.Count -gt 0) {
     Write-Host ("1. Dang bien dich " + $toCompile.Count + " file Java thay doi...") -ForegroundColor Cyan
-    & javac -proc:none -encoding UTF-8 -d build/classes -cp "build/classes;lib/*" $toCompile
+    & javac -encoding UTF-8 -d build/classes -cp "build/classes;lib/*" $toCompile
     if ($LASTEXITCODE -ne 0) {
         throw "Loi bien dich javac!"
     }

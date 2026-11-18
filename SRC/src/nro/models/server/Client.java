@@ -39,6 +39,10 @@ public class Client implements Runnable {
     @Getter
     private final List<Player> players = new java.util.concurrent.CopyOnWriteArrayList<>();
 
+    public List<Player> getPlayers() {
+        return this.players;
+    }
+
     private Client() {
         Executors.newSingleThreadExecutor().submit(this, "Update Client");
     }
