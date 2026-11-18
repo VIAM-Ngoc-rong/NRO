@@ -32,27 +32,27 @@ if [ -n "$OLD_PIDS" ]; then
     fi
 fi
 
-# 1.2. Tự động giải phóng ổ cứng VPS TRƯỚC TIÊN (chống lỗi No space left on device khi git fetch & chạy MySQL)
+# 1.2. Tự động giải phóng ổ cứng VPS TRƯỚC TIÊN (xóa sạch toàn bộ 13GB+ log trong /var/log chống lỗi No space left on device)
 rm -f /root/NRO/.git/*.lock /root/NRO/.git/refs/remotes/origin/*.lock /root/NRO/.git/objects/pack/tmp_* 2>/dev/null || true
-rm -rf /root/NRO/.git/logs/* /var/cache/apt/archives/*.deb /var/cache/apt/archives/partial/* /var/lib/apt/lists/* /tmp/* /tmp/hsperfdata_* /var/tmp/* /var/crash/* /var/lib/systemd/coredump/* /var/spool/postfix/maildrop/* /var/mail/* /root/.cache/* /root/NRO/backups/.git /swapfile 2>/dev/null || true
+find /var/log -type f \( -name "*.gz" -o -name "*.1" -o -name "*.2" -o -name "*.old" -o -name "*.xz" -o -name "*.journal*" \) -delete 2>/dev/null || true
+find /var/log -type f -exec truncate -s 0 {} + 2>/dev/null || true
+rm -rf /var/log/journal/* /root/NRO/.git/logs/* /var/cache/apt/archives/*.deb /var/cache/apt/archives/partial/* /var/lib/apt/lists/* /tmp/* /tmp/hsperfdata_* /var/tmp/* /var/crash/* /var/lib/systemd/coredump/* /var/spool/postfix/maildrop/* /var/mail/* /root/.cache/* /root/.nuget/packages/* /root/NRO/backups/.git 2>/dev/null || true
 apt-get clean >/dev/null 2>&1 || true
-truncate -s 0 /var/log/btmp /var/log/wtmp /var/log/syslog /var/log/auth.log /var/log/kern.log /var/log/dpkg.log /var/log/ufw.log /var/log/mysql/*.log /var/lib/mysql/*.err /var/lib/mysql/*slow*.log /root/NRO/backups/backup.log "$SCRIPT_DIR/update.log" 2>/dev/null || true
+truncate -s 0 /var/lib/mysql/*.err /var/lib/mysql/*slow*.log /root/NRO/backups/backup.log "$SCRIPT_DIR/update.log" 2>/dev/null || true
 if [ -f "$SCRIPT_DIR/server.log" ] && [ "$(stat -c%s "$SCRIPT_DIR/server.log" 2>/dev/null || echo 0)" -gt 2097152 ]; then
     truncate -s 0 "$SCRIPT_DIR/server.log" 2>/dev/null || true
 fi
 journalctl --vacuum-size=5M >/dev/null 2>&1 || true
-find /var/log -type f \( -name "*.gz" -o -name "*.1" -o -name "*.2" -o -name "*.old" \) -delete 2>/dev/null || true
 if [ -d "/root/NRO/backups" ]; then
     ls -1t /root/NRO/backups/team2026_20*.sql.gz 2>/dev/null | tail -n +2 | xargs -r rm -f 2>/dev/null || true
 fi
 
-# 1.5. Tự động kéo code & bản build mới nhất từ GitHub và dọn rác .git/objects/pack
+# 1.5. Tự động kéo code & bản build mới nhất từ GitHub
 if command -v git >/dev/null 2>&1; then
     echo "Đang tự động cập nhật code mới nhất từ GitHub (origin/main)..."
     git -C /root/NRO prune --expire=now >/dev/null 2>&1 || true
     git fetch --depth=1 origin main >/dev/null 2>&1 && git reset --hard origin/main >/dev/null 2>&1 || true
     git -C /root/NRO reflog expire --expire=now --all >/dev/null 2>&1 || true
-    git -C /root/NRO repack -a -d --depth=1 --window=1 >/dev/null 2>&1 || true
     git -C /root/NRO prune --expire=now >/dev/null 2>&1 || true
     sed -i 's/\r$//' "$SCRIPT_DIR/run.sh" "$SCRIPT_DIR/backup_db.sh" 2>/dev/null || true
     chmod +x "$SCRIPT_DIR/run.sh" "$SCRIPT_DIR/backup_db.sh" 2>/dev/null || true
@@ -222,10 +222,11 @@ nohup /bin/bash -c "
     fi
     echo \"[\$(date '+%Y-%m-%d %H:%M:%S')] [WATCHDOG] Server vừa dừng (Mã thoát: \$EXIT_CODE). Đang tự động dọn ổ cứng, git pull và khởi động lại sau 3 giây...\" >> \"$SCRIPT_DIR/server.log\"
     rm -f /root/NRO/.git/*.lock /root/NRO/.git/refs/remotes/origin/*.lock /root/NRO/.git/objects/pack/tmp_* 2>/dev/null || true
+    find /var/log -type f -exec truncate -s 0 {} + 2>/dev/null || true
+    rm -rf /var/log/journal/* 2>/dev/null || true
     if command -v git >/dev/null 2>&1; then
       git fetch --depth=1 origin main >/dev/null 2>&1 && git reset --hard origin/main >/dev/null 2>&1 || true
       git -C /root/NRO reflog expire --expire=now --all >/dev/null 2>&1 || true
-      git -C /root/NRO repack -a -d --depth=1 --window=1 >/dev/null 2>&1 || true
       git -C /root/NRO prune --expire=now >/dev/null 2>&1 || true
     fi
     if [ -f \"$SCRIPT_DIR/dist/NgocRongOnline.jar\" ]; then
