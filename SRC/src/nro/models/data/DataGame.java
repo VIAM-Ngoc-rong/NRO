@@ -111,7 +111,7 @@ public class DataGame {
                     }
                 }
             }
-            session.doSendMessage(Message.fromRawPayload(-87, payload));
+            session.sendMessage(Message.fromRawPayload(-87, payload));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -259,7 +259,7 @@ public class DataGame {
                 }
             }
             if (payload != null) {
-                session.doSendMessage(Message.fromRawPayload(-28, payload));
+                session.sendMessage(Message.fromRawPayload(-28, payload));
             }
         } catch (Exception e) {
             Logger.logException(DataGame.class, e);

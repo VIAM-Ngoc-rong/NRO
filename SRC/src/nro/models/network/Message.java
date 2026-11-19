@@ -17,7 +17,7 @@ public class Message implements IMessage {
     private DataOutputStream dos;
     private ByteArrayInputStream is;
     private DataInputStream dis;
-    private byte[] rawData;
+    private volatile byte[] rawData;
 
     public Message(int command) {
         this((byte) command);
@@ -55,27 +55,29 @@ public class Message implements IMessage {
     }
 
     @Override
-    public byte[] getData() {
-        if (this.os != null) {
-            if (this.rawData == null || this.rawData.length != this.os.size()) {
-                this.rawData = this.os.toByteArray();
+    public synchronized byte[] getData() {
+        ByteArrayOutputStream localOs = this.os;
+        if (localOs != null) {
+            if (this.rawData == null || this.rawData.length != localOs.size()) {
+                this.rawData = localOs.toByteArray();
             }
             return this.rawData;
         }
-        return this.rawData;
+        return this.rawData != null ? this.rawData : new byte[0];
     }
 
     @Override
-    public void cleanup() {
+    public synchronized void cleanup() {
         try {
-            if (this.os != null && (this.rawData == null || this.rawData.length != this.os.size())) {
-                this.rawData = this.os.toByteArray();
+            ByteArrayOutputStream localOs = this.os;
+            if (localOs != null && (this.rawData == null || this.rawData.length != localOs.size())) {
+                this.rawData = localOs.toByteArray();
             }
             if (this.is != null) {
                 this.is.close();
             }
-            if (this.os != null) {
-                this.os.close();
+            if (localOs != null) {
+                localOs.close();
             }
             if (this.dis != null) {
                 this.dis.close();

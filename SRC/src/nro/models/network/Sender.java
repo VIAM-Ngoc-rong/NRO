@@ -28,7 +28,7 @@ public final class Sender implements Runnable {
         }
         try {
             this.session = session;
-            this.messages = new LinkedBlockingDeque<Message>(1000);
+            this.messages = new LinkedBlockingDeque<Message>(4000);
             this.setSocket(socket);
         } catch (Exception exception) {
         }
@@ -47,28 +47,41 @@ public final class Sender implements Runnable {
 
     @Override
     public void run() {
-        try {
-            while (this.session != null && this.session.isConnected()) {
-                Message message = this.messages.poll(1L, TimeUnit.SECONDS);
+        while (this.session != null && this.session.isConnected()) {
+            try {
+                BlockingDeque<Message> queue = this.messages;
+                if (queue == null) {
+                    break;
+                }
+                Message message = queue.poll(1L, TimeUnit.SECONDS);
                 if (message != null) {
                     this.doSendMessage(message);
                     message.cleanup();
                 }
+            } catch (InterruptedException ie) {
+                Thread.currentThread().interrupt();
+                break;
+            } catch (IOException ioe) {
+                break;
+            } catch (Exception exception) {
             }
-        } catch (Exception exception) {
         }
     }
 
     public synchronized void doSendMessage(Message message) throws Exception {
-        this.sendCollect.doSendMessage(this.session, this.dos, message);
+        if (this.sendCollect != null && this.dos != null && this.session != null && this.session.isConnected()) {
+            this.sendCollect.doSendMessage(this.session, this.dos, message);
+        }
     }
 
     public void sendMessage(Message msg) {
         try {
-            if (this.session != null && this.session.isConnected() && this.messages != null) {
+            if (msg != null && this.session != null && this.session.isConnected() && this.messages != null) {
+                // Chốt sẵn mảng byte payload trước khi đưa vào hàng đợi để tránh xung đột với msg.cleanup() ở luồng gọi
+                msg.getData();
                 if (!this.messages.offer(msg)) {
                     msg.cleanup();
-                    if (this.messages.size() >= 1000) {
+                    if (this.messages.size() >= 4000) {
                         this.session.disconnect();
                     }
                 }

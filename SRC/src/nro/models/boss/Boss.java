@@ -1028,9 +1028,6 @@ public class Boss extends Player implements IBoss {
                 return;
             }
         }
-        if (this.effectSkill == null || this.effectSkill.isHaveEffectSkill() || (this.newSkill != null && this.newSkill.isStartSkillSpecial)) {
-            return;
-        }
         if (this.bossStatus == BossStatus.CHAT_S || this.bossStatus == BossStatus.AFK || this.bossStatus == BossStatus.ACTIVE) {
             if (this.zone == null) {
                 this.leaveMap();
@@ -1038,6 +1035,8 @@ public class Boss extends Player implements IBoss {
             }
             if (this.isDie()) {
                 this.changeStatus(BossStatus.DIE);
+            } else if (this.effectSkill == null || this.effectSkill.isHaveEffectSkill() || (this.newSkill != null && this.newSkill.isStartSkillSpecial)) {
+                return;
             }
         }
         switch (this.bossStatus) {
@@ -1125,6 +1124,17 @@ public class Boss extends Player implements IBoss {
         this.currentLevel++;
         if (this.currentLevel >= this.data.length) {
             this.currentLevel = 0;
+        }
+        if (this.newSkill != null) {
+            this.newSkill.isStartSkillSpecial = false;
+        }
+        if (this.effectSkill != null) {
+            this.effectSkill.anTroi = false;
+            this.effectSkill.isStun = false;
+            this.effectSkill.isBlindDCTT = false;
+            this.effectSkill.isThoiMien = false;
+            this.effectSkill.isBinh = false;
+            this.effectSkill.isStone = false;
         }
         this.initBase();
         this.changeToTypeNonPK();
@@ -1423,6 +1433,13 @@ public class Boss extends Player implements IBoss {
     @Override
     public void die(Player plKill) {
         this.pendingNotifyJoinMap = false;
+        if (this.newSkill != null) {
+            this.newSkill.isStartSkillSpecial = false;
+        }
+        if (this.effectSkill != null) {
+            this.effectSkill.anTroi = false;
+            this.effectSkill.removeSkillEffectWhenDie();
+        }
         this.recordBossAttacked();
         this.recordBossKill(plKill);
         Player plOwner = plKill != null && plKill.isPet ? ((Pet) plKill).master : plKill;
@@ -1801,6 +1818,17 @@ public class Boss extends Player implements IBoss {
         this.pendingNotifyJoinMap = false;
         this.pendingIdleDespawn = false;
         this.firstEncounterPlayerTimeMs = 0L;
+        if (this.newSkill != null) {
+            this.newSkill.isStartSkillSpecial = false;
+        }
+        if (this.effectSkill != null) {
+            this.effectSkill.anTroi = false;
+            this.effectSkill.isStun = false;
+            this.effectSkill.isBlindDCTT = false;
+            this.effectSkill.isThoiMien = false;
+            this.effectSkill.isBinh = false;
+            this.effectSkill.isStone = false;
+        }
         if (this.currentLevel < this.data.length - 1) {
             this.lastZone = this.zone;
             this.changeStatus(BossStatus.RESPAWN);

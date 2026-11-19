@@ -206,7 +206,7 @@ public class ItemData {
                 }
             }
             if (payload != null) {
-                session.doSendMessage(Message.fromRawPayload(-28, payload));
+                session.sendMessage(Message.fromRawPayload(-28, payload));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -246,7 +246,7 @@ public class ItemData {
                 }
             }
             if (payload != null) {
-                session.doSendMessage(Message.fromRawPayload(-28, payload));
+                session.sendMessage(Message.fromRawPayload(-28, payload));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -275,7 +275,7 @@ public class ItemData {
                 }
             }
             if (payload != null) {
-                session.doSendMessage(Message.fromRawPayload(-28, payload));
+                session.sendMessage(Message.fromRawPayload(-28, payload));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -307,7 +307,7 @@ public class ItemData {
                 }
             }
             if (payload != null) {
-                session.doSendMessage(Message.fromRawPayload(-28, payload));
+                session.sendMessage(Message.fromRawPayload(-28, payload));
             }
         } catch (Exception e) {
             e.printStackTrace();

@@ -95,6 +95,7 @@ public class MessageSendCollect implements IMessageSendCollect {
             dos.flush();
             msg.cleanup();
         } catch (IOException iOException) {
+            throw iOException;
         }
     }
 
