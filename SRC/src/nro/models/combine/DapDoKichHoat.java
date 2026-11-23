@@ -18,9 +18,9 @@ import nro.models.utils.Util;
  * - Sản phẩm: 1 món trang bị Kích Hoạt mới đúng theo loại & hành tinh của món Phôi (VD: Phôi là Quần KH -> ra Quần KH mới,
  *   Phôi là Găng KH -> ra Găng KH mới) với Cấp sức mạnh ngẫu nhiên.
  * - Cấp sức mạnh càng cao thì tỷ lệ ra càng hiếm:
- *   + Dùng 3 Đồ Thần Linh: Ra đồ Cấp 1 -> Đồ Thần Linh (Mốc Đồ Thần Linh: 5%).
- *   + Dùng 3 Đồ Hủy Diệt: Ra đồ Cấp 1 -> Đồ Hủy Diệt (Mốc Đồ Hủy Diệt: 5%, Đồ Thần Linh: 7%).
- *   + Dùng 3 Đồ Thiên Sứ: Ra đồ Cấp 1 -> Đồ Thiên Sứ (Mốc Đồ Thiên Sứ: 5%, Đồ Hủy Diệt: 6%, Đồ Thần Linh: 8%).
+ *   + Dùng 3 Đồ Thần Linh: Ra đồ Cấp 1 -> Đồ Thần Linh (Mốc Đồ Thần Linh: 15%).
+ *   + Dùng 3 Đồ Hủy Diệt: Ra đồ Cấp 1 -> Đồ Hủy Diệt (Mốc Đồ Hủy Diệt: 15%, Đồ Thần Linh: 7%).
+ *   + Dùng 3 Đồ Thiên Sứ: Ra đồ Cấp 1 -> Đồ Thiên Sứ (Mốc Đồ Thiên Sứ: 15%, Đồ Hủy Diệt: 6%, Đồ Thần Linh: 8%).
  */
 public class DapDoKichHoat {
 
@@ -77,26 +77,27 @@ public class DapDoKichHoat {
 
     /**
      * Trọng số xác suất (tổng = 10.000 tương ứng 100.00%) theo cấp sức mạnh tăng dần (cấp càng cao tỷ lệ càng hiếm):
-     * - WEGHTS_THAN_LINH (13 mốc: Cấp 1..12 + Đồ Thần Linh 5% = 500/10000)
-     * - WEIGHTS_HUY_DIET (14 mốc: Cấp 1..12 + Đồ Thần Linh 7% + Đồ Hủy Diệt 5% = 500/10000)
-     * - WEIGHTS_THIEN_SU (15 mốc: Cấp 1..12 + Đồ Thần Linh 8% + Đồ Hủy Diệt 6% + Đồ Thiên Sứ 5% = 500/10000)
+     * - WEGHTS_THAN_LINH (13 mốc: Cấp 1..12 = 85% + Đồ Thần Linh 15% = 1500/10000)
+     * - WEIGHTS_HUY_DIET (14 mốc: Cấp 1..12 = 78% + Đồ Thần Linh 7% + Đồ Hủy Diệt 15% = 1500/10000)
+     * - WEIGHTS_THIEN_SU (15 mốc: Cấp 1..12 = 71% + Đồ Thần Linh 8% + Đồ Hủy Diệt 6% + Đồ Thiên Sứ 15% = 1500/10000)
+     * Lưu ý: tổng mỗi bảng phải luôn = 10.000 (hàm roll lấy tổng trọng số làm mẫu số).
      */
     private static final int[] WEIGHTS_THAN_LINH = {
-        1400, 1250, 1100, 950, 850, 750, 700, 650, 550, 500, 450, 350,
-        500 // Cấp 13: Đồ Thần Linh (5%)
+        1250, 1100, 1000, 850, 750, 700, 650, 600, 500, 450, 350, 300,
+        1500 // Cấp 13: Đồ Thần Linh (15%)
     };
 
     private static final int[] WEIGHTS_HUY_DIET = {
-        1300, 1150, 1000, 900, 800, 700, 650, 600, 500, 450, 400, 350,
-        700, // Cấp 13: Đồ Thần Linh (7%)
-        500  // Cấp 14: Đồ Hủy Diệt (5%)
+        1150, 1000, 900, 800, 700, 650, 600, 550, 450, 400, 350, 250,
+        700,  // Cấp 13: Đồ Thần Linh (7%)
+        1500  // Cấp 14: Đồ Hủy Diệt (15%)
     };
 
     private static final int[] WEIGHTS_THIEN_SU = {
-        1200, 1050, 950, 850, 750, 650, 600, 550, 450, 400, 350, 300,
-        800, // Cấp 13: Đồ Thần Linh (8%)
-        600, // Cấp 14: Đồ Hủy Diệt (6%)
-        500  // Cấp 15: Đồ Thiên Sứ (5%)
+        1050, 950, 850, 750, 650, 600, 550, 500, 400, 350, 250, 200,
+        800,  // Cấp 13: Đồ Thần Linh (8%)
+        600,  // Cấp 14: Đồ Hủy Diệt (6%)
+        1500  // Cấp 15: Đồ Thiên Sứ (15%)
     };
 
     public static class CombineRecipe {
@@ -362,7 +363,7 @@ public class DapDoKichHoat {
                     "Cần đặt đúng 4 vật phẩm gồm:\n"
                     + "- 1 món Đồ Kích Hoạt làm Phôi (Áo, Quần, Găng, Giày, Rada)\n"
                     + "- 3 món Đồ Thần Linh (hoặc 3 Đồ Hủy Diệt / 3 Đồ Thiên Sứ)\n"
-                    + "|6|Sản phẩm sẽ theo loại của Phôi KH, ngẫu nhiên Cấp sức mạnh (Đồ Thần: 5%) & chỉ số tăng từ 0-15%!\n"
+                    + "|6|Sản phẩm sẽ theo loại của Phôi KH, ngẫu nhiên Cấp sức mạnh (Mốc cao nhất: 15%) & chỉ số tăng từ 0-15%!\n"
                     + "|7|(Mẹo: Bấm 'Chọn nhanh Nguyên liệu' bên dưới để tự chọn 1 Phôi KH + 3 Đồ Thần)",
                     "Đóng", "Chọn nhanh\nNguyên liệu", "Đổi sang\nTrang kế");
             return;
@@ -394,9 +395,9 @@ public class DapDoKichHoat {
         String tierName = getMaterialTierName(recipe.materialTier);
 
         String rateSummary = switch (recipe.materialTier) {
-            case TIER_THIEN_SU -> "Cấp 1->12 (81%) | Đồ Thần (8%) | Đồ Hủy Diệt (6%) | Đồ Thiên Sứ (5%)";
-            case TIER_HUY_DIET -> "Cấp 1->12 (88%) | Đồ Thần (7%) | Đồ Hủy Diệt (5%)";
-            default -> "Cấp 1->12 (95% - cấp càng cao càng hiếm) | Đồ Thần Linh (5%)";
+            case TIER_THIEN_SU -> "Cấp 1->12 (71%) | Đồ Thần (8%) | Đồ Hủy Diệt (6%) | Đồ Thiên Sứ (15%)";
+            case TIER_HUY_DIET -> "Cấp 1->12 (78%) | Đồ Thần (7%) | Đồ Hủy Diệt (15%)";
+            default -> "Cấp 1->12 (85% - cấp càng cao càng hiếm) | Đồ Thần Linh (15%)";
         };
 
         String npcSay = "|2|Đập 3 " + tierName + " + 1 Phôi Kích Hoạt\n"
