@@ -107,8 +107,8 @@ if [ -f "dist/NgocRongOnline.jar" ]; then
     cp -f "dist/NgocRongOnline.jar" "20.jar"
 fi
 
-# Tối ưu Kernel Linux: đẩy các tiến trình nền ít dùng (SmartLab/OS cache) sang Swap (swappiness=60) để nhường tối đa RAM vật lý cho NRO
-sysctl -w vm.swappiness=60 >/dev/null 2>&1 || true
+# Tối ưu Kernel Linux: swappiness thấp (10) để kernel bỏ page cache trước, không đẩy RAM của SmartLab/MySQL xuống Swap (SmartLab được ưu tiên RAM qua cgroup MemoryLow trong systemd)
+sysctl -w vm.swappiness=10 >/dev/null 2>&1 || true
 sysctl -w vm.vfs_cache_pressure=100 >/dev/null 2>&1 || true
 sysctl -w vm.overcommit_memory=1 >/dev/null 2>&1 || true
 sysctl -w vm.overcommit_ratio=100 >/dev/null 2>&1 || true
@@ -134,7 +134,7 @@ if [ "$1" = "--fg" ]; then
       -XX:ActiveProcessorCount=2 \
       -XX:ParallelGCThreads=2 \
       -XX:ConcGCThreads=1 \
-      -Xms256M -Xmx${MAX_HEAP_MB}M \
+      -Xms128M -Xmx${MAX_HEAP_MB}M \
       -XX:MaxMetaspaceSize=128M \
       -XX:ReservedCodeCacheSize=64M \
       -XX:MaxDirectMemorySize=64M \
@@ -159,12 +159,12 @@ fi
 echo "Đang khởi động Ngọc Rồng VIAM kèm Watchdog 24/7 (Heap 256MB ~ ${MAX_HEAP_MB}MB trên tổng ${TOTAL_RAM_MB}MB RAM + ${TOTAL_SWAP_MB}MB Swap)..."
 nohup /bin/bash -c "
   while [ ! -f \"$SCRIPT_DIR/.stop_watchdog\" ]; do
-    echo \"[\$(date '+%Y-%m-%d %H:%M:%S')] Khởi chạy JVM ServerManager (Ưu tiên CPU -10 & OOM Guard -900)...\" >> \"$SCRIPT_DIR/server.log\"
+    echo \"[\$(date '+%Y-%m-%d %H:%M:%S')] Khởi chạy JVM ServerManager (Ưu tiên CPU -10, OOM nhường SmartLab)...\" >> \"$SCRIPT_DIR/server.log\"
     nice -n -10 java -server \
       -XX:ActiveProcessorCount=2 \
       -XX:ParallelGCThreads=2 \
       -XX:ConcGCThreads=1 \
-      -Xms256M -Xmx${MAX_HEAP_MB}M \
+      -Xms128M -Xmx${MAX_HEAP_MB}M \
       -XX:MaxMetaspaceSize=128M \
       -XX:ReservedCodeCacheSize=64M \
       -XX:MaxDirectMemorySize=64M \
@@ -186,7 +186,7 @@ nohup /bin/bash -c "
       nro.models.server.ServerManager >> \"$SCRIPT_DIR/server.log\" 2>&1 < /dev/null &
     JAVA_CHILD_PID=\$!
     if [ -w \"/proc/\$JAVA_CHILD_PID/oom_score_adj\" ]; then
-      echo -900 > \"/proc/\$JAVA_CHILD_PID/oom_score_adj\" 2>/dev/null || true
+      echo 0 > \"/proc/\$JAVA_CHILD_PID/oom_score_adj\" 2>/dev/null || true
     fi
     ionice -c 2 -n 0 -p \$JAVA_CHILD_PID >/dev/null 2>&1 || true
 
